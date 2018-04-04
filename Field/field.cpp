@@ -2,17 +2,24 @@
 
 procon::Field::Field(unsigned int size_x ,unsigned int size_y){
 
+    //初期化処理がめっちゃ分かりづらいですが、四隅にagentを配置してます
+    agents = { { std::make_pair(0, 0), std::make_pair(size_x - 1, size_y - 1) }, { std::make_pair(size_x - 1, 0), std::make_pair(0, size_y - 1) } };
+
     field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
     value_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
 }
 
 procon::Field::Field(unsigned int size_x, unsigned int size_y, std::vector<std::vector<int>> input_val){
 
+    agents = { { std::make_pair(0, 0), std::make_pair(size_x - 1, size_y - 1) }, { std::make_pair(size_x - 1, 0), std::make_pair(0, size_y - 1) } };
+
     field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
     value_data = input_val;
 }
 
 procon::Field::Field(unsigned int size_x, unsigned int size_y, int max_val, int min_val, double minus_per){
+
+    agents = { { std::make_pair(0, 0), std::make_pair(size_x - 1, size_y - 1) }, { std::make_pair(size_x - 1, 0), std::make_pair(0, size_y - 1) } };
 
     field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
     value_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y));
@@ -39,6 +46,10 @@ std::vector<std::vector<int>> procon::Field::getField(){
     return field_data;
 }
 
+
+std::vector<std::vector<std::pair<int,int>>> procon::Field::getAgents(){
+    return agents;
+}
 
 bool procon::Field::isPlaced(int x, int y){
     return (field_data.at(x).at(y) != 0);

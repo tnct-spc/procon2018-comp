@@ -45,23 +45,46 @@ void MainWindow::paintEvent(QPaintEvent *event){
 
     };
 
-    auto drawPieces = [&]{
+    auto drawTiles = [&]{
         for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
             for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
 
-                if(manager->getField().isPlaced(x_pos, y_pos) == 0)
-                    painter.setBrush(QBrush(grid_color));
-                else
-                    painter.setBrush(QBrush(((manager->getField().getState(x_pos,y_pos)).first == 1
-                                            ? team_color_a
-                                            : team_color_b
-                                            )));
-                painter.drawRect(horizontal_margin + grid_size * x_pos, vertical_margin + grid_size * y_pos, grid_size, grid_size);
+                if(manager->getField().isPlaced(x_pos, y_pos) == true){
+
+                    QColor paint_color = ( manager->getField().getState(x_pos, y_pos).first == 1
+                                           ? team_color_a
+                                           : team_color_b);
+                    paint_color.setAlpha(64);
+
+                    painter.setBrush(QBrush(paint_color));
+                    painter.drawRect(horizontal_margin + grid_size * x_pos, vertical_margin + grid_size * y_pos, grid_size, grid_size);
+                }
             }
 
     };
 
+    auto drawAgents = [&]{
+        for(unsigned int team = 0; team < 2; ++team){
+            for(unsigned int index = 0; index < 2; ++index){
+
+                QColor paint_color = ( team == 0
+                           ? team_color_a
+                           : team_color_b);
+                paint_color.setAlpha(128);
+
+                painter.setBrush(QBrush(paint_color));
+
+                int pos_x = manager->getField().getAgents().at(team).at(index).first;
+                int pos_y = manager->getField().getAgents().at(team).at(index).second;
+
+                painter.drawEllipse(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size);
+
+            }
+        }
+    };
+
     drawBackGround();
-    drawPieces();
+    drawTiles();
+    drawAgents();
 
 }

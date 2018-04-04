@@ -15,11 +15,9 @@ public:
 private:
     std::shared_ptr<procon::Field> field;
 
-    bool turn_flag = false;
-
     //ここは後で仕様を変える
-    const int max_val = 5;
-    const int min_val = -2;
+    const int max_val = 16;
+    const int min_val = -16;
 
 };
 
