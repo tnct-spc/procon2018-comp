@@ -68,6 +68,10 @@ void procon::Field::setState(int x, int y, int state){
     field_data.at(x).at(y) = state;
 }
 
+void procon::Field::setAgent(int turn, int number, int x_pos, int y_pos){
+    agents.at(turn).at(number) = std::make_pair(x_pos, y_pos);
+}
+
 int procon::Field::getTurnCount(){
     return turn_count;
 }

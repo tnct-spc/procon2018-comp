@@ -23,6 +23,7 @@ public:
     std::pair<int,int> getState(int x, int y);//pair<タイル状況,評価値>
 
     void setState(int x, int y, int state);//タイル状況のみの変更
+    void setAgent(int turn, int number, int x_pos, int y_pos);
 
     void setTurnCount(int turn);
     int getTurnCount();
