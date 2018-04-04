@@ -15,9 +15,9 @@ public:
     procon::Field getField();
 
     //ここの関数は既に行動が決まっている引数を渡された時にfalseを返す
-    bool stayAgent(bool turn, int number);
-    bool moveAgent(bool turn, int number, int rotate_num);
-    bool deleteTile(bool turn, int number, int rotate_num);
+    void stayAgent(bool turn, int number);
+    void moveAgent(bool turn, int number, int rotate_num);
+    void deleteTile(bool turn, int number, int rotate_num);
 
 private:
     std::shared_ptr<procon::Field> field;
@@ -32,7 +32,7 @@ private:
     //2:タイル除去 移動方向をintで設定する
     std::vector<std::vector<std::pair<int,int>>> act_stack;
 
-    bool agentAct(int turn, int agent, int type, int number);
+    void agentAct(int turn, int agent, int type, int number);
     void changeTurn();
 
 };

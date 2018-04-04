@@ -9,35 +9,31 @@ procon::Field GameManager::getField(){
     return *field;
 }
 
-bool GameManager::stayAgent(bool turn, int number){
-    return  agentAct(turn, number, 0, 0);
+void GameManager::stayAgent(bool turn, int number){
+    agentAct(turn, number, 0, 0);
 }
 
-bool GameManager::moveAgent(bool turn, int number, int rotate_num){
-    return agentAct(turn, number, 1, rotate_num);
+void GameManager::moveAgent(bool turn, int number, int rotate_num){
+    agentAct(turn, number, 1, rotate_num);
 }
 
-bool GameManager::deleteTile(bool turn, int number, int rotate_num){
-    return agentAct(turn, number, 2, rotate_num);
+void GameManager::deleteTile(bool turn, int number, int rotate_num){
+    agentAct(turn, number, 2, rotate_num);
 }
 
-bool GameManager::agentAct(int turn, int agent, int type, int number){
-
-    if(act_stack[turn][agent] != std::make_pair(-1, -1))
-        return false;
+void GameManager::agentAct(int turn, int agent, int type, int number){
 
     act_stack[turn][agent] = std::make_pair(type, number);
 
     for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
         for(int agent_num = 0; agent_num < 2; ++agent_num)
             if(act_stack[turn_flag][agent_num] == std::make_pair(-1, -1) )
-                return true;
+                return ;
 
-    return changeTurn();
+    changeTurn();
 }
 
-bool GameManager::changeTurn(){
+void GameManager::changeTurn(){
 
 
-    return true;
 }
