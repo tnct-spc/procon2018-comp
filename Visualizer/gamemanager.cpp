@@ -2,5 +2,4 @@
 
 GameManager::GameManager()
 {
-
 }
