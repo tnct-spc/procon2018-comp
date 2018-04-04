@@ -16,6 +16,7 @@ public:
     Field(unsigned int size_x, unsigned int size_y,int max_val,int min_val,double minus_per = 0.3);
 
     std::vector<std::vector<std::pair<int,int>>> getAgents();
+    std::pair<int,int> getAgent(int turn, int number);
     std::vector<std::vector<int>> getField();
     std::vector<std::vector<int>> getValue();
 
@@ -28,6 +29,8 @@ public:
     void setTurnCount(int turn);
     int getTurnCount();
 
+    std::pair<int,int> getSize();
+
 
 private:
     std::vector<std::vector<int>> field_data;
@@ -38,6 +41,8 @@ private:
     std::vector<std::vector<std::pair<int,int>>> agents;
 
     int turn_count = 0;
+    int grid_x;
+    int grid_y;
 
 
 };

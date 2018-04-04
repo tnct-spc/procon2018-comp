@@ -1,6 +1,8 @@
 #include "field.h"
 
 procon::Field::Field(unsigned int size_x ,unsigned int size_y){
+    grid_x = size_x;
+    grid_y = size_y;
 
     //初期化処理がめっちゃ分かりづらいですが、四隅にagentを配置してます
     agents = { { std::make_pair(0, 0), std::make_pair(size_x - 1, size_y - 1) }, { std::make_pair(size_x - 1, 0), std::make_pair(0, size_y - 1) } };
@@ -10,6 +12,8 @@ procon::Field::Field(unsigned int size_x ,unsigned int size_y){
 }
 
 procon::Field::Field(unsigned int size_x, unsigned int size_y, std::vector<std::vector<int>> input_val){
+    grid_x = size_x;
+    grid_y = size_y;
 
     agents = { { std::make_pair(0, 0), std::make_pair(size_x - 1, size_y - 1) }, { std::make_pair(size_x - 1, 0), std::make_pair(0, size_y - 1) } };
 
@@ -18,6 +22,8 @@ procon::Field::Field(unsigned int size_x, unsigned int size_y, std::vector<std::
 }
 
 procon::Field::Field(unsigned int size_x, unsigned int size_y, int max_val, int min_val, double minus_per){
+    grid_x = size_x;
+    grid_y = size_y;
 
     agents = { { std::make_pair(0, 0), std::make_pair(size_x - 1, size_y - 1) }, { std::make_pair(size_x - 1, 0), std::make_pair(0, size_y - 1) } };
 
@@ -50,9 +56,17 @@ std::vector<std::vector<int>> procon::Field::getValue(){
     return value_data;
 }
 
+std::pair<int,int> procon::Field::getSize(){
+    return std::make_pair(grid_x, grid_y);
+}
+
 
 std::vector<std::vector<std::pair<int,int>>> procon::Field::getAgents(){
     return agents;
+}
+
+std::pair<int,int> procon::Field::getAgent(int turn, int number){
+    return agents.at(turn).at(number);
 }
 
 bool procon::Field::isPlaced(int x, int y){
