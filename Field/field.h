@@ -17,18 +17,23 @@ public:
 
     std::vector<std::vector<std::pair<int,int>>> getAgents();
     std::vector<std::vector<int>> getField();
+
     bool isPlaced(int x, int y);
     std::pair<int,int> getState(int x, int y);//pair<タイル状況,評価値>
+
+    void setTurnCount(int turn);
+    int getTurnCount();
+
 
 private:
     std::vector<std::vector<int>> field_data;
     std::vector<std::vector<int>> value_data;
 
-    bool turn_flag = true;
-
     //players.at(turn_flag)みたいな事ができるのでvectorにしてます 変えてもいい
     //めっちゃ分かりづらいですね
     std::vector<std::vector<std::pair<int,int>>> agents;
+
+    int turn_count = 0;
 
 
 };

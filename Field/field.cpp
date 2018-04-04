@@ -59,3 +59,11 @@ bool procon::Field::isPlaced(int x, int y){
 std::pair<int,int> procon::Field::getState(int x, int y){
     return std::make_pair(field_data.at(x).at(y), value_data.at(x).at(y));
 }
+
+int procon::Field::getTurnCount(){
+    return turn_count;
+}
+
+void procon::Field::setTurnCount(int turn){
+    turn_count = turn;
+}
