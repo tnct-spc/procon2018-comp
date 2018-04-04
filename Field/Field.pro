@@ -27,5 +27,5 @@ SOURCES += \
 
 HEADERS += \
         field.h \
-        field_global.h 
+        field_global.h
 
