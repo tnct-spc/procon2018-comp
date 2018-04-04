@@ -46,6 +46,10 @@ std::vector<std::vector<int>> procon::Field::getField(){
     return field_data;
 }
 
+std::vector<std::vector<int>> procon::Field::getValue(){
+    return value_data;
+}
+
 
 std::vector<std::vector<std::pair<int,int>>> procon::Field::getAgents(){
     return agents;
@@ -58,6 +62,10 @@ bool procon::Field::isPlaced(int x, int y){
 //pair<タイル状況,評価値>を返す
 std::pair<int,int> procon::Field::getState(int x, int y){
     return std::make_pair(field_data.at(x).at(y), value_data.at(x).at(y));
+}
+
+void procon::Field::setState(int x, int y, int state){
+    field_data.at(x).at(y) = state;
 }
 
 int procon::Field::getTurnCount(){

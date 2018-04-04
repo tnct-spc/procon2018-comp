@@ -14,6 +14,7 @@ public:
 
     procon::Field getField();
 
+    //ここの関数は既に行動が決まっている引数を渡された時にfalseを返す
     bool stayAgent(bool turn, int number);
     bool moveAgent(bool turn, int number, int rotate_num);
     bool deleteTile(bool turn, int number, int rotate_num);
@@ -32,7 +33,7 @@ private:
     std::vector<std::vector<std::pair<int,int>>> act_stack;
 
     bool agentAct(int turn, int agent, int type, int number);
-    bool changeTurn();
+    void changeTurn();
 
 };
 

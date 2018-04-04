@@ -33,8 +33,7 @@ bool GameManager::agentAct(int turn, int agent, int type, int number){
             if(act_stack[turn_flag][agent_num] == std::make_pair(-1, -1) )
                 return true;
 
-    changeTurn();
-
+    return changeTurn();
 }
 
 bool GameManager::changeTurn(){

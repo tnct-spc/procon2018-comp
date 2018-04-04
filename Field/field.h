@@ -17,9 +17,12 @@ public:
 
     std::vector<std::vector<std::pair<int,int>>> getAgents();
     std::vector<std::vector<int>> getField();
+    std::vector<std::vector<int>> getValue();
 
     bool isPlaced(int x, int y);
     std::pair<int,int> getState(int x, int y);//pair<タイル状況,評価値>
+
+    void setState(int x, int y, int state);//タイル状況のみの変更
 
     void setTurnCount(int turn);
     int getTurnCount();
