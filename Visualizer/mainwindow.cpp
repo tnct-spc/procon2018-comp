@@ -5,8 +5,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    field = std::make_shared<procon::Field>(grid_x, grid_y, max_val, min_val);
-    manager = std::make_shared<GameManager>();
+    manager = std::make_shared<GameManager>(grid_x, grid_y);
     ui->setupUi(this);
 }
 
@@ -50,10 +49,10 @@ void MainWindow::paintEvent(QPaintEvent *event){
         for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
             for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
 
-                if(field->isPlaced(x_pos, y_pos) == 0)
+                if(manager->getField().isPlaced(x_pos, y_pos) == 0)
                     painter.setBrush(QBrush(grid_color));
                 else
-                    painter.setBrush(QBrush(((field->getState(x_pos,y_pos)).first == 1
+                    painter.setBrush(QBrush(((manager->getField().getState(x_pos,y_pos)).first == 1
                                             ? team_color_a
                                             : team_color_b
                                             )));

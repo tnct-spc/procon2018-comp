@@ -27,7 +27,6 @@ private:
     Ui::MainWindow *ui;
     void paintEvent(QPaintEvent *event);
 
-    std::shared_ptr<procon::Field> field;
     std::shared_ptr<GameManager> manager;
 
     int window_width;
@@ -46,9 +45,6 @@ private:
     //margin*size分の余白を取る
     const double margin = 1.5;
 
-    //ここは後で仕様を変える
-    const int max_val = 5;
-    const int min_val = -2;
 
     const QColor background_color = QColor(245,245,220);
     const QColor grid_color = QColor(220,220,180);
