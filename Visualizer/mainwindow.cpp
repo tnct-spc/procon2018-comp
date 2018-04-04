@@ -5,7 +5,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    field = std::make_shared<procon::Field>(grid_x,grid_y);
+    field = std::make_shared<procon::Field>(grid_x, grid_y, max_val, min_val);
     manager = std::make_shared<GameManager>();
     ui->setupUi(this);
 }

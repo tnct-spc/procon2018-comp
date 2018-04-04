@@ -38,12 +38,17 @@ private:
 
     int grid_size;
 
-    //ここはgetter,setterで編集
+    //ここはgetterで参照
     unsigned int grid_x = 12;
     unsigned int grid_y = 8;
 
+
     //margin*size分の余白を取る
     const double margin = 1.5;
+
+    //ここは後で仕様を変える
+    const int max_val = 5;
+    const int min_val = -2;
 
     const QColor background_color = QColor(245,245,220);
     const QColor grid_color = QColor(220,220,180);

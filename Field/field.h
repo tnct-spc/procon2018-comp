@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <utility>
+#include <random>
 
 namespace procon {
 
@@ -15,6 +16,7 @@ private:
 public:
     Field(unsigned int size_x, unsigned int size_y);
     Field(unsigned int size_x, unsigned int size_y, std::vector<std::vector<int>> input_val);
+    Field(unsigned int size_x, unsigned int size_y,int max_val,int min_val,double minus_per = 0.3);
 
     std::vector<std::vector<int>> getField();
     bool isPlaced(int x, int y);
