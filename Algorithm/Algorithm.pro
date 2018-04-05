@@ -23,15 +23,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        algorithm.cpp \
-    testalgorithm.cpp
+    testalgorithm.cpp \
+    algorithmwrapper.cpp
 
 HEADERS += \
-        algorithm.h \
         algorithm_global.h \ 
-    testalgorithm.h
+    testalgorithm.h \
+    algorithmwrapper.h
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+LIBS += -L$$OUT_PWD/../Field/ -lField
+INCLUDEPATH += $$PWD/../Field
+DEPENDPATH += $$PWD/../Field
