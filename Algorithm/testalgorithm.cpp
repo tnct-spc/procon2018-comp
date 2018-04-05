@@ -1,6 +1,6 @@
 #include "testalgorithm.h"
 
-TestAlgorithm::TestAlgorithm()
+TestAlgorithm::TestAlgorithm(std::shared_ptr<procon::Field> field)
 {
 
 }

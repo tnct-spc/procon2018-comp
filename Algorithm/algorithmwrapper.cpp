@@ -1,7 +1,8 @@
 #include "algorithmwrapper.h"
+#include "gamemanager.h"
 
-AlgorithmWrapper::AlgorithmWrapper(std::shared_ptr<procon::Field> field_ptr)
+AlgorithmWrapper::AlgorithmWrapper(std::shared_ptr<GameManager> manager_ptr)
 {
-    field = field_ptr;
+    manager = manager_ptr;
 
 }

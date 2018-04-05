@@ -25,12 +25,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
-    gamemanager.cpp
+        mainwindow.cpp
 
 HEADERS += \
-        mainwindow.h \
-    gamemanager.h
+        mainwindow.h
 
 FORMS += \
         mainwindow.ui
@@ -38,3 +36,10 @@ FORMS += \
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
 DEPENDPATH += $$PWD/../Field
+
+
+LIBS += -L$$OUT_PWD/../Algorithm/ -lAlgorithm
+INCLUDEPATH += $$PWD/../Algorithm
+DEPENDPATH += $$PWD/../Algorithm
+
+

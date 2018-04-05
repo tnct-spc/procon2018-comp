@@ -1,8 +1,12 @@
 #include "gamemanager.h"
+#include "algorithmwrapper.h"
 
 GameManager::GameManager(unsigned int x_size, unsigned int y_size){
 
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
+
+    std::shared_ptr<GameManager> share(this); //これ自身を参照するshared_ptr
+    algo = std::make_shared<AlgorithmWrapper>(share);
 
     act_stack = std::vector<std::vector<std::pair<int,std::pair<int,int>>>>(2, std::vector<std::pair<int,std::pair<int,int>>>(2,std::make_pair(-1, std::make_pair(-1,-1))));
 }

@@ -24,12 +24,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     testalgorithm.cpp \
-    algorithmwrapper.cpp
+    algorithmwrapper.cpp \
+    gamemanager.cpp
 
 HEADERS += \
         algorithm_global.h \ 
     testalgorithm.h \
-    algorithmwrapper.h
+    algorithmwrapper.h \
+    gamemanager.h
 
 unix {
     target.path = /usr/lib

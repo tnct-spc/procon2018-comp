@@ -7,7 +7,9 @@
 #include <memory>
 #include <map>
 
-class GameManager : std::enable_shared_from_this<GameManager>
+class AlgorithmWrapper;
+
+class GameManager
 {
 public:
 
@@ -22,6 +24,7 @@ public:
 
 private:
     std::shared_ptr<procon::Field> field;
+    std::shared_ptr<AlgorithmWrapper> algo;
 
     //ここは後で仕様を変える
     const int max_val = 16;
