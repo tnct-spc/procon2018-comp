@@ -4,4 +4,4 @@ TEMPLATE = subdirs
 SUBDIRS += \
     Visualizer \
     Field \
-    Algorithm
+    Solver

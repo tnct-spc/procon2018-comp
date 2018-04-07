@@ -38,8 +38,8 @@ INCLUDEPATH += $$PWD/../Field
 DEPENDPATH += $$PWD/../Field
 
 
-LIBS += -L$$OUT_PWD/../Algorithm/ -lAlgorithm
-INCLUDEPATH += $$PWD/../Algorithm
-DEPENDPATH += $$PWD/../Algorithm
+LIBS += -L$$OUT_PWD/../Solver/ -lSolver
+INCLUDEPATH += $$PWD/../Solver
+DEPENDPATH += $$PWD/../Solver
 
 
