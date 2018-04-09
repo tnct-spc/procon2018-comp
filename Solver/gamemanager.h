@@ -24,7 +24,10 @@ public:
 
 private:
     std::shared_ptr<procon::Field> field;
-    std::shared_ptr<AlgorithmWrapper> algo;
+
+    std::shared_ptr<AlgorithmWrapper> team_1;
+    std::shared_ptr<AlgorithmWrapper> team_2;
+
 
     //ここは後で仕様を変える
     const int max_val = 16;

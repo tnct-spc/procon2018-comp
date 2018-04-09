@@ -2,12 +2,13 @@
 #define TESTALGORITHM_H
 
 #include "field.h"
+#include "algorithmwrapper.h"
 #include <memory>
 
-class TestAlgorithm
+class TestAlgorithm : public AlgorithmWrapper
 {
 public:
-    TestAlgorithm(std::shared_ptr<procon::Field> field);
+//    TestAlgorithm(std::shared_ptr<procon::Field> field);
 };
 
 #endif // TESTALGORITHM_H
