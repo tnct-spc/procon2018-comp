@@ -8,7 +8,7 @@
 class TestAlgorithm : public AlgorithmWrapper
 {
 public:
-//    TestAlgorithm(std::shared_ptr<procon::Field> field);
+    AlgorithmWrapper::AlgorithmWrapper;
 };
 
 #endif // TESTALGORITHM_H

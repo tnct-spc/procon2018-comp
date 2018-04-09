@@ -8,6 +8,7 @@
 #include <map>
 
 class AlgorithmWrapper;
+class TestAlgorithm;
 
 class GameManager
 {

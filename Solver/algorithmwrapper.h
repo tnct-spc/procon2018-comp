@@ -11,7 +11,7 @@ class AlgorithmWrapper
 public:
     AlgorithmWrapper(std::shared_ptr<GameManager> manager_ptr);
 
-private:
+protected:
     std::shared_ptr<GameManager> manager;
 };
 

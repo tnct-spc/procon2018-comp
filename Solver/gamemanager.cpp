@@ -1,5 +1,6 @@
 #include "gamemanager.h"
 #include "algorithmwrapper.h"
+#include "testalgorithm.h"
 
 GameManager::GameManager(unsigned int x_size, unsigned int y_size){
 
@@ -7,8 +8,8 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size){
 
     std::shared_ptr<GameManager> share(this); //これ自身を参照するshared_ptr
 
-    team_1 = std::make_shared<AlgorithmWrapper>(share);
-    team_2 = std::make_shared<AlgorithmWrapper>(share);
+    team_1 = std::make_shared<TestAlgorithm>(share);
+    team_2 = std::make_shared<TestAlgorithm>(share);
 
 
 
