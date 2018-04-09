@@ -4,4 +4,5 @@ TEMPLATE = subdirs
 SUBDIRS += \
     Visualizer \
     Field \
-    Solver
+    Solver \
+    Mejirodai
