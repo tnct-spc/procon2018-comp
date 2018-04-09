@@ -27,8 +27,8 @@ procon::Field::Field(unsigned int size_x, unsigned int size_y, int max_val, int 
 
     agents = { { std::make_pair(0, 0), std::make_pair(size_x - 1, size_y - 1) }, { std::make_pair(size_x - 1, 0), std::make_pair(0, size_y - 1) } };
 
-    field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
-    value_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y));
+    field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 0 ));
+    value_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 0 ));
 
     std::random_device rnd;
     std::mt19937 mt (rnd());
@@ -38,12 +38,19 @@ procon::Field::Field(unsigned int size_x, unsigned int size_y, int max_val, int 
 
     std::uniform_real_distribution<> double_rnd(0.0,1.0);
 
-    for(unsigned int x = 0; x < size_x; ++x){
-        for(unsigned int y = 0; y < size_y; ++y){
+    //ここは「x軸かつy軸方向に垂直」で解釈します
 
-            value_data.at(x).at(y) = (double_rnd(mt) > minus_per
+
+    for(unsigned int x = 0; x < size_x / 2 + 1; ++x){
+        for(unsigned int y = 0; y < size_y / 2 + 1; ++y){
+
+            int value = (double_rnd(mt) > minus_per
                                       ? plus_rnd(mt)
                                       : minus_rnd(mt) );
+            value_data.at(x).at(y) = value;
+            value_data.at(grid_x - x - 1).at(grid_y - y - 1) = value;
+            value_data.at(x).at(grid_y - y - 1) = value;
+            value_data.at(grid_x - x - 1).at(y) = value;
         }
     }
 }

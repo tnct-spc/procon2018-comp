@@ -63,6 +63,23 @@ void MainWindow::paintEvent(QPaintEvent *event){
 
     };
 
+    auto drawValues = [&]{
+
+        std::vector<std::vector<int>> field_value = manager->getField().getValue();
+        QFont text_font;
+        text_font.setPixelSize(grid_size * 0.5);
+        painter.setFont(text_font);
+        painter.setPen(QPen(font_color));
+
+        for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
+            for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
+
+                QString text = QString::fromStdString( std::to_string(field_value.at(x_pos).at(y_pos)) );
+                painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.2), vertical_margin + grid_size * y_pos + ( grid_size * 0.7 ) , text);
+            }
+
+    };
+
     auto drawAgents = [&]{
         for(unsigned int team = 0; team < 2; ++team){
             for(unsigned int index = 0; index < 2; ++index){
@@ -85,6 +102,7 @@ void MainWindow::paintEvent(QPaintEvent *event){
 
     drawBackGround();
     drawTiles();
+    drawValues();
     drawAgents();
 
 }
