@@ -40,6 +40,7 @@ procon::Field::Field(unsigned int size_x, unsigned int size_y, int max_val, int 
 
     //ここは「x軸かつy軸方向に垂直」で解釈します
 
+
     for(unsigned int x = 0; x < size_x / 2 + 1; ++x){
         for(unsigned int y = 0; y < size_y / 2 + 1; ++y){
 
