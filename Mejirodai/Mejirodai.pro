@@ -32,3 +32,16 @@ HEADERS += \
 
 FORMS += \
         mejirodai.ui
+
+LIBS += -L$$OUT_PWD/../Field/ -lField
+INCLUDEPATH += $$PWD/../Field
+DEPENDPATH += $$PWD/../Field
+
+LIBS += -L$$OUT_PWD/../Solver/ -lSolver
+INCLUDEPATH += $$PWD/../Solver
+DEPENDPATH += $$PWD/../Solver
+
+LIBS += -L$$OUT_PWD/../Visualizer/ -lVisualizer
+INCLUDEPATH += $$PWD/../Visualizer
+DEPENDPATH += $$PWD/../Visualizer
+

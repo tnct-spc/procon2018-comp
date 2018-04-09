@@ -1,6 +1,8 @@
 #ifndef MEJIRODAI_H
 #define MEJIRODAI_H
 
+#include "gamemanager.h"
+#include <memory>
 #include <QMainWindow>
 
 namespace Ui {
@@ -17,6 +19,9 @@ public:
 
 private:
     Ui::Mejirodai *ui;
+
+    std::shared_ptr<GameManager> manager;
+
 };
 
 #endif // MEJIRODAI_H
