@@ -69,8 +69,8 @@ void MainWindow::paintEvent(QPaintEvent *event){
         QFont text_font;
         text_font.setPixelSize(grid_size * 0.5);
         painter.setFont(text_font);
+        painter.setPen(QPen(font_color));
 
-        painter.setBrush(QBrush(font_color));
         for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
             for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
 

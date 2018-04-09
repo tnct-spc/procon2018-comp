@@ -46,7 +46,7 @@ private:
     const double margin = 1.5;
 
 
-    const QColor font_color = Qt::black;
+    const QColor font_color = QColor(0,0,0,64);
     const QColor background_color = QColor(245,245,220);
     const QColor grid_color = QColor(220,220,180);
     const QColor team_color_a = QColor(255,0,0);
