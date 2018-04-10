@@ -24,10 +24,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        visualizer.cpp
+        visualizer.cpp \
+    progresdoc.cpp
 
 HEADERS += \
-        visualizer.h
+        visualizer.h \
+    progresdoc.h
 
 FORMS += \
         visualizer.ui
