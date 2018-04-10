@@ -32,6 +32,9 @@ std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TestAlgorithm::agent
         }
 
 
+        std::cout << "hoge : " << field.getAgent(side, agent_num).first + std::get<2>(hyouka_max)<<" ";
+        std::cout << field.getAgent(side, agent_num).second + std::get<3>(hyouka_max)<<std::endl;
+
         (agent_num ? return_val.first : return_val.second) = std::make_tuple(std::get<1>(hyouka_max), std::get<2>(hyouka_max), std::get<3>(hyouka_max));
     }
 

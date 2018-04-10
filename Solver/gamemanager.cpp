@@ -38,12 +38,9 @@ void GameManager::startSimulation(){
         std::tie(type, x_move, y_move) = team_2_ans.second;
         agentAct(1,1,type,x_move,y_move);
 
-        std::cout << x_move << std::endl;
-
         changeTurn();
 
         visualizer->update();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
     }
 
 }
@@ -80,7 +77,8 @@ void GameManager::agentAct(int turn, int agent, int type, int x_pos, int y_pos){
          ))
         act_stack.at(turn).at(agent) = std::make_pair(0 , std::make_pair(0, 0));
 
-    act_stack.at(turn).at(agent) = std::make_pair(type, std::make_pair(agent_pos.first + x_pos, agent_pos.second + y_pos));
+    std::cout << x_pos << " " << y_pos<<" : "<<agent_pos.first - x_pos << " " <<agent_pos.second - y_pos << std::endl;
+    act_stack.at(turn).at(agent) = std::make_pair(type, std::make_pair(agent_pos.first - x_pos, agent_pos.second - y_pos));
 
 }
 
@@ -91,14 +89,13 @@ void GameManager::changeTurn(){
 
     for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
         for(int agent_num = 0; agent_num < 2; ++agent_num){
+
             if(act_stack.at(turn_flag).at(agent_num).first == 1)
                 dest_map[act_stack.at(turn_flag).at(agent_num).second].push_back( std::make_pair(turn_flag, agent_num) );
             else if(act_stack.at(turn_flag).at(agent_num).first == 2){
                 tile_map[act_stack.at(turn_flag).at(agent_num).second].push_back( std::make_pair(turn_flag, agent_num) );
             }
         }
-
-    //ここのsetStateでSEGV ガバってんじゃないの？
 
     for(auto elements : dest_map){
         if(elements.second.size() > 1)
