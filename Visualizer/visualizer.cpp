@@ -55,8 +55,6 @@ void Visualizer::paintEvent(QPaintEvent *event){
         for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
             for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
 
-        std::cout << field.getState(x_pos, y_pos).first << std::endl;
-
                 if(field.isPlaced(x_pos, y_pos) == true){
 
                     QColor paint_color = ( field.getState(x_pos, y_pos).first == 1

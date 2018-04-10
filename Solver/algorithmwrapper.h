@@ -12,7 +12,8 @@ class AlgorithmWrapper
 public:
     AlgorithmWrapper(std::shared_ptr<GameManager> manager_ptr);
 
-    std::tuple<int,int,int,int,int> agentAct();
+    //turn,agentnumber,type,x,y
+    virtual std::tuple<int,int,int,int,int> agentAct();
 
 
 protected:
