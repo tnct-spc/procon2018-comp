@@ -3,6 +3,8 @@
 
 std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TestAlgorithm::agentAct(int side){
 
+    manager->getField();
+
     //ここに処理を書く
     procon::Field field = manager->getField();
     std::vector<std::vector<int>> value_data = field.getValue();
