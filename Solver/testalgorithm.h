@@ -3,6 +3,7 @@
 
 #include "field.h"
 #include "algorithmwrapper.h"
+#include "gamemanager.h"
 #include <memory>
 
 class TestAlgorithm : public AlgorithmWrapper
