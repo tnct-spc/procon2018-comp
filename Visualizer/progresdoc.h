@@ -4,7 +4,9 @@
 #include <QMainWindow>
 #include <QObject>
 #include <QWidget>
+#include <QGraphicsPixmapItem>
 #include"field.h"
+#include"visualizer.h"
 
 namespace Ui {
 class ProgresDoc;
