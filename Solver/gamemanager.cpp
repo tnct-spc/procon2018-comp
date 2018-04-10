@@ -40,6 +40,7 @@ void GameManager::startSimulation(){
 
         changeTurn();
 
+        visualizer->setField(*field);
         visualizer->update();
     }
 
@@ -90,6 +91,8 @@ void GameManager::changeTurn(){
     for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
         for(int agent_num = 0; agent_num < 2; ++agent_num){
 
+            std::cout << act_stack.at(turn_flag).at(agent_num).first << " " << act_stack.at(turn_flag).at(agent_num).second.first << " " << act_stack.at(turn_flag).at(agent_num).second.second << std::endl;
+
             if(act_stack.at(turn_flag).at(agent_num).first == 1)
                 dest_map[act_stack.at(turn_flag).at(agent_num).second].push_back( std::make_pair(turn_flag, agent_num) );
             else if(act_stack.at(turn_flag).at(agent_num).first == 2){
@@ -100,6 +103,7 @@ void GameManager::changeTurn(){
     for(auto elements : dest_map){
         if(elements.second.size() > 1)
             continue;
+        std::cout <<"yabayaba"<<std::endl;
         field->setAgent(elements.second.at(0).first, elements.second.at(0).second, elements.first.first, elements.first.first);
         field->setState(elements.first.first, elements.first.second, elements.second.at(0).first);
     }
