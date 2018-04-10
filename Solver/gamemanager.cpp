@@ -23,8 +23,8 @@ void GameManager::startSimulation(){
 
     for(int turn_count = 0; turn_count < turn_max && turn_count; ++turn_count){
 
-        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans = team_1->agentAct();
-        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans = team_2->agentAct();
+        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans = team_1->agentAct(0);
+        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans = team_2->agentAct(1);
 
         int type, x_move, y_move;
 
