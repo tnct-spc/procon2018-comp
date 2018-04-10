@@ -103,9 +103,9 @@ void GameManager::changeTurn(){
     for(auto elements : dest_map){
         if(elements.second.size() > 1)
             continue;
-        std::cout <<"yabayaba"<<std::endl;
-        field->setAgent(elements.second.at(0).first, elements.second.at(0).second, elements.first.first, elements.first.first);
-        field->setState(elements.first.first, elements.first.second, elements.second.at(0).first);
+        std::cout <<"yabayaba : "<<elements.second.at(0).first<<" "<<elements.second.at(0).second<<" "<<elements.first.first<<" "<<elements.first.second<<std::endl;
+        field->setAgent(elements.second.at(0).first, elements.second.at(0).second, elements.first.first, elements.first.second);
+        field->setState(elements.first.first, elements.first.second, elements.second.at(0).first + 1);
     }
 
     for(auto elements : tile_map){
