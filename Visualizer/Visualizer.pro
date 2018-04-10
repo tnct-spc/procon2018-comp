@@ -24,7 +24,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
         visualizer.cpp
 
 HEADERS += \
@@ -36,10 +35,3 @@ FORMS += \
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
 DEPENDPATH += $$PWD/../Field
-
-
-LIBS += -L$$OUT_PWD/../Solver/ -lSolver
-INCLUDEPATH += $$PWD/../Solver
-DEPENDPATH += $$PWD/../Solver
-
-

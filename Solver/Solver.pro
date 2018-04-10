@@ -41,3 +41,7 @@ unix {
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
 DEPENDPATH += $$PWD/../Field
+
+LIBS += -L$$OUT_PWD/../Visualizer/ -lVisualizer
+INCLUDEPATH += $$PWD/../Visualizer
+DEPENDPATH += $$PWD/../Visualizer

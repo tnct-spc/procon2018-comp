@@ -6,6 +6,8 @@ Mejirodai::Mejirodai(QWidget *parent) :
     ui(new Ui::Mejirodai)
 {
     ui->setupUi(this);
+
+    manager = std::make_shared<GameManager>(x_size, y_size);
 }
 
 Mejirodai::~Mejirodai()
