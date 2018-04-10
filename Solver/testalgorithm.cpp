@@ -1,7 +1,7 @@
 #include "testalgorithm.h"
 
 
-std::tuple<int,int,int,int,int> AlgorithmWrapper::agentAct(){
+std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TestAlgorithm::agentAct(){
 
     //ここに処理を書く
 

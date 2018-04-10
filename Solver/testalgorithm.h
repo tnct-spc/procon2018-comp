@@ -9,6 +9,7 @@ class TestAlgorithm : public AlgorithmWrapper
 {
 public:
     AlgorithmWrapper::AlgorithmWrapper;
+    std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct();
 };
 
 #endif // TESTALGORITHM_H
