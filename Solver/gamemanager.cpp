@@ -21,6 +21,7 @@ void GameManager::startSimulation(){
     //ここに初期化処理 描画もやる
     visualizer->show();
 
+
     for(int turn_count = 0; turn_count < turn_max && turn_count; ++turn_count){
 
 
