@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui widgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -31,6 +31,12 @@ HEADERS += \
 
 FORMS += \
         visualizer.ui
+
+unix {
+    target.path = /usr/lib
+    INSTALLS += target
+}
+
 
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field

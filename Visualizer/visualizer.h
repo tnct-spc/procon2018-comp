@@ -1,10 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+
 #include "field.h"
+#include <QPainter>
 #include <QWidget>
 #include <QPaintEvent>
-#include <QPainter>
 
 #include <memory>
 

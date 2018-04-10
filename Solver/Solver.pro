@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       -= gui
+QT       += core gui widgets
 
 TARGET = Solver
 TEMPLATE = lib
