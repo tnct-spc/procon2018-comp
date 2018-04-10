@@ -1,20 +1,26 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "visualizer.h"
+#include "ui_visualizer.h"
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+Visualizer::Visualizer(procon::Field inp_field, QWidget *parent) :
+    QWidget(parent),
+    field(inp_field),
+    ui(new Ui::Visualizer)
 {
-    manager = std::make_shared<GameManager>(grid_x, grid_y);
     ui->setupUi(this);
+    grid_x = field.getSize().first;
+    grid_y = field.getSize().second;
 }
 
-MainWindow::~MainWindow()
+Visualizer::~Visualizer()
 {
     delete ui;
 }
 
-void MainWindow::paintEvent(QPaintEvent *event){
+void Visualizer::setField(procon::Field inp_field){
+    field = inp_field;
+}
+
+void Visualizer::paintEvent(QPaintEvent *event){
 
     QPainter painter(this);
 
@@ -49,9 +55,9 @@ void MainWindow::paintEvent(QPaintEvent *event){
         for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
             for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
 
-                if(manager->getField().isPlaced(x_pos, y_pos) == true){
+                if(field.isPlaced(x_pos, y_pos) == true){
 
-                    QColor paint_color = ( manager->getField().getState(x_pos, y_pos).first == 1
+                    QColor paint_color = ( field.getState(x_pos, y_pos).first == 1
                                            ? team_color_a
                                            : team_color_b);
                     paint_color.setAlpha(64);
@@ -65,7 +71,7 @@ void MainWindow::paintEvent(QPaintEvent *event){
 
     auto drawValues = [&]{
 
-        std::vector<std::vector<int>> field_value = manager->getField().getValue();
+        std::vector<std::vector<int>> field_value = field.getValue();
         QFont text_font;
         text_font.setPixelSize(grid_size * 0.5);
         painter.setFont(text_font);
@@ -91,8 +97,8 @@ void MainWindow::paintEvent(QPaintEvent *event){
 
                 painter.setBrush(QBrush(paint_color));
 
-                int pos_x = manager->getField().getAgents().at(team).at(index).first;
-                int pos_y = manager->getField().getAgents().at(team).at(index).second;
+                int pos_x = field.getAgents().at(team).at(index).first;
+                int pos_y = field.getAgents().at(team).at(index).second;
 
                 painter.drawEllipse(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size);
 

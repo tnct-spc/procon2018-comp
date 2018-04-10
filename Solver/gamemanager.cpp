@@ -1,8 +1,33 @@
 #include "gamemanager.h"
+#include "algorithmwrapper.h"
+#include "testalgorithm.h"
 
 GameManager::GameManager(unsigned int x_size, unsigned int y_size){
+
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
+    visualizer = std::make_shared<Visualizer>(*field);
+
+    std::shared_ptr<GameManager> share(this); //これ自身を参照するshared_ptr
+
+    team_1 = std::make_shared<TestAlgorithm>(share);
+    team_2 = std::make_shared<TestAlgorithm>(share);
+
+
     act_stack = std::vector<std::vector<std::pair<int,std::pair<int,int>>>>(2, std::vector<std::pair<int,std::pair<int,int>>>(2,std::make_pair(-1, std::make_pair(-1,-1))));
+}
+
+void GameManager::startSimulation(){
+
+    //ここに初期化処理 描画もやる
+    visualizer->show();
+
+    for(int turn_count = 0; turn_count < turn_max && turn_count; ++turn_count){
+
+
+        visualizer->update();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+    }
+
 }
 
 procon::Field GameManager::getField(){

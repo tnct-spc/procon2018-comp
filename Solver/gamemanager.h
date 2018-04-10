@@ -2,10 +2,15 @@
 #define GAMEMANAGER_H
 
 #include "field.h"
+#include "visualizer.h"
 
 #include <vector>
 #include <memory>
 #include <map>
+#include <thread>
+
+class AlgorithmWrapper;
+class TestAlgorithm;
 
 class GameManager
 {
@@ -20,12 +25,20 @@ public:
     bool moveAgent(bool turn, int number, int x_pos, int y_pos);
     bool deleteTile(bool turn, int number, int x_pos, int y_pos);
 
+    void startSimulation();
+
 private:
     std::shared_ptr<procon::Field> field;
+    std::shared_ptr<Visualizer> visualizer;
 
-    //ここは後で仕様を変える
+    std::shared_ptr<AlgorithmWrapper> team_1;
+    std::shared_ptr<AlgorithmWrapper> team_2;
+
+
+    //ここは仕様を変えたり変えなかったりしよう
     const int max_val = 16;
     const int min_val = -16;
+    const int turn_max = 30;
 
     //行動を保存しておく
     //1:移動 移動方向をintで設定する
