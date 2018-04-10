@@ -9,6 +9,14 @@ procon::Field::Field(unsigned int size_x ,unsigned int size_y){
 
     field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
     value_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
+
+    for(int side = 0; side < 2; ++side)
+        for(int agent = 0; agent < 2; ++agent){
+
+            std::pair<int,int> agent_pos = getAgent(side, agent);
+
+            field_data.at(agent_pos.first).at(agent_pos.second) = side + 1;
+        }
 }
 
 procon::Field::Field(unsigned int size_x, unsigned int size_y, std::vector<std::vector<int>> input_val){
@@ -19,6 +27,14 @@ procon::Field::Field(unsigned int size_x, unsigned int size_y, std::vector<std::
 
     field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
     value_data = input_val;
+
+    for(int side = 0; side < 2; ++side)
+        for(int agent = 0; agent < 2; ++agent){
+
+            std::pair<int,int> agent_pos = getAgent(side, agent);
+
+            field_data.at(agent_pos.first).at(agent_pos.second) = side + 1;
+        }
 }
 
 procon::Field::Field(unsigned int size_x, unsigned int size_y, int max_val, int min_val, double minus_per){
@@ -53,6 +69,14 @@ procon::Field::Field(unsigned int size_x, unsigned int size_y, int max_val, int 
             value_data.at(grid_x - x - 1).at(y) = value;
         }
     }
+
+    for(int side = 0; side < 2; ++side)
+        for(int agent = 0; agent < 2; ++agent){
+
+            std::pair<int,int> agent_pos = getAgent(side, agent);
+
+            field_data.at(agent_pos.first).at(agent_pos.second) = side + 1;
+        }
 }
 
 std::vector<std::vector<int>> procon::Field::getField(){
