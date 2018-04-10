@@ -16,6 +16,19 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size){
     act_stack = std::vector<std::vector<std::pair<int,std::pair<int,int>>>>(2, std::vector<std::pair<int,std::pair<int,int>>>(2,std::make_pair(-1, std::make_pair(-1,-1))));
 }
 
+void GameManager::startSimulation(){
+
+    //ここに初期化処理 描画もやる
+
+    for(int turn_count = 0; turn_count < turn_max && turn_count; ++turn_count){
+
+
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+    }
+
+}
+
 procon::Field GameManager::getField(){
     return *field;
 }
@@ -30,10 +43,6 @@ bool GameManager::moveAgent(bool turn, int number, int x_pos, int y_pos){
 
 bool GameManager::deleteTile(bool turn, int number, int x_pos, int y_pos){
     return agentAct(turn, number, 2, x_pos, y_pos);
-}
-
-void GameManager::startSimulation(){
-
 }
 
 bool GameManager::agentAct(int turn, int agent, int type, int x_pos, int y_pos){

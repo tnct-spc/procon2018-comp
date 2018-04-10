@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include "field.h"
-#include <QMainWindow>
+#include <QWidget>
 #include <QPaintEvent>
 #include <QPainter>
 
@@ -14,13 +14,15 @@ namespace Ui {
 class Visualizer;
 }
 
-class Visualizer : public QMainWindow
+class Visualizer : public QWidget
 {
     Q_OBJECT
 
 public:
     explicit Visualizer(procon::Field inp_field, QWidget *parent = 0);
     ~Visualizer();
+
+    void setField(procon::Field inp_field);
 
 private:
     Ui::Visualizer *ui;
