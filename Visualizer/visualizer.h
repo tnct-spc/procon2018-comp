@@ -12,19 +12,19 @@
 
 
 namespace Ui {
-class MainWindow;
+class Visualizer;
 }
 
-class MainWindow : public QMainWindow
+class Visualizer : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit Visualizer(QWidget *parent = 0);
+    ~Visualizer();
 
 private:
-    Ui::MainWindow *ui;
+    Ui::Visualizer *ui;
     void paintEvent(QPaintEvent *event);
 
     std::shared_ptr<GameManager> manager;

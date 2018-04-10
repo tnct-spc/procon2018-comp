@@ -1,20 +1,20 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "visualizer.h"
+#include "ui_visualizer.h"
 
-MainWindow::MainWindow(QWidget *parent) :
+Visualizer::Visualizer(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::Visualizer)
 {
     manager = std::make_shared<GameManager>(grid_x, grid_y);
     ui->setupUi(this);
 }
 
-MainWindow::~MainWindow()
+Visualizer::~Visualizer()
 {
     delete ui;
 }
 
-void MainWindow::paintEvent(QPaintEvent *event){
+void Visualizer::paintEvent(QPaintEvent *event){
 
     QPainter painter(this);
 
