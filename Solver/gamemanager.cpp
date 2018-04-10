@@ -22,7 +22,7 @@ void GameManager::startSimulation(){
     visualizer->show();
 
 
-    for(int turn_count = 0; turn_count < turn_max && turn_count; ++turn_count){
+    for(int turn_count = 0; turn_count < turn_max; ++turn_count){
 
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans = team_1->agentAct(0);
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans = team_2->agentAct(1);
@@ -37,6 +37,8 @@ void GameManager::startSimulation(){
         agentAct(1,0,type,x_move,y_move);
         std::tie(type, x_move, y_move) = team_2_ans.second;
         agentAct(1,1,type,x_move,y_move);
+
+        std::cout << x_move << std::endl;
 
         changeTurn();
 
@@ -95,6 +97,8 @@ void GameManager::changeTurn(){
                 tile_map[act_stack.at(turn_flag).at(agent_num).second].push_back( std::make_pair(turn_flag, agent_num) );
             }
         }
+
+    //ここのsetStateでSEGV ガバってんじゃないの？
 
     for(auto elements : dest_map){
         if(elements.second.size() > 1)

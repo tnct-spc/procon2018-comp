@@ -20,8 +20,8 @@ std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TestAlgorithm::agent
         std::tuple<int,int,int,int> hyouka_max = std::make_tuple(-1, 0, 0, 0);
 
         for(int rotate = 0; rotate < 8; ++rotate){
-            if(agent.first + x_list.at(rotate) < 0 || agent.first + x_list.at(rotate) > field.getSize().first ||
-               agent.second + y_list.at(rotate) < 0 || agent.second + y_list.at(rotate) > field.getSize().second
+            if(agent.first + x_list.at(rotate) < 0 || agent.first + x_list.at(rotate) >= field.getSize().first ||
+               agent.second + y_list.at(rotate) < 0 || agent.second + y_list.at(rotate) >= field.getSize().second
                     )continue;
             bool put_flag = (field.getState(agent.first + x_list.at(rotate), agent.second + y_list.at(rotate)).first == (side==0?2:1));
 

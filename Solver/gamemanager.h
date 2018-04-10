@@ -9,6 +9,8 @@
 #include <map>
 #include <thread>
 
+#include <iostream>
+
 class AlgorithmWrapper;
 class TestAlgorithm;
 
