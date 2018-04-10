@@ -32,6 +32,10 @@ bool GameManager::deleteTile(bool turn, int number, int x_pos, int y_pos){
     return agentAct(turn, number, 2, x_pos, y_pos);
 }
 
+void GameManager::startSimulation(){
+
+}
+
 bool GameManager::agentAct(int turn, int agent, int type, int x_pos, int y_pos){
 
     std::pair<int,int> agent_pos = field->getAgent(turn, agent);

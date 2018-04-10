@@ -14,7 +14,7 @@
    <string>Mejirodai</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="runButton">
     <property name="geometry">
      <rect>
       <x>10</x>

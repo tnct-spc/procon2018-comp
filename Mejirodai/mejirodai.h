@@ -4,6 +4,7 @@
 #include "gamemanager.h"
 #include <memory>
 #include <QMainWindow>
+#include <QPushButton>
 #include <iostream>
 
 namespace Ui {
@@ -22,6 +23,8 @@ private:
     Ui::Mejirodai *ui;
 
     std::shared_ptr<GameManager> manager;
+
+    void RunManagerSimulation();
 
     int x_size = 12;
     int y_size = 8;

@@ -23,6 +23,8 @@ public:
     bool moveAgent(bool turn, int number, int x_pos, int y_pos);
     bool deleteTile(bool turn, int number, int x_pos, int y_pos);
 
+    void startSimulation();
+
 private:
     std::shared_ptr<procon::Field> field;
 
