@@ -5,7 +5,6 @@
 #include <memory>
 #include <QMainWindow>
 #include <QPushButton>
-#include <iostream>
 
 namespace Ui {
 class Mejirodai;
@@ -25,6 +24,8 @@ private:
     std::shared_ptr<GameManager> manager;
 
     void RunManagerSimulation();
+    void goNextState();
+    void goPrevState();
 
     int x_size = 12;
     int y_size = 8;

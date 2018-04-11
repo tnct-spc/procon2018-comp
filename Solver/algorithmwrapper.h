@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <tuple>
+#include <utility>
 
 class GameManager;
 
@@ -13,7 +14,7 @@ public:
     AlgorithmWrapper(std::shared_ptr<GameManager> manager_ptr);
 
     //turn,agentnumber,type,x,y
-    virtual std::tuple<int,int,int,int,int> agentAct();
+    virtual std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> agentAct(int side)=0;
 
 
 protected:
