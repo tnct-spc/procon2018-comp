@@ -118,6 +118,10 @@ void GameManager::changeTurn(){
     for(auto elements : dest_map){
         if(elements.second.size() > 1)
             continue;
+
+        if(field->getState(elements.first.first, elements.first.second).first == (elements.second.at(0).first == 0 ? 2 : 1))
+            continue;
+
         field->setAgent(elements.second.at(0).first, elements.second.at(0).second, elements.first.first, elements.first.second);
         field->setState(elements.first.first, elements.first.second, elements.second.at(0).first + 1);
     }
@@ -126,6 +130,7 @@ void GameManager::changeTurn(){
         bool state_flag = true;
         if(elements.second.size() > 1)
             continue;
+
 
         for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
             for(int agent_num = 0; agent_num < 2; ++agent_num)
