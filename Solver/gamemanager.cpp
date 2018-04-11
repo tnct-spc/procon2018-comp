@@ -18,7 +18,9 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size){
 
 void GameManager::startSimulation(){
 
-    //ここに初期化処理 描画もやる
+    field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
+    visualizer = std::make_shared<Visualizer>(*field);
+
     visualizer->show();
 
 
