@@ -45,8 +45,7 @@ void GameManager::startSimulation(){
 
         field_vec.push_back(*field);
 
-        now_field = field_vec.size() - 1;
-        visualizer->setField(field_vec.at(now_field));
+        setFieldCount(field_vec.size() - 1);
         visualizer->update();
     }
 
@@ -60,6 +59,8 @@ unsigned int GameManager::getFieldCount(){
     return now_field;
 }
 void GameManager::setFieldCount(unsigned int number){
+    if(number >= field_vec.size())return ;
+    visualizer->setField(field_vec.at(number));
     now_field = number;
 }
 
