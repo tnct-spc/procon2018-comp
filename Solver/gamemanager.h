@@ -19,11 +19,6 @@ public:
 
     procon::Field getField();
 
-    /*
-    bool stayAgent(bool turn, int number);
-    bool moveAgent(bool turn, int number, int x_pos, int y_pos);
-    bool deleteTile(bool turn, int number, int x_pos, int y_pos);
-    */
     void setFieldCount(unsigned int number);
     unsigned int getFieldCount();
 

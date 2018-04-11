@@ -65,20 +65,6 @@ void GameManager::setFieldCount(unsigned int number){
     visualizer->update();
 }
 
-/*
-bool GameManager::stayAgent(bool turn, int number){
-    return agentAct(turn, number, 0, 0, 0);
-}
-
-bool GameManager::moveAgent(bool turn, int number, int x_pos, int y_pos){
-    return agentAct(turn, number, 1, x_pos, y_pos);
-}
-
-bool GameManager::deleteTile(bool turn, int number, int x_pos, int y_pos){
-    return agentAct(turn, number, 2, x_pos, y_pos);
-}
-*/
-
 void GameManager::agentAct(int turn, int agent, int type, int x_pos, int y_pos){
 
     std::pair<int,int> agent_pos = field->getAgent(turn, agent);
