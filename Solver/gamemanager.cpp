@@ -20,6 +20,7 @@ void GameManager::startSimulation(){
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
     visualizer = std::make_shared<Visualizer>(*field);
+    field_vec.push_back(*field);
 
     visualizer->show();
 
@@ -42,7 +43,10 @@ void GameManager::startSimulation(){
 
         changeTurn();
 
-        visualizer->setField(*field);
+        field_vec.push_back(*field);
+
+        now_field = field_vec.size() - 1;
+        visualizer->setField(field_vec.at(now_field));
         visualizer->update();
     }
 
@@ -50,6 +54,13 @@ void GameManager::startSimulation(){
 
 procon::Field GameManager::getField(){
     return *field;
+}
+
+unsigned int GameManager::getFieldCount(){
+    return now_field;
+}
+void GameManager::setFieldCount(unsigned int number){
+    now_field = number;
 }
 
 /*
