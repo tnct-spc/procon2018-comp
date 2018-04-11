@@ -8,8 +8,6 @@
 #include <vector>
 #include <utility>
 
-#include <iostream>
-
 class TestAlgorithm : public AlgorithmWrapper
 {
 public:

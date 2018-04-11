@@ -17,7 +17,7 @@ std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TestAlgorithm::agent
     for(int agent_num = 0; agent_num < 2; ++agent_num){
         std::pair<int,int> agent = field.getAgent(side, agent_num);
 
-        std::tuple<int,int,int,int> hyouka_max = std::make_tuple(-1, 0, 0, 0);
+        std::tuple<int,int,int,int> hyouka_max = std::make_tuple(-17, 0, 0, 0);
 
         for(int rotate = 0; rotate < 8; ++rotate){
             if(agent.first + x_list.at(rotate) < 0 || agent.first + x_list.at(rotate) >= field.getSize().first ||
@@ -25,15 +25,12 @@ std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TestAlgorithm::agent
                     )continue;
             bool put_flag = (field.getState(agent.first + x_list.at(rotate), agent.second + y_list.at(rotate)).first == (side==0?2:1));
 
-            int value = (field.getState(agent.first + x_list.at(rotate), agent.second + y_list.at(rotate)).first == side + 1 ? 0 : value_data.at(agent.first + x_list.at(rotate)).at(agent.second + y_list.at(rotate)));
+            int value = (field.getState(agent.first + x_list.at(rotate), agent.second + y_list.at(rotate)).first == side + 1 ? -10 : value_data.at(agent.first + x_list.at(rotate)).at(agent.second + y_list.at(rotate)));
 
             if(std::get<0>(hyouka_max) < value)
                 hyouka_max = std::make_tuple(value, (put_flag ? 2 : 1), x_list.at(rotate), y_list.at(rotate));
         }
 
-
-        std::cout << "hoge : " << field.getAgent(side, agent_num).first + std::get<2>(hyouka_max)<<" ";
-        std::cout << field.getAgent(side, agent_num).second + std::get<3>(hyouka_max)<<std::endl;
 
         (agent_num ? return_val.first : return_val.second) = std::make_tuple(std::get<1>(hyouka_max), std::get<2>(hyouka_max), std::get<3>(hyouka_max));
     }

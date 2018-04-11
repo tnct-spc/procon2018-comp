@@ -70,15 +70,16 @@ void GameManager::agentAct(int turn, int agent, int type, int x_pos, int y_pos){
     std::pair<int,int> grid_size = field->getSize();
 
     //クッソ長い例外処理
-    if(type && (abs(x_pos) > 1 || abs(y_pos) > 1 || (!x_pos && !y_pos) ||
-        agent_pos.first + x_pos < 0 || agent_pos.first + x_pos >= grid_size.first ||
-        agent_pos.second + y_pos < 0 || agent_pos.second + y_pos >= grid_size.second ||
-        (type == 1 && field->getState(agent_pos.first + x_pos, agent_pos.second + y_pos).first == (turn ? 2 : 1)) ||
-        (type == 2 && field->getState(agent_pos.first + x_pos, agent_pos.second + y_pos).first != (turn ? 1 : 2))
-         ))
+    if(type && (
+        agent_pos.first - x_pos < 0 || agent_pos.first - x_pos >= grid_size.first ||
+        agent_pos.second - y_pos < 0 || agent_pos.second - y_pos >= grid_size.second ||
+        (type == 1 && field->getState(agent_pos.first - x_pos, agent_pos.second - y_pos).first == (turn ? 2 : 1)) ||
+        (type == 2 && field->getState(agent_pos.first - x_pos, agent_pos.second - y_pos).first != (turn ? 1 : 2))
+        )){
         act_stack.at(turn).at(agent) = std::make_pair(0 , std::make_pair(0, 0));
+        return ;
+    }
 
-    std::cout << x_pos << " " << y_pos<<" : "<<agent_pos.first - x_pos << " " <<agent_pos.second - y_pos << std::endl;
     act_stack.at(turn).at(agent) = std::make_pair(type, std::make_pair(agent_pos.first - x_pos, agent_pos.second - y_pos));
 
 }
@@ -91,7 +92,6 @@ void GameManager::changeTurn(){
     for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
         for(int agent_num = 0; agent_num < 2; ++agent_num){
 
-            std::cout << act_stack.at(turn_flag).at(agent_num).first << " " << act_stack.at(turn_flag).at(agent_num).second.first << " " << act_stack.at(turn_flag).at(agent_num).second.second << std::endl;
 
             if(act_stack.at(turn_flag).at(agent_num).first == 1)
                 dest_map[act_stack.at(turn_flag).at(agent_num).second].push_back( std::make_pair(turn_flag, agent_num) );
@@ -103,7 +103,6 @@ void GameManager::changeTurn(){
     for(auto elements : dest_map){
         if(elements.second.size() > 1)
             continue;
-        std::cout <<"yabayaba : "<<elements.second.at(0).first<<" "<<elements.second.at(0).second<<" "<<elements.first.first<<" "<<elements.first.second<<std::endl;
         field->setAgent(elements.second.at(0).first, elements.second.at(0).second, elements.first.first, elements.first.second);
         field->setState(elements.first.first, elements.first.second, elements.second.at(0).first + 1);
     }
