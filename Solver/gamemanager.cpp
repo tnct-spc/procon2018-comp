@@ -62,6 +62,7 @@ void GameManager::setFieldCount(unsigned int number){
     if(number >= field_vec.size())return ;
     visualizer->setField(field_vec.at(number));
     now_field = number;
+    visualizer->update();
 }
 
 /*

@@ -10,6 +10,8 @@ Mejirodai::Mejirodai(QWidget *parent) :
     manager = std::make_shared<GameManager>(x_size, y_size);
 
     connect(ui->runButton, &QPushButton::clicked, this, &Mejirodai::RunManagerSimulation);
+    connect(ui->goNext, &QPushButton::clicked, this, &Mejirodai::goNextState);
+    connect(ui->goPrev, &QPushButton::clicked, this, &Mejirodai::goPrevState);
 }
 
 Mejirodai::~Mejirodai()
@@ -20,4 +22,12 @@ Mejirodai::~Mejirodai()
 void Mejirodai::RunManagerSimulation(){
 
     manager->startSimulation();
+}
+
+void Mejirodai::goNextState(){
+    manager->setFieldCount(manager->getFieldCount() + 1);
+}
+
+void Mejirodai::goPrevState(){
+    manager->setFieldCount(manager->getFieldCount() - 1);
 }

@@ -7,7 +7,6 @@
 #include <vector>
 #include <memory>
 #include <map>
-#include <thread>
 
 class AlgorithmWrapper;
 class TestAlgorithm;
