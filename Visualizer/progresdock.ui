@@ -16,10 +16,10 @@
   <widget class="QScrollArea" name="scrollArea">
    <property name="geometry">
     <rect>
-     <x>9</x>
-     <y>9</y>
+     <x>10</x>
+     <y>10</y>
      <width>1371</width>
-     <height>751</height>
+     <height>741</height>
     </rect>
    </property>
    <property name="widgetResizable">
@@ -31,20 +31,14 @@
       <x>0</x>
       <y>0</y>
       <width>1369</width>
-      <height>749</height>
+      <height>739</height>
      </rect>
     </property>
-    <widget class="QWidget" name="gridLayoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>9</x>
-       <y>9</y>
-       <width>1351</width>
-       <height>731</height>
-      </rect>
-     </property>
-     <layout class="QGridLayout" name="board_continer"/>
-    </widget>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <layout class="QGridLayout" name="board_continer"/>
+     </item>
+    </layout>
    </widget>
   </widget>
  </widget>
