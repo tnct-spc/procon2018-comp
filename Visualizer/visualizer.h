@@ -1,34 +1,34 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+
 #include "field.h"
-#include "gamemanager.h"
-#include <QMainWindow>
-#include <QPaintEvent>
 #include <QPainter>
+#include <QWidget>
+#include <QPaintEvent>
 
 #include <memory>
 
 
-
 namespace Ui {
-class MainWindow;
+class Visualizer;
 }
 
-class MainWindow : public QMainWindow
+class Visualizer : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit Visualizer(procon::Field inp_field, QWidget *parent = 0);
+    ~Visualizer();
+
+    void setField(procon::Field inp_field);
 
 private:
-    Ui::MainWindow *ui;
+    Ui::Visualizer *ui;
     void paintEvent(QPaintEvent *event);
 
-    std::shared_ptr<procon::Field> field;
-    std::shared_ptr<GameManager> manager;
+    procon::Field field;
 
     int window_width;
     int window_height;
@@ -38,13 +38,15 @@ private:
 
     int grid_size;
 
-    //ここはgetter,setterで編集
-    unsigned int grid_x = 12;
-    unsigned int grid_y = 8;
+    unsigned int grid_x;
+    unsigned int grid_y;
+
 
     //margin*size分の余白を取る
     const double margin = 1.5;
 
+
+    const QColor font_color = QColor(0,0,0,64);
     const QColor background_color = QColor(245,245,220);
     const QColor grid_color = QColor(220,220,180);
     const QColor team_color_a = QColor(255,0,0);
