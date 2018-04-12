@@ -2,4 +2,7 @@ CONFIG += ordered
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    Visualizer
+    Field \
+    Visualizer \
+    Solver \
+    Mejirodai

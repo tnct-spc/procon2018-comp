@@ -1,15 +1,15 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2018-04-03T23:09:33
+# Project created by QtCreator 2018-04-10T08:46:52
 #
 #-------------------------------------------------
 
-QT       += core gui widgets
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = Visualizer
-TEMPLATE = lib
+TARGET = Mejirodai
+TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -24,23 +24,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        visualizer.cpp \
-    progresdock.cpp
+        main.cpp \
+        mejirodai.cpp
 
 HEADERS += \
-        visualizer.h \
-    progresdock.h
+        mejirodai.h
 
 FORMS += \
-        visualizer.ui \
-    progresdock.ui
-
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
-
+        mejirodai.ui
 
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
 DEPENDPATH += $$PWD/../Field
+
+LIBS += -L$$OUT_PWD/../Solver/ -lSolver
+INCLUDEPATH += $$PWD/../Solver
+DEPENDPATH += $$PWD/../Solver
+
+
+LIBS += -L$$OUT_PWD/../Visualizer/ -lVisualizer
+INCLUDEPATH += $$PWD/../Visualizer
+DEPENDPATH += $$PWD/../Visualizer

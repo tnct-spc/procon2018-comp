@@ -1,10 +1,10 @@
-#include "mainwindow.h"
+#include "mejirodai.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    Mejirodai w;
     w.show();
 
     return a.exec();
