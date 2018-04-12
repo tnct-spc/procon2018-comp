@@ -7,7 +7,6 @@
 #include <vector>
 #include <memory>
 #include <map>
-#include <thread>
 
 class AlgorithmWrapper;
 class TestAlgorithm;
@@ -20,19 +19,20 @@ public:
 
     procon::Field getField();
 
-    //ここの関数は既に行動が決まっている引数を渡された時にfalseを返す
-    bool stayAgent(bool turn, int number);
-    bool moveAgent(bool turn, int number, int x_pos, int y_pos);
-    bool deleteTile(bool turn, int number, int x_pos, int y_pos);
+    void setFieldCount(unsigned int number);
+    unsigned int getFieldCount();
 
     void startSimulation();
 
 private:
     std::shared_ptr<procon::Field> field;
+    std::vector<procon::Field> field_vec;
     std::shared_ptr<Visualizer> visualizer;
 
     std::shared_ptr<AlgorithmWrapper> team_1;
     std::shared_ptr<AlgorithmWrapper> team_2;
+
+    unsigned int now_field = 0;
 
 
     //ここは仕様を変えたり変えなかったりしよう
@@ -45,7 +45,7 @@ private:
     //2:タイル除去 移動方向をintで設定する
     std::vector<std::vector<std::pair<int,std::pair<int,int>>>> act_stack;
 
-    bool agentAct(int turn, int agent, int type, int x_pos, int y_pos);
+    void agentAct(int turn, int agent, int type, int x_pos, int y_pos);
     void changeTurn();
 
 };

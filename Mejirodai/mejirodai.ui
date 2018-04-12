@@ -19,12 +19,38 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>381</width>
+      <width>191</width>
       <height>241</height>
      </rect>
     </property>
     <property name="text">
      <string>Run</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="goNext">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>10</y>
+      <width>80</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Next</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="goPrev">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>40</y>
+      <width>80</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Prev</string>
     </property>
    </widget>
   </widget>
