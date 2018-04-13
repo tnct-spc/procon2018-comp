@@ -31,7 +31,6 @@ private:
     void paintEvent(QPaintEvent *event);
 
     void mousePressEvent(QMouseEvent *event);
-    std::pair<int, int> translatePointIntoMass(QPointF point);
 
     procon::Field field;
 
@@ -45,6 +44,8 @@ private:
 
     unsigned int grid_x;
     unsigned int grid_y;
+
+    std::pair<int, int> grid_click;
 
     //margin*size分の余白を取る
     const double margin = 1.5;

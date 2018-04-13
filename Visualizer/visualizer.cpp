@@ -118,17 +118,19 @@ void Visualizer::paintEvent(QPaintEvent *event){
 // クリックされたときにそのマスの場所を返す
 void Visualizer::mousePressEvent(QMouseEvent *event)
 {
-    // 取得したマウスの座標データをマスの場所にする
-    std::pair<int, int> mass = translatePointIntoMass(event->pos());
-}
+    // マスのwindow上の座標を取得
+    QPointF point = event->pos();
 
-// 座標データをマスのデータに直す
-std::pair<int, int> Visualizer::translatePointIntoMass(QPointF point)
-{
-    std::cout << "OK" << std::endl;
+    // マスの範囲外をクリックしたら何もしない
+    if ((point.x() < horizontal_margin) || (point.x() > window_width - horizontal_margin)
+            || (point.y() < vertical_margin) || (point.y() > window_height - vertical_margin)) {
+        return;
+    }
 
-    std::pair<int, int> mass;
+    // xを座標からマスへ
+    grid_click.first = (point.x() - horizontal_margin) / grid_size;
 
-    return mass;
+    // yを座標からマスへ
+    grid_click.second = (point.y() - vertical_margin) / grid_size;
 }
 
