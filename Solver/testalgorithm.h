@@ -12,8 +12,8 @@
 
 class TestAlgorithm : public AlgorithmWrapper
 {
+    using AlgorithmWrapper::AlgorithmWrapper;
 public:
-    AlgorithmWrapper::AlgorithmWrapper;
     std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
 };
 
