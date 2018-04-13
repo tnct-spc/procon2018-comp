@@ -19,10 +19,10 @@ class Visualizer : public QWidget
     Q_OBJECT
 
 public:
-    explicit Visualizer(const procon::Field inp_field, QWidget *parent = 0);
+    explicit Visualizer(const procon::Field& inp_field, QWidget *parent = 0);
     ~Visualizer();
 
-    void setField(const procon::Field inp_field);
+    void setField(const procon::Field& inp_field);
 
 private:
     Ui::Visualizer *ui;

@@ -17,7 +17,7 @@ public:
 
     GameManager(const unsigned int x_size, const unsigned int y_size);
 
-    procon::Field getField();
+    const procon::Field& getField();
 
     void setFieldCount(const unsigned int number);
     unsigned int getFieldCount();
