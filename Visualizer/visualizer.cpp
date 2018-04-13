@@ -3,8 +3,8 @@
 
 Visualizer::Visualizer(procon::Field inp_field, QWidget *parent) :
     QWidget(parent),
-    field(inp_field),
-    ui(new Ui::Visualizer)
+    ui(new Ui::Visualizer),
+    field(inp_field)
 {
     ui->setupUi(this);
     grid_x = field.getSize().first;
@@ -21,6 +21,7 @@ void Visualizer::setField(procon::Field inp_field){
 }
 
 void Visualizer::paintEvent(QPaintEvent *event){
+    Q_UNUSED(event);
 
     QPainter painter(this);
 
