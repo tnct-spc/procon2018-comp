@@ -1,0 +1,52 @@
+#ifndef FIELD_H
+#define FIELD_H
+
+
+#include <vector>
+#include <utility>
+#include <random>
+
+namespace procon {
+
+class Field
+{
+public:
+    Field(const unsigned int size_x, const unsigned int size_y);
+    Field(const unsigned int size_x, const unsigned int size_y, const std::vector<std::vector<int>>& input_val);
+    Field(const unsigned int size_x, const unsigned int size_y,const unsigned int max_val,const int min_val,const double minus_per = 0.3);
+
+    const std::vector<std::vector<std::pair<int,int>>>& getAgents();
+    std::pair<int,int> getAgent(const unsigned int turn, const unsigned int number);
+    const std::vector<std::vector<int>>& getField();
+    const std::vector<std::vector<int>>& getValue();
+
+    bool isPlaced(const unsigned int x, const unsigned int y);
+    std::pair<int,int> getState(const unsigned int x, const unsigned int y);//pair<タイル状況,評価値>
+
+    void setState(const unsigned int x, const unsigned int y, const unsigned int state);//タイル状況のみの変更
+    void setAgent(const unsigned int turn, const unsigned int number, const unsigned int x_pos, const unsigned int y_pos);
+
+
+    void setTurnCount(const unsigned int turn);
+    int getTurnCount();
+
+    std::pair<int,int> getSize();
+
+
+private:
+    std::vector<std::vector<int>> field_data;
+    std::vector<std::vector<int>> value_data;
+
+    //players.at(turn_flag)みたいな事ができるのでvectorにしてます 変えてもいい
+    //めっちゃ分かりづらいですね
+    std::vector<std::vector<std::pair<int,int>>> agents;
+
+    int turn_count = 0;
+    int grid_x;
+    int grid_y;
+
+
+};
+}
+
+#endif // FIELD_H
