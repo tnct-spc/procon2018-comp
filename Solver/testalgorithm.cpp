@@ -44,8 +44,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TestAlgorithm:
 
     }
 
-     swap(return_val.first,return_val.second);
-
     return return_val;
 
     /*

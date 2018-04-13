@@ -85,6 +85,7 @@ void GameManager::agentAct(const int turn, const int agent, const std::tuple<int
     int type, x_inp, y_inp;
     std::tie(type, x_inp, y_inp) = tuple_val;
 
+
     std::pair<int,int> agent_pos = field->getAgent(turn, agent);
     std::pair<int,int> grid_size = field->getSize();
 
@@ -99,8 +100,10 @@ void GameManager::agentAct(const int turn, const int agent, const std::tuple<int
         (type == 2 && field->getState(x_pos, y_pos).first != (turn==1 ? 1 : 2))
         ){
         act_stack.at(turn).at(agent) = std::make_tuple(0, 0, 0);
+        std::cout << "hage"<<std::endl;
         return ;
     }
+    std::cout << "hoge"<<std::endl;
     act_stack.at(turn).at(agent) = std::make_tuple(type, x_pos, y_pos);
 
 }
