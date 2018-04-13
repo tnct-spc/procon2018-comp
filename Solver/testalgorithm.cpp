@@ -1,7 +1,7 @@
 #include "testalgorithm.h"
 
 
-std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TestAlgorithm::agentAct(int side){
+const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TestAlgorithm::agentAct(int side){
 
     manager->getField();
 

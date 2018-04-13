@@ -19,7 +19,7 @@ procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
         }
 }
 
-procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const std::vector<std::vector<int>> input_val){
+procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const std::vector<std::vector<int>>& input_val){
     grid_x = size_x;
     grid_y = size_y;
 
@@ -79,11 +79,11 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         }
 }
 
-std::vector<std::vector<int>> procon::Field::getField(){
+const std::vector<std::vector<int>>& procon::Field::getField(){
     return field_data;
 }
 
-std::vector<std::vector<int>> procon::Field::getValue(){
+const std::vector<std::vector<int>>& procon::Field::getValue(){
     return value_data;
 }
 
@@ -92,7 +92,7 @@ std::pair<int,int> procon::Field::getSize(){
 }
 
 
-std::vector<std::vector<std::pair<int,int>>> procon::Field::getAgents(){
+const std::vector<std::vector<std::pair<int,int>>>& procon::Field::getAgents(){
     return agents;
 }
 

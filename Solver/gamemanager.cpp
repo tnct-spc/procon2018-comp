@@ -51,7 +51,7 @@ void GameManager::startSimulation(){
 
 }
 
-procon::Field GameManager::getField(){
+const procon::Field& GameManager::getField(){
     return *field;
 }
 
