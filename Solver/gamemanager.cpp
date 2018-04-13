@@ -59,27 +59,6 @@ void GameManager::setFieldCount(const unsigned int number){
     visualizer->update();
 }
 
-/*
-void GameManager::agentAct(const int turn, const int agent, const int type, const int x_pos, const int y_pos){
-
-    std::pair<int,int> agent_pos = field->getAgent(turn, agent);
-    std::pair<int,int> grid_size = field->getSize();
-
-    //クッソ長い例外処理 ここガバってます！！！
-    if(type && (
-        agent_pos.first - x_pos < 0 || agent_pos.first - x_pos >= grid_size.first ||
-        agent_pos.second - y_pos < 0 || agent_pos.second - y_pos >= grid_size.second ||
-        (type == 1 && field->getState(agent_pos.first - x_pos, agent_pos.second - y_pos).first == (turn==1 ? 1 : 2)) ||
-        (type == 2 && field->getState(agent_pos.first - x_pos, agent_pos.second - y_pos).first != (turn==1 ? 1 : 2))
-        )){
-        act_stack.at(turn).at(agent) = std::make_pair(0 , std::make_pair(0, 0));
-        return ;
-    }
-    act_stack.at(turn).at(agent) = std::make_pair(type, std::make_pair(agent_pos.first - x_pos, agent_pos.second - y_pos));
-
-}
-*/
-
 void GameManager::agentAct(const int turn, const int agent, const std::tuple<int, int, int> tuple_val){
 
     int type, x_inp, y_inp;
@@ -92,7 +71,6 @@ void GameManager::agentAct(const int turn, const int agent, const std::tuple<int
     int x_pos = agent_pos.first + x_inp;
     int y_pos = agent_pos.second + y_inp;
 
-    //クッソ長い例外処理 ここガバってます！！！
     if(
         x_pos < 0 || x_pos >= grid_size.first ||
         y_pos < 0 || y_pos >= grid_size.second ||
@@ -100,10 +78,8 @@ void GameManager::agentAct(const int turn, const int agent, const std::tuple<int
         (type == 2 && field->getState(x_pos, y_pos).first != (turn==1 ? 1 : 2))
         ){
         act_stack.at(turn).at(agent) = std::make_tuple(0, 0, 0);
-        std::cout << "hage"<<std::endl;
         return ;
     }
-    std::cout << "hoge"<<std::endl;
     act_stack.at(turn).at(agent) = std::make_tuple(type, x_pos, y_pos);
 
 }
