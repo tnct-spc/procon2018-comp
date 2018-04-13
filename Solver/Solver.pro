@@ -1,15 +1,15 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2018-04-03T23:09:33
+# Project created by QtCreator 2018-04-05T17:18:23
 #
 #-------------------------------------------------
 
 QT       += core gui widgets
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-TARGET = Visualizer
+TARGET = Solver
 TEMPLATE = lib
+
+DEFINES += SOLVER_LIBRARY
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -22,22 +22,26 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-
 SOURCES += \
-        visualizer.cpp
+    testalgorithm.cpp \
+    algorithmwrapper.cpp \
+    gamemanager.cpp
 
 HEADERS += \
-        visualizer.h
-
-FORMS += \
-        visualizer.ui
+        algorithm_global.h \ 
+    testalgorithm.h \
+    algorithmwrapper.h \
+    gamemanager.h
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
 
-
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
 DEPENDPATH += $$PWD/../Field
+
+LIBS += -L$$OUT_PWD/../Visualizer/ -lVisualizer
+INCLUDEPATH += $$PWD/../Visualizer
+DEPENDPATH += $$PWD/../Visualizer
