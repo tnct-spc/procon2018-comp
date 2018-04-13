@@ -10,6 +10,8 @@
 #include <random>
 #include <algorithm>
 
+#include <iostream>
+
 class TestAlgorithm : public AlgorithmWrapper
 {
     using AlgorithmWrapper::AlgorithmWrapper;
