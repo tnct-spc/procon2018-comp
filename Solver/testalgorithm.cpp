@@ -5,12 +5,48 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TestAlgorithm:
 
     manager->getField();
 
-    //ここに処理を書く
     procon::Field field = manager->getField();
-    std::vector<std::vector<int>> value_data = field.getValue();
+
 
     std::vector<int> x_list = {0, 0, 1, 1, 1, -1, -1, -1};
     std::vector<int> y_list = {-1, 1, -1, 0, 1, -1, 0, 1};
+
+
+    std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> return_val;
+
+    for(unsigned int agent_num = 0; agent_num < 2; ++agent_num){
+
+        std::pair<int,int> agent = field.getAgent(side, agent_num);
+        std::vector<std::pair<int,int>> pattern;
+
+        for(unsigned int rotate = 0;rotate < 8; ++rotate){
+
+            if(agent.first + x_list.at(rotate) < 0 || agent.first + x_list.at(rotate) >= field.getSize().first ||
+               agent.second + y_list.at(rotate) < 0 || agent.second + y_list.at(rotate) >= field.getSize().second
+                    )continue;
+            pattern.push_back( std::make_pair(x_list.at(rotate), y_list.at(rotate)) );
+        }
+
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0,pattern.size()-1);
+        int answer = dis(gen);
+
+        (agent_num == 0 ? return_val.first : return_val.second) = std::make_tuple(
+                                                                                    (field.getState(
+                                                                                         agent.first + pattern.at(answer).first,
+                                                                                         agent.second + pattern.at(answer).second
+                                                                                         ).first == (side == 0 ? 2 : 1) ? 2 : 1),
+                                                                                    pattern.at(answer).first,
+                                                                                    pattern.at(answer).second
+                                                                                  );
+
+    }
+
+    return return_val;
+
+    /*
 
     std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> return_val;
 
@@ -53,5 +89,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TestAlgorithm:
     }
 
     return return_val;
+
+    */
 
 }
