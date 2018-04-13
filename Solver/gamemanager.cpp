@@ -70,17 +70,16 @@ void GameManager::agentAct(const int turn, const int agent, const int type, cons
     std::pair<int,int> agent_pos = field->getAgent(turn, agent);
     std::pair<int,int> grid_size = field->getSize();
 
-    //クッソ長い例外処理
+    //クッソ長い例外処理 ここガバってます！！！
     if(type && (
         agent_pos.first - x_pos < 0 || agent_pos.first - x_pos >= grid_size.first ||
         agent_pos.second - y_pos < 0 || agent_pos.second - y_pos >= grid_size.second ||
-        (type == 1 && field->getState(agent_pos.first - x_pos, agent_pos.second - y_pos).first == (turn ? 2 : 1)) ||
-        (type == 2 && field->getState(agent_pos.first - x_pos, agent_pos.second - y_pos).first != (turn ? 1 : 2))
+        (type == 1 && field->getState(agent_pos.first - x_pos, agent_pos.second - y_pos).first == (turn==1 ? 1 : 2)) ||
+        (type == 2 && field->getState(agent_pos.first - x_pos, agent_pos.second - y_pos).first != (turn==1 ? 1 : 2))
         )){
         act_stack.at(turn).at(agent) = std::make_pair(0 , std::make_pair(0, 0));
         return ;
     }
-
     act_stack.at(turn).at(agent) = std::make_pair(type, std::make_pair(agent_pos.first - x_pos, agent_pos.second - y_pos));
 
 }
@@ -93,15 +92,14 @@ void GameManager::changeTurn(){
     for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
         for(int agent_num = 0; agent_num < 2; ++agent_num){
 
-
-            if(act_stack.at(turn_flag).at(agent_num).first == 1)
-                dest_map[act_stack.at(turn_flag).at(agent_num).second].push_back( std::make_pair(turn_flag, agent_num) );
-            else if(act_stack.at(turn_flag).at(agent_num).first == 2){
+            dest_map[act_stack.at(turn_flag).at(agent_num).second].push_back( std::make_pair(turn_flag, agent_num) );
+            if(act_stack.at(turn_flag).at(agent_num).first == 2){
                 tile_map[act_stack.at(turn_flag).at(agent_num).second].push_back( std::make_pair(turn_flag, agent_num) );
             }
         }
 
     for(auto elements : dest_map){
+
         if(elements.second.size() > 1)
             continue;
 

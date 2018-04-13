@@ -41,6 +41,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TestAlgorithm:
                                                                                     pattern.at(answer).first,
                                                                                     pattern.at(answer).second
                                                                                   );
+
     }
 
      swap(return_val.first,return_val.second);
