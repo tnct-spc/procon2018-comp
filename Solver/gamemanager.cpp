@@ -2,7 +2,7 @@
 #include "algorithmwrapper.h"
 #include "testalgorithm.h"
 
-GameManager::GameManager(unsigned int x_size, unsigned int y_size){
+GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
 
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
     visualizer = std::make_shared<Visualizer>(*field);
@@ -58,14 +58,14 @@ procon::Field GameManager::getField(){
 unsigned int GameManager::getFieldCount(){
     return now_field;
 }
-void GameManager::setFieldCount(unsigned int number){
+void GameManager::setFieldCount(const unsigned int number){
     if(number >= field_vec.size())return ;
     visualizer->setField(field_vec.at(number));
     now_field = number;
     visualizer->update();
 }
 
-void GameManager::agentAct(int turn, int agent, int type, int x_pos, int y_pos){
+void GameManager::agentAct(const int turn, const int agent, const int type, const int x_pos, const int y_pos){
 
     std::pair<int,int> agent_pos = field->getAgent(turn, agent);
     std::pair<int,int> grid_size = field->getSize();
