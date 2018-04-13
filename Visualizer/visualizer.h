@@ -6,8 +6,10 @@
 #include <QPainter>
 #include <QWidget>
 #include <QPaintEvent>
+#include <QMouseEvent>
 
 #include <memory>
+#include <iostream>
 
 
 namespace Ui {
@@ -28,6 +30,9 @@ private:
     Ui::Visualizer *ui;
     void paintEvent(QPaintEvent *event);
 
+    void mousePressEvent(QMouseEvent *event);
+    std::pair<int, int> translatePointIntoMass(QPointF point);
+
     procon::Field field;
 
     int window_width;
@@ -40,7 +45,6 @@ private:
 
     unsigned int grid_x;
     unsigned int grid_y;
-
 
     //margin*size分の余白を取る
     const double margin = 1.5;

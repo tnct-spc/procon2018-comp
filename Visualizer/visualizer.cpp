@@ -9,6 +9,8 @@ Visualizer::Visualizer(procon::Field inp_field, QWidget *parent) :
     ui->setupUi(this);
     grid_x = field.getSize().first;
     grid_y = field.getSize().second;
+
+
 }
 
 Visualizer::~Visualizer()
@@ -112,3 +114,21 @@ void Visualizer::paintEvent(QPaintEvent *event){
     drawAgents();
 
 }
+
+// クリックされたときにそのマスの場所を返す
+void Visualizer::mousePressEvent(QMouseEvent *event)
+{
+    // 取得したマウスの座標データをマスの場所にする
+    std::pair<int, int> mass = translatePointIntoMass(event->pos());
+}
+
+// 座標データをマスのデータに直す
+std::pair<int, int> Visualizer::translatePointIntoMass(QPointF point)
+{
+    std::cout << "OK" << std::endl;
+
+    std::pair<int, int> mass;
+
+    return mass;
+}
+
