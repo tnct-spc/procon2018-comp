@@ -12,8 +12,8 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
     team_1 = std::make_shared<TestAlgorithm>(share);
     team_2 = std::make_shared<TestAlgorithm>(share);
 
+    act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
-    act_stack = std::vector<std::vector<std::pair<int,std::pair<int,int>>>>(2, std::vector<std::pair<int,std::pair<int,int>>>(2,std::make_pair(-1, std::make_pair(-1,-1))));
 }
 
 void GameManager::startSimulation(){
@@ -30,16 +30,10 @@ void GameManager::startSimulation(){
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans = team_1->agentAct(0);
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans = team_2->agentAct(1);
 
-        int type, x_move, y_move;
-
-        std::tie(type, x_move, y_move) = team_1_ans.first;
-        agentAct(0,0,type,x_move,y_move);
-        std::tie(type, x_move, y_move) = team_1_ans.second;
-        agentAct(0,1,type,x_move,y_move);
-        std::tie(type, x_move, y_move) = team_2_ans.first;
-        agentAct(1,0,type,x_move,y_move);
-        std::tie(type, x_move, y_move) = team_2_ans.second;
-        agentAct(1,1,type,x_move,y_move);
+        agentAct(0,0,team_1_ans.first);
+        agentAct(0,1,team_1_ans.second);
+        agentAct(1,0,team_2_ans.first);
+        agentAct(1,1,team_2_ans.second);
 
         changeTurn();
 
@@ -65,6 +59,7 @@ void GameManager::setFieldCount(const unsigned int number){
     visualizer->update();
 }
 
+/*
 void GameManager::agentAct(const int turn, const int agent, const int type, const int x_pos, const int y_pos){
 
     std::pair<int,int> agent_pos = field->getAgent(turn, agent);
@@ -83,18 +78,50 @@ void GameManager::agentAct(const int turn, const int agent, const int type, cons
     act_stack.at(turn).at(agent) = std::make_pair(type, std::make_pair(agent_pos.first - x_pos, agent_pos.second - y_pos));
 
 }
+*/
+
+void GameManager::agentAct(const int turn, const int agent, const std::tuple<int, int, int> tuple_val){
+
+    int type, x_inp, y_inp;
+    std::tie(type, x_inp, y_inp) = tuple_val;
+
+    std::pair<int,int> agent_pos = field->getAgent(turn, agent);
+    std::pair<int,int> grid_size = field->getSize();
+
+    int x_pos = agent_pos.first + x_inp;
+    int y_pos = agent_pos.second + y_inp;
+
+    //クッソ長い例外処理 ここガバってます！！！
+    if(
+        x_pos < 0 || x_pos >= grid_size.first ||
+        y_pos < 0 || y_pos >= grid_size.second ||
+        (type == 1 && field->getState(x_pos, y_pos).first == (turn==1 ? 1 : 2)) ||
+        (type == 2 && field->getState(x_pos, y_pos).first != (turn==1 ? 1 : 2))
+        ){
+        act_stack.at(turn).at(agent) = std::make_tuple(0, 0, 0);
+        return ;
+    }
+    act_stack.at(turn).at(agent) = std::make_tuple(type, x_pos, y_pos);
+
+}
 
 void GameManager::changeTurn(){
 
     std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> dest_map;
     std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> tile_map;
 
+    int type, pos_x, pos_y;
+
     for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
         for(int agent_num = 0; agent_num < 2; ++agent_num){
 
-            dest_map[act_stack.at(turn_flag).at(agent_num).second].push_back( std::make_pair(turn_flag, agent_num) );
-            if(act_stack.at(turn_flag).at(agent_num).first == 2){
-                tile_map[act_stack.at(turn_flag).at(agent_num).second].push_back( std::make_pair(turn_flag, agent_num) );
+            std::tie(type, pos_x, pos_y) = act_stack.at(turn_flag).at(agent_num);
+            std::pair<int,int> pos = std::make_pair(pos_x, pos_y);
+
+            dest_map[ pos ].push_back( std::make_pair(turn_flag, agent_num) );
+
+            if(type == 2){
+                tile_map[ pos ].push_back( std::make_pair(turn_flag, agent_num) );
             }
         }
 
