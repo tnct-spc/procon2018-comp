@@ -1,11 +1,15 @@
 #ifndef SIMPLEMONTECARLO_H
 #define SIMPLEMONTECARLO_H
 
+#include "algorithmwrapper.h"
 
-class SimpleMonteCarlo
+
+class SimpleMonteCalro : public AlgorithmWrapper
 {
+    using AlgorithmWrapper::AlgorithmWrapper;
 public:
-    SimpleMonteCarlo();
+    const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
+
 };
 
 #endif // SIMPLEMONTECARLO_H
