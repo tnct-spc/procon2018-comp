@@ -29,5 +29,5 @@ void Mejirodai::goNextState(){
 }
 
 void Mejirodai::goPrevState(){
-    manager->setFieldCount(manager->getFieldCount() - 1 >= 0 ? manager->getFieldCount() - 1 : 0);
+    manager->setFieldCount(manager->getFieldCount() - 1);
 }

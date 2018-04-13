@@ -15,11 +15,11 @@ class GameManager
 {
 public:
 
-    GameManager(unsigned int x_size, unsigned int y_size);
+    GameManager(const unsigned int x_size, const unsigned int y_size);
 
     procon::Field getField();
 
-    void setFieldCount(unsigned int number);
+    void setFieldCount(const unsigned int number);
     unsigned int getFieldCount();
 
     void startSimulation();
@@ -45,7 +45,7 @@ private:
     //2:タイル除去 移動方向をintで設定する
     std::vector<std::vector<std::pair<int,std::pair<int,int>>>> act_stack;
 
-    void agentAct(int turn, int agent, int type, int x_pos, int y_pos);
+    void agentAct(const int turn, const int agent, const int type, const int x_pos, const int y_pos);
     void changeTurn();
 
 };

@@ -27,8 +27,8 @@ private:
     void goNextState();
     void goPrevState();
 
-    int x_size = 12;
-    int y_size = 8;
+    const unsigned int x_size = 12;
+    const unsigned int y_size = 8;
 
 };
 
