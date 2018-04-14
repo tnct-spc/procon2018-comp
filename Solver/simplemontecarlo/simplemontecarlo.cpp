@@ -27,10 +27,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleMonteCal
     //これで最高値のindexを取り出している
     int max_move = std::distance(agent_trial.begin(), std::max_element(agent_trial.begin(), agent_trial.end() ) );
 
-    std::vector<int> x_list = {1, 1, 1, 0, 0, 0, -1, -1, -1};
-    std::vector<int> y_list = {-1, 0, 1, -1, 0, 1, -1, 0, 1};
-
-    std::cout << max_move << std::endl;
+    std::vector<int> x_list = {1, 1, 1, 0, 0, -1, -1, -1, 0};
+    std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
     std::pair<int,int> agent_1_move = std::make_pair( x_list.at( max_move / 9), y_list.at( max_move / 9) );
     std::pair<int,int> agent_2_move = std::make_pair( x_list.at( max_move % 9), y_list.at( max_move % 9) );
@@ -43,6 +41,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleMonteCal
 
     std::tuple<int,int,int> agent_2_tuple = std::make_tuple( (field.getState(agent_2_pos.first, agent_2_pos.second).first == (side == 0 ? 2 : 1 ) ? 2 : 1 ),
                                                              agent_2_move.first, agent_2_move.second);
+
+    std::cout << agent_1_move.first << "," << agent_1_move.second << "," << agent_2_move.first << "," << agent_2_move.second << std::endl;
 
     return std::make_pair(agent_1_tuple, agent_2_tuple);
 
