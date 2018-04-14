@@ -13,7 +13,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleMonteCal
 
                     GameSimulator sim(field, manager->getFinalTurn());
 
-                    if(count == 0 && ( sim.canPut(side, 0, agent_1) == false || sim.canPut(side, 1, agent_2) == false ) ){
+                    if(count == 0 && ( sim.canPut(side, agent_1, agent_2) == false) ){
 
                         agent_trial.at(agent_1 * 9 + agent_2) = -1;
                         break;

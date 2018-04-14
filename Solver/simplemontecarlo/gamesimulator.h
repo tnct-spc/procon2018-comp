@@ -10,7 +10,9 @@ public:
     GameSimulator(const procon::Field& inp_field, const unsigned int final);
 
     bool startSimulation(const unsigned int side, const unsigned int agent_1_move, const unsigned int agent_2_move);
-    bool canPut(const unsigned int side, const unsigned int agent, const unsigned int move);
+
+    //この関数は「置けるかどうか」ではなく「どう考えても酷い動作にならないか」を判断するつもり(同じ位置に二人がmove、除去の重なりetc…)
+    bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2);
 
 private:
     procon::Field field;

@@ -17,12 +17,17 @@ bool GameSimulator::startSimulation(const unsigned int side, const unsigned int 
     return true;
 }
 
-bool GameSimulator::canPut(const unsigned int side, const unsigned int agent, const unsigned int move){
+bool GameSimulator::canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2){
 
-    std::pair<int,int> agent_pos = field.getAgent(side, agent);
+    auto outofrange_calc = [&](int agent){
 
-    agent_pos.first += x_list.at(move);
-    agent_pos.second += y_list.at(move);
+        std::pair<int,int> agent_pos = field.getAgent(side, agent);
+        int move = (agent == 0 ? move_1 : move_2);
 
-    return !(agent_pos.first < 0 || agent_pos.second < 0 || agent_pos.first >= field.getSize().first || agent_pos.second >= field.getSize().second);
+        agent_pos.first += x_list.at(move);
+        agent_pos.second += y_list.at(move);
+
+        return !(agent_pos.first < 0 || agent_pos.second < 0 || agent_pos.first >= field.getSize().first || agent_pos.second >= field.getSize().second);
+    };
+    return ( outofrange_calc(0) && outofrange_calc(1) );
 }
