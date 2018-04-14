@@ -26,7 +26,8 @@ SOURCES += \
         testalgorithm.cpp \
         algorithmwrapper.cpp \
         gamemanager.cpp \
-    simplemontecarlo/simplemontecarlo.cpp
+    simplemontecarlo/simplemontecarlo.cpp \
+    simplemontecarlo/gamesimulator.cpp
         simplemontecarlo/simplemontecarlo.cpp
 
 HEADERS += \
@@ -35,7 +36,8 @@ HEADERS += \
         algorithmwrapper.h \
         gamemanager.h \
         simplemontecarlo/simplemontecarlo.h \
-    simplemontecarlo/simplemontecarlo.h
+    simplemontecarlo/simplemontecarlo.h \
+    simplemontecarlo/gamesimulator.h
 
 unix {
     target.path = /usr/lib

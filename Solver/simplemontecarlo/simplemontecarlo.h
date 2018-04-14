@@ -2,6 +2,10 @@
 #define SIMPLEMONTECARLO_H
 
 #include "algorithmwrapper.h"
+#include "simplemontecarlo/gamesimulator.h"
+#include "gamesimulator.h"
+#include "gamemanager.h"
+
 
 
 class SimpleMonteCalro : public AlgorithmWrapper
