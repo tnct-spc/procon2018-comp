@@ -39,10 +39,10 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleMonteCal
     std::pair<int,int> agent_2_pos = std::make_pair( agent_2_move.first + field.getAgent(side, 1).first, agent_2_move.second + field.getAgent(side, 1).second );
 
     std::tuple<int,int,int> agent_1_tuple = std::make_tuple( (field.getState(agent_1_pos.first, agent_1_pos.second).first == (side == 0 ? 2 : 1 ) ? 2 : 1 ),
-                                                             agent_1_pos.first, agent_1_pos.second);
+                                                             agent_1_move.first, agent_1_move.second);
 
     std::tuple<int,int,int> agent_2_tuple = std::make_tuple( (field.getState(agent_2_pos.first, agent_2_pos.second).first == (side == 0 ? 2 : 1 ) ? 2 : 1 ),
-                                                             agent_2_pos.first, agent_2_pos.second);
+                                                             agent_2_move.first, agent_2_move.second);
 
     return std::make_pair(agent_1_tuple, agent_2_tuple);
 
