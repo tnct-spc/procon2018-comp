@@ -14,7 +14,7 @@ class TestAlgorithm : public AlgorithmWrapper
 {
 public:
     AlgorithmWrapper::AlgorithmWrapper;
+    int Evaluation(procon::Field field);
     std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
 };
-
 #endif // TESTALGORITHM_H
