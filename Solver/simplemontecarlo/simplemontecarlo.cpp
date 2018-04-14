@@ -11,7 +11,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleMonteCal
             for(unsigned int agent_2 = 0; agent_2 < 9; ++agent_2){
                 for(unsigned int count = 0; count < trial; ++count){
 
-                    GameSimulator sim(field, manager->getFinalTurn());
+                    GameSimulator sim(field, manager->getFinalTurn() - field.getTurnCount());
 
                     if(count == 0 && ( sim.canPut(side, agent_1, agent_2) == false) ){
 

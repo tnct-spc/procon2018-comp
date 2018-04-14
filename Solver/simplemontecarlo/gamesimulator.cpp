@@ -13,9 +13,24 @@ bool GameSimulator::startSimulation(const unsigned int side, const unsigned int 
     if(canPut(side, 0, agent_1_move) == false || canPut(side, 1, agent_2_move) == false )
         return false;
 
-
-    return true;
+    return randomizedGame(final_turn, side, agent_1_move, agent_2_move);
 }
+
+bool GameSimulator::randomizedGame(const int turn, const unsigned int side, const int agent_1_move, const int agent_2_move){
+    if(turn < 0){
+        //ここで得点計算処理
+        return true;
+    }
+
+    if(agent_1_move != -1){
+
+    }
+
+
+
+    return randomizedGame(turn - 1, side);
+}
+
 
 bool GameSimulator::canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2){
 
