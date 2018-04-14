@@ -5,6 +5,7 @@ GameSimulator::GameSimulator(const procon::Field &inp_field, const unsigned int 
 {
     final_turn = final;
     now_turn = field.getTurnCount();
+    act_stack.resize(2,std::vector<std::tuple<int,int,int>>(2,std::tuple<int,int,int>(0,0,0)));
 
 }
 
@@ -30,7 +31,6 @@ bool GameSimulator::randomizedGame(const int turn, const unsigned int side, cons
 
     return randomizedGame(turn - 1, side);
 }
-
 
 bool GameSimulator::canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2){
 
@@ -68,4 +68,78 @@ bool GameSimulator::canPut(const unsigned int side, const unsigned int move_1, c
 
 
     return ( check_outofrange(0) && check_outofrange(1) && check_conflict());
+}
+
+void GameSimulator::agentAct(const int turn, const int agent, const int x_inp, const int y_inp){
+
+    std::pair<int,int> agent_pos = field.getAgent(turn, agent);
+    std::pair<int,int> grid_size = field.getSize();
+
+
+    int type = (field.getState(agent_pos.first, agent_pos.second).first == (turn == 0 ? 2 : 1) ? 2 : 1 );
+
+
+    int x_pos = agent_pos.first + x_inp;
+    int y_pos = agent_pos.second + y_inp;
+
+    if(
+        x_pos < 0 || x_pos >= grid_size.first ||
+        y_pos < 0 || y_pos >= grid_size.second ||
+        (type == 1 && field.getState(x_pos, y_pos).first == (turn==1 ? 1 : 2)) ||
+        (type == 2 && field.getState(x_pos, y_pos).first != (turn==1 ? 1 : 2))
+        ){
+        act_stack.at(turn).at(agent) = std::make_tuple(0, 0, 0);
+        return ;
+    }
+    act_stack.at(turn).at(agent) = std::make_tuple(type, x_pos, y_pos);
+
+}
+
+void GameSimulator::changeTurn(){
+
+    std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> dest_map;
+    std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> tile_map;
+
+    int type, pos_x, pos_y;
+
+    for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
+        for(int agent_num = 0; agent_num < 2; ++agent_num){
+
+            std::tie(type, pos_x, pos_y) = act_stack.at(turn_flag).at(agent_num);
+            std::pair<int,int> pos = std::make_pair(pos_x, pos_y);
+
+            dest_map[ pos ].push_back( std::make_pair(turn_flag, agent_num) );
+
+            if(type == 2){
+                tile_map[ pos ].push_back( std::make_pair(turn_flag, agent_num) );
+            }
+        }
+
+    for(auto elements : dest_map){
+
+        if(elements.second.size() > 1)
+            continue;
+
+        if(field.getState(elements.first.first, elements.first.second).first == (elements.second.at(0).first == 0 ? 2 : 1))
+            continue;
+
+        field.setAgent(elements.second.at(0).first, elements.second.at(0).second, elements.first.first, elements.first.second);
+        field.setState(elements.first.first, elements.first.second, elements.second.at(0).first + 1);
+    }
+
+    for(auto elements : tile_map){
+        bool state_flag = true;
+        if(elements.second.size() > 1)
+            continue;
+
+
+        for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
+            for(int agent_num = 0; agent_num < 2; ++agent_num)
+                if(field.getAgent(turn_flag, agent_num) == elements.first){
+                    state_flag = false;
+                    break;
+                }
+        if(state_flag)
+            field.setState(elements.first.first, elements.first.second, 0);
+    }
 }

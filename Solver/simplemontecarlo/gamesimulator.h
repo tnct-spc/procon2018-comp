@@ -2,6 +2,8 @@
 #define GAMESIMULATOR_H
 
 #include "field.h"
+#include <tuple>
+#include <map>
 
 class GameSimulator
 {
@@ -21,9 +23,13 @@ private:
     //これはコンストラクタで指定する「残りのターン数」なので注意
     unsigned int final_turn;
 
+    void agentAct(const int turn, const int agent, const int x_inp, const int y_inp);
+    void changeTurn();
+
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
+    std::vector<std::vector<std::tuple<int,int,int>>> act_stack;
 };
 
 #endif // GAMESIMULATOR_H
