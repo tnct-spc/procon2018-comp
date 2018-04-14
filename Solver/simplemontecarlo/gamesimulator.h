@@ -4,6 +4,7 @@
 #include "field.h"
 #include <tuple>
 #include <map>
+#include <random>
 
 class GameSimulator
 {

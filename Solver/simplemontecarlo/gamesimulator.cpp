@@ -23,11 +23,38 @@ bool GameSimulator::randomizedGame(const int turn, const unsigned int side, cons
         return true;
     }
 
+    std::random_device rnd;
+    std::mt19937 mt(rnd());
+
+    auto random_act = [&](int side){
+
+        std::vector<int> can_move_list;
+
+        for(unsigned int agent_1 = 0; agent_1 < 9; ++agent_1)
+            for(unsigned int agent_2 = 0; agent_2 < 9; ++agent_2)
+
+                if( canPut(side, agent_1, agent_2) )
+                    can_move_list.push_back( agent_1 * 9 + agent_2 );
+
+        std::uniform_int_distribution<> rand(0, can_move_list.size() - 1);
+
+        int rand_value = can_move_list.at( rand(mt) );
+
+        agentAct(side, 0, x_list.at(rand_value / 9), y_list.at(rand_value / 9) );
+        agentAct(side, 1, x_list.at(rand_value % 9), y_list.at(rand_value % 9) );
+
+    };
+
     if(agent_1_move != -1){
 
-    }
+        agentAct(side, 0, x_list.at(agent_1_move), y_list.at(agent_1_move) );
+        agentAct(side, 1, x_list.at(agent_2_move), y_list.at(agent_2_move) );
+    }else
+        random_act(side);
 
+    random_act( ( side == 0 ? 1 : 0 ) );
 
+    changeTurn();
 
     return randomizedGame(turn - 1, side);
 }
