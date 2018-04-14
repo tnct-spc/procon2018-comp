@@ -6,6 +6,8 @@
 #include "gamesimulator.h"
 #include "gamemanager.h"
 
+#include <iostream>
+
 
 
 class SimpleMonteCalro : public AlgorithmWrapper

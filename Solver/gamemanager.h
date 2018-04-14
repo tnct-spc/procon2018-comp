@@ -23,6 +23,8 @@ public:
 
     void startSimulation();
 
+    unsigned int getFinalTurn();
+
 private:
     std::shared_ptr<procon::Field> field;
     std::vector<procon::Field> field_vec;
@@ -44,7 +46,6 @@ private:
     //2:タイル除去 移動方向をintで設定する
     std::vector<std::vector<std::tuple<int,int,int>>> act_stack; //ここは絶対座標での入力なので注意！
 
-    // void agentAct(const int turn, const int agent, const int type, const int x_pos, const int y_pos);
     void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
     void changeTurn();
 

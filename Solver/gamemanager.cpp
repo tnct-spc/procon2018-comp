@@ -61,6 +61,10 @@ void GameManager::setFieldCount(const unsigned int number){
     visualizer->update();
 }
 
+unsigned int GameManager::getFinalTurn(){
+    return turn_max;
+}
+
 void GameManager::agentAct(const int turn, const int agent, const std::tuple<int, int, int> tuple_val){
 
     int type, x_inp, y_inp;
