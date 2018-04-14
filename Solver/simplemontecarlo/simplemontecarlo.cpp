@@ -1,12 +1,20 @@
 #include "simplemontecarlo.h"
 
+SimpleMonteCalro::SimpleMonteCalro(std::shared_ptr<GameManager> manager_ptr) :
+    AlgorithmWrapper(manager_ptr),
+    sim(GameSimulator(manager_ptr->getField()))
+{
+
+}
+
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleMonteCalro::agentAct(int side){
 
-    procon::Field field = manager->getField();
+    const procon::Field& field = manager->getField();
 
     std::vector<int> agent_trial(81, 0);
 
-    GameSimulator sim(field, manager->getFinalTurn() - field.getTurnCount());
+    sim.setFieldData(field.getField(), field.getAgents());
+
 
         for(unsigned int agent_1 = 0; agent_1 < 9; ++agent_1)
             for(unsigned int agent_2 = 0; agent_2 < 9; ++agent_2){
@@ -20,7 +28,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleMonteCal
                         break;
                     }
 
-                    agent_trial.at(agent_1 * 9 + agent_2) += sim.startSimulation(side, agent_1, agent_2);
+                    agent_trial.at(agent_1 * 9 + agent_2) += sim.startSimulation(side, agent_1, agent_2, manager->getFinalTurn() - field.getTurnCount());
 
                 }
             }

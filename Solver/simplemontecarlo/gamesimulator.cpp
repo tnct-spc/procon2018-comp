@@ -1,17 +1,17 @@
 #include "gamesimulator.h"
 
-GameSimulator::GameSimulator(const procon::Field &inp_field, const unsigned int final) :
+GameSimulator::GameSimulator(const procon::Field& inp_field) :
     field(inp_field)
 {
     field_data = field.getField();
     agent_data = field.getAgents();
-    final_turn = final;
     now_turn = field.getTurnCount();
     act_stack.resize(2,std::vector<std::tuple<int,int,int>>(2,std::tuple<int,int,int>(0,0,0)));
 
 }
 
-bool GameSimulator::startSimulation(const unsigned int side, const unsigned int agent_1_move, const unsigned int agent_2_move){
+bool GameSimulator::startSimulation(const unsigned int side, const unsigned int agent_1_move, const unsigned int agent_2_move, const unsigned int final){
+    final_turn = final;
 
     if(canPut(side, agent_1_move, agent_2_move) == false)
         return false;
@@ -113,6 +113,11 @@ bool GameSimulator::canPut(const unsigned int side, const unsigned int move_1, c
 void GameSimulator::resetField(){
     field.setAgents(agent_data);
     field.setStates(field_data);
+}
+
+void GameSimulator::setFieldData(const std::vector<std::vector<int>>& inp_field, const std::vector<std::vector<std::pair<int,int>>>& inp_agent){
+    field_data = inp_field;
+    agent_data = inp_agent;
 }
 
 void GameSimulator::agentAct(const int turn, const int agent, const int x_inp, const int y_inp){

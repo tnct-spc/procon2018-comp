@@ -12,14 +12,15 @@ class GameSimulator
 {
 
 public:
-    GameSimulator(const procon::Field& inp_field, const unsigned int final);
+    GameSimulator(const procon::Field& inp_field);
 
-    bool startSimulation(const unsigned int side, const unsigned int agent_1_move, const unsigned int agent_2_move);
+    bool startSimulation(const unsigned int side, const unsigned int agent_1_move, const unsigned int agent_2_move, const unsigned int final);
     bool randomizedGame(const int turn, const unsigned int side, const int agent_1_move = -1, const int agent_2_move = -1);
 
     //この関数は「置けるかどうか」ではなく「どう考えても酷い動作にならないか」を判断するつもり(同じ位置に二人がmove、除去の重なりetc…)
     bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2);
     void resetField();
+    void setFieldData(const std::vector<std::vector<int>>& inp_field, const std::vector<std::vector<std::pair<int,int>>>& inp_agent);
 
 private:
     procon::Field field;

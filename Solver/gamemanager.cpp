@@ -8,15 +8,12 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
     visualizer = std::make_shared<Visualizer>(*field);
 
-    std::shared_ptr<GameManager> share(this); //これ自身を参照するshared_ptr
-
-
-    team_1 = std::make_shared<SimpleMonteCalro>(share);
-    team_2 = std::make_shared<SimpleMonteCalro>(share);
-    //team_2 = std::make_shared<TestAlgorithm>(share);
-
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
+    std::shared_ptr<GameManager> share(this); //これ自身を参照するshared_ptr
+
+    team_1 = std::make_shared<SimpleMonteCalro>(share);
+    team_2 = std::make_shared<TestAlgorithm>(share);
 }
 
 void GameManager::startSimulation(){
