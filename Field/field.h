@@ -26,6 +26,9 @@ public:
     void setState(const unsigned int x, const unsigned int y, const unsigned int state);//タイル状況のみの変更
     void setAgent(const unsigned int turn, const unsigned int number, const unsigned int x_pos, const unsigned int y_pos);
 
+    void setStates(const std::vector<std::vector<int>>& values);
+    void setAgents(const std::vector<std::vector<std::pair<int,int>>>& values);
+
 
     void setTurnCount(const unsigned int turn);
     int getTurnCount();

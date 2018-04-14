@@ -3,6 +3,8 @@
 GameSimulator::GameSimulator(const procon::Field &inp_field, const unsigned int final) :
     field(inp_field)
 {
+    field_data = field.getField();
+    agent_data = field.getAgents();
     final_turn = final;
     now_turn = field.getTurnCount();
     act_stack.resize(2,std::vector<std::tuple<int,int,int>>(2,std::tuple<int,int,int>(0,0,0)));
@@ -106,6 +108,11 @@ bool GameSimulator::canPut(const unsigned int side, const unsigned int move_1, c
 
 
     return ( check_outofrange(0) && check_outofrange(1) && check_conflict());
+}
+
+void GameSimulator::resetField(){
+    field.setAgents(agent_data);
+    field.setStates(field_data);
 }
 
 void GameSimulator::agentAct(const int turn, const int agent, const int x_inp, const int y_inp){

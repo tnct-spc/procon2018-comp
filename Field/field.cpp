@@ -124,3 +124,11 @@ int procon::Field::getTurnCount(){
 void procon::Field::setTurnCount(const unsigned int turn){
     turn_count = turn;
 }
+
+void procon::Field::setAgents(const std::vector<std::vector<std::pair<int,int>>>& values){
+    agents = values;
+}
+
+void procon::Field::setStates(const std::vector<std::vector<int>>& values){
+    field_data = values;
+}

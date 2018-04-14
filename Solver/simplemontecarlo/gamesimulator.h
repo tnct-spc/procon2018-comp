@@ -19,6 +19,7 @@ public:
 
     //この関数は「置けるかどうか」ではなく「どう考えても酷い動作にならないか」を判断するつもり(同じ位置に二人がmove、除去の重なりetc…)
     bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2);
+    void resetField();
 
 private:
     procon::Field field;
@@ -33,6 +34,9 @@ private:
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
     std::vector<std::vector<std::tuple<int,int,int>>> act_stack;
+
+    std::vector<std::vector<int>> field_data;
+    std::vector<std::vector<std::pair<int,int>>> agent_data;
 };
 
 #endif // GAMESIMULATOR_H
