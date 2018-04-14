@@ -11,7 +11,7 @@ GameSimulator::GameSimulator(const procon::Field &inp_field, const unsigned int 
 
 bool GameSimulator::startSimulation(const unsigned int side, const unsigned int agent_1_move, const unsigned int agent_2_move){
 
-    if(canPut(side, 0, agent_1_move) == false || canPut(side, 1, agent_2_move) == false )
+    if(canPut(side, agent_1_move, agent_2_move) == false)
         return false;
 
     return randomizedGame(final_turn, side, agent_1_move, agent_2_move);
@@ -20,7 +20,16 @@ bool GameSimulator::startSimulation(const unsigned int side, const unsigned int 
 bool GameSimulator::randomizedGame(const int turn, const unsigned int side, const int agent_1_move, const int agent_2_move){
     if(turn < 0){
         //ここで得点計算処理
-        return true;
+        int t = 0;
+        for(int i=0;i<field.getSize().first;++i)
+            for(int j=0;j<field.getSize().second;++j){
+                if(field.getState(i,j).first == (side == 0 ? 1 : 2))
+                    t+=field.getState(i,j).second;
+                if(field.getState(i,j).first == (side == 0 ? 2 : 1))
+                    t-=field.getState(i,j).second;
+            }
+        return t > 0;
+        //return true;
     }
 
     std::random_device rnd;
@@ -69,6 +78,7 @@ bool GameSimulator::canPut(const unsigned int side, const unsigned int move_1, c
         agent_pos.first += x_list.at(move);
         agent_pos.second += y_list.at(move);
 
+
         return !(agent_pos.first < 0 || agent_pos.second < 0 || agent_pos.first >= field.getSize().first || agent_pos.second >= field.getSize().second);
     };
 
@@ -90,6 +100,7 @@ bool GameSimulator::canPut(const unsigned int side, const unsigned int move_1, c
             agent_pos_2.second += y_list.at(move_2);
         }
 
+        //if(agent_pos_1 == agent_pos_2)std::cout<<"hoge"<<std::endl;
         return (agent_pos_1 != agent_pos_2);
     };
 

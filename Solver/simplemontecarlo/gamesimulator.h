@@ -6,6 +6,8 @@
 #include <map>
 #include <random>
 
+#include <iostream>
+
 class GameSimulator
 {
 

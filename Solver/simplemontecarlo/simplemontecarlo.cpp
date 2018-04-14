@@ -25,7 +25,18 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleMonteCal
             }
 
     //これで最高値のindexを取り出している
-    int max_move = std::distance(agent_trial.begin(), std::max_element(agent_trial.begin(), agent_trial.end() ) );
+    int max_val = *std::max_element(agent_trial.begin(), agent_trial.end() );
+    std::vector<int> max_val_vector;
+
+    for(int index = 0; index < 81; ++index)
+        if( agent_trial.at(index) == max_val)
+            max_val_vector.push_back( index );
+
+    std::random_device rnd;
+    std::mt19937 mt(rnd());
+    std::uniform_int_distribution<> rand_index(0,max_val_vector.size() - 1);
+
+    int max_move = max_val_vector.at( rand_index(mt) );
 
     std::vector<int> x_list = {1, 1, 1, 0, 0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};

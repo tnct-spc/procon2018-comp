@@ -12,7 +12,8 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
 
 
     team_1 = std::make_shared<SimpleMonteCalro>(share);
-    team_2 = std::make_shared<TestAlgorithm>(share);
+    team_2 = std::make_shared<SimpleMonteCalro>(share);
+    //team_2 = std::make_shared<TestAlgorithm>(share);
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
