@@ -130,4 +130,7 @@ void GameManager::changeTurn(){
 
 
     field->setTurnCount(field->getTurnCount() + 1);
+//    procon::Field outputField = this->getField();
+//    csvIO *csv = new csvIO();
+//    csv->exportField(outputField, "../../procon2018-comp/field.csv");
 }

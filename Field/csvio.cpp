@@ -23,13 +23,47 @@ csvIO::csvIO() {
 
 procon::Field csvIO::importField(std::string path)
 {
+    /** SaveBuffer **/
+    procon::Field fields;
+
+    /** ImportData **/
+    std::ifstream input(path);
+    std::string line_buffer = "";
+
+    while(std::getline(input, line_buffer)) {
+        //read mode
+        std::string point_buffer = "";
+        std::istringstream line_stream(line_buffer);
+        std::getline(line_stream, point_buffer, ',');
+        mode = std::stoi(point_buffer);
+
+        if(mode == 0) {
+            std::string data = "";
+            std::getline(line_stream, data, ",");
+            fields.setTurnCount(std::stoi(data));
+            std::pair<int, int> grid;
+            std::getline(line_stream, data, ",");
+            grid.first = std::stoi(data);
+            std::getline(line_stream, data, ",");
+            grid.second = std::stoi(data);
+        }
+
+        if(mode == 1) {
+            std::string data = "";
+            std::getline(line_stream, data, ",");
+
+        }
+    }
+
+
+    return fields;
 
 }
 
 void csvIO::exportField(procon::Field data, std::string path)
 {
-    /** getData **/
-    int trun_count = data.getTurnCount();
+    /** GetData **/
+    int turn_count = data.getTurnCount();
     std::pair<int, int> grid = data.getSize();
     std::vector<std::vector<int>> fields = data.getField();
     std::vector<std::vector<std::pair<int, int>>> agents = data.getAgents();
@@ -39,7 +73,7 @@ void csvIO::exportField(procon::Field data, std::string path)
     std::ofstream output(path);
 
     auto exportFujisan = [&]() {
-        output << FUJISAN << trun_count << grid.first << grid.second << std::endl;
+        output << FUJISAN << "," << turn_count << "," << grid.first << "," << grid.second << std::endl;
     };
 
     auto exportTakaosan = [&]() {

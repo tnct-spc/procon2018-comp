@@ -124,3 +124,18 @@ int procon::Field::getTurnCount(){
 void procon::Field::setTurnCount(int turn){
     turn_count = turn;
 }
+
+void procon::Field::setSize(std::pair<int, int> grid)
+{
+    grid_x = grid.first; grid_y = grid.second;
+}
+
+void procon::Field::setField(std::vector<std::vector<int> > field)
+{
+    field_data = field;
+}
+
+void procon::Field::setValue(std::vector<std::vector<int> > value)
+{
+    value_data = value;
+}

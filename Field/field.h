@@ -28,6 +28,9 @@ public:
 
     void setTurnCount(int turn);
     int getTurnCount();
+    void setSize(std::pair<int, int> grid);
+    void setField(std::vector<std::vector<int>> field);
+    void setValue(std::vector<std::vector<int>> value);
 
     std::pair<int,int> getSize();
 
