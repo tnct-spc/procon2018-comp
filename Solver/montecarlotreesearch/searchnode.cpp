@@ -63,13 +63,13 @@ bool SearchNode::trySimulate(GameSimulator *sim, int turn){
 
         }
 
-        sim->agentAct(side, 0, can_move_index_list.at(max_priority_move) / 9 );
-        sim->agentAct(side, 0, can_move_index_list.at(max_priority_move) % 9 );
+        sim->agentAct(side, 0, max_priority_move / 9 );
+        sim->agentAct(side, 0, max_priority_move % 9 );
 
         //ここで相手の動き
         random_act((side == 0 ? 1 : 0));
 
-        bool win_flag = can_move_node_list.at(can_move_index_list.at(max_priority_move) )->trySimulate(sim, turn - 1);
+        bool win_flag = can_move_node_list.at(max_priority_move)->trySimulate(sim, turn - 1);
 
         win_count += win_flag;
         return win_flag;
