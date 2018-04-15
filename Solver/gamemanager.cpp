@@ -20,9 +20,14 @@ void GameManager::startSimulation(){
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
     visualizer = std::make_shared<Visualizer>(*field);
+
+    progresdock = std::make_shared<ProgresDock>();
+
     field_vec.push_back(*field);
 
     visualizer->show();
+
+    progresdock->show();
 
 
     for(int turn_count = 0; turn_count < turn_max; ++turn_count){
@@ -39,8 +44,11 @@ void GameManager::startSimulation(){
 
         field_vec.push_back(*field);
 
+        progresdock->addAnswer(*field);
+
         setFieldCount(field_vec.size() - 1);
         visualizer->update();
+        progresdock->update();
     }
 
 }
