@@ -49,6 +49,7 @@ void GameManager::startSimulation(){
 
         setFieldCount(field_vec.size() - 1);
         visualizer->update();
+        visualizer->repaint();
 
 
         std::cout << "turn : " << turn_count << std::endl;

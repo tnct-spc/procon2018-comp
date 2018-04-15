@@ -17,7 +17,7 @@ public:
     explicit ProgresDock(QWidget *parent = 0);
     ~ProgresDock();
 
-    void addAnswer(procon::Field const& field);
+    void addAnswer(procon::Field& field);
 
 private:
     Ui::ProgresDock *ui;
