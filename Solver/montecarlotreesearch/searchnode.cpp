@@ -2,12 +2,12 @@
 
 #include "montecarlotreesearch.h"
 
-SearchNode::SearchNode(MonteCarloTreeSearch *tree, SearchNode *parent, std::vector<std::pair<int,int>> agents, int x_inp , int y_inp) :
-    agents(agents),
+SearchNode::SearchNode(MonteCarloTreeSearch *tree, SearchNode *parent, std::vector<std::pair<int,int>> agents, int x_inp, int y_inp) :
     tree(tree),
-    parent(parent)
+    parent(parent),
+    agents(agents)
 {
-    if(x_inp != -1){
+    if(size_x != -1){
         size_x = x_inp;
         size_y = y_inp;
     }

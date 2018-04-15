@@ -2,6 +2,8 @@
 #define MONTECARLOTREESEARCH_H
 
 #include <algorithmwrapper.h>
+#include "searchnode.h"
+#include "gamemanager.h"
 
 class MonteCarloTreeSearch : public AlgorithmWrapper
 {
