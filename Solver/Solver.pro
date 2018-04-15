@@ -27,7 +27,8 @@ SOURCES += \
         algorithmwrapper.cpp \
         gamemanager.cpp \
     simplemontecarlo/simplemontecarlo.cpp \
-    simplemontecarlo/gamesimulator.cpp
+    simplemontecarlo/gamesimulator.cpp \
+    montecarlotreesearch/montecarlotreesearch.cpp
         simplemontecarlo/simplemontecarlo.cpp
 
 HEADERS += \
@@ -37,7 +38,8 @@ HEADERS += \
         gamemanager.h \
         simplemontecarlo/simplemontecarlo.h \
     simplemontecarlo/simplemontecarlo.h \
-    simplemontecarlo/gamesimulator.h
+    simplemontecarlo/gamesimulator.h \
+    montecarlotreesearch/montecarlotreesearch.h
 
 unix {
     target.path = /usr/lib
