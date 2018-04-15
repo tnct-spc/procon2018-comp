@@ -21,7 +21,8 @@ public:
 
 private:
     Ui::ProgresDock *ui;
-    std::vector<procon::Field> fields;
+    unsigned int field_count = 0;
+//    std::vector<procon::Field> fields;
 };
 
 #endif // PROGRESDOCK_H

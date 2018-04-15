@@ -26,10 +26,11 @@ public:
 
     unsigned int getFinalTurn();
 
+
 private:
     std::shared_ptr<procon::Field> field;
-    std::vector<procon::Field> field_vec;
     std::shared_ptr<Visualizer> visualizer;
+   std::vector<std::shared_ptr<procon::Field>> field_vec;
 
     std::shared_ptr<ProgresDock> progresdock;
 

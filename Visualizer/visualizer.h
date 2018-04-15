@@ -8,7 +8,6 @@
 #include <QPaintEvent>
 
 #include <memory>
-#include <iostream>
 
 
 namespace Ui {
@@ -23,7 +22,7 @@ public:
     explicit Visualizer(procon::Field& inp_field, QWidget *parent = 0);
     ~Visualizer();
 
-    void setField(const procon::Field& inp_field);
+    void setField(procon::Field& inp_field);
 
 private:
     Ui::Visualizer *ui;

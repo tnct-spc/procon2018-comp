@@ -102,7 +102,6 @@ bool GameSimulator::canPut(const unsigned int side, const unsigned int move_1, c
             agent_pos_2.second += y_list.at(move_2);
         }
 
-        //if(agent_pos_1 == agent_pos_2)std::cout<<"hoge"<<std::endl;
         return (agent_pos_1 != agent_pos_2);
     };
 
