@@ -21,7 +21,7 @@ public:
     std::vector<std::vector<int>> getValue();
 
     bool isPlaced(int x, int y);
-    std::pair<int,int> getState(int x, int y);//pair<タイル状況,評価値>
+    std::pair<int,int> getState(int x, int y);//pair<タイル状況,値>
 
     void setState(int x, int y, int state);//タイル状況のみの変更
     void setAgent(int turn, int number, int x_pos, int y_pos);
