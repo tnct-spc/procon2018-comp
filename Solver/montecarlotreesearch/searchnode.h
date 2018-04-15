@@ -12,10 +12,13 @@ public:
 
     SearchNode(MonteCarloTreeSearch *tree, SearchNode *parent, std::vector<std::pair<int,int>> agents, int side);
 
-    bool canMove(int agent_1_move, int agent_2_move);
 
     //UCB定数 sqrt(2)が基本
     static constexpr double ucb_value = 1.41421356;
+
+    //閾値 これ以上試行した場合は葉を展開する
+    static constexpr int threshold = 5;
+
     const std::vector<int> x_list = { 0, 0, 1, 1, 1, -1, -1, -1, 0};
     const std::vector<int> y_list = { 1, -1, 1, 0, -1, 1, 0, -1, 0};
 
@@ -32,6 +35,13 @@ public:
     std::vector<SearchNode*> childs;
 
     const procon::Field& field;
+
+    /*
+
+      閾値を設定し、それ以上の場合は葉を展開する
+      葉が展開できなくなった場合はそこからプレイアウト
+
+    */
 
 };
 
