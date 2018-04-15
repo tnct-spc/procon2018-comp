@@ -30,7 +30,7 @@ bool SearchNode::trySimulate(GameSimulator *sim, int turn){
 
         int rand_value = can_move_list.at( rand(mt) );
 
-        sim->agentAct(side, 0, rand_value / 0);
+        sim->agentAct(side, 0, rand_value / 9);
         sim->agentAct(side, 1, rand_value % 9);
 
     };
