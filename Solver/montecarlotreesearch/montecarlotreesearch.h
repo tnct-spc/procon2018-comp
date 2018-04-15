@@ -13,7 +13,7 @@ public:
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
 
     //合計での試行回数
-    int trial = 50;
+    int trial = 400;
 };
 
 #endif // MONTECARLOTREESEARCH_H
