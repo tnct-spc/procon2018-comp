@@ -19,7 +19,7 @@ public:
 private:
     //試行回数 適当に変えてね
     unsigned int trial = 5;
-    GameSimulator sim;//(field, manager->getFinalTurn() - field.getTurnCount());
+    GameSimulator sim;
 
 
 };
