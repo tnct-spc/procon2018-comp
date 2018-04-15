@@ -54,7 +54,7 @@ bool SearchNode::trySimulate(GameSimulator *sim, int turn){
                 break;
             }
 
-            double priority = 1.0 * node_win / node_try + ( ucb_value * std::sqrt( std::log(all_pat_try_count) / node_try) );
+            double priority = 1.0 * node_win / node_try + ( 2.0 * ucb_value * std::sqrt( std::log(all_pat_try_count) / node_try) );
 
             if(priority > max_priority){
                 max_priority = priority;
