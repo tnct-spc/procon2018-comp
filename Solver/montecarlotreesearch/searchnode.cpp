@@ -80,6 +80,7 @@ bool SearchNode::trySimulate(GameSimulator *sim, int turn){
 
     ++try_count;
 
+    return win_flag;
 }
 
 void SearchNode::expandNode(GameSimulator *sim){
