@@ -29,7 +29,6 @@ SOURCES += \
     simplemontecarlo/simplemontecarlo.cpp \
     simplemontecarlo/gamesimulator.cpp \
     montecarlotreesearch/montecarlotreesearch.cpp \
-    montecarlotreesearch/searchtree.cpp \
     montecarlotreesearch/searchnode.cpp
         simplemontecarlo/simplemontecarlo.cpp
 
@@ -42,7 +41,6 @@ HEADERS += \
     simplemontecarlo/simplemontecarlo.h \
     simplemontecarlo/gamesimulator.h \
     montecarlotreesearch/montecarlotreesearch.h \
-    montecarlotreesearch/searchtree.h \
     montecarlotreesearch/searchnode.h
 
 unix {
