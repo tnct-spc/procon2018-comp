@@ -27,7 +27,7 @@ SOURCES += \
         algorithmwrapper.cpp \
         gamemanager.cpp \
     simplemontecarlo/simplemontecarlo.cpp \
-    simplemontecarlo/gamesimulator.cpp \
+    gamesimulator.cpp \
     montecarlotreesearch/montecarlotreesearch.cpp \
     montecarlotreesearch/searchnode.cpp
         simplemontecarlo/simplemontecarlo.cpp
@@ -39,7 +39,7 @@ HEADERS += \
         gamemanager.h \
         simplemontecarlo/simplemontecarlo.h \
     simplemontecarlo/simplemontecarlo.h \
-    simplemontecarlo/gamesimulator.h \
+    gamesimulator.h \
     montecarlotreesearch/montecarlotreesearch.h \
     montecarlotreesearch/searchnode.h
 
