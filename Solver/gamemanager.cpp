@@ -14,21 +14,24 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
 
     team_1 = std::make_shared<SimpleMonteCalro>(share);
     team_2 = std::make_shared<TestAlgorithm>(share);
+
+
 }
 
 void GameManager::startSimulation(){
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
     visualizer = std::make_shared<Visualizer>(*field);
+    // visualizer->setField(*field);
+
+    visualizer->show();
 
     progresdock = std::make_shared<ProgresDock>();
 
     field_vec.push_back(std::make_shared<procon::Field>(*field));
     progresdock->addAnswer(*(field_vec.back()));
 
-    visualizer->show();
-
-    progresdock->show();
+    visualizer->update();
 
 
     for(int turn_count = 0; turn_count < turn_max; ++turn_count){
@@ -48,14 +51,16 @@ void GameManager::startSimulation(){
 
         progresdock->addAnswer(*(field_vec.back()));
 
-        setFieldCount(field_vec.size() - 1);
-
 
         std::cout << "turn : " << turn_count << std::endl;
 
+        setFieldCount(field_vec.size() - 1);
         progresdock->update();
 
+
     }
+
+    progresdock->show();
 
 }
 
