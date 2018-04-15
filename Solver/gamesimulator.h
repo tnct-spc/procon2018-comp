@@ -22,13 +22,15 @@ public:
     void resetField();
     void setFieldData(const std::vector<std::vector<int>>& inp_field, const std::vector<std::vector<std::pair<int,int>>>& inp_agent);
 
+    void agentAct(const int turn, const int agent, const int x_inp, const int y_inp);
+    void agentAct(const int turn, const int agent, const int move);
+
 private:
     procon::Field field;
     unsigned int now_turn;
     //これはコンストラクタで指定する「残りのターン数」なので注意
     unsigned int final_turn;
 
-    void agentAct(const int turn, const int agent, const int x_inp, const int y_inp);
     void changeTurn();
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};

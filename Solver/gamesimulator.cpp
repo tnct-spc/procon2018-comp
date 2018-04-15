@@ -144,6 +144,10 @@ void GameSimulator::agentAct(const int turn, const int agent, const int x_inp, c
 
 }
 
+void GameSimulator::agentAct(const int turn, const int agent, const int move){
+    agentAct(turn, agent, x_list.at(move), y_list.at(move) );
+}
+
 void GameSimulator::changeTurn(){
 
     std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> dest_map;

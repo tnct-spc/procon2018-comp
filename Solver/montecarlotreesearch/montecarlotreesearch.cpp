@@ -14,8 +14,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
 
     for(int count = 0; count < trial; ++count){
 
+        root_node.all_pat_try_count = count;
+
         sim.setFieldData(field_data, agent_data);
         root_node.trySimulate(&sim);
+
 
     }
 

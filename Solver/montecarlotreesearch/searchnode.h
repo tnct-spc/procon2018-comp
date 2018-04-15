@@ -2,6 +2,8 @@
 #define SEARCHNODE_H
 
 #include <vector>
+#include <random>
+#include <cmath>
 #include "field.h"
 #include "gamesimulator.h"
 
@@ -22,10 +24,7 @@ public:
     //閾値 これ以上試行した場合は葉を展開する
     static constexpr int threshold = 5;
 
-    /*
-    const std::vector<int> x_list = { 0, 0, 1, 1, 1, -1, -1, -1, 0};
-    const std::vector<int> y_list = { 1, -1, 1, 0, -1, 1, 0, -1, 0};
-    */
+    static int all_pat_try_count;
 
     SearchNode *parent;
 
