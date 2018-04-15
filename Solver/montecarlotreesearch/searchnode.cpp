@@ -1,6 +1,6 @@
 #include "searchnode.h"
 
-int SearchNode::all_pat_try_count = 0;
+int SearchNode::all_pat_try_count = 1;
 
 SearchNode::SearchNode(SearchNode *parent, int side, int try_count) :
     parent(parent),
@@ -36,7 +36,10 @@ bool SearchNode::trySimulate(GameSimulator *sim, int turn){
     };
 
     if(try_count > threshold){
-        expandNode(sim);
+
+        if(can_move_index_list.empty())
+            expandNode(sim);
+
 
         double max_priority = -1;
         int max_priority_move = 0;
@@ -62,7 +65,6 @@ bool SearchNode::trySimulate(GameSimulator *sim, int turn){
             }
 
         }
-
         sim->agentAct(side, 0, max_priority_move / 9 );
         sim->agentAct(side, 0, max_priority_move % 9 );
 
@@ -70,6 +72,8 @@ bool SearchNode::trySimulate(GameSimulator *sim, int turn){
         random_act((side == 0 ? 1 : 0));
 
         bool win_flag = can_move_node_list.at(max_priority_move)->trySimulate(sim, turn - 1);
+
+        ++try_count;
 
         win_count += win_flag;
         return win_flag;

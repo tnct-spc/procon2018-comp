@@ -26,11 +26,13 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
 
     for(unsigned int count = 0; count < index_list.size(); ++count){
 
+        root_node.all_pat_try_count = count + 1;
+
         int index = index_list.at(count);
 
         int value = root_node.can_move_node_list.at(index)->try_count;
 
-        std::cout << "index : " << index << "value : " << value << std::endl;
+//        std::cout << "index : " << index << "value : " << value << std::endl;
 
         if(max_value < value){
             max_value = value;
