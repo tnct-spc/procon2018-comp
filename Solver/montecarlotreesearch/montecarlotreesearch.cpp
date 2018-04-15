@@ -4,6 +4,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
 
     std::vector<std::pair<int,int>> agents { manager->getField().getAgent(side, 0) , manager->getField().getAgent(side, 1) };
 
-    SearchNode root_node(this, nullptr, agents, manager->getField().getSize().first, side, manager->getField().getSize().second);
+    SearchNode root_node(this, nullptr, agents, side);
 
 }
