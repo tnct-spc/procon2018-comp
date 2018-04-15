@@ -1,5 +1,6 @@
 #include "searchnode.h"
 
+int SearchNode::all_pat_try_count = 0;
 
 SearchNode::SearchNode(SearchNode *parent, int side, int try_count) :
     parent(parent),
@@ -7,10 +8,32 @@ SearchNode::SearchNode(SearchNode *parent, int side, int try_count) :
     try_count(try_count)
 {
     can_move_node_list.resize(81);
+
 }
 
-bool SearchNode::trySimulate(GameSimulator *sim){
+bool SearchNode::trySimulate(GameSimulator *sim, int turn){
 
+    std::random_device rnd;
+    std::mt19937 mt(rnd());
+
+    auto random_act = [&](int side){
+
+        std::vector<int> can_move_list;
+
+        for(unsigned int agent_1 = 0; agent_1 < 9; ++agent_1)
+            for(unsigned int agent_2 = 0; agent_2 < 9; ++agent_2)
+
+                if( sim->canPut(side, agent_1, agent_2) )
+                    can_move_list.push_back( agent_1 * 9 + agent_2 );
+
+        std::uniform_int_distribution<> rand(0, can_move_list.size() - 1);
+
+        int rand_value = can_move_list.at( rand(mt) );
+
+        sim->agentAct(side, 0, rand_value);
+        sim->agentAct(side, 1, rand_value);
+
+    };
 
     if(try_count > threshold){
         expandNode(sim);
@@ -44,13 +67,16 @@ bool SearchNode::trySimulate(GameSimulator *sim){
         sim->agentAct(side, 0, can_move_index_list.at(max_priority_move) % 9 );
 
         //ここで相手の動き
-        //相手の動きを乱択で選択(激ウマギャグ)ラムダ関数を作る
+        random_act((side == 0 ? 1 : 0));
 
-        bool win_flag = can_move_node_list.at(can_move_index_list.at(max_priority_move) )->trySimulate(sim);
+        bool win_flag = can_move_node_list.at(can_move_index_list.at(max_priority_move) )->trySimulate(sim, turn - 1);
 
         win_count += win_flag;
         return win_flag;
     }
+
+    bool win_flag = sim->randomizedGame(turn - 1, side);
+    win_count += win_flag;
 
     ++try_count;
 

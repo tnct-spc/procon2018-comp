@@ -17,7 +17,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
         root_node.all_pat_try_count = count;
 
         sim.setFieldData(field_data, agent_data);
-        root_node.trySimulate(&sim);
+        root_node.trySimulate(&sim, manager->getFinalTurn() - manager->getField().getTurnCount());
 
 
     }
