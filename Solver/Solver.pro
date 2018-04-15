@@ -23,15 +23,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    testalgorithm.cpp \
-    algorithmwrapper.cpp \
-    gamemanager.cpp
+        testalgorithm.cpp \
+        algorithmwrapper.cpp \
+        gamemanager.cpp \
+    simplemontecarlo/simplemontecarlo.cpp \
+    simplemontecarlo/gamesimulator.cpp
+        simplemontecarlo/simplemontecarlo.cpp
 
 HEADERS += \
         algorithm_global.h \ 
-    testalgorithm.h \
-    algorithmwrapper.h \
-    gamemanager.h
+        testalgorithm.h \
+        algorithmwrapper.h \
+        gamemanager.h \
+        simplemontecarlo/simplemontecarlo.h \
+    simplemontecarlo/simplemontecarlo.h \
+    simplemontecarlo/gamesimulator.h
 
 unix {
     target.path = /usr/lib

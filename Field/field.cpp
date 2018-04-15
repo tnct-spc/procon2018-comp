@@ -79,11 +79,11 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         }
 }
 
-const std::vector<std::vector<int>>& procon::Field::getField(){
+const std::vector<std::vector<int>>& procon::Field::getField() const{
     return field_data;
 }
 
-const std::vector<std::vector<int>>& procon::Field::getValue(){
+const std::vector<std::vector<int>>& procon::Field::getValue() const{
     return value_data;
 }
 
@@ -92,11 +92,11 @@ std::pair<int,int> procon::Field::getSize(){
 }
 
 
-const std::vector<std::vector<std::pair<int,int>>>& procon::Field::getAgents(){
+const std::vector<std::vector<std::pair<int,int>>>& procon::Field::getAgents() const{
     return agents;
 }
 
-std::pair<int,int> procon::Field::getAgent(const unsigned int turn, const unsigned int number){
+std::pair<int,int> procon::Field::getAgent(const unsigned int turn, const unsigned int number) const{
     return agents.at(turn).at(number);
 }
 
@@ -105,7 +105,7 @@ bool procon::Field::isPlaced(const unsigned int x, const unsigned int y){
 }
 
 //pair<タイル状況,評価値>を返す
-std::pair<int,int> procon::Field::getState(const unsigned int x, const unsigned int y){
+std::pair<int,int> procon::Field::getState(const unsigned int x, const unsigned int y) const{
     return std::make_pair(field_data.at(x).at(y), value_data.at(x).at(y));
 }
 
@@ -117,10 +117,18 @@ void procon::Field::setAgent(const unsigned int turn, const unsigned int number,
     agents.at(turn).at(number) = std::make_pair(x_pos, y_pos);
 }
 
-int procon::Field::getTurnCount(){
+int procon::Field::getTurnCount() const{
     return turn_count;
 }
 
 void procon::Field::setTurnCount(const unsigned int turn){
     turn_count = turn;
+}
+
+void procon::Field::setAgents(const std::vector<std::vector<std::pair<int,int>>>& values){
+    agents = values;
+}
+
+void procon::Field::setStates(const std::vector<std::vector<int>>& values){
+    field_data = values;
 }

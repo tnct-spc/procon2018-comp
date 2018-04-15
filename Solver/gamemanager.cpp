@@ -1,19 +1,19 @@
 #include "gamemanager.h"
 #include "algorithmwrapper.h"
 #include "testalgorithm.h"
+#include "simplemontecarlo/simplemontecarlo.h"
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
 
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
     visualizer = std::make_shared<Visualizer>(*field);
 
-    std::shared_ptr<GameManager> share(this); //これ自身を参照するshared_ptr
-
-    team_1 = std::make_shared<TestAlgorithm>(share);
-    team_2 = std::make_shared<TestAlgorithm>(share);
-
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
+    std::shared_ptr<GameManager> share(this); //これ自身を参照するshared_ptr
+
+    team_1 = std::make_shared<SimpleMonteCalro>(share);
+    team_2 = std::make_shared<TestAlgorithm>(share);
 }
 
 void GameManager::startSimulation(){
@@ -32,6 +32,7 @@ void GameManager::startSimulation(){
 
     for(int turn_count = 0; turn_count < turn_max; ++turn_count){
 
+
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans = team_1->agentAct(0);
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans = team_2->agentAct(1);
 
@@ -48,7 +49,12 @@ void GameManager::startSimulation(){
 
         setFieldCount(field_vec.size() - 1);
         visualizer->update();
+
+
+        std::cout << "turn : " << turn_count << std::endl;
+
         progresdock->update();
+
     }
 
 }
@@ -65,6 +71,10 @@ void GameManager::setFieldCount(const unsigned int number){
     visualizer->setField(field_vec.at(number));
     now_field = number;
     visualizer->update();
+}
+
+unsigned int GameManager::getFinalTurn(){
+    return turn_max;
 }
 
 void GameManager::agentAct(const int turn, const int agent, const std::tuple<int, int, int> tuple_val){
