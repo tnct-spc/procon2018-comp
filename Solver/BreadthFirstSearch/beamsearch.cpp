@@ -20,8 +20,9 @@ int beamsearch::Evaluation_Field(procon::Field field,int turn){
     }
     return Eva_manhattan;
 }
-int beamsearch::agentAct(int side){
-    std::queue<std::pair<int,procon::Field>> beam;
+const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(int side){
+    const procon::Field& field = manager->getField();
+    std::queue<std::tuple<int,procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>> beam;
     for(int a = 0;a < beam_range;a++){
 
     }
