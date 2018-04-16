@@ -10,8 +10,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
     std::vector<std::vector<std::pair<int,int>>> agent_data = field.getAgents();
 
 
-    GameSimulator sim(manager->getField());
-    sim.setFieldData(field_data, agent_data);
+    GameSimulator sim(manager->getField().getValue(), manager->getField().getTurnCount());
 
     clock_t start_time = clock();
     int count = 0;
@@ -21,7 +20,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
         if(try_time < static_cast<double>(now_time - start_time) )
             break;
 
-        sim.resetField();
+        sim.resetField(field_data, agent_data);
 
         root_node.trySimulate(&sim, manager->getFinalTurn() - manager->getField().getTurnCount());
 
@@ -32,7 +31,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
     std::vector<int> index_list = root_node.can_move_index_list;
 
     int max_value = 0;
-    std::vector<int> max_index = {index_list.front()};
+    int max_win = 0;
+    int max_index = index_list.front();
 
     for(unsigned int count = 0; count < index_list.size(); ++count){
 
@@ -42,29 +42,27 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
 
         int value = root_node.can_move_node_list.at(index)->try_count;
 
+        int win_count = root_node.can_move_node_list.at(index)->win_count;
+
 //        std::cout << "index : " << index << "value : " << value << std::endl;
 
         if(max_value < value){
             max_value = value;
-            max_index = {index};
+            max_win = win_count;
+            max_index = index;
 
-        }else if(max_value == value)
-            max_index.push_back(index);
+        }else if(max_value == value && max_win < win_count)
+            max_index = index;
     }
 
-    std::random_device rnd;
-    std::mt19937 mt(rnd());
-    std::uniform_int_distribution<> rand(0, max_index.size() - 1);
 
-    int max_move = max_index.at( rand(mt) );
-
-    std::cout << max_value << " , " << max_move << std::endl;
+    std::cout << "max_try : " << max_value << ", win_count : " << max_win << ", move :  " << max_index << std::endl;
 
     std::vector<int> x_list = {1, 1, 1, 0, 0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
-    std::pair<int,int> agent_1_move = std::make_pair( x_list.at( max_move / 9), y_list.at( max_move / 9) );
-    std::pair<int,int> agent_2_move = std::make_pair( x_list.at( max_move % 9), y_list.at( max_move % 9) );
+    std::pair<int,int> agent_1_move = std::make_pair( x_list.at( max_index / 9), y_list.at( max_index / 9) );
+    std::pair<int,int> agent_2_move = std::make_pair( x_list.at( max_index % 9), y_list.at( max_index % 9) );
 
     std::pair<int,int> agent_1_pos = std::make_pair( agent_1_move.first + field.getAgent(side, 0).first, agent_1_move.second + field.getAgent(side, 0).second );
     std::pair<int,int> agent_2_pos = std::make_pair( agent_2_move.first + field.getAgent(side, 1).first, agent_2_move.second + field.getAgent(side, 1).second );

@@ -2,7 +2,7 @@
 
 SimpleMonteCalro::SimpleMonteCalro(std::shared_ptr<GameManager> manager_ptr) :
     AlgorithmWrapper(manager_ptr),
-    sim(GameSimulator(manager_ptr->getField()))
+    sim(GameSimulator(manager_ptr->getField().getValue(), manager_ptr->getField().getTurnCount()))
 {
 
 }
@@ -13,14 +13,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleMonteCal
 
     std::vector<int> agent_trial(81, 0);
 
-    sim.setFieldData(field.getField(), field.getAgents());
-
-
         for(unsigned int agent_1 = 0; agent_1 < 9; ++agent_1)
             for(unsigned int agent_2 = 0; agent_2 < 9; ++agent_2){
                 for(unsigned int count = 0; count < trial; ++count){
 
-                    sim.resetField();
+                    sim.resetField(field.getField(), field.getAgents());
 
                     if(count == 0 && ( sim.canPut(side, agent_1, agent_2) == false) ){
 
