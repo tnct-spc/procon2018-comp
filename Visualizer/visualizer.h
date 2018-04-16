@@ -32,6 +32,8 @@ private:
 
     void mousePressEvent(QMouseEvent *event);
 
+    std::pair<int, int> checkPressedClickedAgent(std::pair<int, int> mass);
+
     procon::Field field;
 
     int window_width;

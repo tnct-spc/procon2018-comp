@@ -132,5 +132,35 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
 
     // yを座標からマスへ
     grid_click.second = (point.y() - vertical_margin) / grid_size;
+
+    // クリックされたエージェントまたはマスを照合
+    std::pair<int, int> clicked = checkPressedClickedAgent(grid_click);
+
+    std::cout << clicked.first << ", " << clicked.second << std::endl;
+}
+
+// クリックされたエージェントまたはマスを照合
+std::pair<int, int> Visualizer::checkPressedClickedAgent(std::pair<int, int> mass)
+{
+    // return用のpair
+    std::pair<int, int> checked_agent = std::make_pair(2,2);
+
+    // Fieldから現在のエージェントの位置を取得
+    std::vector<std::vector<std::pair<int, int>>> agents = field.getAgents();
+
+    // クリックされたマスにエージェントがいるのか確認
+    for (int team = 0; team < 2; team++) {
+        for (int agent = 0; agent < 2; agent++) {
+
+            // クリックされたマスとエージェントの位置が一致したら、チームとエージェントの番号を返す
+            if (mass == agents.at(team).at(agent)) {
+                checked_agent.first = team;
+                checked_agent.second = agent;
+                return checked_agent;
+            }
+        }
+    }
+
+    return checked_agent;
 }
 
