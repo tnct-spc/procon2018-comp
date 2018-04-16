@@ -1,5 +1,10 @@
 #include "field.h"
 
+procon::Field::Field()
+{
+
+}
+
 procon::Field::Field(unsigned int size_x ,unsigned int size_y){
     grid_x = size_x;
     grid_y = size_y;
