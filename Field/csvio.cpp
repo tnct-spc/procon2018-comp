@@ -36,25 +36,58 @@ procon::Field csvIO::importField(std::string path)
         std::istringstream line_stream(line_buffer);
         std::getline(line_stream, point_buffer, ',');
         mode = std::stoi(point_buffer);
+        std::pair<int, int> grid;
 
         if(mode == 0) {
             std::string data = "";
             std::getline(line_stream, data, ",");
             fields.setTurnCount(std::stoi(data));
-            std::pair<int, int> grid;
             std::getline(line_stream, data, ",");
             grid.first = std::stoi(data);
             std::getline(line_stream, data, ",");
             grid.second = std::stoi(data);
+            fields.setSize(grid);
         }
 
         if(mode == 1) {
-            std::string data = "";
-            std::getline(line_stream, data, ",");
+            std::vector<std::vector<int>> field_data;
+            //format the vector field_data[grid.first][grid.second]
+            field_data = std::vector<std::vector<int>>(grid.first, std::vector<int>(grid.second, 0));
+            for(int i = 0; i < grid.first; ++i) {
+                for(int j = 0; j < grid.second; ++j) {
+                    std::string data = "";
+                    std::getline(line_stream, data, ",");
+                    field_data[i][j] = std::stoi(data);
+                }
+            }
+            fields.setField(field_data);
+        }
 
+        if(mode == 2) {
+            for(int i = 0; i < 2; ++i) {
+                for(int j = 0; j < 2; ++j) {
+                    std::string data = "";
+                    int x = std::stoi(std::getline(line_stream, data, ","));
+                    int y = std::stoi(std::getline(line_stream, data, ","));
+                    fields.setAgent(i, j, x, y);
+                }
+            }
+        }
+
+        if(mode == 3) {
+            std::vector<std::vector<int>> value_data;
+            //format the vector value_data[grid.first][grid.second]
+            value_data = std::vector<std::vector<int>>(grid.first, std::vector<int>(grid.second, 0));
+            for(int i = 0; i < grid.first; ++i) {
+                for(int j = 0; j < grid.second; ++j) {
+                    std::string data = "";
+                    std::getline(line_stream, data, ",");
+                    value_data[i][j] = std::stoi(data);
+                }
+            }
+            fields.setValue(value_data);
         }
     }
-
 
     return fields;
 
