@@ -32,7 +32,9 @@ private:
 
     void mousePressEvent(QMouseEvent *event);
 
-    std::pair<int, int> checkPressedClickedAgent(std::pair<int, int> mass);
+    std::pair<int, int> checkClickedAgent(std::pair<int, int> mass);
+
+    bool checkClickGrid(std::pair<int, int> mass);
 
     procon::Field field;
 
@@ -47,11 +49,14 @@ private:
     unsigned int grid_x;
     unsigned int grid_y;
 
-    std::pair<int, int> grid_click;
+    // 移動を入力するエージェントが選択されているか
+    bool selected = false;
+
+    // 移動を入力するエージェントのグリッド座標
+    std::pair<int, int> selected_agent;
 
     //margin*size分の余白を取る
     const double margin = 1.5;
-
 
     const QColor font_color = QColor(0,0,0,64);
     const QColor background_color = QColor(245,245,220);

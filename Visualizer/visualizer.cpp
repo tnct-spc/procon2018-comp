@@ -115,7 +115,9 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
 }
 
-// クリックされたときにそのマスの場所を返す
+// メインウィンドウ内のマスをクリックしたときに行われるイベント
+// エージェント：エージェントの移動可能先を表示
+// エージェントの移動可能域内のマス：エージェントの移動を決定
 void Visualizer::mousePressEvent(QMouseEvent *event)
 {
     // マスのwindow上の座標を取得
@@ -127,20 +129,39 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         return;
     }
 
+    // クリックされたグリッド座標を保存
+    std::pair<int, int> clicked_grid;
+
     // xを座標からマスへ
-    grid_click.first = (point.x() - horizontal_margin) / grid_size;
+    clicked_grid.first = (point.x() - horizontal_margin) / grid_size;
 
     // yを座標からマスへ
-    grid_click.second = (point.y() - vertical_margin) / grid_size;
+    clicked_grid.second = (point.y() - vertical_margin) / grid_size;
 
-    // クリックされたエージェントまたはマスを照合
-    std::pair<int, int> clicked = checkPressedClickedAgent(grid_click);
+    // 移動をを入力するエージェントが選ばれているか
+    if (selected) {
 
-    std::cout << clicked.first << ", " << clicked.second << std::endl;
+        // グリッドはエージェントの移動先に含まれているか
+        bool checked = checkClickGrid(clicked_grid);
+
+        // エージェントの移動先を入力したら、選択を解除
+        if (checked) {
+            selected = false;
+            std::cout << "OK" << std::endl;
+        }
+
+        std::cout << "NO" << std::endl;
+
+    } else {
+
+        // クリックされたエージェントまたはマスを照合
+        std::pair<int, int> clicked = checkClickedAgent(clicked_grid);
+    }
+
 }
 
 // クリックされたエージェントまたはマスを照合
-std::pair<int, int> Visualizer::checkPressedClickedAgent(std::pair<int, int> mass)
+std::pair<int, int> Visualizer::checkClickedAgent(std::pair<int, int> mass)
 {
     // return用のpair
     std::pair<int, int> checked_agent = std::make_pair(2,2);
@@ -154,8 +175,16 @@ std::pair<int, int> Visualizer::checkPressedClickedAgent(std::pair<int, int> mas
 
             // クリックされたマスとエージェントの位置が一致したら、チームとエージェントの番号を返す
             if (mass == agents.at(team).at(agent)) {
+
                 checked_agent.first = team;
                 checked_agent.second = agent;
+
+                // 移動を入力するエージェントのグリッド座標を保存
+                selected_agent = mass;
+
+                // 移動そ入力されたエージェントが選択されたことを記録
+                selected = true;
+
                 return checked_agent;
             }
         }
@@ -164,3 +193,15 @@ std::pair<int, int> Visualizer::checkPressedClickedAgent(std::pair<int, int> mas
     return checked_agent;
 }
 
+// エージェントの移動先を決定
+bool Visualizer::checkClickGrid(std::pair<int, int> mass)
+{
+    // クリックされた場所がエージェントの移動範囲に含まれているか確認
+    // 含まれていない場合、リセット
+    if (((selected_agent.first - 1) > mass.first) || ((selected_agent.first + 1) < mass.first)
+            || ((selected_agent.second - 1) > mass.second) || ((selected_agent.second + 1) < mass.second)) {
+        return false;
+    }
+
+    return true;
+}
