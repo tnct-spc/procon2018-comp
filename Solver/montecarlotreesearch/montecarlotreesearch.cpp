@@ -11,10 +11,17 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
 
 
     GameSimulator sim(manager->getField());
+    sim.setFieldData(field_data, agent_data);
 
-    for(int count = 0; count < trial; ++count){
+    clock_t start_time = clock();
+    while(1){
+        clock_t now_time = clock();
 
-        sim.setFieldData(field_data, agent_data);
+        if(try_time < static_cast<double>(now_time - start_time) )
+            break;
+
+        sim.resetField();
+
         root_node.trySimulate(&sim, manager->getFinalTurn() - manager->getField().getTurnCount());
 
     }
