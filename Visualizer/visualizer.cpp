@@ -1,7 +1,7 @@
 #include "visualizer.h"
 #include "ui_visualizer.h"
 
-Visualizer::Visualizer(const procon::Field& inp_field, QWidget *parent) :
+Visualizer::Visualizer(procon::Field& inp_field, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Visualizer),
     field(inp_field)
@@ -9,6 +9,7 @@ Visualizer::Visualizer(const procon::Field& inp_field, QWidget *parent) :
     ui->setupUi(this);
     grid_x = field.getSize().first;
     grid_y = field.getSize().second;
+
 }
 
 Visualizer::~Visualizer()
@@ -16,12 +17,14 @@ Visualizer::~Visualizer()
     delete ui;
 }
 
-void Visualizer::setField(const procon::Field& inp_field){
+void Visualizer::setField(procon::Field& inp_field){
     field = inp_field;
 }
 
 void Visualizer::paintEvent(QPaintEvent *event){
     Q_UNUSED(event);
+
+    std::cout << "paintevent_vis" << std::endl;
 
     QPainter painter(this);
 

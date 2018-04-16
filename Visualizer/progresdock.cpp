@@ -13,11 +13,11 @@ ProgresDock::~ProgresDock()
     delete ui;
 }
 
-void ProgresDock::addAnswer(const procon::Field &field){
-    fields.push_back(field);
+void ProgresDock::addAnswer(procon::Field& field){
+    //fields.push_back(field);
     Visualizer* Visu = new Visualizer(field);
-    Visu->setField(field);
     Visu->setFixedSize(300, 300);
 
-    this->ui->board_continer->addWidget(Visu,fields.size()/4,fields.size()%4);
+    this->ui->board_continer->addWidget(Visu,field_count/4,field_count%4);
+    field_count++;
 }
