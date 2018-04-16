@@ -3,8 +3,10 @@
 GameSimulator::GameSimulator(const procon::Field& inp_field) :
     field(inp_field)
 {
+    /*
     field_data = field.getField();
     agent_data = field.getAgents();
+    */
     now_turn = field.getTurnCount();
     act_stack.resize(2,std::vector<std::tuple<int,int,int>>(2,std::tuple<int,int,int>(0,0,0)));
 

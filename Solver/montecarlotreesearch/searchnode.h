@@ -22,7 +22,7 @@ public:
     static constexpr double ucb_value = 1.41421356;
 
     //閾値 これ以上試行した場合は葉を展開する
-    static constexpr int threshold = 30;
+    static constexpr int threshold = 50;
 
     static int all_pat_try_count;
 

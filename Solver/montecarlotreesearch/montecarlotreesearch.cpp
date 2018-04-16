@@ -14,7 +14,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
     sim.setFieldData(field_data, agent_data);
 
     clock_t start_time = clock();
-    while(1){
+    int count = 0;
+    while(++count){
         clock_t now_time = clock();
 
         if(try_time < static_cast<double>(now_time - start_time) )
@@ -25,6 +26,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
         root_node.trySimulate(&sim, manager->getFinalTurn() - manager->getField().getTurnCount());
 
     }
+
+    std::cout << "try_count : " << count << std::endl;
 
     std::vector<int> index_list = root_node.can_move_index_list;
 
