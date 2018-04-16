@@ -32,7 +32,7 @@ private:
 
     void mousePressEvent(QMouseEvent *event);
 
-    std::pair<int, int> checkClickedAgent(std::pair<int, int> mass);
+    void checkClickedAgent(std::pair<int, int> mass);
 
     bool checkClickGrid(std::pair<int, int> mass);
 
@@ -52,8 +52,11 @@ private:
     // 移動を入力するエージェントが選択されているか
     bool selected = false;
 
-    // 移動を入力するエージェントのグリッド座標
+    // 移動を入力するエージェントのチームとエージェント番号
     std::pair<int, int> selected_agent;
+
+    // 移動を入力するエージェントのグリッド座標
+    std::pair<int, int> selected_agent_grid;
 
     //margin*size分の余白を取る
     const double margin = 1.5;

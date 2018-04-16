@@ -108,8 +108,43 @@ void Visualizer::paintEvent(QPaintEvent *event){
         }
     };
 
+    // 選択されたエージェントの移動可能先を塗る
+    auto drawAroundAgent = [&] {
+
+        // チームごとに配色を変える
+        QColor paint_color = ( selected_agent.first == 0
+                               ? team_color_a
+                               : team_color_b);
+        paint_color.setAlpha(128);
+
+        painter.setBrush(QBrush(paint_color));
+
+        // フィールドをはみ出さい範囲で、エージェントの移動可能領域を描く
+        for (int x = -1; x < 2; x++) {
+
+            int draw_x = selected_agent_grid.first + x;
+
+            if ((draw_x >= 0) && ((unsigned int)draw_x < grid_x)) {
+
+                for (int y = -1; y < 2; y++) {
+
+                    int draw_y = selected_agent_grid.second + y;
+
+                    if ((draw_y >= 0) && ((unsigned int)draw_y < grid_y)) {
+
+                        painter.drawRect(horizontal_margin + draw_x * grid_size, vertical_margin + draw_y * grid_size, grid_size, grid_size);
+                    }
+                }
+            }
+        }
+
+    };
+
     drawBackGround();
     drawTiles();
+
+    if (selected) drawAroundAgent();
+
     drawValues();
     drawAgents();
 
@@ -146,7 +181,6 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
 
         // エージェントの移動先を入力したら、選択を解除
         if (checked) {
-            selected = false;
             std::cout << "OK" << std::endl;
         }
 
@@ -155,17 +189,14 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
     } else {
 
         // クリックされたエージェントまたはマスを照合
-        std::pair<int, int> clicked = checkClickedAgent(clicked_grid);
+        checkClickedAgent(clicked_grid);
     }
 
 }
 
 // クリックされたエージェントまたはマスを照合
-std::pair<int, int> Visualizer::checkClickedAgent(std::pair<int, int> mass)
+void Visualizer::checkClickedAgent(std::pair<int, int> mass)
 {
-    // return用のpair
-    std::pair<int, int> checked_agent = std::make_pair(2,2);
-
     // Fieldから現在のエージェントの位置を取得
     std::vector<std::vector<std::pair<int, int>>> agents = field.getAgents();
 
@@ -176,21 +207,20 @@ std::pair<int, int> Visualizer::checkClickedAgent(std::pair<int, int> mass)
             // クリックされたマスとエージェントの位置が一致したら、チームとエージェントの番号を返す
             if (mass == agents.at(team).at(agent)) {
 
-                checked_agent.first = team;
-                checked_agent.second = agent;
+                selected_agent.first = team;
+                selected_agent.second = agent;
 
                 // 移動を入力するエージェントのグリッド座標を保存
-                selected_agent = mass;
+                selected_agent_grid = mass;
 
                 // 移動そ入力されたエージェントが選択されたことを記録
                 selected = true;
 
-                return checked_agent;
+                // 選択されたエージェントの移動可能範囲を表示
+                this->update();
             }
         }
     }
-
-    return checked_agent;
 }
 
 // エージェントの移動先を決定
@@ -198,10 +228,16 @@ bool Visualizer::checkClickGrid(std::pair<int, int> mass)
 {
     // クリックされた場所がエージェントの移動範囲に含まれているか確認
     // 含まれていない場合、リセット
-    if (((selected_agent.first - 1) > mass.first) || ((selected_agent.first + 1) < mass.first)
-            || ((selected_agent.second - 1) > mass.second) || ((selected_agent.second + 1) < mass.second)) {
+    if (((selected_agent_grid.first - 1) > mass.first) || ((selected_agent_grid.first + 1) < mass.first)
+            || ((selected_agent_grid.second - 1) > mass.second) || ((selected_agent_grid.second + 1) < mass.second)) {
         return false;
     }
+
+    // エージェントの選択を解除
+    selected = false;
+
+    // windowの描きかえ
+    this->update();
 
     return true;
 }
