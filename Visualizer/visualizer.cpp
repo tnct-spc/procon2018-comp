@@ -185,7 +185,7 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         checkClickedAgent(clicked_grid);
     }
 
-    std::vector<std::vector<std::pair<int, int>>> box = getNextAgents();
+//    std::vector<std::vector<std::pair<int, int>>> box = getNextAgents();
 }
 
 // クリックされたエージェントまたはマスを照合
@@ -247,19 +247,19 @@ bool Visualizer::checkClickGrid(std::pair<int, int> mass)
 // 決定されたエージェントの移動先を返す
 std::vector<std::vector<std::pair<int, int>>> Visualizer::getNextAgents()
 {
+    // decided_agentsの初期化. Return用のベクターづくり
+    std::vector<std::vector<std::pair<int, int>>> next_positions;
+
     // すべてのエージェントが次の移動先を決定されているか確認
     // 決定されていなかったら空の配列を返す
     for(int team = 0; team < 2; team++) {
         for (int agent = 0; agent < 2; agent++) {
             if (!decided_agents.at(team).at(agent)) {
-                std::vector<std::vector<std::pair<int, int>>> empty;
-                return empty;
+                return next_positions;
             }
         }
     }
 
-    // decided_agentsの初期化. Return用のベクターづくり
-    std::vector<std::vector<std::pair<int, int>>> next_positions;
     for(int team = 0; team < 2; team++) {
 
         std::vector<std::pair<int, int>> agent_grid;

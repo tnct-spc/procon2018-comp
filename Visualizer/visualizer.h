@@ -26,6 +26,8 @@ public:
 
     void setField(procon::Field inp_field);
 
+    std::vector<std::vector<std::pair<int, int>>> getNextAgents();
+
 private:
     Ui::Visualizer *ui;
     void paintEvent(QPaintEvent *event);
@@ -35,8 +37,6 @@ private:
     void checkClickedAgent(std::pair<int, int> mass);
 
     bool checkClickGrid(std::pair<int, int> mass);
-
-    std::vector<std::vector<std::pair<int, int>>> getNextAgents();
 
     procon::Field field;
 
@@ -55,6 +55,7 @@ private:
     bool selected = false;
 
     // 移動を入力するエージェントのチームとエージェント番号
+    // first：チーム,second：エージェント
     std::pair<int, int> selected_agent;
 
     // 移動を入力するエージェントのグリッド座標
