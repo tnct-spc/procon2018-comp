@@ -9,7 +9,6 @@ class GameManager;
 
 class AlgorithmWrapper
 {
-
 public:
     AlgorithmWrapper(std::shared_ptr<GameManager> manager_ptr);
 
