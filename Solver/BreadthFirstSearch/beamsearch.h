@@ -13,7 +13,7 @@ public:
     beamsearch();
     int beam_range;
     int beam_turn;
-    int Evaluation_Field(procon::Field field,int turn);
+    int Evaluation_Field(procon::Field field);
     std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
     std::pair<int,int> agent1,agent2;
 
