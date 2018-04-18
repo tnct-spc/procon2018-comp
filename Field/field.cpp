@@ -83,16 +83,16 @@ std::vector<std::vector<int>> procon::Field::getField(){
     return field_data;
 }
 
-std::vector<std::vector<int>> procon::Field::getValue(){
+std::vector<std::vector<int>>& procon::Field::getValue(){
     return value_data;
 }
 
-std::pair<int,int> procon::Field::getSize(){
+std::pair<int,int> procon::Field::getSize() const{
     return std::make_pair(grid_x, grid_y);
 }
 
 
-std::vector<std::vector<std::pair<int,int>>> procon::Field::getAgents(){
+const std::vector<std::vector<std::pair<int,int>>>& procon::Field::getAgents() const{
     return agents;
 }
 
@@ -105,7 +105,7 @@ bool procon::Field::isPlaced(int x, int y){
 }
 
 //pair<タイル状況,評価値>を返す
-std::pair<int,int> procon::Field::getState(int x, int y){
+std::pair<int,int> procon::Field::getState(int x, int y) const {
     return std::make_pair(field_data.at(x).at(y), value_data.at(x).at(y));
 }
 
