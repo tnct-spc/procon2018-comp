@@ -113,8 +113,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
         // チームごとに配色を変える
         QColor paint_color = ( selected_agent.first == 0
-                               ? team_color_a
-                               : team_color_b);
+                               ? checked_color_a
+                               : checked_color_b);
         paint_color.setAlpha(100);
 
         painter.setBrush(QBrush(paint_color));

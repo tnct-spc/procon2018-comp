@@ -75,6 +75,8 @@ private:
     const QColor grid_color = QColor(220,220,180);
     const QColor team_color_a = QColor(255,0,0);
     const QColor team_color_b = QColor(0,0,255);
+    const QColor checked_color_a = QColor(255,120,0);
+    const QColor checked_color_b = QColor(0,120,255);
 
 };
 
