@@ -21,13 +21,8 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
 
 void GameManager::startSimulation(std::shared_ptr<Visualizer> vis){
 
-    // field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
-    // visualizer = std::make_shared<Visualizer>(*field);
+    field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
     visualizer = vis;
-    visualizer->setField(*field);
-    visualizer->update();
-
-    // visualizer->show();
 
     progresdock = std::make_shared<ProgresDock>();
 
