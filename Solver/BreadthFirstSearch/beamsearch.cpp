@@ -1,9 +1,6 @@
 #include "beamsearch.h"
 
-bool pairCompare(const std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>>& firstElof, const std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>>& secondElof)
-{
-    return firstElof.first < secondElof.first;
-}
+
 
 int beamsearch::Evaluation_Field(procon::Field field){
     std::pair<int,int> size = field.getSize();
@@ -20,6 +17,10 @@ int beamsearch::Evaluation_Field(procon::Field field){
 
 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(int side){
 
+    auto c = [](std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>> r,std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>> l){
+        return l.first > r.first;
+    };
+
     const procon::Field& field = manager->getField();
 
     std::vector<std::vector<std::pair<int,int>>> Agents = field.getAgents();
@@ -31,7 +32,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(
         agent1=Agents.at(1).at(0);
         agent2=Agents.at(1).at(1);
     }
-    std::priority_queue<std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>>,pairCompare> beam;
+    std::priority_queue<std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>>,std::vector<std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>>> beam(c);
     std::vector<std::pair<int,int>> age1,age2;
     age1.push_back(std::make_pair(1,0));
     age1.push_back(std::make_pair(1,1));
@@ -69,7 +70,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(
                 }
             }
         }else{
-            std::priority_queue<std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>>,pairCompare> ins_beam;
+            std::priority_queue<std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>>,std::vector<std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>>,decltype(c)> ins_beam(c);
             int ins_size = beam.size();
             for(int range = 0;range < std::min(beam_range,ins_size);range++){
                 std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>> ins_value = beam.top();
@@ -98,7 +99,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(
                 beam.pop();
             }
             beam = ins_beam;
-            ins_beam = std::priority_queue<std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>>>();
+            ins_beam = std::priority_queue<std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>>,std::vector<std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>>,decltype(c)>();
         }
     }
     return std::make_pair(std::get<1>(beam.top().second),std::get<2>(beam.top().second));
