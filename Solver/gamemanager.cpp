@@ -7,7 +7,7 @@
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
 
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
-    visualizer = std::make_shared<Visualizer>(*field);
+    // visualizer = std::make_shared<Visualizer>(*field);
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
@@ -19,13 +19,15 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
 
 }
 
-void GameManager::startSimulation(){
+void GameManager::startSimulation(std::shared_ptr<Visualizer> vis){
 
-    field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
-    visualizer = std::make_shared<Visualizer>(*field);
-    // visualizer->setField(*field);
+    // field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
+    // visualizer = std::make_shared<Visualizer>(*field);
+    visualizer = vis;
+    visualizer->setField(*field);
+    visualizer->update();
 
-    visualizer->show();
+    // visualizer->show();
 
     progresdock = std::make_shared<ProgresDock>();
 
@@ -97,7 +99,7 @@ void GameManager::startSimulation(){
 
 }
 
-const procon::Field& GameManager::getField(){
+procon::Field& GameManager::getField(){
     return *field;
 }
 
@@ -109,6 +111,7 @@ void GameManager::setFieldCount(const unsigned int number){
     visualizer->setField(*field_vec.at(number));
     now_field = number;
     visualizer->update();
+    visualizer->repaint();
 }
 
 unsigned int GameManager::getFinalTurn(){

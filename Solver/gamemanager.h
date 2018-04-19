@@ -18,12 +18,12 @@ public:
 
     GameManager(const unsigned int x_size, const unsigned int y_size);
 
-    const procon::Field& getField();
+    procon::Field& getField();
 
     void setFieldCount(const unsigned int number);
     unsigned int getFieldCount();
 
-    void startSimulation();
+    void startSimulation(std::shared_ptr<Visualizer> vis);
 
     unsigned int getFinalTurn();
 
@@ -33,7 +33,7 @@ public:
 private:
     std::shared_ptr<procon::Field> field;
     std::shared_ptr<Visualizer> visualizer;
-   std::vector<std::shared_ptr<procon::Field>> field_vec;
+    std::vector<std::shared_ptr<procon::Field>> field_vec;
 
     std::shared_ptr<ProgresDock> progresdock;
 
@@ -46,7 +46,7 @@ private:
     //ここは仕様を変えたり変えなかったりしよう
     const int max_val = 16;
     const int min_val = -16;
-    const int turn_max = 30;
+    const int turn_max = 15;
 
     //これがtrueなら自動進行
     bool is_auto = true;

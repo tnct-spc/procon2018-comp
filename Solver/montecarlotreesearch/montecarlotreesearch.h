@@ -15,7 +15,7 @@ public:
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
 
     //合計での試行回数
-    unsigned int try_time = 3 * 1e6;
+    unsigned int try_time = 1 * 1e5;
 };
 
 #endif // MONTECARLOTREESEARCH_H
