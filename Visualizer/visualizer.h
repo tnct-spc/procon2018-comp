@@ -28,6 +28,8 @@ public:
 
     std::vector<std::vector<std::pair<int, int>>> getNextAgents();
 
+    std::vector<std::vector<std::pair<int,int>>> clickWait();
+
 private:
     Ui::Visualizer *ui;
     void paintEvent(QPaintEvent *event);

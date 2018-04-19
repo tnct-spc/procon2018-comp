@@ -26,6 +26,8 @@ public:
 
     unsigned int getFinalTurn();
 
+    void setAutoMode(bool value);
+
 
 private:
     std::shared_ptr<procon::Field> field;
@@ -44,6 +46,9 @@ private:
     const int max_val = 16;
     const int min_val = -16;
     const int turn_max = 30;
+
+    //これがtrueなら自動進行
+    bool is_auto = false;
 
     //行動を保存しておく
     //1:移動 移動方向をintで設定する

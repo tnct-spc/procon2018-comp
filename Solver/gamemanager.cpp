@@ -41,12 +41,30 @@ void GameManager::startSimulation(){
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans = team_1->agentAct(0);
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans = team_2->agentAct(1);
 
-        agentAct(0,0,team_1_ans.first);
-        agentAct(0,1,team_1_ans.second);
-        agentAct(1,0,team_2_ans.first);
-        agentAct(1,1,team_2_ans.second);
+        if(is_auto){//自動進行
 
-        changeTurn();
+            agentAct(0,0,team_1_ans.first);
+            agentAct(0,1,team_1_ans.second);
+            agentAct(1,0,team_2_ans.first);
+            agentAct(1,1,team_2_ans.second);
+
+            changeTurn();
+
+        }else{
+            visualizer;//ここから適当にpairを引数にとってえいえい
+            std::vector<std::vector<std::pair<int,int>>> act_val = visualizer->clickWait();//ここからクリックされるまで待機
+
+            for(int side = 0; side < 2; ++side){
+                for(int agent = 0; agent < 2; ++agent){
+                    std::pair<int,int> pos = act_val.at(side).at(agent);
+
+                    int type = (field->getState(pos.first, pos.second).first == (side == 0 ? 2 : 1) ? 2 : 1);
+
+                    agentAct(side, agent, std::make_tuple(type, pos.first, pos.second));
+                }
+            }
+
+        }
 
         field_vec.push_back(std::make_shared<procon::Field>(*field));
 
@@ -158,4 +176,8 @@ void GameManager::changeTurn(){
 
 
     field->setTurnCount(field->getTurnCount() + 1);
+}
+
+void GameManager::setAutoMode(bool value){
+    is_auto = value;
 }
