@@ -5,6 +5,7 @@
 #include "visualizer.h"
 #include "progresdock.h"
 
+#include <thread>
 #include <vector>
 #include <memory>
 #include <map>

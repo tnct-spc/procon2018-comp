@@ -13,8 +13,8 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
 
     std::shared_ptr<GameManager> share(this); //これ自身を参照するshared_ptr
 
-    team_1 = std::make_shared<TestAlgorithm>(share);
-    team_2 = std::make_shared<TestAlgorithm>(share);
+    team_1 = std::make_shared<MonteCarloTreeSearch>(share);
+    team_2 = std::make_shared<MonteCarloTreeSearch>(share);
 
 
 }
@@ -37,9 +37,14 @@ void GameManager::startSimulation(){
 
     for(int turn_count = 0; turn_count < turn_max; ++turn_count){
 
+        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
+        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
 
-        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans = team_1->agentAct(0);
-        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans = team_2->agentAct(1);
+        std::thread th1([&]{team_1_ans =  team_1->agentAct(0);});
+        std::thread th2([&]{team_2_ans =  team_2->agentAct(1);});
+
+        th1.join();
+        th2.join();
 
         if(is_auto){//自動進行
 
