@@ -9,6 +9,8 @@
 
 #include <memory>
 
+#include <iostream>
+
 
 namespace Ui {
 class Visualizer;
@@ -19,16 +21,16 @@ class Visualizer : public QWidget
     Q_OBJECT
 
 public:
-    explicit Visualizer(procon::Field inp_field, QWidget *parent = 0);
+    explicit Visualizer(procon::Field& inp_field, QWidget *parent = 0);
     ~Visualizer();
 
-    void setField(procon::Field inp_field);
+    void setField(procon::Field& inp_field);
 
 private:
     Ui::Visualizer *ui;
     void paintEvent(QPaintEvent *event);
 
-    procon::Field field;
+    procon::Field& field;
 
     int window_width;
     int window_height;

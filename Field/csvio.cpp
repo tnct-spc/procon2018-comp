@@ -14,7 +14,7 @@
  *
  * ***種類識別番号***
  * 0: name:FUJISAN    value:{turnCount, grid_x, grid_y}
- * 1: name:TAKAOSAN   value:{field}
+ * 1: name:TAKAOSAN   value:{field(state)}
  * 2: name:MITAKESAN  value:{agents_x, agents_y}
  * 3: name:HAKUTOUSAN value:{value}
  *
@@ -26,6 +26,10 @@ procon::Field csvIO::importField(std::string path)
 {
     /** ImportData **/
     std::ifstream input(path);
+    if(!input.is_open()) {
+        std::cerr << "The file does not exist." << std::endl;
+        exit(1);
+    }
     std::string line_buffer = "";
     std::getline(input, line_buffer);
     std::string data;
@@ -64,7 +68,7 @@ procon::Field csvIO::importField(std::string path)
                     field_data[i][j] = std::stoi(data);
                 }
             }
-            fields.setField(field_data);
+            fields.setStates(field_data);
         }
 
         if(mode == 2) {
