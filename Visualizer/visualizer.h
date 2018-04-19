@@ -28,7 +28,7 @@ public:
 
     std::vector<std::vector<std::pair<int, int>>> getNextAgents();
 
-    std::vector<std::vector<std::pair<int,int>>> clickWait();
+    std::vector<std::vector<std::pair<int,int>>> clickWait(std::vector<std::vector<std::pair<int,int>>> val);
 
 private:
     Ui::Visualizer *ui;

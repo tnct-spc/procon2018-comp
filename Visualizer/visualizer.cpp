@@ -276,7 +276,7 @@ std::vector<std::vector<std::pair<int, int>>> Visualizer::getNextAgents()
     return next_positions;
 }
 
-std::vector<std::vector<std::pair<int,int>>> Visualizer::clickWait(){
+std::vector<std::vector<std::pair<int,int>>> Visualizer::clickWait(std::vector<std::vector<std::pair<int,int>>> val){
 
     while(1){
 

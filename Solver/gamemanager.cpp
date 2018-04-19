@@ -51,8 +51,15 @@ void GameManager::startSimulation(){
             changeTurn();
 
         }else{
-            visualizer;//ここから適当にpairを引数にとってえいえい
-            std::vector<std::vector<std::pair<int,int>>> act_val = visualizer->clickWait();//ここからクリックされるまで待機
+
+            std::vector<std::vector<std::pair<int,int>>> args(2, std::vector<std::pair<int,int>>(2) );
+
+            args.at(0).at(0) = std::make_pair(std::get<1>(team_1_ans.first), std::get<2>(team_1_ans.first));
+            args.at(0).at(1) = std::make_pair(std::get<1>(team_1_ans.second), std::get<2>(team_1_ans.second));
+            args.at(1).at(0) = std::make_pair(std::get<1>(team_2_ans.first), std::get<2>(team_2_ans.first));
+            args.at(1).at(1) = std::make_pair(std::get<1>(team_2_ans.second), std::get<2>(team_2_ans.second));
+
+            std::vector<std::vector<std::pair<int,int>>> act_val = visualizer->clickWait( args );//ここからクリックされるまで待機
 
             for(int side = 0; side < 2; ++side){
                 for(int agent = 0; agent < 2; ++agent){
