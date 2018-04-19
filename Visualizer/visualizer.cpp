@@ -24,8 +24,6 @@ void Visualizer::setField(procon::Field& inp_field){
 void Visualizer::paintEvent(QPaintEvent *event){
     Q_UNUSED(event);
 
-    std::cout << "paintevent_vis" << std::endl;
-
     QPainter painter(this);
 
     window_width = this->width();

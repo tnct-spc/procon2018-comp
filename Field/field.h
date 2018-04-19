@@ -33,7 +33,7 @@ public:
     void setTurnCount(const unsigned int turn);
     int getTurnCount() const;
 
-    std::pair<int,int> getSize();
+    std::pair<int,int> getSize() const;
 
 
 private:

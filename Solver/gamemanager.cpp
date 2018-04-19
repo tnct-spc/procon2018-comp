@@ -2,6 +2,7 @@
 #include "algorithmwrapper.h"
 #include "testalgorithm.h"
 #include "simplemontecarlo/simplemontecarlo.h"
+#include "montecarlotreesearch/montecarlotreesearch.h"
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
 
@@ -12,8 +13,8 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
 
     std::shared_ptr<GameManager> share(this); //これ自身を参照するshared_ptr
 
-    team_1 = std::make_shared<SimpleMonteCalro>(share);
-    team_2 = std::make_shared<TestAlgorithm>(share);
+    team_1 = std::make_shared<MonteCarloTreeSearch>(share);
+    team_2 = std::make_shared<SimpleMonteCalro>(share);
 
 
 }

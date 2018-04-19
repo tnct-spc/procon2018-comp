@@ -16,6 +16,8 @@ public:
     //turn,agentnumber,type,x,y
     virtual const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> agentAct(int side)=0;
 
+    std::shared_ptr<GameManager> getManagerPtr();
+
 
 protected:
     std::shared_ptr<GameManager> manager;

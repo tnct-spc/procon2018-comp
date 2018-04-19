@@ -6,3 +6,7 @@ AlgorithmWrapper::AlgorithmWrapper(const std::shared_ptr<GameManager> manager_pt
     manager = manager_ptr;
 
 }
+
+std::shared_ptr<GameManager> AlgorithmWrapper::getManagerPtr(){
+    return manager;
+}

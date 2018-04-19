@@ -87,7 +87,7 @@ const std::vector<std::vector<int>>& procon::Field::getValue() const{
     return value_data;
 }
 
-std::pair<int,int> procon::Field::getSize(){
+std::pair<int,int> procon::Field::getSize() const{
     return std::make_pair(grid_x, grid_y);
 }
 
