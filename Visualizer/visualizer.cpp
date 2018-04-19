@@ -278,7 +278,11 @@ std::vector<std::vector<std::pair<int, int>>> Visualizer::getNextAgents()
 
 std::vector<std::vector<std::pair<int,int>>> Visualizer::clickWait(std::vector<std::vector<std::pair<int,int>>> val){
 
+    std::cout << "hoge" << std::endl;
+    this->update();
+    this->repaint();
     while(1){
+        this->update();
 
     }
 }
