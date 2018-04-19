@@ -17,6 +17,7 @@ public:
 
 
 protected:
+
     std::shared_ptr<GameManager> manager;
 };
 

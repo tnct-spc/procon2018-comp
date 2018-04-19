@@ -4,6 +4,7 @@
 #include "field.h"
 #include "visualizer.h"
 #include "progresdock.h"
+#include "BreadthFirstSearch/beamsearch.h"
 
 #include <vector>
 #include <memory>
@@ -30,10 +31,11 @@ private:
     std::vector<procon::Field> field_vec;
     std::shared_ptr<Visualizer> visualizer;
 
-    std::shared_ptr<ProgresDock> progresdock;
-
     std::shared_ptr<AlgorithmWrapper> team_1;
     std::shared_ptr<AlgorithmWrapper> team_2;
+
+    std::shared_ptr<ProgresDock> progresdock;
+
 
     unsigned int now_field = 0;
 
