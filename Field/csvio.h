@@ -7,14 +7,14 @@ class csvIO
 
 public:
     csvIO();
-    procon::Field importField(std::string path);
-    void exportField(procon::Field data, std::string path);
+    static procon::Field importField(std::string path);
+    static void exportField(procon::Field data, std::string path);
 
 private:
-    const int FUJISAN = 0;
-    const int TAKAOSAN = 1;
-    const int MITAKESAN = 2;
-    const int HAKUTOUSAN = 3;
+    static const int FUJISAN = 0;
+    static const int TAKAOSAN = 1;
+    static const int MITAKESAN = 2;
+    static const int HAKUTOUSAN = 3;
 };
 
 #endif // CSVIO_H
