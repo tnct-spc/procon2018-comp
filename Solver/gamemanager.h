@@ -3,31 +3,36 @@
 
 #include "field.h"
 #include "visualizer.h"
+#include "progresdock.h"
 
 #include <vector>
 #include <memory>
 #include <map>
 
 class AlgorithmWrapper;
-class TestAlgorithm;
 
 class GameManager
 {
 public:
 
-    GameManager(unsigned int x_size, unsigned int y_size);
+    GameManager(const unsigned int x_size, const unsigned int y_size);
 
-    procon::Field getField();
+    const procon::Field& getField();
 
-    void setFieldCount(unsigned int number);
+    void setFieldCount(const unsigned int number);
     unsigned int getFieldCount();
 
     void startSimulation();
 
+    unsigned int getFinalTurn();
+
+
 private:
     std::shared_ptr<procon::Field> field;
-    std::vector<procon::Field> field_vec;
     std::shared_ptr<Visualizer> visualizer;
+   std::vector<std::shared_ptr<procon::Field>> field_vec;
+
+    std::shared_ptr<ProgresDock> progresdock;
 
     std::shared_ptr<AlgorithmWrapper> team_1;
     std::shared_ptr<AlgorithmWrapper> team_2;
@@ -38,14 +43,14 @@ private:
     //ここは仕様を変えたり変えなかったりしよう
     const int max_val = 16;
     const int min_val = -16;
-    const int turn_max = 30;
+    const int turn_max = 60;
 
     //行動を保存しておく
     //1:移動 移動方向をintで設定する
     //2:タイル除去 移動方向をintで設定する
-    std::vector<std::vector<std::pair<int,std::pair<int,int>>>> act_stack;
+    std::vector<std::vector<std::tuple<int,int,int>>> act_stack; //ここは絶対座標での入力なので注意！
 
-    void agentAct(int turn, int agent, int type, int x_pos, int y_pos);
+    void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
     void changeTurn();
 
 };

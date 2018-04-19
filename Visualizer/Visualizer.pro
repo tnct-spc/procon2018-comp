@@ -24,13 +24,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        visualizer.cpp
+        visualizer.cpp \
+    progresdock.cpp
 
 HEADERS += \
-        visualizer.h
+        visualizer.h \
+    progresdock.h
 
 FORMS += \
-        visualizer.ui
+        visualizer.ui \
+    progresdock.ui
 
 unix {
     target.path = /usr/lib
