@@ -12,6 +12,8 @@ Mejirodai::Mejirodai(QWidget *parent) :
     connect(ui->runButton, &QPushButton::clicked, this, &Mejirodai::RunManagerSimulation);
     connect(ui->goNext, &QPushButton::clicked, this, &Mejirodai::goNextState);
     connect(ui->goPrev, &QPushButton::clicked, this, &Mejirodai::goPrevState);
+
+    // アルゴリズムの選択
 }
 
 Mejirodai::~Mejirodai()

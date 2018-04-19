@@ -5,6 +5,7 @@
 #include <memory>
 #include <QMainWindow>
 #include <QPushButton>
+#include <QComboBox>
 
 namespace Ui {
 class Mejirodai;
