@@ -205,3 +205,7 @@ void GameManager::changeTurn(){
 void GameManager::setAutoMode(bool value){
     is_auto = value;
 }
+
+void GameManager::humanPowerSimulation(){
+
+}

@@ -10,6 +10,8 @@ Visualizer::Visualizer(procon::Field& inp_field, QWidget *parent) :
     grid_x = field.getSize().first;
     grid_y = field.getSize().second;
 
+    next_grids = std::vector<std::vector<std::pair<int, int>>>(2,std::vector<std::pair<int,int>>(2,std::make_pair(-1,-1)));
+
 }
 
 Visualizer::~Visualizer()
@@ -177,7 +179,7 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
     if (selected) {
 
         // グリッドはエージェントの移動先に含まれているか
-        bool checked = checkClickGrid(clicked_grid);
+        checkClickGrid(clicked_grid);
 
     } else {
 
@@ -202,7 +204,7 @@ void Visualizer::checkClickedAgent(std::pair<int, int> mass)
             if (mass == agents.at(team).at(agent)) {
 
                 // クリックされたエージェントがすでに変更済みなら何もしない
-                if (decided_agents.at(team).at(agent)) return;
+                // if (decided_agents.at(team).at(agent)) return;
 
                 selected_agent.first = team;
                 selected_agent.second = agent;
@@ -233,7 +235,7 @@ bool Visualizer::checkClickGrid(std::pair<int, int> mass)
     next_grids.at(selected_agent.first).at(selected_agent.second) = mass;
 
     // エージェントの移動先が決定済みであることを記録
-    decided_agents.at(selected_agent.first).at(selected_agent.second) = true;
+    // decided_agents.at(selected_agent.first).at(selected_agent.second) = true;
 
     // エージェントの選択を解除
     selected = false;
@@ -247,6 +249,9 @@ bool Visualizer::checkClickGrid(std::pair<int, int> mass)
 // 決定されたエージェントの移動先を返す
 std::vector<std::vector<std::pair<int, int>>> Visualizer::getNextAgents()
 {
+
+    return next_grids;
+    /*
     // decided_agentsの初期化. Return用のベクターづくり
     std::vector<std::vector<std::pair<int, int>>> next_positions;
 
@@ -266,7 +271,7 @@ std::vector<std::vector<std::pair<int, int>>> Visualizer::getNextAgents()
 
         for (int agent = 0; agent < 2; agent++) {
 
-            decided_agents.at(team).at(agent) = false;
+            // decided_agents.at(team).at(agent) = false;
             agent_grid.push_back(next_grids.at(team).at(agent));
         }
 
@@ -274,6 +279,7 @@ std::vector<std::vector<std::pair<int, int>>> Visualizer::getNextAgents()
     }
 
     return next_positions;
+    */
 }
 
 std::vector<std::vector<std::pair<int,int>>> Visualizer::clickWait(std::vector<std::vector<std::pair<int,int>>> val){

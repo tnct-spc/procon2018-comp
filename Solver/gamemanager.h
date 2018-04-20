@@ -49,7 +49,7 @@ private:
     const int turn_max = 15;
 
     //これがtrueなら自動進行
-    bool is_auto = false;
+    bool is_auto = true;
 
     // 人力モード！！！！！！！！ｼｬｷｰﾝｗｗｗｗｗｗｗ
     int humanpower_mode_turn = -1;

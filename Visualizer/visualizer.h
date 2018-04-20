@@ -64,10 +64,10 @@ private:
     std::pair<int, int> selected_agent_grid;
 
     // 各エージェントが移動先を決定しているかどうか
-    std::array<std::array<bool, 2>, 2> decided_agents = {false, false, false, false};
+    // std::array<std::array<bool, 2>, 2> decided_agents = {false, false, false, false};
 
     // 各エージェントの移動先を記録
-    std::array<std::array<std::pair<int, int>, 2>, 2> next_grids;
+    std::vector<std::vector<std::pair<int, int>>> next_grids;
 
     //margin*size分の余白を取る
     const double margin = 1.5;
