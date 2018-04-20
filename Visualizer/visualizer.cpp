@@ -91,6 +91,9 @@ void Visualizer::paintEvent(QPaintEvent *event){
     };
 
     auto drawAgents = [&]{
+
+        painter.setPen(QPen(QBrush(Qt::black),0.5));
+
         for(unsigned int team = 0; team < 2; ++team){
             for(unsigned int index = 0; index < 2; ++index){
 
@@ -108,6 +111,32 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
             }
         }
+    };
+
+    auto drawAgentMove = [&]{
+
+        for(unsigned int team = 0; team < 2; ++team){
+            for(unsigned int index = 0; index < 2; ++index){
+
+                QColor paint_color = ( team == 0
+                           ? checked_color_a
+                           : checked_color_b);
+
+                paint_color.setAlpha(100);
+
+
+                painter.setBrush(QBrush(paint_color));
+
+                int pos_x = next_grids.at(team).at(index).first;
+                int pos_y = next_grids.at(team).at(index).second;
+
+                if(pos_x == -1)continue;
+
+                painter.drawRect(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size);
+            }
+        }
+
+
     };
 
     // 選択されたエージェントの移動可能先を塗る
@@ -142,9 +171,11 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     };
 
+
     drawBackGround();
     drawTiles();
 
+    drawAgentMove();
     if (selected) drawAroundAgent();
 
     drawValues();
