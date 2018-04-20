@@ -61,7 +61,17 @@ void GameManager::startSimulation(std::shared_ptr<Visualizer> vis){
 
             setFieldCount(field_vec.size() - 1);
         }
+
+        progresdock->show();
+
+    }else{
+        // この変数、-1でない場合はターン数を記憶します
+        humanpower_mode_turn = 0;
+        humanPowerSimulation();
     }
+
+        // 探索→候補を表示→クリック待機
+        // これをturn_count回繰り返す
 
         /*
         {
@@ -93,8 +103,6 @@ void GameManager::startSimulation(std::shared_ptr<Visualizer> vis){
 
 
 
-
-    progresdock->show();
 
 }
 

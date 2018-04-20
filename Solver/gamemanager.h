@@ -51,6 +51,9 @@ private:
     //これがtrueなら自動進行
     bool is_auto = false;
 
+    // 人力モード！！！！！！！！ｼｬｷｰﾝｗｗｗｗｗｗｗ
+    int humanpower_mode_turn = -1;
+
     //行動を保存しておく
     //1:移動 移動方向をintで設定する
     //2:タイル除去 移動方向をintで設定する
@@ -58,6 +61,9 @@ private:
 
     void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
     void changeTurn();
+
+    //人力補助システム！！！！うぇ〜い！！！！！
+    void humanPowerSimulation();
 
 };
 
