@@ -32,18 +32,18 @@ void GameManager::startSimulation(std::shared_ptr<Visualizer> vis){
     visualizer->update();
 
 
-    for(int turn_count = 0; turn_count < turn_max; ++turn_count){
+    //うぇーいｗｗｗｗｗｗｗ
+    if(is_auto){
+        for(int turn_count = 0; turn_count < turn_max; ++turn_count){
 
-        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
-        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
+            std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
+            std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
 
-        std::thread th1([&]{team_1_ans =  team_1->agentAct(0);});
-        std::thread th2([&]{team_2_ans =  team_2->agentAct(1);});
+            std::thread th1([&]{team_1_ans =  team_1->agentAct(0);});
+            std::thread th2([&]{team_2_ans =  team_2->agentAct(1);});
 
-        th1.join();
-        th2.join();
-
-        if(is_auto){//自動進行
+            th1.join();
+            th2.join();
 
             agentAct(0,0,team_1_ans.first);
             agentAct(0,1,team_1_ans.second);
@@ -52,7 +52,19 @@ void GameManager::startSimulation(std::shared_ptr<Visualizer> vis){
 
             changeTurn();
 
-        }else{
+            field_vec.push_back(std::make_shared<procon::Field>(*field));
+
+            progresdock->addAnswer(*(field_vec.back()));
+
+
+            std::cout << "turn : " << turn_count << std::endl;
+
+            setFieldCount(field_vec.size() - 1);
+        }
+    }
+
+        /*
+        {
 
             std::vector<std::vector<std::pair<int,int>>> args(2, std::vector<std::pair<int,int>>(2) );
 
@@ -77,18 +89,10 @@ void GameManager::startSimulation(std::shared_ptr<Visualizer> vis){
             }
 
         }
-
-        field_vec.push_back(std::make_shared<procon::Field>(*field));
-
-        progresdock->addAnswer(*(field_vec.back()));
+        */
 
 
-        std::cout << "turn : " << turn_count << std::endl;
 
-        setFieldCount(field_vec.size() - 1);
-
-
-    }
 
     progresdock->show();
 

@@ -282,6 +282,7 @@ std::vector<std::vector<std::pair<int,int>>> Visualizer::clickWait(std::vector<s
     this->repaint();
     while(1){
         this->update();
+        this->repaint();
 
     }
 }
