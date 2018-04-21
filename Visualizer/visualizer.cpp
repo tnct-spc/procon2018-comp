@@ -341,6 +341,5 @@ std::vector<std::vector<std::pair<int,int>>> Visualizer::clickWait(std::vector<s
 */
 
 void Visualizer::slotAutoMode(bool value){
-    std::cout << "aew" << std::endl;
     auto_mode = value;
 }

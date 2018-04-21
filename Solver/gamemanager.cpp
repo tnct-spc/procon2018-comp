@@ -21,7 +21,6 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, Q
 
     connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
     connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
-    connect(this, &GameManager::signalAutoMode, [=](bool value){std::cout << value << std::endl;});
 
 }
 
@@ -234,7 +233,6 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
             new_pos.first -= origin_pos.first;
             new_pos.second -= origin_pos.second;
 
-            std::cout << "pos : " << pos.first << "," << pos.second << std::endl;
             agentAct(side, agent,  std::make_tuple( ( field->getState(pos.first, pos.second).first == (side == 0 ? 2 : 1) ? 2 : 1 ), new_pos.first, new_pos.second ) );
 
         }
