@@ -25,11 +25,13 @@ public:
     void setFieldCount(const unsigned int number);
     unsigned int getFieldCount();
 
-    void startSimulation(std::shared_ptr<Visualizer> vis);
+    void startSimulation();
 
     unsigned int getFinalTurn();
 
     void setAutoMode(bool value);
+
+    std::shared_ptr<Visualizer> getVisualizer();
 
 signals:
     void signalAutoMode(bool value);
@@ -52,13 +54,14 @@ private:
     unsigned int now_field = 0;
 
 
+
     //ここは仕様を変えたり変えなかったりしよう
     const int max_val = 16;
     const int min_val = -16;
     const int turn_max = 15;
 
     //これがtrueなら自動進行
-    bool is_auto = true;
+    bool is_auto = false;
 
     // 人力モード！！！！！！！！ｼｬｷｰﾝｗｗｗｗｗｗｗ
     int humanpower_mode_turn = -1;

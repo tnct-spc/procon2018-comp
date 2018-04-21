@@ -21,13 +21,13 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, Q
 
     connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
     connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
+    connect(this, &GameManager::signalAutoMode, [=](bool value){std::cout << value << std::endl;});
 
 }
 
-void GameManager::startSimulation(std::shared_ptr<Visualizer> vis){
+void GameManager::startSimulation(){
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
-    visualizer = vis;
 
     progresdock = std::make_shared<ProgresDock>();
 
@@ -213,6 +213,11 @@ void GameManager::setAutoMode(bool value){
     is_auto = value;
 }
 
+std::shared_ptr<Visualizer> GameManager::getVisualizer(){
+    return visualizer;
+}
+
 void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>& move){
+    std::cout << "change" << std::endl;
 
 }
