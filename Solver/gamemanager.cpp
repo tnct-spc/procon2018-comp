@@ -40,7 +40,7 @@ void GameManager::startSimulation(){
     if(is_auto){
         for(int turn_count = 0; turn_count < turn_max; ++turn_count){
 
-            std::cout << "turn : " << turn_count << std::endl << std::endl;
+            std::cout << "turn " << turn_count + 1 << " started" << std::endl << std::endl;
 
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
