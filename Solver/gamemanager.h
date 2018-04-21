@@ -12,7 +12,7 @@
 
 class AlgorithmWrapper;
 
-class GameManager
+class GameManager : public QObject
 {
 public:
 
@@ -28,6 +28,9 @@ public:
     unsigned int getFinalTurn();
 
     void setAutoMode(bool value);
+
+public slots:
+    void changeMove(const std::vector<std::vector<std::pair<int,int>>>& move);
 
 
 private:

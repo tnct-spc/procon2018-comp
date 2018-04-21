@@ -1,6 +1,7 @@
 #include "visualizer.h"
 #include "ui_visualizer.h"
 
+
 Visualizer::Visualizer(procon::Field& inp_field, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Visualizer),
@@ -274,11 +275,20 @@ bool Visualizer::checkClickGrid(std::pair<int, int> mass)
     // windowの描きかえ
     this->update();
 
+    ++confirm_count;
+
+    if(confirm_count == 4){
+
+        confirm_count = 0;
+        emit nextMove(getNextAgents());
+        next_grids = std::vector<std::vector<std::pair<int, int>>>(2,std::vector<std::pair<int,int>>(2,std::make_pair(-1,-1)));
+    }
+
     return true;
 }
 
 // 決定されたエージェントの移動先を返す
-std::vector<std::vector<std::pair<int, int>>> Visualizer::getNextAgents()
+const std::vector<std::vector<std::pair<int, int>>>& Visualizer::getNextAgents()
 {
 
     return next_grids;
@@ -313,6 +323,7 @@ std::vector<std::vector<std::pair<int, int>>> Visualizer::getNextAgents()
     */
 }
 
+/*
 std::vector<std::vector<std::pair<int,int>>> Visualizer::clickWait(std::vector<std::vector<std::pair<int,int>>> val){
 
     this->update();
@@ -323,3 +334,4 @@ std::vector<std::vector<std::pair<int,int>>> Visualizer::clickWait(std::vector<s
 
     }
 }
+*/

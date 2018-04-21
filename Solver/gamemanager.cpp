@@ -17,6 +17,9 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
     team_2 = std::make_shared<MonteCarloTreeSearch>(share);
 
 
+    connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
+    // connect(visualizer, SIGNAL(nextMove(std::vector<std::vector<std::pair<int,int>>>)), this, SLOT(changeMove(std::vector<std::vector<std::pair<int,int> > >)));
+
 }
 
 void GameManager::startSimulation(std::shared_ptr<Visualizer> vis){
@@ -207,5 +210,9 @@ void GameManager::setAutoMode(bool value){
 }
 
 void GameManager::humanPowerSimulation(){
+
+}
+
+void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>& move){
 
 }

@@ -26,9 +26,12 @@ public:
 
     void setField(procon::Field& inp_field);
 
-    std::vector<std::vector<std::pair<int, int>>> getNextAgents();
+    const std::vector<std::vector<std::pair<int,int>>>& getNextAgents();
 
-    std::vector<std::vector<std::pair<int,int>>> clickWait(std::vector<std::vector<std::pair<int,int>>> val);
+    // std::vector<std::vector<std::pair<int,int>>> clickWait(std::vector<std::vector<std::pair<int,int>>> val);
+
+signals:
+    void nextMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec);
 
 private:
     Ui::Visualizer *ui;
@@ -55,6 +58,8 @@ private:
 
     // 移動を入力するエージェントが選択されているか
     bool selected = false;
+
+    unsigned int confirm_count = 0;
 
     // 移動を入力するエージェントのチームとエージェント番号
     // first：チーム,second：エージェント
