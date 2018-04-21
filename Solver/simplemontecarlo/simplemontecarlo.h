@@ -18,7 +18,7 @@ public:
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
 private:
     //試行回数 適当に変えてね
-    unsigned int trial = 5;
+    unsigned int trial = 100;
     GameSimulator sim;
 
 

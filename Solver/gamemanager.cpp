@@ -16,7 +16,7 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, Q
     std::shared_ptr<GameManager> share(this); //これ自身を参照するshared_ptr
 
     team_1 = std::make_shared<MonteCarloTreeSearch>(share);
-    team_2 = std::make_shared<MonteCarloTreeSearch>(share);
+    team_2 = std::make_shared<SimpleMonteCalro>(share);
 
 
     connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
