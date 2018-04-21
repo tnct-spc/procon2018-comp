@@ -267,6 +267,11 @@ bool Visualizer::checkClickGrid(std::pair<int, int> mass)
         return false;
     }
 
+
+    //もう既に選択されている場合は値を増やさない
+    if(next_grids.at(selected_agent.first).at(selected_agent.second).first == -1)
+        ++confirm_count;
+
     // 移動先を記録
     next_grids.at(selected_agent.first).at(selected_agent.second) = mass;
 
@@ -279,7 +284,6 @@ bool Visualizer::checkClickGrid(std::pair<int, int> mass)
     // windowの描きかえ
     this->update();
 
-    ++confirm_count;
 
     if(confirm_count == 4){
 
