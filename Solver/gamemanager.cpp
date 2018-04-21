@@ -4,7 +4,9 @@
 #include "simplemontecarlo/simplemontecarlo.h"
 #include "montecarlotreesearch/montecarlotreesearch.h"
 
-GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
+GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, QObject *parent)
+    : QObject(parent)
+{
 
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
     visualizer = std::make_shared<Visualizer>(*field);
@@ -17,15 +19,14 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
     team_2 = std::make_shared<SimpleMonteCalro>(share);
 
 
+    connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
+    connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
+
 }
 
 void GameManager::startSimulation(){
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
-    visualizer = std::make_shared<Visualizer>(*field);
-    // visualizer->setField(*field);
-
-    visualizer->show();
 
     progresdock = std::make_shared<ProgresDock>();
 
@@ -35,37 +36,83 @@ void GameManager::startSimulation(){
     visualizer->update();
 
 
-    for(int turn_count = 0; turn_count < turn_max; ++turn_count){
+    //うぇーいｗｗｗｗｗｗｗ
+    if(is_auto){
+        for(int turn_count = 0; turn_count < turn_max; ++turn_count){
+
+            std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
+            std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
+
+            std::thread th1([&]{team_1_ans =  team_1->agentAct(0);});
+            std::thread th2([&]{team_2_ans =  team_2->agentAct(1);});
+
+            th1.join();
+            th2.join();
+
+            agentAct(0,0,team_1_ans.first);
+            agentAct(0,1,team_1_ans.second);
+            agentAct(1,0,team_2_ans.first);
+            agentAct(1,1,team_2_ans.second);
+
+            changeTurn();
+
+            field_vec.push_back(std::make_shared<procon::Field>(*field));
+
+            progresdock->addAnswer(*(field_vec.back()));
 
 
-        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans = team_1->agentAct(0);
-        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans = team_2->agentAct(1);
+            std::cout << "turn : " << turn_count << std::endl;
 
-        agentAct(0,0,team_1_ans.first);
-        agentAct(0,1,team_1_ans.second);
-        agentAct(1,0,team_2_ans.first);
-        agentAct(1,1,team_2_ans.second);
+            setFieldCount(field_vec.size() - 1);
+        }
 
-        changeTurn();
+        progresdock->show();
 
-        field_vec.push_back(std::make_shared<procon::Field>(*field));
+    }else{
 
-        progresdock->addAnswer(*(field_vec.back()));
+        humanpower_mode_turn = 0;
 
-
-        std::cout << "turn : " << turn_count << std::endl;
-
-        setFieldCount(field_vec.size() - 1);
-        progresdock->update();
-
-
+        //visualizerにもauto解除する事を伝える
+        emit signalAutoMode(false);
     }
 
-    progresdock->show();
+        // 探索→候補を表示→クリック待機
+        // これをturn_count回繰り返す
+
+        /*
+        {
+
+            std::vector<std::vector<std::pair<int,int>>> args(2, std::vector<std::pair<int,int>>(2) );
+
+            args.at(0).at(0) = std::make_pair(std::get<1>(team_1_ans.first), std::get<2>(team_1_ans.first));
+            args.at(0).at(1) = std::make_pair(std::get<1>(team_1_ans.second), std::get<2>(team_1_ans.second));
+            args.at(1).at(0) = std::make_pair(std::get<1>(team_2_ans.first), std::get<2>(team_2_ans.first));
+            args.at(1).at(1) = std::make_pair(std::get<1>(team_2_ans.second), std::get<2>(team_2_ans.second));
+
+
+            std::vector<std::vector<std::pair<int,int>>> act_val = visualizer->clickWait( args );//ここからクリックされるまで待機
+
+            visualizer->update();
+
+            for(int side = 0; side < 2; ++side){
+                for(int agent = 0; agent < 2; ++agent){
+                    std::pair<int,int> pos = act_val.at(side).at(agent);
+
+                    int type = (field->getState(pos.first, pos.second).first == (side == 0 ? 2 : 1) ? 2 : 1);
+
+                    agentAct(side, agent, std::make_tuple(type, pos.first, pos.second));
+                }
+            }
+
+        }
+        */
+
+
+
 
 }
 
-const procon::Field& GameManager::getField(){
+procon::Field& GameManager::getField(){
     return *field;
 }
 
@@ -77,6 +124,7 @@ void GameManager::setFieldCount(const unsigned int number){
     visualizer->setField(*field_vec.at(number));
     now_field = number;
     visualizer->update();
+    visualizer->repaint();
 }
 
 unsigned int GameManager::getFinalTurn(){
@@ -158,4 +206,58 @@ void GameManager::changeTurn(){
 
 
     field->setTurnCount(field->getTurnCount() + 1);
+}
+
+void GameManager::setAutoMode(bool value){
+    is_auto = value;
+}
+
+std::shared_ptr<Visualizer> GameManager::getVisualizer(){
+    return visualizer;
+}
+
+void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>& move){
+
+    if(humanpower_mode_turn == -1)
+        return ;
+
+    for(int side = 0; side < 2; ++side)
+        for(int agent = 0; agent < 2; ++agent){
+
+            std::pair<int,int> origin_pos = field->getAgent(side, agent);
+
+            std::pair<int,int> pos = move.at(side).at(agent);
+
+            std::pair<int,int> new_pos = pos;
+
+            new_pos.first -= origin_pos.first;
+            new_pos.second -= origin_pos.second;
+
+            agentAct(side, agent,  std::make_tuple( ( field->getState(pos.first, pos.second).first == (side == 0 ? 2 : 1) ? 2 : 1 ), new_pos.first, new_pos.second ) );
+
+        }
+
+    changeTurn();
+
+    field_vec.push_back(std::make_shared<procon::Field>(*field));
+
+    progresdock->addAnswer(*(field_vec.back()));
+
+
+    std::cout << "turn : " << humanpower_mode_turn << std::endl;
+
+    setFieldCount(field_vec.size() - 1);
+
+    humanpower_mode_turn++;
+
+    visualizer->update();
+
+    if(humanpower_mode_turn == turn_max){
+
+        humanpower_mode_turn = -1;
+
+        emit signalAutoMode(false);
+        progresdock->show();
+    }
+
 }

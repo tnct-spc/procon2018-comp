@@ -5,19 +5,22 @@
 #include "visualizer.h"
 #include "progresdock.h"
 
+#include <thread>
 #include <vector>
 #include <memory>
 #include <map>
 
 class AlgorithmWrapper;
 
-class GameManager
+class GameManager : public QObject
 {
+    Q_OBJECT
+
 public:
 
-    GameManager(const unsigned int x_size, const unsigned int y_size);
+    explicit GameManager(const unsigned int x_size, const unsigned int y_size, QObject *parent = 0);
 
-    const procon::Field& getField();
+    procon::Field& getField();
 
     void setFieldCount(const unsigned int number);
     unsigned int getFieldCount();
@@ -26,24 +29,41 @@ public:
 
     unsigned int getFinalTurn();
 
+    void setAutoMode(bool value);
+
+    std::shared_ptr<Visualizer> getVisualizer();
+
+signals:
+    void signalAutoMode(bool value);
+
+public slots:
+    void changeMove(const std::vector<std::vector<std::pair<int,int>>>& move);
+
+
 
 private:
     std::shared_ptr<procon::Field> field;
     std::shared_ptr<Visualizer> visualizer;
-   std::vector<std::shared_ptr<procon::Field>> field_vec;
+    std::vector<std::shared_ptr<procon::Field>> field_vec;
 
     std::shared_ptr<ProgresDock> progresdock;
 
     std::shared_ptr<AlgorithmWrapper> team_1;
     std::shared_ptr<AlgorithmWrapper> team_2;
 
+    int humanpower_mode_turn = -1;
+
     unsigned int now_field = 0;
+
 
 
     //ここは仕様を変えたり変えなかったりしよう
     const int max_val = 16;
     const int min_val = -16;
-    const int turn_max = 60;
+    const int turn_max = 30;
+
+    //これがtrueなら自動進行
+    bool is_auto = true;
 
     //行動を保存しておく
     //1:移動 移動方向をintで設定する
