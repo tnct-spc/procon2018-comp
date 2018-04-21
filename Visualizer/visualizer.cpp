@@ -1,8 +1,7 @@
 #include "visualizer.h"
 #include "ui_visualizer.h"
 
-
-Visualizer::Visualizer(procon::Field& inp_field, QWidget *parent) :
+ Visualizer::Visualizer(procon::Field& inp_field, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Visualizer),
     field(inp_field)
@@ -176,8 +175,10 @@ void Visualizer::paintEvent(QPaintEvent *event){
     drawBackGround();
     drawTiles();
 
-    drawAgentMove();
-    if (selected) drawAroundAgent();
+    if(auto_mode == false){
+        drawAgentMove();
+        if (selected) drawAroundAgent();
+    }
 
     drawValues();
     drawAgents();
@@ -192,31 +193,34 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
     // マスのwindow上の座標を取得
     QPointF point = event->pos();
 
-    // マスの範囲外をクリックしたら何もしない
-    if ((point.x() < horizontal_margin) || (point.x() > window_width - horizontal_margin)
+    if(auto_mode == false){
+
+        // マスの範囲外をクリックしたら何もしない
+        if ((point.x() < horizontal_margin) || (point.x() > window_width - horizontal_margin)
             || (point.y() < vertical_margin) || (point.y() > window_height - vertical_margin)) {
         return;
-    }
+        }
 
-    // クリックされたグリッド座標を保存
-    std::pair<int, int> clicked_grid;
+        // クリックされたグリッド座標を保存
+        std::pair<int, int> clicked_grid;
 
-    // xを座標からマスへ
-    clicked_grid.first = (point.x() - horizontal_margin) / grid_size;
+        // xを座標からマスへ
+        clicked_grid.first = (point.x() - horizontal_margin) / grid_size;
 
-    // yを座標からマスへ
-    clicked_grid.second = (point.y() - vertical_margin) / grid_size;
+        // yを座標からマスへ
+        clicked_grid.second = (point.y() - vertical_margin) / grid_size;
 
-    // 移動をを入力するエージェントが選ばれているか
-    if (selected) {
+        // 移動をを入力するエージェントが選ばれているか
+        if (selected) {
 
         // グリッドはエージェントの移動先に含まれているか
         checkClickGrid(clicked_grid);
 
-    } else {
+        } else {
 
         // クリックされたエージェントまたはマスを照合
         checkClickedAgent(clicked_grid);
+        }
     }
 
 //    std::vector<std::vector<std::pair<int, int>>> box = getNextAgents();
@@ -335,3 +339,7 @@ std::vector<std::vector<std::pair<int,int>>> Visualizer::clickWait(std::vector<s
     }
 }
 */
+
+void Visualizer::slotAutoMode(bool value){
+    auto_mode = value;
+}

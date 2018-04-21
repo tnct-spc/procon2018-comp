@@ -14,9 +14,11 @@ class AlgorithmWrapper;
 
 class GameManager : public QObject
 {
+    Q_OBJECT
+
 public:
 
-    GameManager(const unsigned int x_size, const unsigned int y_size);
+    explicit GameManager(const unsigned int x_size, const unsigned int y_size, QObject *parent = 0);
 
     procon::Field& getField();
 
@@ -29,8 +31,12 @@ public:
 
     void setAutoMode(bool value);
 
+signals:
+    void signalAutoMode(bool value);
+
 public slots:
     void changeMove(const std::vector<std::vector<std::pair<int,int>>>& move);
+
 
 
 private:
@@ -64,9 +70,6 @@ private:
 
     void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
     void changeTurn();
-
-    //人力補助システム！！！！うぇ〜い！！！！！
-    void humanPowerSimulation();
 
 };
 

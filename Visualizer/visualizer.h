@@ -28,10 +28,13 @@ public:
 
     const std::vector<std::vector<std::pair<int,int>>>& getNextAgents();
 
+
     // std::vector<std::vector<std::pair<int,int>>> clickWait(std::vector<std::vector<std::pair<int,int>>> val);
 
 signals:
     void nextMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec);
+public slots:
+    void slotAutoMode(bool value);
 
 private:
     Ui::Visualizer *ui;
@@ -55,6 +58,8 @@ private:
 
     unsigned int grid_x;
     unsigned int grid_y;
+
+    bool auto_mode = true;
 
     // 移動を入力するエージェントが選択されているか
     bool selected = false;

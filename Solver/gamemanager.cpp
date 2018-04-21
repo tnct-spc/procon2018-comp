@@ -4,10 +4,12 @@
 #include "simplemontecarlo/simplemontecarlo.h"
 #include "montecarlotreesearch/montecarlotreesearch.h"
 
-GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
+GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, QObject *parent)
+    : QObject(parent)
+{
 
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
-    // visualizer = std::make_shared<Visualizer>(*field);
+    visualizer = std::make_shared<Visualizer>(*field);
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
@@ -18,7 +20,7 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
 
 
     connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
-    // connect(visualizer, SIGNAL(nextMove(std::vector<std::vector<std::pair<int,int>>>)), this, SLOT(changeMove(std::vector<std::vector<std::pair<int,int> > >)));
+    connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
 
 }
 
@@ -70,7 +72,9 @@ void GameManager::startSimulation(std::shared_ptr<Visualizer> vis){
     }else{
         // この変数、-1でない場合はターン数を記憶します
         humanpower_mode_turn = 0;
-        humanPowerSimulation();
+
+        //visualizerにもauto解除する事を伝える
+        emit signalAutoMode(false);
     }
 
         // 探索→候補を表示→クリック待機
@@ -207,10 +211,6 @@ void GameManager::changeTurn(){
 
 void GameManager::setAutoMode(bool value){
     is_auto = value;
-}
-
-void GameManager::humanPowerSimulation(){
-
 }
 
 void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>& move){
