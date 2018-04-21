@@ -70,7 +70,7 @@ void GameManager::startSimulation(){
         progresdock->show();
 
     }else{
-        // この変数、-1でない場合はターン数を記憶します
+
         humanpower_mode_turn = 0;
 
         //visualizerにもauto解除する事を伝える
@@ -218,6 +218,48 @@ std::shared_ptr<Visualizer> GameManager::getVisualizer(){
 }
 
 void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>& move){
-    std::cout << "change" << std::endl;
+
+    if(humanpower_mode_turn == -1)
+        return ;
+
+    for(int side = 0; side < 2; ++side)
+        for(int agent = 0; agent < 2; ++agent){
+
+            std::pair<int,int> origin_pos = field->getAgent(side, agent);
+
+            std::pair<int,int> pos = move.at(side).at(agent);
+
+            std::pair<int,int> new_pos = pos;
+
+            new_pos.first -= origin_pos.first;
+            new_pos.second -= origin_pos.second;
+
+            std::cout << "pos : " << pos.first << "," << pos.second << std::endl;
+            agentAct(side, agent,  std::make_tuple( ( field->getState(pos.first, pos.second).first == (side == 0 ? 2 : 1) ? 2 : 1 ), new_pos.first, new_pos.second ) );
+
+        }
+
+    changeTurn();
+
+    field_vec.push_back(std::make_shared<procon::Field>(*field));
+
+    progresdock->addAnswer(*(field_vec.back()));
+
+
+    std::cout << "turn : " << humanpower_mode_turn << std::endl;
+
+    setFieldCount(field_vec.size() - 1);
+
+    humanpower_mode_turn++;
+
+    visualizer->update();
+
+    if(humanpower_mode_turn == turn_max){
+
+        humanpower_mode_turn = -1;
+
+        emit signalAutoMode(false);
+        progresdock->show();
+    }
 
 }

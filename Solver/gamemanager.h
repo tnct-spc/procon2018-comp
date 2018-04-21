@@ -51,6 +51,8 @@ private:
     std::shared_ptr<AlgorithmWrapper> team_1;
     std::shared_ptr<AlgorithmWrapper> team_2;
 
+    int humanpower_mode_turn = -1;
+
     unsigned int now_field = 0;
 
 
@@ -62,9 +64,6 @@ private:
 
     //これがtrueなら自動進行
     bool is_auto = false;
-
-    // 人力モード！！！！！！！！ｼｬｷｰﾝｗｗｗｗｗｗｗ
-    int humanpower_mode_turn = -1;
 
     //行動を保存しておく
     //1:移動 移動方向をintで設定する
