@@ -60,7 +60,7 @@ private:
     //ここは仕様を変えたり変えなかったりしよう
     const int max_val = 16;
     const int min_val = -16;
-    const int turn_max = 30;
+    const int turn_max = 60;
 
     //これがtrueなら自動進行
     bool is_auto = true;

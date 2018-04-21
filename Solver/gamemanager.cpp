@@ -43,11 +43,16 @@ void GameManager::startSimulation(){
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
 
+            /* マルチスレッドのテスト用
             std::thread th1([&]{team_1_ans =  team_1->agentAct(0);});
             std::thread th2([&]{team_2_ans =  team_2->agentAct(1);});
 
             th1.join();
             th2.join();
+            */
+
+            team_1_ans = team_1->agentAct(0);
+            team_2_ans = team_2->agentAct(1);
 
             agentAct(0,0,team_1_ans.first);
             agentAct(0,1,team_1_ans.second);
@@ -61,7 +66,7 @@ void GameManager::startSimulation(){
             progresdock->addAnswer(*(field_vec.back()));
 
 
-            std::cout << "turn : " << turn_count << std::endl;
+            std::cout << "turn : " << turn_count << std::endl << std::endl;
 
             setFieldCount(field_vec.size() - 1);
         }
@@ -244,7 +249,7 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
     progresdock->addAnswer(*(field_vec.back()));
 
 
-    std::cout << "turn : " << humanpower_mode_turn << std::endl;
+    std::cout << "turn : " << humanpower_mode_turn << std::endl << std::endl;
 
     setFieldCount(field_vec.size() - 1);
 

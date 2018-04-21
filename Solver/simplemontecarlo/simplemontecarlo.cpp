@@ -13,30 +13,54 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleMonteCal
 
     std::vector<int> agent_trial(81, 0);
 
-        for(unsigned int agent_1 = 0; agent_1 < 9; ++agent_1)
-            for(unsigned int agent_2 = 0; agent_2 < 9; ++agent_2){
-                for(unsigned int count = 0; count < trial; ++count){
 
-                    sim.resetField(field.getField(), field.getAgents());
+    int can_put_count = 0;
 
-                    if(count == 0 && ( sim.canPut(side, agent_1, agent_2) == false) ){
+    for(unsigned int agent_1 = 0; agent_1 < 9; ++agent_1)
+        for(unsigned int agent_2 = 0; agent_2 < 9; ++agent_2){
+            sim.resetField(field.getField(), field.getAgents());
+            if(sim.canPut(side, agent_1, agent_2) == true)
+                can_put_count++;
+        }
 
-                        agent_trial.at(agent_1 * 9 + agent_2) = -1;
-                        break;
-                    }
+    int count = 0;
 
-                    agent_trial.at(agent_1 * 9 + agent_2) += sim.startSimulation(side, agent_1, agent_2, manager->getFinalTurn() - field.getTurnCount());
+
+    for(unsigned int agent_1 = 0; agent_1 < 9; ++agent_1)
+        for(unsigned int agent_2 = 0; agent_2 < 9; ++agent_2){
+
+            clock_t start_time = clock();
+
+            while(++count){
+
+                clock_t now_time = clock();
+
+                if(try_time < static_cast<double>(now_time - start_time) * can_put_count)
+                break;
+
+                sim.resetField(field.getField(), field.getAgents());
+
+                if(sim.canPut(side, agent_1, agent_2) == false){
+
+                    agent_trial.at(agent_1 * 9 + agent_2) = -1;
+                    break;
 
                 }
+
+                agent_trial.at(agent_1 * 9 + agent_2) += sim.startSimulation(side, agent_1, agent_2, manager->getFinalTurn() - field.getTurnCount());
+
             }
+        }
+
+    std::cout << "simplemontecarlo...try_count : " << count << std::endl;
 
     //これで最高値のindexを取り出している
     int max_val = *std::max_element(agent_trial.begin(), agent_trial.end() );
     std::vector<int> max_val_vector;
 
     for(int index = 0; index < 81; ++index)
-        if( agent_trial.at(index) == max_val)
-            max_val_vector.push_back( index );
+    if( agent_trial.at(index) == max_val)
+    max_val_vector.push_back( index );
 
     std::random_device rnd;
     std::mt19937 mt(rnd());

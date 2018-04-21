@@ -26,7 +26,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
 
     }
 
-    std::cout << "try_count : " << count << std::endl;
+    std::cout << "montecarlotreesearch...try_count : " << count << std::endl;
 
     std::vector<int> index_list = root_node.can_move_index_list;
 
