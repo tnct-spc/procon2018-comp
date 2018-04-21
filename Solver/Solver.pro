@@ -30,6 +30,7 @@ SOURCES += \
         gamesimulator.cpp \
         montecarlotreesearch/montecarlotreesearch.cpp \
         montecarlotreesearch/searchnode.cpp \
+    dummyalgorithm.cpp
 
 HEADERS += \
         algorithm_global.h \ 
@@ -40,6 +41,7 @@ HEADERS += \
         gamesimulator.h \
         montecarlotreesearch/montecarlotreesearch.h \
         montecarlotreesearch/searchnode.h \
+    dummyalgorithm.h
 
 unix {
     target.path = /usr/lib
