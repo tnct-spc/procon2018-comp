@@ -36,7 +36,6 @@ void GameManager::startSimulation(){
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans = team_2->agentAct(1);
 
         int type, x_move, y_move;
-        std::cout<<std::get<0>(team_1_ans.second)<<" "<<std::get<1>(team_1_ans.second)<<" "<<std::get<2>(team_1_ans.second)<<std::endl;
 
         std::tie(type, x_move, y_move) = team_1_ans.first;
         agentAct(0,0,type,x_move,y_move);
