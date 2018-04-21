@@ -52,10 +52,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleMonteCal
             }
         }
 
-    std::cout << "simplemontecarlo...try_count : " << count << std::endl;
 
     //これで最高値のindexを取り出している
     int max_val = *std::max_element(agent_trial.begin(), agent_trial.end() );
+
+
     std::vector<int> max_val_vector;
 
     for(int index = 0; index < 81; ++index)
@@ -67,6 +68,9 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleMonteCal
     std::uniform_int_distribution<> rand_index(0,max_val_vector.size() - 1);
 
     int max_move = max_val_vector.at( rand_index(mt) );
+
+    std::cout << "simplemontecarlo...try_count : " << count << std::endl;
+    std::cout << "win_count : " << max_val << ", move : " << max_move << std::endl << std::endl;
 
     std::vector<int> x_list = {1, 1, 1, 0, 0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};

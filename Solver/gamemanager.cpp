@@ -40,6 +40,8 @@ void GameManager::startSimulation(){
     if(is_auto){
         for(int turn_count = 0; turn_count < turn_max; ++turn_count){
 
+            std::cout << "turn : " << turn_count << std::endl << std::endl;
+
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
 
@@ -66,7 +68,6 @@ void GameManager::startSimulation(){
             progresdock->addAnswer(*(field_vec.back()));
 
 
-            std::cout << "turn : " << turn_count << std::endl << std::endl;
 
             setFieldCount(field_vec.size() - 1);
         }
@@ -226,6 +227,8 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
     if(humanpower_mode_turn == -1)
         return ;
 
+    std::cout << "turn : " << humanpower_mode_turn << std::endl << std::endl;
+
     for(int side = 0; side < 2; ++side)
         for(int agent = 0; agent < 2; ++agent){
 
@@ -249,7 +252,6 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
     progresdock->addAnswer(*(field_vec.back()));
 
 
-    std::cout << "turn : " << humanpower_mode_turn << std::endl << std::endl;
 
     setFieldCount(field_vec.size() - 1);
 
