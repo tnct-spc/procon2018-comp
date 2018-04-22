@@ -159,7 +159,7 @@ void Visualizer::paintEvent(QPaintEvent *event){
                 int pos_x = candidate.at(team).at(index).first;
                 int pos_y = candidate.at(team).at(index).second;
 
-                if(pos_x == -1)continue;
+                if(pos_x == -1 || candidate.at(team).at(index) == field.getAgent(team, index) )continue;
 
                 //角が取れた四角形らしいです
                 painter.drawRoundRect(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size );
