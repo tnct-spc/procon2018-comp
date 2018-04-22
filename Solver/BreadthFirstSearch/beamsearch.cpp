@@ -161,6 +161,6 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(
         }
     }
     cout<<"("<<agent1.first<<","<<agent1.second<<")"<<"("<<agent2.first<<","<<agent2.second<<")"<<endl;
-    cout<<"("<<std::get<0>(std::get<1>(beam.front().second))<<","<<std::get<1>(std::get<1>(beam.front().second))+agent1.first<<","<<std::get<2>(std::get<1>(beam.front().second))+agent1.second<<")"<<"("<<std::get<0>(std::get<2>(beam.front().second))<<","<<std::get<1>(std::get<2>(beam.front().second))+agent2.first<<","<<std::get<2>(std::get<2>(beam.front().second))+agent2.second<<")"<<endl;
+    cout<<"("<<std::get<0>(std::get<1>(beam.front().second))<<","<<std::get<1>(std::get<1>(beam.front().second))<<","<<std::get<2>(std::get<1>(beam.front().second))<<")"<<"("<<std::get<0>(std::get<2>(beam.front().second))<<","<<std::get<1>(std::get<2>(beam.front().second))<<","<<std::get<2>(std::get<2>(beam.front().second))<<")"<<endl;
     return std::make_pair(std::get<2>(beam.front().second),std::get<1>(beam.front().second));
 }
