@@ -19,7 +19,8 @@ public:
     void expandNode(GameSimulator* sim);
 
     //UCB定数 sqrt(2)が基本
-    static constexpr double ucb_value = 1.41421356;
+    // static constexpr double ucb_value = 1.41421356;
+    static constexpr double ucb_value = 0.5;
 
     //閾値 これ以上試行した場合は葉を展開する
     static constexpr int threshold = 50;
