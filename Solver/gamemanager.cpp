@@ -3,6 +3,7 @@
 #include "testalgorithm.h"
 #include "simplemontecarlo/simplemontecarlo.h"
 #include "montecarlotreesearch/montecarlotreesearch.h"
+#include "dummyalgorithm.h"
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, QObject *parent)
     : QObject(parent)
@@ -15,12 +16,13 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, Q
 
     std::shared_ptr<GameManager> share(this); //これ自身を参照するshared_ptr
 
-    team_1 = std::make_shared<MonteCarloTreeSearch>(share);
-    team_2 = std::make_shared<SimpleMonteCalro>(share);
+    team_1 = std::make_shared<DummyAlgorithm>(share);
+    team_2 = std::make_shared<MonteCarloTreeSearch>(share);
 
 
     connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
     connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
+    connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
 
 }
 
@@ -77,6 +79,8 @@ void GameManager::startSimulation(){
     }else{
 
         humanpower_mode_turn = 0;
+
+        nextMoveForManualMode();
 
         //visualizerにもauto解除する事を伝える
         emit signalAutoMode(false);
@@ -265,6 +269,34 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
 
         emit signalAutoMode(false);
         progresdock->show();
+    }else
+        nextMoveForManualMode();
+
+}
+
+void GameManager::nextMoveForManualMode(){
+
+    visualizer->update();
+    visualizer->repaint();
+
+    std::vector<std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>>> candidate_move(2);
+    candidate_move.at(0) = team_1->agentAct(0);
+    candidate_move.at(1) = team_2->agentAct(1);
+
+    std::vector<std::vector<std::pair<int,int>>> return_vec(2, std::vector<std::pair<int,int>>(2) );
+
+    for(int side = 0; side < 2; ++side){
+
+            return_vec.at(side).at(0) = std::make_pair( std::get<1>(candidate_move.at(side).first), std::get<2>(candidate_move.at(side).first) );
+            return_vec.at(side).at(1) = std::make_pair( std::get<1>(candidate_move.at(side).second), std::get<2>(candidate_move.at(side).second) );
     }
+
+    for(int side = 0; side < 2; ++side)
+        for(int agent = 0; agent < 2; ++agent){
+            return_vec.at(side).at(agent).first += field->getAgent(side, agent).first;
+            return_vec.at(side).at(agent).second += field->getAgent(side, agent).second;
+        }
+
+    emit setCandidateMove(return_vec);
 
 }

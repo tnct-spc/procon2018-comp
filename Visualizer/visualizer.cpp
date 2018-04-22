@@ -11,6 +11,8 @@
     grid_y = field.getSize().second;
 
     next_grids = std::vector<std::vector<std::pair<int, int>>>(2,std::vector<std::pair<int,int>>(2,std::make_pair(-1,-1)));
+    candidate = std::vector<std::vector<std::pair<int, int>>>(2,std::vector<std::pair<int,int>>(2,std::make_pair(-1,-1)));
+
 
 }
 
@@ -139,6 +141,34 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     };
 
+    //manual時の移動候補表示
+    auto drawCandidateMove = [&]{
+
+        for(unsigned int team = 0; team < 2; ++team){
+            for(unsigned int index = 0; index < 2; ++index){
+
+                QColor paint_color = ( team == 0
+                           ? team_color_a
+                           : team_color_b);
+
+                paint_color.setAlpha(60);
+
+
+                painter.setBrush(QBrush(paint_color));
+
+                int pos_x = candidate.at(team).at(index).first;
+                int pos_y = candidate.at(team).at(index).second;
+
+                if(pos_x == -1)continue;
+
+                //角が取れた四角形らしいです
+                painter.drawRoundRect(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size );
+            }
+        }
+
+
+    };
+
     // 選択されたエージェントの移動可能先を塗る
     auto drawAroundAgent = [&] {
 
@@ -172,11 +202,13 @@ void Visualizer::paintEvent(QPaintEvent *event){
     };
 
 
+
     drawBackGround();
     drawTiles();
 
     if(auto_mode == false){
         drawAgentMove();
+        drawCandidateMove();
         if (selected) drawAroundAgent();
     }
 
@@ -288,8 +320,10 @@ bool Visualizer::checkClickGrid(std::pair<int, int> mass)
     if(confirm_count == 4){
 
         confirm_count = 0;
-        emit nextMove(getNextAgents());
+        std::vector<std::vector<std::pair<int,int>>> return_val = getNextAgents();
         next_grids = std::vector<std::vector<std::pair<int, int>>>(2,std::vector<std::pair<int,int>>(2,std::make_pair(-1,-1)));
+        candidate = std::vector<std::vector<std::pair<int, int>>>(2,std::vector<std::pair<int,int>>(2,std::make_pair(-1,-1)));
+        emit nextMove(return_val);
     }
 
     return true;
@@ -346,4 +380,9 @@ std::vector<std::vector<std::pair<int,int>>> Visualizer::clickWait(std::vector<s
 
 void Visualizer::slotAutoMode(bool value){
     auto_mode = value;
+}
+
+void Visualizer::candidateMove(const std::vector<std::vector<std::pair<int, int> > > &inp_vec){
+    candidate = inp_vec;
+    this->update();
 }

@@ -35,6 +35,7 @@ signals:
     void nextMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec);
 public slots:
     void slotAutoMode(bool value);
+    void candidateMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec);
 
 private:
     Ui::Visualizer *ui;
@@ -78,6 +79,9 @@ private:
 
     // 各エージェントの移動先を記録
     std::vector<std::vector<std::pair<int, int>>> next_grids;
+
+    //こっちはmanualmode用
+    std::vector<std::vector<std::pair<int, int>>> candidate;
 
     //margin*size分の余白を取る
     const double margin = 1.5;

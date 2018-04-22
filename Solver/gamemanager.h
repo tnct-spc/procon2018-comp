@@ -35,6 +35,7 @@ public:
 
 signals:
     void signalAutoMode(bool value);
+    void setCandidateMove(const std::vector<std::vector<std::pair<int,int>>>& move);
 
 public slots:
     void changeMove(const std::vector<std::vector<std::pair<int,int>>>& move);
@@ -72,6 +73,8 @@ private:
 
     void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
     void changeTurn();
+
+    void nextMoveForManualMode();
 
 };
 
