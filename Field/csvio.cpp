@@ -22,7 +22,7 @@
  * 0, 30, 3, 3, 1, 0, 0, 0, ... , 2, 0, 0, 0, 3, 3, 0, 3, 3, 3, 0, 0, 0, ... , 0
  */
 
-procon::Field csvIO::importField(std::string path)
+procon::Field CsvIo::importField(std::string path)
 {
     /** ImportData **/
     std::ifstream input(path);
@@ -103,7 +103,7 @@ procon::Field csvIO::importField(std::string path)
 
 }
 
-void csvIO::exportField(procon::Field data, std::string path)
+void CsvIo::exportField(procon::Field data, std::string path)
 {
     /** GetData **/
     int turn_count = data.getTurnCount();

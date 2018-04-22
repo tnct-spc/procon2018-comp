@@ -2,11 +2,11 @@
 #define CSVIO_H
 
 #include "field.h"
-class csvIO
+class CsvIo
 {
 
 public:
-    csvIO();
+    CsvIo();
     static procon::Field importField(std::string path);
     static void exportField(procon::Field data, std::string path);
 
