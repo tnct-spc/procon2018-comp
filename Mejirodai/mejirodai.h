@@ -2,9 +2,11 @@
 #define MEJIRODAI_H
 
 #include "gamemanager.h"
+#include <thread>
 #include <memory>
 #include <QMainWindow>
 #include <QPushButton>
+
 
 namespace Ui {
 class Mejirodai;
@@ -22,6 +24,7 @@ private:
     Ui::Mejirodai *ui;
 
     std::shared_ptr<GameManager> manager;
+    std::shared_ptr<Visualizer> visualizer;
 
     void RunManagerSimulation();
     void goNextState();

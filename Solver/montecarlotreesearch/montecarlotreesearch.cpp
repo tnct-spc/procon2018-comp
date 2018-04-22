@@ -26,7 +26,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
 
     }
 
-    std::cout << "try_count : " << count << std::endl;
+    std::cout << "montecarlotreesearch...try_count : " << count << std::endl;
 
     std::vector<int> index_list = root_node.can_move_index_list;
 
@@ -56,7 +56,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
     }
 
 
-    std::cout << "max_try : " << max_value << ", win_count : " << max_win << ", move :  " << max_index << std::endl;
+    std::cout << "max_try : " << max_value << ", win_count : " << max_win << ", move :  " << max_index << std::endl << std::endl;
 
     std::vector<int> x_list = {1, 1, 1, 0, 0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
