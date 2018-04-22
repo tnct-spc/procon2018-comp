@@ -14,7 +14,7 @@ class beamsearch : public AlgorithmWrapper
 public:
     beamsearch();
     int beam_range = 100;
-    int beam_turn = 3;
+    int beam_turn = 1;
     int Evaluation_Field(procon::Field field);
     std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
     std::pair<int,int> agent1,agent2;
