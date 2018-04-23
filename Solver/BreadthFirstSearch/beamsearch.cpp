@@ -27,7 +27,7 @@ int beamsearch::Evaluation_Field(procon::Field field){
 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(int side){
 
 
-    const procon::Field field = manager->getField();
+    const procon::Field& field = manager->getField();
 
     auto sortEva = [&](std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>> const& a,std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>> const& b)->bool
     {
@@ -135,20 +135,32 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(
                         procon::Field ins_field = Provisional_ins_Field;
 
                         if(ins_field.getState(Provisional_ins_Field.getAgent(side,0).first+age1.at(a).first,Provisional_ins_Field.getAgent(side,0).second+age1.at(a).second).first==side+1){
+
                         ins_field.setAgent(side,0,Provisional_ins_Field.getAgent(side,0).first+age1.at(a).first,Provisional_ins_Field.getAgent(side,0).second+age1.at(a).second);
+
                         }else if(ins_field.getState(Provisional_ins_Field.getAgent(side,0).first+age1.at(a).first,Provisional_ins_Field.getAgent(side,0).second+age1.at(a).second).first==0){
+
                             ins_field.setState(Provisional_ins_Field.getAgent(side,0).first+age1.at(a).first,Provisional_ins_Field.getAgent(side,0).second+age1.at(a).second,side+1);
                             ins_field.setAgent(side,0,Provisional_ins_Field.getAgent(side,0).first+age1.at(a).first,Provisional_ins_Field.getAgent(side,0).second+age1.at(a).second);
+
                         }else{
+
                             ins_field.setState(Provisional_ins_Field.getAgent(side,0).first+age1.at(a).first,Provisional_ins_Field.getAgent(side,0).second+age1.at(a).second,0);
+
                         }
                         if(ins_field.getState(Provisional_ins_Field.getAgent(side,1).first+age2.at(b).first,Provisional_ins_Field.getAgent(side,1).second+age2.at(b).second).first==side+1){
+
                         ins_field.setAgent(side,1,Provisional_ins_Field.getAgent(side,1).first+age2.at(b).first,Provisional_ins_Field.getAgent(side,1).second +age2.at(b).second);
+
                         }else if(ins_field.getState(Provisional_ins_Field.getAgent(side,1).first+age2.at(b).first,Provisional_ins_Field.getAgent(side,1).second+age2.at(b).second).first==0){
+
                             ins_field.setState(Provisional_ins_Field.getAgent(side,1).first+age2.at(b).first,Provisional_ins_Field.getAgent(side,1).second+age2.at(b).second,side+1);
                             ins_field.setAgent(side,1,Provisional_ins_Field.getAgent(side,1).first+age2.at(b).first,Provisional_ins_Field.getAgent(side,1).second+age2.at(b).second);
+
                         }else{
+
                             ins_field.setState(Provisional_ins_Field.getAgent(side,1).first+age2.at(b).first,Provisional_ins_Field.getAgent(side,1).second+age2.at(b).second,0);
+
                         }
                         int v = Evaluation_Field(ins_field);
                         ins_beam.push_back(std::make_pair(v,std::make_tuple(ins_field,std::get<1>(ins_value.second),std::get<2>(ins_value.second))));
