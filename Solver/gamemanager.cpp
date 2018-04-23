@@ -11,10 +11,12 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
-    std::shared_ptr<GameManager> share(this); //これ自身を参照するshared_ptr
+    // std::shared_ptr<GameManager> share(this); //これ自身を参照するshared_ptr
 
+    /*
     team_1 = std::make_shared<MonteCarloTreeSearch>(share);
     team_2 = std::make_shared<MonteCarloTreeSearch>(share);
+    */
 }
 
 void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
@@ -40,6 +42,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
     team_1 = std::make_shared<MonteCarloTreeSearch>(share);
 
     team_2 = std::make_shared<SimpleMonteCalro>(share);
+
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
     visualizer = std::make_shared<Visualizer>(*field);
