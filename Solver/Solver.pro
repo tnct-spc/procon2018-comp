@@ -26,11 +26,11 @@ SOURCES += \
         testalgorithm.cpp \
         algorithmwrapper.cpp \
         gamemanager.cpp \
-    simplemontecarlo/simplemontecarlo.cpp \
-    gamesimulator.cpp \
-    montecarlotreesearch/montecarlotreesearch.cpp \
-    montecarlotreesearch/searchnode.cpp
-        simplemontecarlo/simplemontecarlo.cpp
+        simplemontecarlo/simplemontecarlo.cpp \
+        gamesimulator.cpp \
+        montecarlotreesearch/montecarlotreesearch.cpp \
+        montecarlotreesearch/searchnode.cpp \
+    dummyalgorithm.cpp
 
 HEADERS += \
         algorithm_global.h \ 
@@ -38,10 +38,10 @@ HEADERS += \
         algorithmwrapper.h \
         gamemanager.h \
         simplemontecarlo/simplemontecarlo.h \
-    simplemontecarlo/simplemontecarlo.h \
-    gamesimulator.h \
-    montecarlotreesearch/montecarlotreesearch.h \
-    montecarlotreesearch/searchnode.h
+        gamesimulator.h \
+        montecarlotreesearch/montecarlotreesearch.h \
+        montecarlotreesearch/searchnode.h \
+    dummyalgorithm.h
 
 unix {
     target.path = /usr/lib

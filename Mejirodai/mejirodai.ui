@@ -70,6 +70,11 @@
         <string>TestAlgorithm</string>
        </property>
       </item>
+      <item>
+       <property name="text">
+        <string>DummyAlgorithm</string>
+       </property>
+      </item>
      </widget>
     </item>
     <item row="0" column="2">
@@ -96,6 +101,11 @@
       <item>
        <property name="text">
         <string>TestAlgorithm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>DummyAlgorithm</string>
        </property>
       </item>
      </widget>
