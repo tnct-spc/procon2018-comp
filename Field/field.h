@@ -30,9 +30,6 @@ public:
     void setAgents(const std::vector<std::vector<std::pair<int,int>>>& values);
 
 
-    void setTurnCount(const unsigned int turn);
-    int getTurnCount() const;
-
     std::pair<int,int> getSize() const;
 
 
@@ -44,7 +41,6 @@ private:
     //めっちゃ分かりづらいですね
     std::vector<std::vector<std::pair<int,int>>> agents;
 
-    int turn_count = 0;
     int grid_x;
     int grid_y;
 

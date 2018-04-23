@@ -55,9 +55,11 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
     //うぇーいｗｗｗｗｗｗｗ
     if(is_auto){
-        for(int turn_count = 0; turn_count < turn_max; ++turn_count){
+        now_turn = 0;
+        for(int now_turn = 0; now_turn < turn_max; ++now_turn){
 
-            std::cout << "turn " << turn_count + 1 << " started" << std::endl << std::endl;
+
+            std::cout << "turn " << now_turn + 1 << " started" << std::endl << std::endl;
 
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
@@ -89,11 +91,13 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
             setFieldCount(field_vec.size() - 1);
         }
 
+        now_turn = -1;
+
         progresdock->show();
 
     }else{
 
-        humanpower_mode_turn = 0;
+        now_turn = 0;
 
         nextMoveForManualMode();
 
@@ -102,7 +106,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
     }
 
         // 探索→候補を表示→クリック待機
-        // これをturn_count回繰り返す
+        // これをnow_turn回繰り返す
 
         /*
         {
@@ -230,7 +234,6 @@ void GameManager::changeTurn(){
     }
 
 
-    field->setTurnCount(field->getTurnCount() + 1);
 }
 
 void GameManager::setAutoMode(bool value){
@@ -241,12 +244,16 @@ std::shared_ptr<Visualizer> GameManager::getVisualizer(){
     return visualizer;
 }
 
+int GameManager::getTurnCount(){
+    return now_turn;
+}
+
 void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>& move){
 
-    if(humanpower_mode_turn == -1)
+    if(now_turn == -1)
         return ;
 
-    std::cout << "turn : " << humanpower_mode_turn << std::endl << std::endl;
+    std::cout << "turn : " << now_turn << std::endl << std::endl;
 
     for(int side = 0; side < 2; ++side)
         for(int agent = 0; agent < 2; ++agent){
@@ -274,13 +281,13 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
 
     setFieldCount(field_vec.size() - 1);
 
-    humanpower_mode_turn++;
+    now_turn++;
 
     visualizer->update();
 
-    if(humanpower_mode_turn == turn_max){
+    if(now_turn == turn_max){
 
-        humanpower_mode_turn = -1;
+        now_turn = -1;
 
         emit signalAutoMode(false);
         progresdock->show();

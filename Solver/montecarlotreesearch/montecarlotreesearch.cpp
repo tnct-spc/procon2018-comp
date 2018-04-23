@@ -10,7 +10,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
     std::vector<std::vector<std::pair<int,int>>> agent_data = field.getAgents();
 
 
-    GameSimulator sim(manager->getField().getValue(), manager->getField().getTurnCount());
+    GameSimulator sim(manager->getField().getValue(), manager->getTurnCount());
 
     clock_t start_time = clock();
     int count = 0;
@@ -22,7 +22,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MonteCarloTree
 
         sim.resetField(field_data, agent_data);
 
-        root_node.trySimulate(&sim, manager->getFinalTurn() - manager->getField().getTurnCount());
+        root_node.trySimulate(&sim, manager->getFinalTurn() - manager->getTurnCount());
 
     }
 

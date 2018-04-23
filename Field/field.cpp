@@ -117,14 +117,6 @@ void procon::Field::setAgent(const unsigned int turn, const unsigned int number,
     agents.at(turn).at(number) = std::make_pair(x_pos, y_pos);
 }
 
-int procon::Field::getTurnCount() const{
-    return turn_count;
-}
-
-void procon::Field::setTurnCount(const unsigned int turn){
-    turn_count = turn;
-}
-
 void procon::Field::setAgents(const std::vector<std::vector<std::pair<int,int>>>& values){
     agents = values;
 }

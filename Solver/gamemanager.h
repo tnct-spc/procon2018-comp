@@ -32,6 +32,8 @@ public:
 
     std::shared_ptr<Visualizer> getVisualizer();
 
+    int getTurnCount();
+
 signals:
     void signalAutoMode(bool value);
     void setCandidateMove(const std::vector<std::vector<std::pair<int,int>>>& move);
@@ -51,16 +53,15 @@ private:
     std::shared_ptr<AlgorithmWrapper> team_1;
     std::shared_ptr<AlgorithmWrapper> team_2;
 
-    int humanpower_mode_turn = -1;
-
     unsigned int now_field = 0;
-
 
 
     //ここは仕様を変えたり変えなかったりしよう
     const int max_val = 16;
     const int min_val = -16;
     const int turn_max = 60;
+
+    int now_turn = -1;
 
     //これがtrueなら自動進行
     bool is_auto = false;
