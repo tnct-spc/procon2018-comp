@@ -14,12 +14,32 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size){
     std::shared_ptr<GameManager> share(this); //これ自身を参照するshared_ptr
 
     team_1 = std::make_shared<MonteCarloTreeSearch>(share);
-    team_2 = std::make_shared<SimpleMonteCalro>(share);
-
-
+    team_2 = std::make_shared<MonteCarloTreeSearch>(share);
 }
 
-void GameManager::startSimulation(){
+void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
+
+    std::shared_ptr<GameManager> share(this);
+
+//    if (QString::compare("MonteCarloTreeSearch", my_algo) == 0) {
+//        team_1 = std::make_shared<MonteCarloTreeSearch>(share);
+//    } else if (QString::compare("SimpleMonteCalro", my_algo) == 0) {
+//        team_1 = std::make_shared<SimpleMonteCalro>(share);
+//    } else if (QString::compare("TestAlgorithm", my_algo) == 0) {
+//        team_1 = std::make_shared<TestAlgorithm>(share);
+//    }
+
+//    if (QString::compare("MonteCarloTreeSearch", opponent_algo) == 0) {
+//        team_2 = std::make_shared<MonteCarloTreeSearch>(share);
+//    } else if (QString::compare("SimpleMonteCalro", opponent_algo) == 0) {
+//        team_2 = std::make_shared<SimpleMonteCalro>(share);
+//    } else if (QString::compare("TestAlgorithm", opponent_algo) == 0) {
+//        team_2 = std::make_shared<TestAlgorithm>(share);
+//    }
+
+    team_1 = std::make_shared<MonteCarloTreeSearch>(share);
+
+    team_2 = std::make_shared<SimpleMonteCalro>(share);
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
     visualizer = std::make_shared<Visualizer>(*field);

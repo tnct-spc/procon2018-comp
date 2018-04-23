@@ -12,8 +12,6 @@ Mejirodai::Mejirodai(QWidget *parent) :
     connect(ui->runButton, &QPushButton::clicked, this, &Mejirodai::RunManagerSimulation);
     connect(ui->goNext, &QPushButton::clicked, this, &Mejirodai::goNextState);
     connect(ui->goPrev, &QPushButton::clicked, this, &Mejirodai::goPrevState);
-
-    // アルゴリズムの選択
 }
 
 Mejirodai::~Mejirodai()
@@ -23,7 +21,11 @@ Mejirodai::~Mejirodai()
 
 void Mejirodai::RunManagerSimulation(){
 
-    manager->startSimulation();
+    QString my = ui->selectMyAlgorithmBox->currentText();
+    QString opponnent = ui->selectOpponentAlgorithmBox->currentText();
+
+//    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
+    manager->startSimulation(my, opponnent);
 }
 
 void Mejirodai::goNextState(){

@@ -22,15 +22,14 @@ public:
     void setFieldCount(const unsigned int number);
     unsigned int getFieldCount();
 
-    void startSimulation();
-
+    void startSimulation(QString my_algo, QString opponent_algo);
     unsigned int getFinalTurn();
 
 
 private:
     std::shared_ptr<procon::Field> field;
     std::shared_ptr<Visualizer> visualizer;
-   std::vector<std::shared_ptr<procon::Field>> field_vec;
+    std::vector<std::shared_ptr<procon::Field>> field_vec;
 
     std::shared_ptr<ProgresDock> progresdock;
 
