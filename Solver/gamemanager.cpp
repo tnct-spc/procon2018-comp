@@ -40,7 +40,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
     } else if (QString::compare("TestAlgorithm", opponent_algo) == 0) {
         team_2 = std::make_shared<TestAlgorithm>(share);
     } else if (QString::compare("DummyAlgorithm", my_algo) == 0) {
-        team_1 = std::make_shared<DummyAlgorithm>(share);
+        team_2 = std::make_shared<DummyAlgorithm>(share);
     }
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
