@@ -21,6 +21,10 @@ public:
 
     procon::Field getField();
 
+    void setdock(procon::Field field){
+        progresdock->addAnswer(field);
+    }
+
     void setFieldCount(unsigned int number);
     unsigned int getFieldCount();
 
