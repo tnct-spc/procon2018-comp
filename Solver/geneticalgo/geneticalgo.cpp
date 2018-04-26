@@ -16,6 +16,10 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
     double region = 0.5; //領域ポイントの優先度(高いほど優先)
     double removal = 0.5; //タイル除去の優先度(高いほど優先)
     */
+    const procon::Field& field = manager->getField();
+
+    std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
+    std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
     std::vector<int> can_put_pattern;
 
@@ -25,7 +29,19 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
 
     std::vector<double> eval(can_put_pattern.size(), 0);
 
-    for(int index = 0; index < can_put_pattern.size(); ++index){
+    for(unsigned int index = 0; index < can_put_pattern.size(); ++index){
+
+        int count = can_put_pattern.at(index);
+
+        std::vector<std::pair<int,int>> pos(2);
+
+        pos.at(0) = field.getAgent(side, 0);
+        pos.at(0).first += x_list.at(count / 9);
+        pos.at(0).second += y_list.at(count / 9);
+
+        pos.at(1) = field.getAgent(side, 1);
+        pos.at(1).first += x_list.at(count % 9);
+        pos.at(1).second += y_list.at(count % 9);
 
     }
 
