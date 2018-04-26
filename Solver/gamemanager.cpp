@@ -3,6 +3,7 @@
 #include "testalgorithm.h"
 #include "simplemontecarlo/simplemontecarlo.h"
 #include "montecarlotreesearch/montecarlotreesearch.h"
+#include "geneticalgo/geneticalgo.h"
 #include "dummyalgorithm.h"
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, QObject *parent)
@@ -31,6 +32,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_1 = std::make_shared<TestAlgorithm>(share);
     } else if (QString::compare("DummyAlgorithm", my_algo) == 0) {
         team_1 = std::make_shared<DummyAlgorithm>(share);
+    } else if (QString::compare("GeneticAlgo", my_algo) == 0) {
+        team_1 = std::make_shared<GeneticAlgo>(share);
     }
 
     if (QString::compare("MonteCarloTreeSearch", opponent_algo) == 0) {
@@ -41,6 +44,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_2 = std::make_shared<TestAlgorithm>(share);
     } else if (QString::compare("DummyAlgorithm", my_algo) == 0) {
         team_2 = std::make_shared<DummyAlgorithm>(share);
+    } else if (QString::compare("GeneticAlgo", my_algo) == 0) {
+        team_2 = std::make_shared<GeneticAlgo>(share);
     }
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);

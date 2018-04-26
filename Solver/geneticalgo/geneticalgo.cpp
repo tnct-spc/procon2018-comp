@@ -3,6 +3,7 @@
 GeneticAlgo::GeneticAlgo(std::shared_ptr<GameManager> manager_ptr) :
     AlgorithmWrapper(manager_ptr)
 {
+    agent_data = GeneticAgent();
 
 }
 
