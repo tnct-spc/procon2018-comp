@@ -27,7 +27,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
         if(manager->canPut(side, count / 9, count % 9))
             can_put_pattern.emplace_back(count);
 
-    std::vector<double> eval(can_put_pattern.size(), 0);
 
 
     //とりあえずここで評価していく
@@ -53,6 +52,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
         return value;
     };
 
+    std::vector<std::pair<double,int>> eval;//value,indexでペアを組む
+
     for(unsigned int index = 0; index < can_put_pattern.size(); ++index){
 
         int count = can_put_pattern.at(index);
@@ -67,10 +68,19 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
         pos.at(1).first += x_list.at(count % 9);
         pos.at(1).second += y_list.at(count % 9);
 
-        double value1 = tile_value(pos.at(0));
+        double value_1 = tile_value(pos.at(0));
         double value_2 = tile_value(pos.at(1));
 
+        eval.emplace_back(std::make_pair(value_1 + value_2, index ));
+
     }
+    sort(eval.begin(), eval.end(), std::greater<std::pair<double,int>>() );
+
+    //累積和配列
+    std::vector<std::pair<double,int>> accum(can_put_pattern.size() + 1, std::make_pair(0, 0) );
+    for(unsigned int count = 0; count < can_put_pattern.size(); ++count)
+        accum.at(count + 1) = std::make_pair(accum.at(count).first + eval.at(count).first, eval.at(count).second );
+
 
 
 }
