@@ -160,6 +160,49 @@ unsigned int GameManager::getFinalTurn(){
     return turn_max;
 }
 
+bool GameManager::canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2){
+
+    std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
+    std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
+
+    auto check_outofrange = [&](int agent){
+
+        std::pair<int,int> agent_pos = field->getAgent(side, agent);
+
+        int move = (agent == 0 ? move_1 : move_2);
+
+        agent_pos.first += x_list.at(move);
+        agent_pos.second += y_list.at(move);
+
+
+        return !(agent_pos.first < 0 || agent_pos.second < 0 || agent_pos.first >= field->getSize().first || agent_pos.second >= field->getSize().second);
+    };
+
+    auto check_conflict = [&]{
+
+        std::pair<int,int> agent_pos_1 = field->getAgent(side, 0);
+
+        if(field->getState(agent_pos_1.first + x_list.at(move_1), agent_pos_1.second + y_list.at(move_1) ).first != (side == 0 ? 2 : 1) ){
+
+            agent_pos_1.first += x_list.at(move_1);
+            agent_pos_1.second += y_list.at(move_1);
+        }
+
+        std::pair<int,int> agent_pos_2 = field->getAgent(side, 1);
+
+        if(field->getState(agent_pos_2.first + x_list.at(move_2), agent_pos_2.second + y_list.at(move_2) ).first != (side == 0 ? 2 : 1) ){
+
+            agent_pos_2.first += x_list.at(move_2);
+            agent_pos_2.second += y_list.at(move_2);
+        }
+
+        return (agent_pos_1 != agent_pos_2);
+    };
+
+
+    return ( check_outofrange(0) && check_outofrange(1) && check_conflict());
+}
+
 void GameManager::agentAct(const int turn, const int agent, const std::tuple<int, int, int> tuple_val){
 
     int type, x_inp, y_inp;

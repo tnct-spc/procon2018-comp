@@ -28,6 +28,7 @@ public:
     void startSimulation(QString my_algo, QString opponent_algo);
     unsigned int getFinalTurn();
 
+    bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2);
     void setAutoMode(bool value);
 
     std::shared_ptr<Visualizer> getVisualizer();

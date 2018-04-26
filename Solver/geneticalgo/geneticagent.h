@@ -8,6 +8,9 @@ public:
     GeneticAgent();
 
     //パラメータを持ってて実質構造体
+    
+
+
 };
 
 #endif // GENETICAGENT_H
