@@ -87,6 +87,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
     }
     sort(eval.begin(), eval.end(), std::greater<std::pair<double,int>>() );
 
+    double min_val = eval.back().first;
+    if(min_val < 0)//負の値が出るとよくない(?)
+        for(int count = 0; count < can_put_pattern.size(); ++count)
+            eval.at(count).first -= min_val;
+
     //累積和配列
     std::vector<std::pair<double,int>> accum(can_put_pattern.size() + 1, std::make_pair(0, 0) );
     for(unsigned int count = 0; count < can_put_pattern.size(); ++count)
