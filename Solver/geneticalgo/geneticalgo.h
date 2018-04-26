@@ -2,6 +2,7 @@
 #define GENETICALGO_H
 
 #include "algorithmwrapper.h"
+#include "gamemanager.h"
 #include "geneticagent.h"
 
 class GeneticAlgo : public AlgorithmWrapper
