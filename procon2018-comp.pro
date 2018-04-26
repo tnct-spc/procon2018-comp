@@ -5,4 +5,5 @@ SUBDIRS += \
     Field \
     Visualizer \
     Solver \
-    Mejirodai
+    Mejirodai \
+    GeneticSimulator
