@@ -11,10 +11,11 @@ Mejirodai::Mejirodai(QWidget *parent) :
     visualizer = manager->getVisualizer();
     visualizer->show();
 
-
     connect(ui->runButton, &QPushButton::clicked, this, &Mejirodai::RunManagerSimulation);
     connect(ui->goNext, &QPushButton::clicked, this, &Mejirodai::goNextState);
     connect(ui->goPrev, &QPushButton::clicked, this, &Mejirodai::goPrevState);
+
+
 }
 
 Mejirodai::~Mejirodai()
@@ -37,4 +38,14 @@ void Mejirodai::goNextState(){
 
 void Mejirodai::goPrevState(){
     manager->setFieldCount(manager->getFieldCount() - 1);
+}
+
+void Mejirodai::on_selectMyAlgorithmBox_currentIndexChanged(int index)
+{
+    ui->my_stackedWidget->setCurrentIndex(index);
+}
+
+void Mejirodai::on_selectOpponentAlgorithmBox_currentIndexChanged(int index)
+{
+    ui->opponent_stackedWidget->setCurrentIndex(index);
 }

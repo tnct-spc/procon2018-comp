@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -24,7 +24,7 @@
     <item row="0" column="1">
      <widget class="QLabel" name="label">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -34,10 +34,10 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="0" rowspan="8">
+    <item row="0" column="0" rowspan="6">
      <widget class="QPushButton" name="runButton">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -47,37 +47,71 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="2">
-     <widget class="QComboBox" name="selectOpponentAlgorithmBox">
+    <item row="4" column="1">
+     <widget class="QPushButton" name="goNext">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <item>
-       <property name="text">
-        <string>MonteCarloTreeSearch</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>SimpleMonteCalro</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>TestAlgorithm</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>DummyAlgorithm</string>
-       </property>
-      </item>
+      <property name="text">
+       <string>Next</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QPushButton" name="goPrev">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Prev</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="QStackedWidget" name="opponent_stackedWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <widget class="QWidget" name="MonteCarloTreeSearch_opponent"/>
+      <widget class="QWidget" name="SimpleMonteCalro_opponent"/>
+      <widget class="QWidget" name="TestAlgorithm_opponent"/>
+      <widget class="QWidget" name="DummyAlgorithm_opponent"/>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QStackedWidget" name="my_stackedWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="MonteCarloTreeSearch_my"/>
+      <widget class="QWidget" name="SimpleMonteCalro_my"/>
+      <widget class="QWidget" name="TestAlgorithm_my"/>
+      <widget class="QWidget" name="DummyAlgorithm_my"/>
      </widget>
     </item>
     <item row="0" column="2">
+     <widget class="QLabel" name="label_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Opponent's Algorithm</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
      <widget class="QComboBox" name="selectMyAlgorithmBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -110,43 +144,34 @@
       </item>
      </widget>
     </item>
-    <item row="1" column="1">
-     <widget class="QLabel" name="label_2">
+    <item row="1" column="2">
+     <widget class="QComboBox" name="selectOpponentAlgorithmBox">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <property name="text">
-       <string>Opponent's Algorithm</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="1">
-     <widget class="QPushButton" name="goNext">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Next</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="1">
-     <widget class="QPushButton" name="goPrev">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Prev</string>
-      </property>
+      <item>
+       <property name="text">
+        <string>MonteCarloTreeSearch</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>SimpleMonteCalro</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>TestAlgorithm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>DummyAlgorithm</string>
+       </property>
+      </item>
      </widget>
     </item>
    </layout>
