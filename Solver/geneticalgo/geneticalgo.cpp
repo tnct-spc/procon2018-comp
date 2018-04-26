@@ -81,6 +81,15 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
     for(unsigned int count = 0; count < can_put_pattern.size(); ++count)
         accum.at(count + 1) = std::make_pair(accum.at(count).first + eval.at(count).first, eval.at(count).second );
 
+    //ここからagent_data.randを元にどこまで取るかを決める ここから乱数とlower_bound(i,-1)とかで出す
+    std::random_device rnd;
+    std::mt19937 mt(rnd());
+
+    std::uniform_real_distribution<> rand_double(0.0, agent_data.rand * (accum.back().first));
+
+    unsigned int index = std::distance(accum.begin(), std::lower_bound(accum.begin(), accum.end(), std::make_pair(rand_double(mt), -1)) );
+
+    int val = eval.at(index).second;
 
 
 }
