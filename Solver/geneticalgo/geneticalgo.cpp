@@ -72,7 +72,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
         double value_1 = tile_value(pos.at(0));
         double value_2 = tile_value(pos.at(1));
 
-        eval.emplace_back(std::make_pair(value_1 + value_2, index ));
+        eval.emplace_back(std::make_pair(value_1 + value_2, count ));
 
     }
     sort(eval.begin(), eval.end(), std::greater<std::pair<double,int>>() );
@@ -104,6 +104,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
     std::tuple<int,int,int> agent_2_tuple = std::make_tuple( (field.getState(agent_2_pos.first, agent_2_pos.second).first == (side == 0 ? 2 : 1 ) ? 2 : 1 ),
                                                              agent_2_move.first, agent_2_move.second);
 
+    std::cout << " ( " << agent_1_move.first << " , " << agent_1_move.second << " ) ";
+    std::cout << " ( " << agent_2_move.first << " , " << agent_2_move.second << " ) " << std::endl;
     return std::make_pair(agent_1_tuple, agent_2_tuple);
 
 
