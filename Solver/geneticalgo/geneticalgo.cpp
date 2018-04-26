@@ -16,6 +16,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
     double next_p = 0.5; //次の手での得点の優先度(高いほど優先)
     double region = 0.5; //領域ポイントの優先度(高いほど優先)
     double removal = 0.5; //タイル除去の優先度(高いほど優先)
+    double nomove = 0.5; //移動しなかった時のペナルティ(高いほどペナ大)
     */
     const procon::Field& field = manager->getField();
 
@@ -45,6 +46,9 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
             value = state.second;
         }
 
+        if(state.first == side + 1)//バックの場合ペナを設ける
+            value -= (agent_data.backmove + 1.0) * state.second;
+
         if(state.second < 0)
             value += state.second * ( agent_data.minus * 3.0);//マイナスの時は評価を減らす
 
@@ -71,6 +75,12 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
 
         double value_1 = tile_value(pos.at(0));
         double value_2 = tile_value(pos.at(1));
+
+        //動かない場合のペナ
+        if(count / 9 == 8)
+            value_1 -= 16.0 * (1.0 - agent_data.nomove) * 2.0;
+        if(count % 9 == 8)
+            value_2 -= 16.0 * (1.0 - agent_data.nomove) * 2.0;
 
         eval.emplace_back(std::make_pair(value_1 + value_2, count ));
 

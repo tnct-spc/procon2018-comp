@@ -13,4 +13,6 @@ GeneticAgent::GeneticAgent()
     next_p = rand_double(mt);
     region = rand_double(mt);
     removal = rand_double(mt);
+    nomove = rand_double(mt);
+    backmove = rand_double(mt);
 }
