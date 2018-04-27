@@ -7,7 +7,8 @@
 #include "dummyalgorithm.h"
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, QObject *parent)
-    : QObject(parent)
+    : QObject(parent),
+    share(std::shared_ptr<GameManager>(this))
 {
 
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
@@ -22,7 +23,7 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, Q
 
 void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
-    std::shared_ptr<GameManager> share(this);
+   // std::shared_ptr<GameManager> share(this);
 
     if (QString::compare("MonteCarloTreeSearch", my_algo) == 0) {
         team_1 = std::make_shared<MonteCarloTreeSearch>(share);
@@ -49,6 +50,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
     }
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
+
 
 
 
@@ -144,8 +146,6 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
         }
         */
-
-
 
 
 }

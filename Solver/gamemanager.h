@@ -45,6 +45,8 @@ public slots:
 
 
 private:
+    std::shared_ptr<GameManager> share;
+
     std::shared_ptr<procon::Field> field;
     std::shared_ptr<Visualizer> visualizer;
     std::vector<std::shared_ptr<procon::Field>> field_vec;
