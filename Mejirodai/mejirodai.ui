@@ -81,10 +81,66 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <widget class="QWidget" name="MonteCarloTreeSearch_opponent"/>
-      <widget class="QWidget" name="SimpleMonteCalro_opponent"/>
-      <widget class="QWidget" name="TestAlgorithm_opponent"/>
-      <widget class="QWidget" name="DummyAlgorithm_opponent"/>
+      <widget class="QWidget" name="MonteCarloTreeSearch_opponent">
+       <widget class="QLabel" name="label_4">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>MonteCarloTreeSearch</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="SimpleMonteCalro_opponent">
+       <widget class="QLabel" name="label_6">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>90</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>SimpleMonteCalro</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="TestAlgorithm_opponent">
+       <widget class="QLabel" name="label_8">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>110</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>TestAlgorithm</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="DummyAlgorithm_opponent">
+       <widget class="QLabel" name="label_10">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>DummyAlgorithm</string>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </item>
     <item row="0" column="2" alignment="Qt::AlignTop">
@@ -105,10 +161,66 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="MonteCarloTreeSearch_my"/>
-      <widget class="QWidget" name="SimpleMonteCalro_my"/>
-      <widget class="QWidget" name="TestAlgorithm_my"/>
-      <widget class="QWidget" name="DummyAlgorithm_my"/>
+      <widget class="QWidget" name="MonteCarloTreeSearch_my">
+       <widget class="QLabel" name="label_3">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>MonteCarloTreeSearch</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="SimpleMonteCalro_my">
+       <widget class="QLabel" name="label_5">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>90</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>SimpleMonteCalro</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="TestAlgorithm_my">
+       <widget class="QLabel" name="label_7">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>TestAlgorithm</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="DummyAlgorithm_my">
+       <widget class="QLabel" name="label_9">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>DummyAlgorithm</string>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </item>
     <item row="1" column="1" rowspan="2">

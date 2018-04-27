@@ -22,12 +22,6 @@ public:
     explicit Mejirodai(QWidget *parent = 0);
     ~Mejirodai();
 
-private slots:
-
-    void on_selectMyAlgorithmBox_currentIndexChanged(int index);
-
-    void on_selectOpponentAlgorithmBox_currentIndexChanged(int index);
-
 private:
     Ui::Mejirodai *ui;
 
