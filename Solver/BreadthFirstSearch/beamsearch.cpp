@@ -36,13 +36,9 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(
   //  cout<<"unya"<<endl;
     std::vector<std::vector<std::pair<int,int>>> Agents = field.getAgents();
 
-    if(side==0){
-        agent1=Agents.at(0).at(0);
-        agent2=Agents.at(0).at(1);
-    }else{
-        agent1=Agents.at(1).at(0);
-        agent2=Agents.at(1).at(1);
-    }
+        agent1=Agents.at(side).at(0);
+        agent2=Agents.at(side).at(1);
+
     cout<<"("<<agent1.first<<","<<agent1.second<<")"<<"("<<agent2.first<<","<<agent2.second<<")"<<endl;
    // cout<<"nya"<<endl;
     std::vector<std::pair<int,std::tuple<procon::Field,std::tuple<int,int,int>,std::tuple<int,int,int>>>> beam;
@@ -110,7 +106,6 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(
 
                     }
                     int v = Evaluation_Field(ins_field);
-                    manager->setdock(ins_field);
                     beam.push_back(std::make_pair(v,std::make_tuple(ins_field,std::make_tuple(way1,age1.at(a).first,age1.at(a).second),std::make_tuple(way2,age2.at(b).first,age2.at(b).second))));
                 }
             }
@@ -166,7 +161,6 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(
                         }
                         int v = Evaluation_Field(ins_field);
 
-                        manager->setdock(ins_field);
                         ins_beam.push_back(std::make_pair(v,std::make_tuple(ins_field,std::get<1>(ins_value.second),std::get<2>(ins_value.second))));
                     }
                 }
@@ -177,5 +171,5 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(
         }
     }
     cout<<"("<<std::get<0>(std::get<1>(beam.front().second))<<","<<std::get<1>(std::get<1>(beam.front().second))<<","<<std::get<2>(std::get<1>(beam.front().second))<<")"<<"("<<std::get<0>(std::get<2>(beam.front().second))<<","<<std::get<1>(std::get<2>(beam.front().second))<<","<<std::get<2>(std::get<2>(beam.front().second))<<")"<<endl;
-    return std::make_pair(std::get<2>(beam.front().second),std::get<1>(beam.front().second));
+    return std::make_pair(std::get<1>(beam.front().second),std::get<2>(beam.front().second));
 }

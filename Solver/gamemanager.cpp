@@ -80,16 +80,16 @@ void GameManager::agentAct(int turn, int agent, int type, int x_pos, int y_pos){
 
     //クッソ長い例外処理
     if(type && (
-        agent_pos.first - x_pos < 0 || agent_pos.first - x_pos >= grid_size.first ||
-        agent_pos.second - y_pos < 0 || agent_pos.second - y_pos >= grid_size.second ||
-        (type == 1 && field->getState(agent_pos.first - x_pos, agent_pos.second - y_pos).first == (turn ? 2 : 1)) ||
-        (type == 2 && field->getState(agent_pos.first - x_pos, agent_pos.second - y_pos).first != (turn ? 1 : 2))
+        agent_pos.first + x_pos < 0 || agent_pos.first + x_pos >= grid_size.first ||
+        agent_pos.second + y_pos < 0 || agent_pos.second + y_pos >= grid_size.second ||
+        (type == 1 && field->getState(agent_pos.first + x_pos, agent_pos.second + y_pos).first == (turn ? 2 : 1)) ||
+        (type == 2 && field->getState(agent_pos.first + x_pos, agent_pos.second + y_pos).first != (turn ? 1 : 2))
         )){
         act_stack.at(turn).at(agent) = std::make_pair(0 , std::make_pair(0, 0));
         return ;
     }
 
-    act_stack.at(turn).at(agent) = std::make_pair(type, std::make_pair(agent_pos.first - x_pos, agent_pos.second - y_pos));
+    act_stack.at(turn).at(agent) = std::make_pair(type, std::make_pair(agent_pos.first + x_pos, agent_pos.second + y_pos));
 
 }
 
