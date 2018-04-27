@@ -49,10 +49,14 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     std::random_device rnd;
     std::mt19937 mt (rnd());
 
+    /*
     std::uniform_int_distribution<> plus_rnd(0,max_val);
     std::uniform_int_distribution<> minus_rnd(min_val,-1);
+    */
 
-    std::uniform_real_distribution<> double_rnd(0.0,1.0);
+    std::lognormal_distribution<> dist(0,1.4);
+
+    //std::uniform_real_distribution<> double_rnd(0.0,1.0);
 
     //ここは「x軸かつy軸方向に垂直」で解釈します
 
@@ -60,9 +64,14 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     for(unsigned int x = 0; x < size_x / 2 + 1; ++x){
         for(unsigned int y = 0; y < size_y / 2 + 1; ++y){
 
+            /*
             int value = (double_rnd(mt) > minus_per
                                       ? plus_rnd(mt)
                                       : minus_rnd(mt) );
+            */
+
+            int value = std::min(static_cast<int>(dist(mt)), (int)max_val);
+
             value_data.at(x).at(y) = value;
             value_data.at(grid_x - x - 1).at(grid_y - y - 1) = value;
             value_data.at(x).at(grid_y - y - 1) = value;

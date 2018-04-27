@@ -13,7 +13,7 @@ class Field
 public:
     Field(const unsigned int size_x, const unsigned int size_y);
     Field(const unsigned int size_x, const unsigned int size_y, const std::vector<std::vector<int>>& input_val);
-    Field(const unsigned int size_x, const unsigned int size_y,const unsigned int max_val,const int min_val,const double minus_per = 0.3);
+    Field(const unsigned int size_x, const unsigned int size_y,const unsigned int max_val,const int min_val,const double minus_per = 0.15);
 
     const std::vector<std::vector<std::pair<int,int>>>& getAgents() const;
     std::pair<int,int> getAgent(const unsigned int turn, const unsigned int number) const;

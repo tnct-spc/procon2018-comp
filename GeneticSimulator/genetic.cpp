@@ -21,14 +21,16 @@ int Genetic::retRandom(int st, int en){
 }
 
 
-int Genetic::buttleAgents(GeneticAgent* first, GeneticAgent* second){
+int Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
 
-    procon::Field field(12, 8, 16, -16);
 
     auto buttle = [&]{
         int turn = retRandom(60, 120);
+        std::pair<int,int> size = std::make_pair( retRandom(8,12), retRandom(8, 12) );
 
+        procon::Field field(size.first, size.second, 16, -16);
         GameSimulator sim(field.getValue(), turn );
+
         sim.resetField(field.getField(), field.getAgents());
 
         for(int count = 0; count < turn; ++count){
@@ -37,6 +39,7 @@ int Genetic::buttleAgents(GeneticAgent* first, GeneticAgent* second){
 
         return true;
     };
+
 
 
     int win_count = 0;

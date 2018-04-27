@@ -37,23 +37,27 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
     }
 
     if (QString::compare("MonteCarloTreeSearch", opponent_algo) == 0) {
-        team_2 = std::make_shared<MonteCarloTreeSearch>(share);
+        team_2 = std::make_shared<MonteCarloTreeSearch>(team_1->getManagerPtr());
     } else if (QString::compare("SimpleMonteCalro", opponent_algo) == 0) {
-        team_2 = std::make_shared<SimpleMonteCalro>(share);
+        team_2 = std::make_shared<SimpleMonteCalro>(team_1->getManagerPtr());
     } else if (QString::compare("TestAlgorithm", opponent_algo) == 0) {
-        team_2 = std::make_shared<TestAlgorithm>(share);
-    } else if (QString::compare("DummyAlgorithm", my_algo) == 0) {
-        team_2 = std::make_shared<DummyAlgorithm>(share);
-    } else if (QString::compare("GeneticAlgo", my_algo) == 0) {
-        team_2 = std::make_shared<GeneticAlgo>(share);
+        team_2 = std::make_shared<TestAlgorithm>(team_1->getManagerPtr());
+    } else if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
+        team_2 = std::make_shared<DummyAlgorithm>(team_1->getManagerPtr());
+    } else if (QString::compare("GeneticAlgo", opponent_algo) == 0) {
+        team_2 = std::make_shared<GeneticAlgo>(team_1->getManagerPtr());
     }
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
 
-    progresdock = std::make_shared<ProgresDock>();
 
+
+    // progressdockは一旦表示しない事にします(使う事があまりないため)
+    /*
+    progresdock = std::make_shared<ProgresDock>();
     field_vec.push_back(std::make_shared<procon::Field>(*field));
     progresdock->addAnswer(*(field_vec.back()));
+    */
 
     visualizer->update();
 
@@ -89,7 +93,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
             field_vec.push_back(std::make_shared<procon::Field>(*field));
 
-            progresdock->addAnswer(*(field_vec.back()));
+//            progresdock->addAnswer(*(field_vec.back()));
 
 
 
@@ -98,7 +102,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
         now_turn = -1;
 
-        progresdock->show();
+        // progresdock->show();
 
     }else{
 
@@ -323,7 +327,7 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
 
     field_vec.push_back(std::make_shared<procon::Field>(*field));
 
-    progresdock->addAnswer(*(field_vec.back()));
+//     progresdock->addAnswer(*(field_vec.back()));
 
 
 
@@ -338,7 +342,7 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
         now_turn = -1;
 
         emit signalAutoMode(false);
-        progresdock->show();
+        // progresdock->show();
     }else
         nextMoveForManualMode();
 

@@ -22,7 +22,7 @@ private:
     std::mt19937 mt;
 
     //先手の勝利回数を返す
-    int buttleAgents(GeneticAgent* first, GeneticAgent* second);
+    int buttleAgents(GeneticAgent& first, GeneticAgent& second);
 
     int retRandom(int st, int en);//[st,en]の乱数
 
