@@ -4,3 +4,7 @@ Genetic::Genetic()
 {
 
 }
+
+void Genetic::run(){
+
+}

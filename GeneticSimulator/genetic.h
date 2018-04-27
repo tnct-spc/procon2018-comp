@@ -6,6 +6,7 @@ class Genetic
 {
 public:
     Genetic();
+    void run();
 };
 
 #endif // GENETIC_H
