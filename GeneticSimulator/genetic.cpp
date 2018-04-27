@@ -4,13 +4,12 @@ Genetic::Genetic() :
     mt(rnd())
 {
     //乱択で生成する
-    for(int count = 0; count < agent_num; ++count)
-        agents.emplace_back(GeneticAgent());
+    while(agents.size() < agent_num)
+        agents.insert(GeneticAgent());
 
 }
 
 void Genetic::run(){
-
 
 }
 

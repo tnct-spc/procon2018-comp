@@ -16,3 +16,6 @@ GeneticAgent::GeneticAgent()
     nomove = rand_double(mt);
     backmove = rand_double(mt);
 }
+bool GeneticAgent::operator<(const GeneticAgent &other) const {
+    return 1.0 * win_count / try_count < 1.0 * other.win_count / other.try_count;
+}

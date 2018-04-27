@@ -8,6 +8,8 @@ class GeneticAgent
 public:
     GeneticAgent();
 
+    bool operator<(const GeneticAgent &other) const;
+
     //パラメータを持ってて実質構造体
 
     double rand = 0.5; //乱択度合い(高いほど乱択)
@@ -18,6 +20,8 @@ public:
     double nomove = 0.5; //移動しなかった時のペナルティ(高いほどペナ大)
     double backmove = 0.5; //もう塗られてる所に行った時のペナルティ(高いほどペナ大)
     
+    int try_count = 0;//試行回数と勝利回数
+    int win_count = 0;
 
 
 };
