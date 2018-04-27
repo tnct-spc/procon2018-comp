@@ -4,4 +4,16 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        main.cpp
+        main.cpp \
+    genetic.cpp
+
+LIBS += -L$$OUT_PWD/../Field/ -lField
+INCLUDEPATH += $$PWD/../Field
+DEPENDPATH += $$PWD/../Field
+
+LIBS += -L$$OUT_PWD/../Solver/ -lSolver
+INCLUDEPATH += $$PWD/../Solver
+DEPENDPATH += $$PWD/../Solver
+
+HEADERS += \
+    genetic.h
