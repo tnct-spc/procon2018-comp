@@ -41,13 +41,14 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
             if(state.second >= 0)value = state.second * (agent_data.removal * 2.0);//除去特有の重み付け
             else value = state.second * ( 0.5 / agent_data.removal );
 
-        }else{
+        }else if(state.first == side + 1){
 
+            //戻った時のペナ
+            value = - 32.0 * agent_data.nomove * agent_data.nomove;
+        }else{
+            //置かれてない時
             value = state.second;
         }
-
-        if(state.first == side + 1)//バックの場合ペナを設ける
-            value -= (agent_data.backmove + 1.0) * state.second;
 
         if(state.second < 0)
             value += state.second * ( agent_data.minus * 3.0);//マイナスの時は評価を減らす
@@ -87,10 +88,9 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
     }
     sort(eval.begin(), eval.end(), std::greater<std::pair<double,int>>() );
 
-    double min_val = eval.back().first;
-    if(min_val < 0)//負の値が出るとよくない(?)
-        for(int count = 0; count < can_put_pattern.size(); ++count)
-            eval.at(count).first -= min_val;
+    //負の値なら選ばない
+    for(unsigned int count = 0; count < can_put_pattern.size(); ++count)
+        eval.at(count).first = std::max(eval.at(count).first, 0.0);
 
     //累積和配列
     std::vector<std::pair<double,int>> accum(can_put_pattern.size() + 1, std::make_pair(0, 0) );
@@ -119,8 +119,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
     std::tuple<int,int,int> agent_2_tuple = std::make_tuple( (field.getState(agent_2_pos.first, agent_2_pos.second).first == (side == 0 ? 2 : 1 ) ? 2 : 1 ),
                                                              agent_2_move.first, agent_2_move.second);
 
+    /* デバッグ用出力
     std::cout << " ( " << agent_1_move.first << " , " << agent_1_move.second << " ) ";
     std::cout << " ( " << agent_2_move.first << " , " << agent_2_move.second << " ) " << std::endl;
+    */
+
     return std::make_pair(agent_1_tuple, agent_2_tuple);
 
 
