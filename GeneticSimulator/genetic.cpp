@@ -23,14 +23,15 @@ int Genetic::retRandom(int st, int en){
 int Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
 
 
-    auto buttle = [&]{
+    auto buttle = [&](bool flag){//2で割った余りによって反転する(得点が同じ時の処理が順番依存なので一応)
         int turn = retRandom(60, 120);
         std::pair<int,int> size = std::make_pair( retRandom(8,12), retRandom(8, 12) );
 
         //visualizerは表示しない
         GameManager manager(size.first, size.second, false, turn);
 
-        return manager.simulationGenetic(first, second);
+        return (flag ? manager.simulationGenetic(first, second)
+                     : manager.simulationGenetic(second, first));
     };
 
 
@@ -38,7 +39,7 @@ int Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
     int win_count = 0;
 
     for(int count = 0; count < buttile_count; ++count)
-        win_count += buttle();
+        win_count += buttle(count % 2);
 
     return win_count;
 }

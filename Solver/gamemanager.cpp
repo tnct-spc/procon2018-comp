@@ -186,8 +186,17 @@ bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAg
     }
 
     // todo: ここで点数計算を行い勝率を出す
+    int point_1 = 0;
+    int point_2 = 0;
+    for(int x = 0; x < field->getSize().first; ++x)
+        for(int y = 0; y < field->getSize().second; ++y){
+            if(field->getState(x, y).first == 1)
+                point_1 += field->getState(x, y).second;
+            else if(field->getState(x, y).first == 2)
+                point_2 += field->getState(x, y).second;
+        }
 
-    return true;
+    return point_1 > point_2;
 }
 
 procon::Field& GameManager::getField(){
