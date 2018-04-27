@@ -37,7 +37,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         }
 }
 
-procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const unsigned int max_val, const int min_val, const double minus_per){
+procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const int max_val, const int min_val){
     grid_x = size_x;
     grid_y = size_y;
 
@@ -52,11 +52,12 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     /*
     std::uniform_int_distribution<> plus_rnd(0,max_val);
     std::uniform_int_distribution<> minus_rnd(min_val,-1);
-    */
-
-    std::lognormal_distribution<> dist(0,1.4);
-
     //std::uniform_real_distribution<> double_rnd(0.0,1.0);
+    */
+    std::uniform_int_distribution<> plus_rnd(0,max_val / 3);
+
+    std::lognormal_distribution<> dist(3.0,0.25);
+
 
     //ここは「x軸かつy軸方向に垂直」で解釈します
 
@@ -70,7 +71,8 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
                                       : minus_rnd(mt) );
             */
 
-            int value = std::min(static_cast<int>(dist(mt)), (int)max_val);
+            int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
+            value = std::max(min_val, value);
 
             value_data.at(x).at(y) = value;
             value_data.at(grid_x - x - 1).at(grid_y - y - 1) = value;
