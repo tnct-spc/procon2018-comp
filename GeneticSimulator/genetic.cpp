@@ -28,14 +28,11 @@ int Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
         int turn = retRandom(60, 120);
         std::pair<int,int> size = std::make_pair( retRandom(8,12), retRandom(8, 12) );
 
-        procon::Field field(size.first, size.second, 16, -16);
-        GameSimulator sim(field.getValue(), turn );
+        //visualizerは表示しない
+        GameManager manager(size.first, size.second, false, turn);
 
-        sim.resetField(field.getField(), field.getAgents());
+        // manager.startSimulation();
 
-        for(int count = 0; count < turn; ++count){
-
-        }
 
         return true;
     };

@@ -1,9 +1,9 @@
 #include "geneticalgo.h"
 
-GeneticAlgo::GeneticAlgo(std::shared_ptr<GameManager> manager_ptr) :
-    AlgorithmWrapper(manager_ptr)
+GeneticAlgo::GeneticAlgo(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent) :
+    AlgorithmWrapper(manager_ptr),
+    agent_data(agent)
 {
-    agent_data = GeneticAgent();
 
 }
 
@@ -127,8 +127,4 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
     return std::make_pair(agent_1_tuple, agent_2_tuple);
 
 
-}
-
-void GeneticAlgo::setAgentData(GeneticAgent inp){
-    agent_data = inp;
 }

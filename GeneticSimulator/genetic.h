@@ -3,7 +3,7 @@
 
 #include <random>
 
-#include "gamesimulator.h"
+#include "gamemanager.h"
 #include "geneticalgo/geneticalgo.h"
 
 class Genetic

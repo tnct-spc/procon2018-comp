@@ -3,22 +3,25 @@
 #include "testalgorithm.h"
 #include "simplemontecarlo/simplemontecarlo.h"
 #include "montecarlotreesearch/montecarlotreesearch.h"
-#include "geneticalgo/geneticalgo.h"
 #include "dummyalgorithm.h"
 
-GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, QObject *parent)
+GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
-    share(std::shared_ptr<GameManager>(this))
+    share(std::shared_ptr<GameManager>(this)),
+    turn_max(turn_max),
+    vis_show(vis_show)
 {
 
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
-    visualizer = std::make_shared<Visualizer>(*field);
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
-    connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
-    connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
-    connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
+    if(vis_show){
+        visualizer = std::make_shared<Visualizer>(*field);
+        connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
+        connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
+        connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
+    }
 }
 
 void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
@@ -61,7 +64,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
     progresdock->addAnswer(*(field_vec.back()));
     */
 
-    visualizer->update();
+    if(vis_show)
+        visualizer->update();
 
 
     //うぇーいｗｗｗｗｗｗｗ
@@ -150,6 +154,38 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
 }
 
+bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAgent &agent_2){
+
+    team_1 = std::make_shared<GeneticAlgo>(share, agent_1);
+    team_2 = std::make_shared<GeneticAlgo>(share, agent_2);
+
+    for(int now_turn = 0; now_turn < turn_max; ++now_turn){
+
+
+        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
+        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
+
+        std::thread th1([&]{team_1_ans =  team_1->agentAct(0);});
+        std::thread th2([&]{team_2_ans =  team_2->agentAct(1);});
+
+        th1.join();
+        th2.join();
+
+        team_1_ans = team_1->agentAct(0);
+        team_2_ans = team_2->agentAct(1);
+
+        agentAct(0,0,team_1_ans.first);
+        agentAct(0,1,team_1_ans.second);
+        agentAct(1,0,team_2_ans.first);
+        agentAct(1,1,team_2_ans.second);
+
+        changeTurn();
+
+    }
+
+    return true;
+}
+
 procon::Field& GameManager::getField(){
     return *field;
 }
@@ -159,10 +195,12 @@ unsigned int GameManager::getFieldCount(){
 }
 void GameManager::setFieldCount(const unsigned int number){
     if(number >= field_vec.size())return ;
-    visualizer->setField(*field_vec.at(number));
     now_field = number;
-    visualizer->update();
-    visualizer->repaint();
+    if(vis_show){
+        visualizer->setField(*field_vec.at(number));
+        visualizer->update();
+        visualizer->repaint();
+    }
 }
 
 unsigned int GameManager::getFinalTurn(){
