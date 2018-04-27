@@ -31,10 +31,7 @@ int Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
         //visualizerは表示しない
         GameManager manager(size.first, size.second, false, turn);
 
-        // manager.startSimulation();
-
-
-        return true;
+        return manager.simulationGenetic(first, second);
     };
 
 

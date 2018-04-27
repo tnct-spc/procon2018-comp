@@ -5,7 +5,6 @@
 #include "visualizer.h"
 #include "progresdock.h"
 #include "geneticalgo/geneticalgo.h"
-#include "geneticalgo/geneticagent.h"
 
 #include <thread>
 #include <vector>

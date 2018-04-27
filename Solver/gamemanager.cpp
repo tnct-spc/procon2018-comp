@@ -21,6 +21,8 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, b
         connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
         connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
         connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
+    }else{
+        is_auto = true;//この場合は自動進行
     }
 }
 
@@ -182,6 +184,8 @@ bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAg
         changeTurn();
 
     }
+
+    // todo: ここで点数計算を行い勝率を出す
 
     return true;
 }
