@@ -39,6 +39,34 @@ void Genetic::generateAgents(){
 
     int generate_count = agent_num - tournament_count;//この数だけ新たに生成する
 
+    auto mutate = [&]{
+        int target = retRandom(0,9);
+        int siz = agents.at(target).size;
+        std::vector<double> target_data = agents.at(target).getData();
+
+        //これだけの数を適当に切り出して乱数で決め直す
+        int change_count = retRandom(1, siz / 2);
+
+        std::vector<int> val(7);
+        std::iota(val.begin(), val.end(), 0);
+
+        std::uniform_real_distribution<> rand_double(0.0, 1.0);
+
+        //決め直す所が被らないようにする
+        for(int count = 0; count < change_count; ++count){
+
+            int index = (retRandom(0, val.size() - 1));
+            target_data.at(index) = rand_double(mt);
+            val.erase(std::next(val.begin(), index));
+        }
+
+        GeneticAgent new_agent(false);
+        new_agent.setData(target_data);
+
+        agents.emplace_back(std::move(new_agent));
+
+    };
+
     auto crossover = [&]{
         //二点交叉法でやるよ
 
@@ -76,6 +104,7 @@ void Genetic::generateAgents(){
 
         if(random_value >= 1.0 - mutate_per){
             //突然変異
+            mutate();
 
         }else if(random_value <= crossover_per){
             //交叉
