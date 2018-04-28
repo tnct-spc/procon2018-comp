@@ -26,6 +26,25 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, b
     }
 }
 
+void GameManager::resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show, const int t_max){
+    turn_max = t_max;
+    vis_show = v_show;
+
+    field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
+
+    act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
+
+    if(vis_show){
+        visualizer = std::make_shared<Visualizer>(*field);
+        connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
+        connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
+        connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
+    }else{
+        is_auto = true;//この場合は自動進行
+    }
+
+}
+
 void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
    // std::shared_ptr<GameManager> share(this);

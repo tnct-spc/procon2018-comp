@@ -5,6 +5,7 @@
 #include "visualizer.h"
 #include "progresdock.h"
 #include "geneticalgo/geneticalgo.h"
+#include "geneticalgo/geneticagent.h"
 
 #include <thread>
 #include <vector>
@@ -20,6 +21,8 @@ class GameManager : public QObject
 public:
 
     explicit GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show = true, const int turn_max = 60, QObject *parent = 0);
+
+    void resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show = true, const int t_max = 60);
 
     procon::Field& getField();
 
