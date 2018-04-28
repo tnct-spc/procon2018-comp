@@ -9,8 +9,9 @@ Genetic::Genetic() :
 
     cpu_num = std::thread::hardware_concurrency();
 
-    for(int index = 0; index < cpu_num; ++index)
-        manager.emplace_back( GameManager(12,12,false,60));
+    for(int index = 0; index < cpu_num; ++index){
+        managers.push_back(new GameManager(12,12,false,60));
+    }
 
 }
 
@@ -96,11 +97,11 @@ bool Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
         std::pair<int,int> size = std::make_pair( retRandom(8,12), retRandom(8, 12) );
 
         //visualizerは表示しない
-        manager.at(index).resetManager(size.first, size.second, false, turn);
+        managers.at(index)->resetManager(size.first, size.second, false, turn);
 
         //firstが勝ったらtrue
-        return (flag ? manager.at(index).simulationGenetic(first, second)
-                     : ! manager.at(index).simulationGenetic(second, first));
+        return (flag ? managers.at(index)->simulationGenetic(first, second)
+                     : ! managers.at(index)->simulationGenetic(second, first));
     };
 
 

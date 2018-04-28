@@ -21,7 +21,7 @@ private:
     GameSimulator sim;
     */
 
-    std::vector<GameManager> manager;
+    std::vector<GameManager*> managers;
 
     std::random_device rnd;
     std::mt19937 mt;

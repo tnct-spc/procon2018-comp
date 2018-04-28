@@ -17,10 +17,11 @@ class AlgorithmWrapper;
 class GameManager : public QObject
 {
     Q_OBJECT
+    //Q_DISABLE_COPY(GameManager)
 
 public:
-
     explicit GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show = true, const int turn_max = 60, QObject *parent = 0);
+
 
     void resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show = true, const int t_max = 60);
 
