@@ -19,3 +19,22 @@ GeneticAgent::GeneticAgent()
 bool GeneticAgent::operator<(const GeneticAgent &other) const {
     return 1.0 * win_count / try_count < 1.0 * other.win_count / other.try_count;
 }
+
+void GeneticAgent::setData(const std::vector<double>& inp){
+
+    rand = inp.at(0);
+    minus = inp.at(1);
+    next_p = inp.at(2);
+    region = inp.at(3);
+    removal = inp.at(4);
+    nomove = inp.at(5);
+    backmove = inp.at(6);
+
+}
+
+std::vector<double> GeneticAgent::getData(){
+    std::vector<double> ret;
+    ret = {rand,minus,next_p,region,removal,nomove,backmove};
+
+    return ret;
+}

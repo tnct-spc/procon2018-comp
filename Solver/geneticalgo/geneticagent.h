@@ -2,6 +2,7 @@
 #define GENETICAGENT_H
 
 #include <random>
+#include <vector>
 
 class GeneticAgent
 {
@@ -9,6 +10,9 @@ public:
     GeneticAgent();
 
     bool operator<(const GeneticAgent &other) const;
+
+    void setData(const std::vector<double>& inp);
+    std::vector<double> getData();
 
     //パラメータを持ってて実質構造体
 
@@ -23,6 +27,7 @@ public:
     int try_count = 0;//試行回数と勝利回数
     int win_count = 0;
 
+    int size = 7;//パラメータの数
 
 };
 
