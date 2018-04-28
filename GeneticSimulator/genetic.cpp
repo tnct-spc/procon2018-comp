@@ -19,7 +19,7 @@ void Genetic::run(){
 
     for(int gen = 0; gen < max_gen; ++gen){
 
-        std::cout << "gen " << gen << " started" << std::endl;
+        std::cout << "gen " << gen+1 << " started" << std::endl << std::endl;
 
         //選別してtournament_count体に絞り込む
         startTournament();
@@ -36,6 +36,8 @@ int Genetic::retRandom(int st, int en){
 }
 
 void Genetic::generateAgents(){
+
+    std::cout << "generate agent" << std::endl << std::endl;
 
     int generate_count = agent_num - tournament_count;//この数だけ新たに生成する
 
@@ -160,7 +162,7 @@ void Genetic::startTournament(){
         for(unsigned int index = 0; index < input_data.size(); ++index){
             std::cout << 1.0 * input_data.at(index).win_count / input_data.at(index).try_count << " ";
         }
-        std::cout << std::endl;
+        std::cout << std::endl << std::endl;
 
         new_agents.push_back(input_data.back());
         input_data.erase(std::prev(input_data.end() ) );
@@ -187,7 +189,7 @@ void Genetic::startTournament(){
             agents.erase(agents.begin() + rand_index);
         }
 
-        std::cout << "tournament started" << std::endl;
+        std::cout << "tournament " << count + 1 << " started" << std::endl;
 
         battleTournament(tournaments);
 
