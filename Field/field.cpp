@@ -128,6 +128,15 @@ void procon::Field::setAgent(const unsigned int turn, const unsigned int number,
     agents.at(turn).at(number) = std::make_pair(x_pos, y_pos);
 }
 
+
+void procon::Field::setSize(const std::pair<int, int> &grid){
+    grid_x = grid.first; grid_y = grid.second;
+}
+
+void procon::Field::setValue(const std::vector<std::vector<int>> &value){
+    value_data = value;
+}
+
 void procon::Field::setAgents(const std::vector<std::vector<std::pair<int,int>>>& values){
     agents = values;
 }

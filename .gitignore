@@ -37,4 +37,7 @@ Makefile*
 # QtCtreator CMake
 CMakeLists.txt.user*
 
+# exported field file
+*.csv
+
 Data/GeneticAgent/ga_data

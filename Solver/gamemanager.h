@@ -3,6 +3,7 @@
 
 #include "field.h"
 #include "visualizer.h"
+#include "csvio.h"
 #include "progresdock.h"
 #include "geneticalgo/geneticalgo.h"
 #include "geneticalgo/geneticagent.h"
