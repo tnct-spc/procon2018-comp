@@ -37,7 +37,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         }
 }
 
-procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const unsigned int max_val, const int min_val, const double minus_per){
+procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const int max_val, const int min_val){
     grid_x = size_x;
     grid_y = size_y;
 
@@ -49,10 +49,15 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     std::random_device rnd;
     std::mt19937 mt (rnd());
 
+    /*
     std::uniform_int_distribution<> plus_rnd(0,max_val);
     std::uniform_int_distribution<> minus_rnd(min_val,-1);
+    //std::uniform_real_distribution<> double_rnd(0.0,1.0);
+    */
+    std::uniform_int_distribution<> plus_rnd(0,max_val / 3);
 
-    std::uniform_real_distribution<> double_rnd(0.0,1.0);
+    std::lognormal_distribution<> dist(3.0,0.25);
+
 
     //ここは「x軸かつy軸方向に垂直」で解釈します
 
@@ -60,9 +65,15 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     for(unsigned int x = 0; x < size_x / 2 + 1; ++x){
         for(unsigned int y = 0; y < size_y / 2 + 1; ++y){
 
+            /*
             int value = (double_rnd(mt) > minus_per
                                       ? plus_rnd(mt)
                                       : minus_rnd(mt) );
+            */
+
+            int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
+            value = std::max(min_val, value);
+
             value_data.at(x).at(y) = value;
             value_data.at(grid_x - x - 1).at(grid_y - y - 1) = value;
             value_data.at(x).at(grid_y - y - 1) = value;
@@ -117,13 +128,6 @@ void procon::Field::setAgent(const unsigned int turn, const unsigned int number,
     agents.at(turn).at(number) = std::make_pair(x_pos, y_pos);
 }
 
-int procon::Field::getTurnCount() const{
-    return turn_count;
-}
-
-void procon::Field::setTurnCount(const unsigned int turn){
-    turn_count = turn;
-}
 
 void procon::Field::setSize(const std::pair<int, int> &grid){
     grid_x = grid.first; grid_y = grid.second;
@@ -132,6 +136,7 @@ void procon::Field::setSize(const std::pair<int, int> &grid){
 void procon::Field::setValue(const std::vector<std::vector<int>> &value){
     value_data = value;
 }
+
 void procon::Field::setAgents(const std::vector<std::vector<std::pair<int,int>>>& values){
     agents = values;
 }

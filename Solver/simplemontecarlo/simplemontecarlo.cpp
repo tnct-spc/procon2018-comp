@@ -2,7 +2,7 @@
 
 SimpleMonteCalro::SimpleMonteCalro(std::shared_ptr<GameManager> manager_ptr) :
     AlgorithmWrapper(manager_ptr),
-    sim(GameSimulator(manager_ptr->getField().getValue(), manager_ptr->getField().getTurnCount()))
+    sim(GameSimulator(manager_ptr->getField().getValue(), manager_ptr->getTurnCount()))
 {
 
 }
@@ -47,7 +47,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleMonteCal
 
                 }
 
-                agent_trial.at(agent_1 * 9 + agent_2) += sim.startSimulation(side, agent_1, agent_2, manager->getFinalTurn() - field.getTurnCount());
+                agent_trial.at(agent_1 * 9 + agent_2) += sim.startSimulation(side, agent_1, agent_2, manager->getFinalTurn() - manager->getTurnCount());
 
             }
         }

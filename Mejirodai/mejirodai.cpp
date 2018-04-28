@@ -23,7 +23,12 @@ Mejirodai::~Mejirodai()
 }
 
 void Mejirodai::RunManagerSimulation(){
-    manager->startSimulation();
+
+    QString my = ui->selectMyAlgorithmBox->currentText();
+    QString opponnent = ui->selectOpponentAlgorithmBox->currentText();
+
+//    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
+    manager->startSimulation(my, opponnent);
 }
 
 void Mejirodai::goNextState(){
