@@ -40,12 +40,15 @@ private:
 
     double mutate_per = 0.3;//突然変異率(これ以外は交叉)
 
+    double cross_change_per = 0.3;//交叉時にパラメータを少し変化させる確率
+    double cross_change_val = 0.2;//交叉時のパラメータの最大変化量
+
     //集合の数
     const unsigned int agent_num = 100;
     //トーナメントの数
-    const int tournament_count = 10;
+    const int tournament_count = 20;
     //トーナメントの大きさ
-    const int tournament_size = 10;
+    const int tournament_size = 8;
 
     //トーナメントでの対戦数
     const int tournament_buttle = 5;
