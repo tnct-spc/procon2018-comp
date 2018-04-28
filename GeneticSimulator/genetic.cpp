@@ -102,18 +102,14 @@ void Genetic::generateAgents(){
 
         double random_value = 0.00001 * retRandom(0,100000);
 
-        if(random_value >= 1.0 - mutate_per){
+        if(random_value < mutate_per){
             //突然変異
             mutate();
 
-        }else if(random_value <= crossover_per){
+        }else{
             //交叉
             crossover();
-
-        }else{
-            //コピー
         }
-
     }
 }
 
