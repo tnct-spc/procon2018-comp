@@ -19,8 +19,9 @@ void Genetic::run(){
 
     auto debug_output = [&]{
 
-        //履歴を残さず、最新のものだけを保存する
-        std::ofstream output("../procon2017-comp/ga_data");
+        // 履歴を残さず、最新のものだけを保存する
+        // procon2018-compと同じ階層にbuildディレクトリがある状態でpath書いてます
+        std::ofstream output("../../procon2018-comp/Data/GeneticAgent/ga_data");
 
         for(auto val : agents){
 
@@ -39,7 +40,6 @@ void Genetic::run(){
             output << data.at(siz - 1) << " }" << std::endl;
         }
         std::cout << std::endl;
-        output << std::endl;
 
         output.close();
     };
