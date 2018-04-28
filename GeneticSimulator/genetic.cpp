@@ -104,8 +104,6 @@ void Genetic::generateAgents(){
     };
 
     auto crossover = [&]{
-        //二点交叉法でやるよ
-
         int target_1 = retRandom(0,9);
         int target_2 = target_1;
 
@@ -114,9 +112,6 @@ void Genetic::generateAgents(){
 
         int siz = agents.at(target_1).size;
 
-        // [cross_1,cross_2]を親2から取ってくる
-        int cross_1 = retRandom(1, siz - 2);
-        int cross_2 = retRandom(cross_1, siz - 2);
 
         std::vector<double> data_1 = agents.at(target_1).getData();
         std::vector<double> data_2 = agents.at(target_2).getData();
@@ -124,7 +119,7 @@ void Genetic::generateAgents(){
         std::vector<double> agent_data(siz);
 
         for(int index = 0; index < siz; ++index)
-            agent_data.at(index) = (cross_1 <= index && index <= cross_2
+            agent_data.at(index) = (retRandom(0, 1)
                                     ? data_2.at(index)
                                     : data_1.at(index) );
 
