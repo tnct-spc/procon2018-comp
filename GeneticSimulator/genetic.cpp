@@ -125,11 +125,13 @@ void Genetic::generateAgents(){
                                     ? data_2.at(index)
                                     : data_1.at(index) );
 
-        std::uniform_real_distribution<> rand_double(-cross_change_val, cross_change_val);
 
         // 交叉時にも一定確率で変化させる
         for(int index = 0; index < siz; ++index){
             if(retRandom(0,10000) < 10000 * cross_change_per){
+
+                std::uniform_real_distribution<> rand_double(std::max(-cross_change_val, -agent_data.at(index) ), std::min(cross_change_val, 1 - agent_data.at(index)) );
+
                 agent_data.at(index) += rand_double(mt);
                 agent_data.at(index) = std::min(agent_data.at(index), 1.0);
                 agent_data.at(index) = std::max(agent_data.at(index), 0.0);
