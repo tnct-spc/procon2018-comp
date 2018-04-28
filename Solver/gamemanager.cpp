@@ -213,6 +213,9 @@ void GameManager::changeTurn(){
         if(field->getState(elements.first.first, elements.first.second).first == (elements.second.at(0).first == 0 ? 2 : 1))
             continue;
 
+        if(field->getAgent(elements.second.at(0).first,(elements.second.second ? 0 : 1 )) == elements.first)
+            continue;
+
         field->setAgent(elements.second.at(0).first, elements.second.at(0).second, elements.first.first, elements.first.second);
         field->setState(elements.first.first, elements.first.second, elements.second.at(0).first + 1);
     }
