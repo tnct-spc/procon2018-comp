@@ -21,7 +21,7 @@ private:
     GameSimulator sim;
     */
 
-    GameManager manager;
+    std::vector<GameManager> manager;
 
     std::random_device rnd;
     std::mt19937 mt;
@@ -35,6 +35,8 @@ private:
 
     std::vector<GeneticAgent> agents;
 
+    int cpu_num;
+
     //集合の数
     const unsigned int agent_num = 100;
     //トーナメントの数(今回は10ずつrandで最優秀の10体を取る)
@@ -42,7 +44,7 @@ private:
     //トーナメントでの対戦数
     const int tournament_buttle = 5;
     //一回の試行でのプレイアウト回数
-    const int buttle_count = 1001;
+    const int buttle_count = 100;
     //世代数の最大
     const int max_gen = 200;
 };

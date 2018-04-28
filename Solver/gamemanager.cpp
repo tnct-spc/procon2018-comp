@@ -186,11 +186,14 @@ bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAg
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
 
+        /* マルチスレッド用
         std::thread th1([&]{team_1_ans =  team_1->agentAct(0);});
         std::thread th2([&]{team_2_ans =  team_2->agentAct(1);});
 
         th1.join();
         th2.join();
+        */
+
 
         team_1_ans = team_1->agentAct(0);
         team_2_ans = team_2->agentAct(1);

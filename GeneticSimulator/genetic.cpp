@@ -1,22 +1,25 @@
 #include "genetic.h"
 
 Genetic::Genetic() :
-    mt(rnd()),
-    manager(12,12,false,60)
+    mt(rnd())
 {
     //乱択で生成する
     while(agents.size() < agent_num)
         agents.emplace_back(GeneticAgent());
 
+    cpu_num = std::thread::hardware_concurrency();
+
+    for(int index = 0; index < cpu_num; ++index)
+        manager.emplace_back( GameManager(12,12,false,60));
 
 }
 
 void Genetic::run(){
 
     for(int gen = 0; gen < max_gen; ++gen){
-        startTournament();
 
     }
+    startTournament();
 
 }
 
@@ -88,24 +91,38 @@ void Genetic::startTournament(){
 bool Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
 
 
-    auto buttle = [&](bool flag){//2で割った余りによって反転する(得点が同じ時の処理が順番依存なので一応)
+    auto buttle = [&](bool flag, int index){//2で割った余りによって反転する(得点が同じ時の処理が順番依存なので一応)
         int turn = retRandom(60, 120);
         std::pair<int,int> size = std::make_pair( retRandom(8,12), retRandom(8, 12) );
 
         //visualizerは表示しない
-        manager.resetManager(size.first, size.second, false, turn);
+        manager.at(index).resetManager(size.first, size.second, false, turn);
 
         //firstが勝ったらtrue
-        return (flag ? manager.simulationGenetic(first, second)
-                     : ! manager.simulationGenetic(second, first));
+        return (flag ? manager.at(index).simulationGenetic(first, second)
+                     : ! manager.at(index).simulationGenetic(second, first));
     };
 
 
 
     int win_count = 0;
 
-    for(int count = 0; count < buttle_count; ++count)
-        win_count += buttle(count % 2);
+    std::vector<std::thread> threads(cpu_num);
 
-    return win_count * 2 >= buttle_count * 2;
+    std::cout << "buttle" << std::endl;
+
+    for(int index = 0; index < cpu_num; ++index){
+
+        threads.at(index) = std::thread( [=,&win_count]{
+            for(int count = 0;count<buttle_count/cpu_num;++count)win_count += buttle(count % 2, index);
+        } );
+
+    }
+    for(int index = 0; index < cpu_num; ++index){
+        threads.at(index).join();
+    }
+
+    std::cout << "buttle ended" << std::endl;
+
+    return win_count * 2 >= (buttle_count / cpu_num) * cpu_num;
 }
