@@ -24,10 +24,10 @@ void Genetic::run(){
             int siz = val.size;
 
             const std::vector<double>& data = val.getData();
-            for(int index = 0; index < siz; ++index)
-                std::cout << data.at(index) << " ";
+            for(int index = 0; index < siz-1; ++index)
+                std::cout << data.at(index) << ", ";
 
-            std::cout << "}" << std::endl;
+            std::cout << data.at(siz - 1) << " }" << std::endl;
         }
         std::cout << std::endl;
     };
