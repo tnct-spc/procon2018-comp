@@ -1,6 +1,7 @@
 #ifndef GENETIC_H
 #define GENETIC_H
 
+#include <fstream>
 #include <random>
 #include <unordered_set>
 

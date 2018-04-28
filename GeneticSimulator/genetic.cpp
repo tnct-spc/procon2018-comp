@@ -19,17 +19,29 @@ void Genetic::run(){
 
     auto debug_output = [&]{
 
+        //履歴を残さず、最新のものだけを保存する
+        std::ofstream output("../procon2017-comp/ga_data");
+
         for(auto val : agents){
+
+
             std::cout << "{ ";
+            output << "{";
             int siz = val.size;
 
             const std::vector<double>& data = val.getData();
-            for(int index = 0; index < siz-1; ++index)
+            for(int index = 0; index < siz-1; ++index){
                 std::cout << data.at(index) << ", ";
+                output << data.at(index) << ", ";
+            }
 
             std::cout << data.at(siz - 1) << " }" << std::endl;
+            output << data.at(siz - 1) << " }" << std::endl;
         }
         std::cout << std::endl;
+        output << std::endl;
+
+        output.close();
     };
 
     for(int gen = 0; gen < max_gen; ++gen){
