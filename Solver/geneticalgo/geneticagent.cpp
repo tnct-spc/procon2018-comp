@@ -8,6 +8,7 @@ GeneticAgent::GeneticAgent(bool flag)
 
     std::uniform_real_distribution<> rand_double(0.0, 1.0);
 
+
     if(flag){
         rand = rand_double(mt);
         minus = rand_double(mt);
