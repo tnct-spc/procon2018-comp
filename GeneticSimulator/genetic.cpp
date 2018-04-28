@@ -17,12 +17,31 @@ Genetic::Genetic() :
 
 void Genetic::run(){
 
+    auto debug_output = [&]{
+
+        for(auto val : agents){
+            std::cout << "{ ";
+            int siz = val.size;
+
+            const std::vector<double>& data = val.getData();
+            for(int index = 0; index < siz; ++index)
+                std::cout << data.at(index) << " ";
+
+            std::cout << "}" << std::endl;
+        }
+        std::cout << std::endl;
+    };
+
     for(int gen = 0; gen < max_gen; ++gen){
 
-        std::cout << "gen " << gen+1 << " started" << std::endl << std::endl;
+        std::cout << "gen " << gen + 1 << " started" << std::endl << std::endl;
+        std::cout << "agent count : " << agents.size() << std::endl;
 
         //選別してtournament_count体に絞り込む
         startTournament();
+
+        debug_output();
+
         generateAgents();
 
     }
