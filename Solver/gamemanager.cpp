@@ -85,8 +85,10 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
     progresdock->addAnswer(*(field_vec.back()));
     */
 
-    if(vis_show)
+    if(vis_show){
         visualizer->update();
+        visualizer->setField(*field);
+    }
 
 
     //うぇーいｗｗｗｗｗｗｗ

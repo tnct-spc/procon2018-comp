@@ -17,6 +17,9 @@ GeneticAgent::GeneticAgent(bool flag)
         removal = rand_double(mt);
         nomove = rand_double(mt);
         backmove = rand_double(mt);
+        std::vector<double> val = {0.0873751, 0.302949, 0.508008, 0.305717, 0.301959, 0.759892, 0.717588 };
+        setData(val);
+
     }
 }
 bool GeneticAgent::operator<(const GeneticAgent &other) const {

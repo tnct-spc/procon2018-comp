@@ -21,7 +21,7 @@ Visualizer::~Visualizer()
     delete ui;
 }
 
-void Visualizer::setField(procon::Field& inp_field){
+void Visualizer::setField(const procon::Field& inp_field){
     field = inp_field;
 }
 
