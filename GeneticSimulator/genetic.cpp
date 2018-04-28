@@ -39,9 +39,35 @@ void Genetic::generateAgents(){
 
     int generate_count = agent_num - tournament_count;//この数だけ新たに生成する
 
-    auto mutate = [&]{
+    auto crossover = [&]{
         //二点交叉法でやるよ
 
+        int target_1 = retRandom(0,9);
+        int target_2 = target_1;
+
+        while(target_2 != target_1)
+            target_2 = retRandom(0,9);
+
+        int siz = agents.at(target_1).size;
+
+        // [cross_1,cross_2]を親2から取ってくる
+        int cross_1 = retRandom(1, siz - 2);
+        int cross_2 = retRandom(cross_1, siz - 2);
+
+        std::vector<double> data_1 = agents.at(target_1).getData();
+        std::vector<double> data_2 = agents.at(target_2).getData();
+
+        std::vector<double> agent_data(siz);
+
+        for(int index = 0; index < siz; ++index)
+            agent_data.at(index) = (cross_1 <= index && index <= cross_2
+                                    ? data_2.at(index)
+                                    : data_1.at(index) );
+
+        GeneticAgent new_agent(false);
+        new_agent.setData(agent_data);
+
+        agents.emplace_back(std::move(new_agent));
     };
 
     for(int count = 0; count < generate_count; ++count){
@@ -53,6 +79,7 @@ void Genetic::generateAgents(){
 
         }else if(random_value <= crossover_per){
             //交叉
+            crossover();
 
         }else{
             //コピー

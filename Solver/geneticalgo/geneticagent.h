@@ -7,7 +7,8 @@
 class GeneticAgent
 {
 public:
-    GeneticAgent();
+    //flagがtrueなら乱択で初期パラメータ生成
+    GeneticAgent(bool flag = true);
 
     bool operator<(const GeneticAgent &other) const;
 
