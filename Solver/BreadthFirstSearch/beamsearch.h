@@ -18,6 +18,8 @@ public:
     int Evaluation_Field(procon::Field field);
     std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
     std::pair<int,int> agent1,agent2;
+private:
+    procon::Field agentmove(procon::Field field,int side,std::vector<std::vector<std::pair<int,std::pair<int,int>>>> pos);
 };
 
 #endif // BEAMSEARCH_H

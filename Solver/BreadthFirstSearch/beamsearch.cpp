@@ -71,7 +71,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(
                     procon::Field ins_field = field;
                     int way1,way2;
               //      cout<<ins_field.getState(agent1.first+age1.at(a).first,agent1.second+age1.at(a).second).first<<endl;
-                    if(ins_field.getState(agent1.first+age1.at(a).first,agent1.second+age1.at(a).second).first==side+1){
+                    if(ins_field.getState(agent1.first+age1.at(a).first,agent1.second+age1.at(a).second).first == ( side ? 2 : 1 )){
 
                     ins_field.setAgent(side,0,agent1.first+age1.at(a).first,agent1.second+age1.at(a).second);
                     way1 = 1;
@@ -88,7 +88,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(
                         way1 = 2;
 
                     }
-                    if(ins_field.getState(agent2.first+age2.at(b).first,agent2.second+age2.at(b).second).first==side+1){
+                    if(ins_field.getState(agent2.first+age2.at(b).first,agent2.second+age2.at(b).second).first == ( side ? 2 : 1 )){
 
                     ins_field.setAgent(side,1,agent2.first+age2.at(b).first,agent2.second+age2.at(b).second);
                     way2 = 1;
@@ -173,3 +173,48 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(
     cout<<"("<<std::get<0>(std::get<1>(beam.front().second))<<","<<std::get<1>(std::get<1>(beam.front().second))<<","<<std::get<2>(std::get<1>(beam.front().second))<<")"<<"("<<std::get<0>(std::get<2>(beam.front().second))<<","<<std::get<1>(std::get<2>(beam.front().second))<<","<<std::get<2>(std::get<2>(beam.front().second))<<")"<<endl;
     return std::make_pair(std::get<1>(beam.front().second),std::get<2>(beam.front().second));
 }
+beamsearch::agentmove(procon::Field field, std::vector<std::vector<std::pair<int,std::pair<int,int>>>> pos)
+{
+
+    std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> dest_map;
+    std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> tile_map;
+
+    for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
+        for(int agent_num = 0; agent_num < 2; ++agent_num){
+
+
+            if(act_stack.at(turn_flag).at(agent_num).first == 1)
+                dest_map[act_stack.at(turn_flag).at(agent_num).second].push_back( std::make_pair(turn_flag, agent_num) );
+            else if(act_stack.at(turn_flag).at(agent_num).first == 2){
+                tile_map[act_stack.at(turn_flag).at(agent_num).second].push_back( std::make_pair(turn_flag, agent_num) );
+            }
+        }
+
+    for(auto elements : dest_map){
+        if(elements.second.size() > 1)
+            continue;
+
+        if(field->getState(elements.first.first, elements.first.second).first == (elements.second.at(0).first == 0 ? 2 : 1))
+            continue;
+        field->setAgent(elements.second.at(0).first, elements.second.at(0).second, elements.first.first, elements.first.second);
+        field->setState(elements.first.first, elements.first.second, elements.second.at(0).first + 1);
+    }
+
+    for(auto elements : tile_map){
+        bool state_flag = true;
+        if(elements.second.size() > 1)
+            continue;
+
+
+        for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
+            for(int agent_num = 0; agent_num < 2; ++agent_num)
+                if(field->getAgent(turn_flag, agent_num) == elements.first){
+                    state_flag = false;
+                    break;
+                }
+        if(state_flag)
+            field->setState(elements.first.first, elements.first.second, 0);
+    }
+    field->setTurnCount(field->getTurnCount() + 1);
+}
+
