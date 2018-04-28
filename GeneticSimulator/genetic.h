@@ -39,8 +39,11 @@ private:
 
     //集合の数
     const unsigned int agent_num = 100;
-    //トーナメントの数(今回は10ずつrandで最優秀の10体を取る)
+    //トーナメントの数
+    const int tournament_count = 10;
+    //トーナメントの大きさ
     const int tournament_size = 10;
+
     //トーナメントでの対戦数
     const int tournament_buttle = 5;
     //一回の試行でのプレイアウト回数

@@ -19,8 +19,10 @@ void Genetic::run(){
 
     for(int gen = 0; gen < max_gen; ++gen){
 
+        //選別して10体に絞り込む
+        startTournament();
+
     }
-    startTournament();
 
 }
 
@@ -36,6 +38,14 @@ void Genetic::startTournament(){
 
     //ここで最適なチームを出す
     auto battleTournament = [&](std::vector<GeneticAgent>& input_data){
+
+        std::shuffle(input_data.begin(), input_data.end(), mt);
+
+        for(auto& val : input_data){
+            //初期化する
+            val.try_count=0;
+            val.win_count=0;
+        }
 
         //まだ規定数にたどり着いてないAgentのポインタと、戦った相手のポインタを持つ(可読性酷いね)
         std::vector<std::pair<GeneticAgent*, std::unordered_set<GeneticAgent*> >> values;
@@ -57,21 +67,37 @@ void Genetic::startTournament(){
             values.back().first->try_count++;
             values.at(index).first->try_count++;
 
+            if(values.back().first->try_count >= tournament_buttle)
+                values.erase(std::prev(values.end() ) );//末尾削除
+
+            if(values.at(index).first->try_count >= tournament_buttle)
+                values.erase(std::next(values.begin(), index) );
         }
 
         std::sort(input_data.begin(), input_data.end());
+
+        for(unsigned int index = 0; index < input_data.size(); ++index){
+            std::cout << 1.0 * input_data.at(index).win_count / input_data.at(index).try_count << " ";
+        }
+        std::cout << std::endl;
+
         new_agents.push_back(input_data.back());
+        input_data.erase(std::prev(input_data.end() ) );
+
+        for(auto& val : input_data){
+            //再度初期化して選ばれなかった物を再投入
+            val.try_count=0;
+            val.win_count=0;
+            agents.emplace_back(val);
+        }
     };
 
-    while(!agents.empty()){
-
-        //vectorのeraseは効率が悪いのですが、ランダムにアクセスする都合上これでいきます
+    for(int count = 0; count < tournament_count; ++count){
 
         std::vector<GeneticAgent> tournaments;
-        int siz = std::min(tournament_size, static_cast<int>(agents.size()) );
 
         //乱択でトーナメント生成
-        for(int count = 0; count < siz; ++count){
+        for(int rand_count = 0; rand_count < tournament_size;++rand_count){
 
             int rand_index = retRandom(0, agents.size() - 1);
 
@@ -79,6 +105,8 @@ void Genetic::startTournament(){
 
             agents.erase(agents.begin() + rand_index);
         }
+
+        std::cout << "tournament started" << std::endl;
 
         battleTournament(tournaments);
 
@@ -110,7 +138,6 @@ bool Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
 
     std::vector<std::thread> threads(cpu_num);
 
-    std::cout << "buttle" << std::endl;
 
     for(int index = 0; index < cpu_num; ++index){
 
@@ -122,8 +149,6 @@ bool Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
     for(int index = 0; index < cpu_num; ++index){
         threads.at(index).join();
     }
-
-    std::cout << "buttle ended" << std::endl;
 
     return win_count * 2 >= (buttle_count / cpu_num) * cpu_num;
 }
