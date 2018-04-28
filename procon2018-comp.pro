@@ -6,3 +6,4 @@ SUBDIRS += \
     Visualizer \
     Solver \
     Mejirodai \
+    communicator
