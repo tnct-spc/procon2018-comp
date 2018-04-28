@@ -54,7 +54,10 @@ void Genetic::run(){
 
         debug_output();
 
-        generateAgents();
+        if(gen != max_gen - 1)
+            generateAgents();
+        else
+            std::cout << "simulation complete" << std::endl;
 
     }
 
