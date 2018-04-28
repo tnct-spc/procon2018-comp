@@ -36,5 +36,5 @@ std::vector<double> GeneticAgent::getData(){
     std::vector<double> ret;
     ret = {rand,minus,next_p,region,removal,nomove,backmove};
 
-    return ret;
+    return std::move(ret);
 }
