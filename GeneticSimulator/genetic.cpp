@@ -19,8 +19,11 @@ void Genetic::run(){
 
     for(int gen = 0; gen < max_gen; ++gen){
 
-        //選別して10体に絞り込む
+        std::cout << "gen " << gen << " started" << std::endl;
+
+        //選別してtournament_count体に絞り込む
         startTournament();
+        generateAgents();
 
     }
 
@@ -30,6 +33,32 @@ int Genetic::retRandom(int st, int en){
     std::uniform_int_distribution<> rand(st, en);
 
     return rand(mt);
+}
+
+void Genetic::generateAgents(){
+
+    int generate_count = agent_num - tournament_count;//この数だけ新たに生成する
+
+    auto mutate = [&]{
+        //二点交叉法でやるよ
+
+    };
+
+    for(int count = 0; count < generate_count; ++count){
+
+        double random_value = 0.00001 * retRandom(0,100000);
+
+        if(random_value >= 1.0 - mutate_per){
+            //突然変異
+
+        }else if(random_value <= crossover_per){
+            //交叉
+
+        }else{
+            //コピー
+        }
+
+    }
 }
 
 void Genetic::startTournament(){

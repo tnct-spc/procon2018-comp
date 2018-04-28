@@ -30,12 +30,16 @@ private:
     bool buttleAgents(GeneticAgent& first, GeneticAgent& second);
 
     void startTournament();
+    void generateAgents();
 
     int retRandom(int st, int en);//[st,en]の乱数
 
     std::vector<GeneticAgent> agents;
 
     int cpu_num;
+
+    double mutate_per = 0.05;//突然変異率
+    double crossover_per = 0.7;//交叉率
 
     //集合の数
     const unsigned int agent_num = 100;
