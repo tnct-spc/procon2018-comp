@@ -3,9 +3,6 @@
 Genetic::Genetic() :
     mt(rnd())
 {
-    //乱択で生成する
-    while(agents.size() < agent_num)
-        agents.emplace_back(GeneticAgent());
 
     cpu_num = std::thread::hardware_concurrency();
 
@@ -43,6 +40,25 @@ void Genetic::run(){
 
         output.close();
     };
+
+    std::cout << "please select algorithm" << std::endl;
+    std::cout << "0: GeneticAlgo" << std::endl;
+
+    while(1){
+        std::cout << "algorithm number : ";
+        std::cin >> algo_number;
+        if(algo_number >= 0 && algo_number <= 0)
+            break;
+        std::cout << "incorrect" << std::endl;
+    }
+
+
+    //乱択で生成する
+    while(agents.size() < agent_num){
+
+        if(algo_number == 0) // この辺個別処理
+            agents.emplace_back(GeneticAgent(7));
+    }
 
     for(int gen = 0; gen < max_gen; ++gen){
 
@@ -199,15 +215,29 @@ void Genetic::startTournament(){
                 values.erase(std::next(values.begin(), index) );
         }
 
-        std::sort(input_data.begin(), input_data.end());
+        double max_val = -1;
+        std::vector<int> max_index_list;
 
         for(unsigned int index = 0; index < input_data.size(); ++index){
-            std::cout << 1.0 * input_data.at(index).win_count / input_data.at(index).try_count << " ";
-        }
-        std::cout << std::endl << std::endl;
 
-        new_agents.push_back(input_data.back());
-        input_data.erase(std::prev(input_data.end() ) );
+            double value = 1.0 * input_data.at(index).win_count / input_data.at(index).try_count;
+
+            if(value > max_val){
+                max_val = value;
+                max_index_list.clear();
+                max_index_list.emplace_back(index);
+
+            }else if(value == max_val)
+                max_index_list.emplace_back(index);
+
+            std::cout << value << " ";
+        }
+        std::cout << " max_per : " << max_val << std::endl << std::endl;
+
+        int max_index = max_index_list.at(retRandom(0, max_index_list.size() - 1));
+
+        new_agents.push_back(input_data.at(max_index));
+        input_data.erase(std::next(input_data.begin(), max_index));
 
         for(auto& val : input_data){
             //再度初期化して選ばれなかった物を再投入

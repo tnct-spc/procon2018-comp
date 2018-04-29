@@ -10,7 +10,7 @@ class GeneticAlgo : public AlgorithmWrapper
     // using AlgorithmWrapper::AlgorithmWrapper;
 public:
 
-    GeneticAlgo(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent = GeneticAgent());
+    GeneticAlgo(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent = GeneticAgent(7));
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
 
 private:

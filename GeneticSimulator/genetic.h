@@ -37,6 +37,8 @@ private:
 
     std::vector<GeneticAgent> agents;
 
+    int algo_number = -1;
+
     int cpu_num;
 
     double mutate_per = 0.3;//突然変異率(これ以外は交叉)
