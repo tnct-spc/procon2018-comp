@@ -16,7 +16,7 @@ public:
     int beam_range = 10;
     int beam_turn = 3;
     int Evaluation_Field(procon::Field field);
-    std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
+    const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
     std::pair<int,int> agent1,agent2;
 private:
     procon::Field agentmove(procon::Field field,std::vector<std::vector<std::pair<int,std::pair<int,int>>>> pos);

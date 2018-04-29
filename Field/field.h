@@ -11,23 +11,23 @@ namespace procon {
 class Field
 {
 public:
-    Field(unsigned int size_x, unsigned int size_y);
-    Field(unsigned int size_x, unsigned int size_y, std::vector<std::vector<int>> input_val);
-    Field(unsigned int size_x, unsigned int size_y,int max_val,int min_val,double minus_per = 0.3);
+    Field(const unsigned int size_x, const unsigned int size_y);
+    Field(const unsigned int size_x, const unsigned int size_y, const std::vector<std::vector<int>>& input_val);
+    Field(const unsigned int size_x, const unsigned int size_y,const unsigned int max_val,const int min_val,const double minus_per = 0.3);
 
     const std::vector<std::vector<std::pair<int,int>>>& getAgents() const;
-    std::pair<int,int> getAgent(int turn, int number);
-    std::vector<std::vector<int>> getField();
-    std::vector<std::vector<int>>& getValue();
+    std::pair<int,int> getAgent(const unsigned int turn, const unsigned int number) const;
+    const std::vector<std::vector<int>>& getField() const;
+    const std::vector<std::vector<int>>& getValue() const;
 
-    bool isPlaced(int x, int y);
-    std::pair<int,int> getState(int x, int y) const;//pair<タイル状況,値>
+    bool isPlaced(const unsigned int x, const unsigned int y);
+    std::pair<int,int> getState(const unsigned int x, const unsigned int y) const;//pair<タイル状況,評価値>
 
-    void setState(int x, int y, int state);//タイル状況のみの変更
-    void setAgent(int turn, int number, int x_pos, int y_pos);
+    void setState(const unsigned int x, const unsigned int y, const unsigned int state);//タイル状況のみの変更
+    void setAgent(const unsigned int turn, const unsigned int number, const unsigned int x_pos, const unsigned int y_pos);
 
-    void setTurnCount(int turn);
-    int getTurnCount();
+    void setStates(const std::vector<std::vector<int>>& values);
+    void setAgents(const std::vector<std::vector<std::pair<int,int>>>& values);
 
     std::pair<int,int> getSize() const;
 
@@ -40,7 +40,6 @@ private:
     //めっちゃ分かりづらいですね
     std::vector<std::vector<std::pair<int,int>>> agents;
 
-    int turn_count = 0;
     int grid_x;
     int grid_y;
 
