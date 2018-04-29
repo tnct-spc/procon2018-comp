@@ -283,8 +283,8 @@ bool Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
         managers.at(index)->resetManager(size.first, size.second, false, turn);
 
         //firstが勝ったらtrue
-        return (flag ? managers.at(index)->simulationGenetic(first, second)
-                     : ! managers.at(index)->simulationGenetic(second, first));
+        return (flag ? managers.at(index)->simulationGenetic(first, second, algo_number)
+                     : ! managers.at(index)->simulationGenetic(second, first, algo_number));
     };
 
 
