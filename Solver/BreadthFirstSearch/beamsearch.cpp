@@ -126,8 +126,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(
             }
             sort(beam.begin(),beam.end(),sortEva);
         }else{
-
-            for(int range = 0;range < beam_range;range++){
+            int beam_size = beam.size();
+            for(int range = 0;range < std::min(beam_range,beam_size);range++){
             procon::Field Neo_ins_field = std::get<0>(beam.at(range).second);
             agent1 = Neo_ins_field.getAgent(side,0);
             agent2 = Neo_ins_field.getAgent(side,1);
@@ -181,11 +181,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(
 
                        pos.push_back(ins_pos);
                    }
-
                     procon::Field ins_field = agentmove(Neo_ins_field,pos);
-
                     int Eva = Evaluation_Field(ins_field);
-
                     std::tuple<procon::Field,int,int> ins_value = beam.at(range).second;
 
                     ins_beam.push_back(make_pair(Eva,make_tuple(ins_field,std::get<1>(ins_value),std::get<2>(ins_value))));
