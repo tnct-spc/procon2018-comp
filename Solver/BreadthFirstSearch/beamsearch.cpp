@@ -26,6 +26,7 @@ int beamsearch::Evaluation_Field(procon::Field field){
 
 const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(int side){
 
+    int count = 0;
 
     const procon::Field& field = manager->getField();
 
@@ -122,6 +123,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
                     beam.push_back(make_pair(Eva,make_tuple(ins_field,a,b)));
                     Eva_stack.at(a).at(b).first+=Eva;
                     Eva_stack.at(a).at(b).second++;
+                    count++;
                 }
             }
             sort(beam.begin(),beam.end(),sortEva);
@@ -188,6 +190,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
                     ins_beam.push_back(make_pair(Eva,make_tuple(ins_field,std::get<1>(ins_value),std::get<2>(ins_value))));
                     Eva_stack.at(std::get<1>(ins_value)).at(std::get<2>(ins_value)).first+=Eva;
                     Eva_stack.at(std::get<1>(ins_value)).at(std::get<2>(ins_value)).second++;
+                    count++;
                     }
                 }
             }
@@ -210,6 +213,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
         }
     }
     cout<<"("<<std::get<0>(ans.first)<<","<<std::get<1>(ans.first)<<","<<std::get<2>(ans.first)<<")"<<"("<<std::get<0>(ans.second)<<","<<std::get<1>(ans.second)<<","<<std::get<2>(ans.second)<<")"<<endl;
+    cout<<count<<endl;
     return ans;
 }
 procon::Field beamsearch::agentmove(procon::Field ins_field, std::vector<std::vector<std::pair<int,std::pair<int,int>>>> pos)

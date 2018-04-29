@@ -62,6 +62,11 @@
       </item>
       <item>
        <property name="text">
+        <string>beamsearch</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>SimpleMonteCalro</string>
        </property>
       </item>
@@ -91,6 +96,11 @@
       <item>
        <property name="text">
         <string>MonteCarloTreeSearch</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>beamsearch</string>
        </property>
       </item>
       <item>
@@ -157,7 +167,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>30</height>
+     <height>18</height>
     </rect>
    </property>
   </widget>
