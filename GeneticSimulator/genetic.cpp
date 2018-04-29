@@ -112,7 +112,7 @@ void Genetic::generateAgents(){
             val.erase(std::next(val.begin(), index));
         }
 
-        GeneticAgent new_agent(false);
+        GeneticAgent new_agent(agents.at(0).size, false);
         new_agent.setData(target_data);
 
         agents.emplace_back(std::move(new_agent));
@@ -152,7 +152,7 @@ void Genetic::generateAgents(){
             }
         }
 
-        GeneticAgent new_agent(false);
+        GeneticAgent new_agent(agents.at(0).size, false);
         new_agent.setData(agent_data);
 
         agents.emplace_back(std::move(new_agent));

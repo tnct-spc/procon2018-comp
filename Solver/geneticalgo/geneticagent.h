@@ -17,7 +17,7 @@ public:
     int try_count = 0;//試行回数と勝利回数
     int win_count = 0;
 
-    int size;//パラメータの数
+    int size = 114514;//パラメータの数
 
 private:
 
