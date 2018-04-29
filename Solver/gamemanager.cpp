@@ -32,6 +32,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_1 = std::make_shared<TestAlgorithm>(share);
     } else if (QString::compare("DummyAlgorithm", my_algo) == 0) {
         team_1 = std::make_shared<DummyAlgorithm>(share);
+    } else if (QString::compare("beamsearch", my_algo) == 0){
+        team_1 = std::make_shared<beamsearch>(share);
     }
 
     if (QString::compare("MonteCarloTreeSearch", opponent_algo) == 0) {
@@ -42,6 +44,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_2 = std::make_shared<TestAlgorithm>(share);
     } else if (QString::compare("DummyAlgorithm", my_algo) == 0) {
         team_2 = std::make_shared<DummyAlgorithm>(share);
+    } else if (QString::compare("beamsearch", opponent_algo) == 0){
+        team_2 = std::make_shared<beamsearch>(share);
     }
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
