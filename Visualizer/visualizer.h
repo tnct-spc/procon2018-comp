@@ -24,7 +24,7 @@ public:
     explicit Visualizer(procon::Field& inp_field, QWidget *parent = 0);
     ~Visualizer();
 
-    void setField(procon::Field& inp_field);
+    void setField(const procon::Field& inp_field);
 
     const std::vector<std::vector<std::pair<int,int>>>& getNextAgents();
 
@@ -41,7 +41,7 @@ private:
     Ui::Visualizer *ui;
     void paintEvent(QPaintEvent *event);
 
-    procon::Field& field;
+    procon::Field field;
 
     void mousePressEvent(QMouseEvent *event);
 

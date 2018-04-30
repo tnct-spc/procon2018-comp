@@ -30,7 +30,9 @@ SOURCES += \
         gamesimulator.cpp \
         montecarlotreesearch/montecarlotreesearch.cpp \
         montecarlotreesearch/searchnode.cpp \
-    dummyalgorithm.cpp
+        dummyalgorithm.cpp \
+    geneticalgo/geneticalgo.cpp \
+    geneticalgo/geneticagent.cpp
 
 HEADERS += \
         algorithm_global.h \ 
@@ -41,7 +43,9 @@ HEADERS += \
         gamesimulator.h \
         montecarlotreesearch/montecarlotreesearch.h \
         montecarlotreesearch/searchnode.h \
-    dummyalgorithm.h
+        dummyalgorithm.h \
+    geneticalgo/geneticalgo.h \
+    geneticalgo/geneticagent.h
 
 unix {
     target.path = /usr/lib
