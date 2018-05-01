@@ -21,10 +21,73 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="1" rowspan="2">
+     <widget class="QComboBox" name="selectMyAlgorithmBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">MyAlgorithm</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>MonteCarloTreeSearch</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>SimpleMonteCalro</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>TestAlgorithm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>DummyAlgorithm</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="1" column="2" rowspan="2">
+     <widget class="QComboBox" name="selectOpponentAlgorithmBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <item>
+       <property name="text">
+        <string>MonteCarloTreeSearch</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>SimpleMonteCalro</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>TestAlgorithm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>DummyAlgorithm</string>
+       </property>
+      </item>
+     </widget>
+    </item>
     <item row="5" column="1" alignment="Qt::AlignBottom">
      <widget class="QPushButton" name="goPrev">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -37,10 +100,15 @@
     <item row="5" column="2" alignment="Qt::AlignBottom">
      <widget class="QPushButton" name="goNext">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <kerning>true</kerning>
+       </font>
       </property>
       <property name="text">
        <string>Next</string>
@@ -223,67 +291,17 @@
       </widget>
      </widget>
     </item>
-    <item row="1" column="1" rowspan="2">
-     <widget class="QComboBox" name="selectMyAlgorithmBox">
+    <item row="4" column="1">
+     <widget class="QCheckBox" name="autoMode">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <property name="styleSheet">
-       <string notr="true">MyAlgorithm</string>
+      <property name="text">
+       <string>AutoMode</string>
       </property>
-      <item>
-       <property name="text">
-        <string>MonteCarloTreeSearch</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>SimpleMonteCalro</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>TestAlgorithm</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>DummyAlgorithm</string>
-       </property>
-      </item>
-     </widget>
-    </item>
-    <item row="1" column="2" rowspan="2">
-     <widget class="QComboBox" name="selectOpponentAlgorithmBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <item>
-       <property name="text">
-        <string>MonteCarloTreeSearch</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>SimpleMonteCalro</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>TestAlgorithm</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>DummyAlgorithm</string>
-       </property>
-      </item>
      </widget>
     </item>
    </layout>

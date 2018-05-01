@@ -26,8 +26,12 @@ Mejirodai::~Mejirodai()
 
 void Mejirodai::RunManagerSimulation(){
 
+    // 各チームのアルゴリズムの設定
     QString my = ui->selectMyAlgorithmBox->currentText();
     QString opponnent = ui->selectOpponentAlgorithmBox->currentText();
+
+    // AutoModeの設定
+    manager->setAutoMode(ui->autoMode->isChecked());
 
 //    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
     manager->startSimulation(my, opponnent);

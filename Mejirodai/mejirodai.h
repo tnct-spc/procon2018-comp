@@ -8,7 +8,7 @@
 #include <QPushButton>
 #include <QComboBox>
 #include <QStackedWidget>
-
+#include <QCheckBox>
 
 namespace Ui {
 class Mejirodai;
