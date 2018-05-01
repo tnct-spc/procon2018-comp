@@ -11,7 +11,7 @@
 class Genetic
 {
 public:
-    Genetic();
+    Genetic(int algo_number);
     void run();
 
     // (今の所は)遺伝的アルゴリズムで最適なやつを出していく
@@ -21,6 +21,8 @@ private:
     procon::Field field;
     GameSimulator sim;
     */
+
+    int algo_number;
 
     std::vector<GameManager*> managers;
 
@@ -36,8 +38,6 @@ private:
     int retRandom(int st, int en);//[st,en]の乱数
 
     std::vector<GeneticAgent> agents;
-
-    int algo_number = -1;
 
     int cpu_num;
 

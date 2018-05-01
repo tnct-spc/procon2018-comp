@@ -1,6 +1,7 @@
 #include "genetic.h"
 
-Genetic::Genetic() :
+Genetic::Genetic(int algo_number) :
+    algo_number(algo_number),
     mt(rnd())
 {
 
@@ -40,17 +41,6 @@ void Genetic::run(){
 
         output.close();
     };
-
-    std::cout << "please select algorithm" << std::endl;
-    std::cout << "0: GeneticAlgo" << std::endl;
-
-    while(1){
-        std::cout << "algorithm number : ";
-        std::cin >> algo_number;
-        if(algo_number >= 0 && algo_number <= 0)
-            break;
-        std::cout << "incorrect" << std::endl;
-    }
 
 
     //乱択で生成する
