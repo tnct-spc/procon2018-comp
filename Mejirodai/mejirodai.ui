@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -21,68 +21,7 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="1">
-     <widget class="QLabel" name="label">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>My Algorithm</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0" rowspan="8">
-     <widget class="QPushButton" name="runButton">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Run</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="2">
-     <widget class="QComboBox" name="selectOpponentAlgorithmBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <item>
-       <property name="text">
-        <string>MonteCarloTreeSearch</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>GeneticAlgo</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>SimpleMonteCalro</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>TestAlgorithm</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>DummyAlgorithm</string>
-       </property>
-      </item>
-     </widget>
-    </item>
-    <item row="0" column="2">
+    <item row="1" column="1" rowspan="2">
      <widget class="QComboBox" name="selectMyAlgorithmBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -120,10 +59,172 @@
       </item>
      </widget>
     </item>
-    <item row="1" column="1">
+    <item row="1" column="2" rowspan="2">
+     <widget class="QComboBox" name="selectOpponentAlgorithmBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <item>
+       <property name="text">
+        <string>MonteCarloTreeSearch</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>GeneticAlgo</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>SimpleMonteCalro</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>TestAlgorithm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>DummyAlgorithm</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="5" column="1" alignment="Qt::AlignBottom">
+     <widget class="QPushButton" name="goPrev">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Prev</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="2" alignment="Qt::AlignBottom">
+     <widget class="QPushButton" name="goNext">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <kerning>true</kerning>
+       </font>
+      </property>
+      <property name="text">
+       <string>Next</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" alignment="Qt::AlignTop">
+     <widget class="QLabel" name="label">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>My Algorithm</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" rowspan="6">
+     <widget class="QPushButton" name="runButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Run</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="QStackedWidget" name="opponent_stackedWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <widget class="QWidget" name="MonteCarloTreeSearch_opponent">
+       <widget class="QLabel" name="label_4">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>MonteCarloTreeSearch</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="SimpleMonteCalro_opponent">
+       <widget class="QLabel" name="label_6">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>90</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>SimpleMonteCalro</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="TestAlgorithm_opponent">
+       <widget class="QLabel" name="label_8">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>110</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>TestAlgorithm</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="DummyAlgorithm_opponent">
+       <widget class="QLabel" name="label_10">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>DummyAlgorithm</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+    <item row="0" column="2" alignment="Qt::AlignTop">
      <widget class="QLabel" name="label_2">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -133,29 +234,83 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="1">
-     <widget class="QPushButton" name="goNext">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+    <item row="3" column="1">
+     <widget class="QStackedWidget" name="my_stackedWidget">
+      <property name="currentIndex">
+       <number>0</number>
       </property>
-      <property name="text">
-       <string>Next</string>
-      </property>
+      <widget class="QWidget" name="MonteCarloTreeSearch_my">
+       <widget class="QLabel" name="label_3">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>MonteCarloTreeSearch</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="SimpleMonteCalro_my">
+       <widget class="QLabel" name="label_5">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>90</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>SimpleMonteCalro</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="TestAlgorithm_my">
+       <widget class="QLabel" name="label_7">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>TestAlgorithm</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="DummyAlgorithm_my">
+       <widget class="QLabel" name="label_9">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>DummyAlgorithm</string>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </item>
-    <item row="7" column="1">
-     <widget class="QPushButton" name="goPrev">
+    <item row="4" column="1">
+     <widget class="QCheckBox" name="autoMode">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
       <property name="text">
-       <string>Prev</string>
+       <string>AutoMode</string>
       </property>
      </widget>
     </item>
