@@ -177,10 +177,12 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
 }
 
-bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAgent &agent_2){
+bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAgent &agent_2, int algo_number){
 
-    team_1 = std::make_shared<GeneticAlgo>(share, agent_1);
-    team_2 = std::make_shared<GeneticAlgo>(share, agent_2);
+    if(algo_number == 0){
+        team_1 = std::make_shared<GeneticAlgo>(share, agent_1);
+        team_2 = std::make_shared<GeneticAlgo>(share, agent_2);
+    }
 
     for(int now_turn = 0; now_turn < turn_max; ++now_turn){
 

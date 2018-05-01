@@ -9,15 +9,16 @@ GeneticAlgo::GeneticAlgo(std::shared_ptr<GameManager> manager_ptr, const Genetic
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::agentAct(int side)
 {
-    //ここは規定のパラメータに合わせてえいえい
-    /*
-    double rand = 0.5; //乱択度合い(高いほど乱択)
-    double minus = 0.5; //マイナスの回避度(高いほど避ける)
-    double next_p = 0.5; //次の手での得点の優先度(高いほど優先)
-    double region = 0.5; //領域ポイントの優先度(高いほど優先)
-    double removal = 0.5; //タイル除去の優先度(高いほど優先)
-    double nomove = 0.5; //移動しなかった時のペナルティ(高いほどペナ大)
-    */
+
+    std::vector<double> status = agent_data.getData();
+    double rand = status.at(0); //乱択度合い(高いほど乱択)
+    double minus = status.at(1); //マイナスの回避度(高いほど避ける)
+    double next_p = status.at(2); //次の手での得点の優先度(高いほど優先)
+    double region = status.at(3); //領域ポイントの優先度(高いほど優先)
+    double removal = status.at(4); //タイル除去の優先度(高いほど優先)
+    double nomove = status.at(5); //移動しなかった時のペナルティ(高いほどペナ大)
+    double backmove = status.at(6); //もう塗られてる所に行った時のペナルティ(高いほどペナ大)
+
     const procon::Field& field = manager->getField();
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
@@ -38,22 +39,22 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
 
         if(state.first == (side == 0 ? 2 : 1)){//除去の場合
 
-            if(state.second >= 0)value = state.second * (agent_data.removal * 2.0);//除去特有の重み付け
-            else value = state.second * ( 0.5 / agent_data.removal );
+            if(state.second >= 0)value = state.second * (removal * 2.0);//除去特有の重み付け
+            else value = state.second * ( 0.5 / removal );
 
         }else if(state.first == side + 1){
 
             //戻った時のペナ
-            value = - 32.0 * agent_data.nomove * agent_data.nomove;
+            value = - 32.0 * backmove;
         }else{
             //置かれてない時
             value = state.second;
         }
 
         if(state.second < 0)
-            value += state.second * ( agent_data.minus * 3.0);//マイナスの時は評価を減らす
+            value += state.second * ( minus * 3.0);//マイナスの時は評価を減らす
 
-        value += state.second * ( agent_data.next_p * 2.0);//得点に合わせて加算
+        value += state.second * ( next_p * 2.0);//得点に合わせて加算
 
         return value;
     };
@@ -79,9 +80,9 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
 
         //動かない場合のペナ
         if(count / 9 == 8)
-            value_1 -= 16.0 * (1.0 - agent_data.nomove) * 2.0;
+            value_1 -= 16.0 * (1.0 - nomove) * 2.0;
         if(count % 9 == 8)
-            value_2 -= 16.0 * (1.0 - agent_data.nomove) * 2.0;
+            value_2 -= 16.0 * (1.0 - nomove) * 2.0;
 
         eval.emplace_back(std::make_pair(value_1 + value_2, count ));
 
@@ -97,11 +98,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
     for(unsigned int count = 0; count < can_put_pattern.size(); ++count)
         accum.at(count + 1) = std::make_pair(accum.at(count).first + eval.at(count).first, eval.at(count).second );
 
-    //ここからagent_data.randを元にどこまで取るかを決める ここから乱数とlower_bound(i,-1)とかで出す
+    //ここからrandを元にどこまで取るかを決める ここから乱数とlower_bound(i,-1)とかで出す
     std::random_device rnd;
     std::mt19937 mt(rnd());
 
-    std::uniform_real_distribution<> rand_double(0.0, agent_data.rand * (accum.back().first));
+    std::uniform_real_distribution<> rand_double(0.0, rand * (accum.back().first));
 
     unsigned int index = std::distance(accum.begin(), std::lower_bound(accum.begin(), accum.end(), std::make_pair(rand_double(mt), -1)) );
 
