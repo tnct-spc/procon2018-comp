@@ -50,7 +50,7 @@ void SimulatedAnnealing::run(){
 
         std::cout << "count " << count + 1 << " started" << std::endl << std::endl;
 
-        updateAgent();
+        updateAgent(count+1);
 
         debug_output();
 
@@ -60,7 +60,80 @@ void SimulatedAnnealing::run(){
 
 }
 
-void SimulatedAnnealing::updateAgent(){
+void SimulatedAnnealing::updateAgent(int now_count){
+
+    GeneticAgent* new_agent;
+
+    if(algo_number==0)
+        new_agent = new GeneticAgent(7,false);
+    else
+        new_agent = new GeneticAgent(7,false);//warning回避のためこの書き方をしているけど、ここが呼ばれる事はありえないです
+
+    std::vector<double> agent_data = agent->getData();
+
+    for(int index = 0; index < new_agent->size; ++index){
+
+        std::uniform_real_distribution<> rand_double(std::max(-max_change_val, -agent_data.at(index) ), std::min(max_change_val, 1 - agent_data.at(index)) );
+
+        agent_data.at(index) += rand_double(mt);
+        agent_data.at(index) = std::min(agent_data.at(index), 1.0);
+        agent_data.at(index) = std::max(agent_data.at(index), 0.0);
+    }
+
+    new_agent->setData(agent_data);
+
+    bool win = buttleAgents((*agent), (*new_agent));
+
+    int old_agent_win = 0;
+    int new_agent_win = 0;
+
+    for(int count = 0; count < buttle_rand; ++count){
+
+        GeneticAgent* buttle_agent;
+        if(algo_number==0)
+            buttle_agent = new GeneticAgent(7,false);
+        else
+            buttle_agent = new GeneticAgent(7,false);//warning回避のためこの書き方をしているけど、ここが呼ばれる事はありえないです
+
+        old_agent_win += buttleAgents((*agent), (*buttle_agent));
+        new_agent_win += buttleAgents((*new_agent), (*buttle_agent));
+    }
+
+
+    int old_val = old_agent_win;
+    int new_val = new_agent_win + ( win ? 1 : -1) * buttle_val;
+
+    //二分累乗法で計算している
+
+    auto sq = [](double x){return x*x;};
+
+    std::function<double(double,int)> pow_ = [sq,pow_](double x, int n){//xのn乗
+      if(n==0)return 1.0;
+      else if(n==1)return x;
+      if(n%2==0)return (sq(pow_(x,n/2)));
+      else return ((x*sq(pow_(x,n/2))));
+    };
+
+    auto temperature = [&]{
+        return (1.0 * end_temp +  pow_(const_val, max_try - now_count ) );
+    };
+
+    //移動確率
+    auto probability = [&]{
+
+        if(new_val >= old_val)
+            return 1.0;
+
+        else
+            return 1.0 * std::exp(old_val - new_val) / temperature();
+    };
+
+    double per = probability();
+
+    std::uniform_real_distribution<> rand_double(0.0,1.0);
+
+    if(rand_double(mt) <= per)
+        agent = new_agent;
 
 }
 
