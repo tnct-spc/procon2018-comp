@@ -11,6 +11,12 @@ Genetic::Genetic(int algo_number) :
         managers.push_back(new GameManager(12,12,false,60));
     }
 
+    //乱択で生成する
+    while(agents.size() < agent_num){
+
+        if(algo_number == 0) // この辺個別処理
+            agents.emplace_back(GeneticAgent(7));
+    }
 }
 
 void Genetic::run(){
@@ -43,12 +49,6 @@ void Genetic::run(){
     };
 
 
-    //乱択で生成する
-    while(agents.size() < agent_num){
-
-        if(algo_number == 0) // この辺個別処理
-            agents.emplace_back(GeneticAgent(7));
-    }
 
     for(int gen = 0; gen < max_gen; ++gen){
 
