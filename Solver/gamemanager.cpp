@@ -87,7 +87,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
     if(vis_show){
         visualizer->update();
-        visualizer->setField(*field);
+        visualizer->setField(*field, 0, turn_max);
     }
 
 
@@ -234,7 +234,7 @@ void GameManager::setFieldCount(const unsigned int number){
     if(number >= field_vec.size())return ;
     now_field = number;
     if(vis_show){
-        visualizer->setField(*field_vec.at(number));
+        visualizer->setField(*field_vec.at(number), number+1, turn_max);
         visualizer->update();
         visualizer->repaint();
     }
@@ -380,7 +380,7 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
     if(now_turn == -1)
         return ;
 
-    std::cout << "turn : " << now_turn << std::endl << std::endl;
+    std::cout << "turn : " << now_turn+1 << std::endl << std::endl;
 
     for(int side = 0; side < 2; ++side)
         for(int agent = 0; agent < 2; ++agent){

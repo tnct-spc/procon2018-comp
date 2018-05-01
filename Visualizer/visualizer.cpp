@@ -21,8 +21,10 @@ Visualizer::~Visualizer()
     delete ui;
 }
 
-void Visualizer::setField(const procon::Field& inp_field){
+void Visualizer::setField(const procon::Field& inp_field, int now_turn, int max_t){
     field = inp_field;
+    turn = now_turn;
+    max_turn = max_t;
 }
 
 void Visualizer::paintEvent(QPaintEvent *event){
@@ -201,6 +203,20 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     };
 
+    auto drawTurnCount = [&]{
+
+        QPoint text_point;
+        text_point.setX(horizontal_margin);
+        text_point.setY(vertical_margin - 0.3 * grid_size);
+        painter.setFont(QFont("Decorative", grid_size*0.6, QFont::Thin)); // text font
+        painter.setPen(QPen(QBrush(QColor(250,80,80,80)),0.3));
+        std::string str;
+        str += std::to_string(turn);
+        str += " / ";
+        str += std::to_string(max_turn);
+        painter.drawText(text_point,QString::fromStdString(str));
+    };
+
 
 
     drawBackGround();
@@ -214,6 +230,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     drawValues();
     drawAgents();
+
+    drawTurnCount();
 
 }
 

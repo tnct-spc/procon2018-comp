@@ -24,7 +24,7 @@ public:
     explicit Visualizer(procon::Field& inp_field, QWidget *parent = 0);
     ~Visualizer();
 
-    void setField(const procon::Field& inp_field);
+    void setField(const procon::Field& inp_field, int now_turn, int max_t);
 
     const std::vector<std::vector<std::pair<int,int>>>& getNextAgents();
 
@@ -54,6 +54,10 @@ private:
 
     int vertical_margin;
     int horizontal_margin;
+
+    int turn = 0;
+
+    int max_turn = 0;
 
     int grid_size;
 
