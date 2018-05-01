@@ -6,4 +6,4 @@ SUBDIRS += \
     Visualizer \
     Solver \
     Mejirodai \
-    GeneticSimulator
+    Simulator
