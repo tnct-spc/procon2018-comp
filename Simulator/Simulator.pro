@@ -6,7 +6,8 @@ QT += core gui widgets
 
 SOURCES += \
         main.cpp \
-    genetic.cpp
+    genetic.cpp \
+    simulatedannealing.cpp
 
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
@@ -21,4 +22,5 @@ INCLUDEPATH += $$PWD/../Solver
 DEPENDPATH += $$PWD/../Solver
 
 HEADERS += \
-    genetic.h
+    genetic.h \
+    simulatedannealing.h
