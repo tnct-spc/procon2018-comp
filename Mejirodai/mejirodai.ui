@@ -34,22 +34,7 @@
       </property>
       <item>
        <property name="text">
-        <string>MonteCarloTreeSearch</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
         <string>GeneticAlgo</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>SimpleMonteCalro</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>TestAlgorithm</string>
        </property>
       </item>
       <item>
@@ -69,22 +54,7 @@
       </property>
       <item>
        <property name="text">
-        <string>MonteCarloTreeSearch</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
         <string>GeneticAlgo</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>SimpleMonteCalro</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>TestAlgorithm</string>
        </property>
       </item>
       <item>
@@ -159,7 +129,7 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <widget class="QWidget" name="MonteCarloTreeSearch_opponent">
+      <widget class="QWidget" name="GeneticAlgo_opponent">
        <widget class="QLabel" name="label_4">
         <property name="geometry">
          <rect>
@@ -170,37 +140,7 @@
          </rect>
         </property>
         <property name="text">
-         <string>MonteCarloTreeSearch</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="SimpleMonteCalro_opponent">
-       <widget class="QLabel" name="label_6">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>90</y>
-          <width>251</width>
-          <height>81</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>SimpleMonteCalro</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="TestAlgorithm_opponent">
-       <widget class="QLabel" name="label_8">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>110</y>
-          <width>251</width>
-          <height>81</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>TestAlgorithm</string>
+         <string>GeneticAlgo</string>
         </property>
        </widget>
       </widget>
@@ -234,12 +174,25 @@
       </property>
      </widget>
     </item>
+    <item row="4" column="1">
+     <widget class="QCheckBox" name="autoMode">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>AutoMode</string>
+      </property>
+     </widget>
+    </item>
     <item row="3" column="1">
      <widget class="QStackedWidget" name="my_stackedWidget">
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="MonteCarloTreeSearch_my">
+      <widget class="QWidget" name="GeneticAlgo_my">
        <widget class="QLabel" name="label_3">
         <property name="geometry">
          <rect>
@@ -250,37 +203,7 @@
          </rect>
         </property>
         <property name="text">
-         <string>MonteCarloTreeSearch</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="SimpleMonteCalro_my">
-       <widget class="QLabel" name="label_5">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>90</y>
-          <width>251</width>
-          <height>81</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>SimpleMonteCalro</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="TestAlgorithm_my">
-       <widget class="QLabel" name="label_7">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>100</y>
-          <width>251</width>
-          <height>81</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>TestAlgorithm</string>
+         <string>GeneticAlgo</string>
         </property>
        </widget>
       </widget>
@@ -301,19 +224,6 @@
       </widget>
      </widget>
     </item>
-    <item row="4" column="1">
-     <widget class="QCheckBox" name="autoMode">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>AutoMode</string>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -322,7 +232,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>18</height>
+     <height>30</height>
     </rect>
    </property>
   </widget>
