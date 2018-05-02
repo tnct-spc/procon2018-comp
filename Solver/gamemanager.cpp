@@ -47,7 +47,11 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
 
 void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
-   // std::shared_ptr<GameManager> share(this);
+
+    field_vec.clear();
+
+    field_vec.push_back(std::make_shared<procon::Field>(*field));
+    setFieldCount(field_vec.size() - 1);
 
     if (QString::compare("DummyAlgorithm", my_algo) == 0) {
         team_1 = std::make_shared<DummyAlgorithm>(share);
@@ -62,6 +66,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
     }
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
+
 
 
 
@@ -220,9 +225,13 @@ unsigned int GameManager::getFieldCount(){
 }
 void GameManager::setFieldCount(const unsigned int number){
     if(number >= field_vec.size())return ;
+
+    std::cout << field_vec.size() << " , " << number << std::endl;
+
     now_field = number;
+    field_vec.resize(number + 1);
     if(vis_show){
-        visualizer->setField(*field_vec.at(number), number+1, turn_max);
+        visualizer->setField(*field_vec.at(number), number, turn_max);
         visualizer->update();
         visualizer->repaint();
     }
