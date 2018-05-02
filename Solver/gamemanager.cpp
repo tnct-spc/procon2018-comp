@@ -49,25 +49,13 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
    // std::shared_ptr<GameManager> share(this);
 
-    if (QString::compare("MonteCarloTreeSearch", my_algo) == 0) {
-        team_1 = std::make_shared<MonteCarloTreeSearch>(share);
-    } else if (QString::compare("SimpleMonteCalro", my_algo) == 0) {
-        team_1 = std::make_shared<SimpleMonteCalro>(share);
-    } else if (QString::compare("TestAlgorithm", my_algo) == 0) {
-        team_1 = std::make_shared<TestAlgorithm>(share);
-    } else if (QString::compare("DummyAlgorithm", my_algo) == 0) {
+    if (QString::compare("DummyAlgorithm", my_algo) == 0) {
         team_1 = std::make_shared<DummyAlgorithm>(share);
     } else if (QString::compare("GeneticAlgo", my_algo) == 0) {
         team_1 = std::make_shared<GeneticAlgo>(share);
     }
 
-    if (QString::compare("MonteCarloTreeSearch", opponent_algo) == 0) {
-        team_2 = std::make_shared<MonteCarloTreeSearch>(team_1->getManagerPtr());
-    } else if (QString::compare("SimpleMonteCalro", opponent_algo) == 0) {
-        team_2 = std::make_shared<SimpleMonteCalro>(team_1->getManagerPtr());
-    } else if (QString::compare("TestAlgorithm", opponent_algo) == 0) {
-        team_2 = std::make_shared<TestAlgorithm>(team_1->getManagerPtr());
-    } else if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
+    if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
         team_2 = std::make_shared<DummyAlgorithm>(team_1->getManagerPtr());
     } else if (QString::compare("GeneticAlgo", opponent_algo) == 0) {
         team_2 = std::make_shared<GeneticAlgo>(team_1->getManagerPtr());
