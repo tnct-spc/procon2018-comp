@@ -87,7 +87,7 @@ void Genetic::generateAgents(){
         std::vector<double> target_data = agents.at(target).getData();
 
         //これだけの数を適当に切り出して乱数で決め直す
-        int change_count = retRandom(1, siz / 2);
+        int change_count = retRandom(1, siz / 3);
 
         std::vector<int> val(7);
         std::iota(val.begin(), val.end(), 0);
