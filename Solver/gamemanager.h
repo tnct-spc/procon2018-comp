@@ -66,7 +66,7 @@ private:
     int now_turn = -1;
 
     //これがtrueなら自動進行
-    bool is_auto = false;
+    bool is_auto = true;
 
     //行動を保存しておく
     //1:移動 移動方向をintで設定する

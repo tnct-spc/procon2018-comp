@@ -1,5 +1,5 @@
 #include "beamsearch.h"
-
+typedef std::pair<int,std::tuple<procon::Field,int,int>> origin;
 using namespace std;
 int beamsearch::Evaluation_Field(procon::Field field){
     /*
@@ -24,17 +24,14 @@ int beamsearch::Evaluation_Field(procon::Field field){
     return rand1000(mt);
 }
 
+
+
 const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(int side){
 
     int count = 0;
 
     const procon::Field& field = manager->getField();
 
-    auto sortEva = [&](std::pair<int,std::tuple<procon::Field,int,int>> const& a,std::pair<int,std::tuple<procon::Field,int,int>> const& b)->bool
-    {
-      return a.first < b.first;
-    };
-  //  cout<<"unya"<<endl;
     std::vector<std::vector<std::pair<int,int>>> Agents = field.getAgents();
 
         agent1=Agents.at(side).at(0);
@@ -58,7 +55,9 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
     age2 = age1;
     std::vector<std::vector<std::pair<int,int>>> Eva_stack(8 ,std::vector<std::pair<int,int>>(8 , std::make_pair(0,0))); //age1,age2の組み合わせの得点/回数
     std::vector<std::vector<std::pair<int,int>>> ways(8,std::vector<std::pair<int,int>>(8 , std::make_pair(0,0)));
-    std::vector<std::pair<int,std::tuple<procon::Field,int,int>>> beam,ins_beam;
+    std::priority_queue<origin,std::vector<origin>,
+            function<bool(origin,origin)>>
+            beam([](origin a,origin b) -> bool {if(a.first<b.first){return true;}else{return false;}});
     for(int turn = 0;turn < beam_turn;turn++){
         if(turn == 0){
 
@@ -120,17 +119,20 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
                     ways.at(a).at(b).first=way1;
                     ways.at(a).at(b).second=way2;
 
-                    beam.push_back(make_pair(Eva,make_tuple(ins_field,a,b)));
+                    beam.push(make_pair(Eva,make_tuple(ins_field,a,b)));
                     Eva_stack.at(a).at(b).first+=Eva;
                     Eva_stack.at(a).at(b).second++;
                     count++;
                 }
             }
-            sort(beam.begin(),beam.end(),sortEva);
         }else{
             int beam_size = beam.size();
+            std::priority_queue<origin,std::vector<origin>,
+                    function<bool(origin,origin)>>
+                    beam_ins([](origin a,origin b) -> bool{return a.first < b.first;});
+         //   cout<<beam_size<<endl;
             for(int range = 0;range < std::min(beam_range,beam_size);range++){
-            procon::Field Neo_ins_field = std::get<0>(beam.at(range).second);
+            procon::Field Neo_ins_field = std::get<0>(beam.top().second);
             agent1 = Neo_ins_field.getAgent(side,0);
             agent2 = Neo_ins_field.getAgent(side,1);
             for(int a = 0;a < 8;a++){
@@ -185,18 +187,17 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
                    }
                     procon::Field ins_field = agentmove(Neo_ins_field,pos);
                     int Eva = Evaluation_Field(ins_field);
-                    std::tuple<procon::Field,int,int> ins_value = beam.at(range).second;
+                    std::tuple<procon::Field,int,int> ins_value = beam.top().second;
 
-                    ins_beam.push_back(make_pair(Eva,make_tuple(ins_field,std::get<1>(ins_value),std::get<2>(ins_value))));
+                    beam_ins.push(make_pair(Eva,make_tuple(ins_field,std::get<1>(ins_value),std::get<2>(ins_value))));
                     Eva_stack.at(std::get<1>(ins_value)).at(std::get<2>(ins_value)).first+=Eva;
                     Eva_stack.at(std::get<1>(ins_value)).at(std::get<2>(ins_value)).second++;
                     count++;
                     }
                 }
+            beam.pop();
             }
-            beam = ins_beam;
-            ins_beam.clear();
-            std::sort(beam.begin(),beam.end(),sortEva);
+            beam = beam_ins;
         }
     }
 
