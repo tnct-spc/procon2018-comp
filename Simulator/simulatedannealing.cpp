@@ -62,6 +62,8 @@ void SimulatedAnnealing::run(){
 
 void SimulatedAnnealing::updateAgent(int now_count){
 
+     std::cout << "update" << std::endl;
+
     GeneticAgent* new_agent;
 
     if(algo_number==0)
@@ -82,12 +84,12 @@ void SimulatedAnnealing::updateAgent(int now_count){
 
     new_agent->setData(agent_data);
 
-    bool win = buttleAgents((*agent), (*new_agent));
+    double win = buttleAgents((*agent), (*new_agent), false);
 
-    int old_agent_win = 0;
-    int new_agent_win = 0;
+    double old_agent_win = 0;
+    double new_agent_win = 0;
 
-    for(int count = 0; count < buttle_rand; ++count){
+    for(int count = 0; count < buttle_rand.first; ++count){
 
         GeneticAgent* buttle_agent;
         if(algo_number==0)
@@ -95,28 +97,17 @@ void SimulatedAnnealing::updateAgent(int now_count){
         else
             buttle_agent = new GeneticAgent(7,false);//warning回避のためこの書き方をしているけど、ここが呼ばれる事はありえないです
 
-        old_agent_win += buttleAgents((*agent), (*buttle_agent));
-        new_agent_win += buttleAgents((*new_agent), (*buttle_agent));
+        old_agent_win += buttleAgents((*agent), (*buttle_agent), true);
+        new_agent_win += buttleAgents((*new_agent), (*buttle_agent), true);
     }
 
 
-    int old_val = old_agent_win;
-    int new_val = new_agent_win + ( win ? 1 : -1) * buttle_val;
+    double old_val = old_agent_win;
+    double new_val = new_agent_win + (win - 0.5) * buttle_direct.first;
 
-    //二分累乗法で計算している
 
-    auto sq = [](double x){return x*x;};
+    double now_temp = 	1.0 * (start_temp - end_temp) * (max_try - now_count) / max_try + end_temp;
 
-    std::function<double(double,int)> pow_ = [sq,pow_](double x, int n){//xのn乗
-      if(n==0)return 1.0;
-      else if(n==1)return x;
-      if(n%2==0)return (sq(pow_(x,n/2)));
-      else return ((x*sq(pow_(x,n/2))));
-    };
-
-    auto temperature = [&]{
-        return (1.0 * end_temp +  pow_(const_val, max_try - now_count ) );
-    };
 
     //移動確率
     auto probability = [&]{
@@ -125,10 +116,15 @@ void SimulatedAnnealing::updateAgent(int now_count){
             return 1.0;
 
         else
-            return 1.0 * std::exp(old_val - new_val) / temperature();
+            return 1.0 * std::exp((new_val - old_val) / now_temp);
     };
 
     double per = probability();
+
+    std::cout << "val = " << old_val << std::endl;
+    std::cout << "diff = " << old_val - new_val << std::endl;
+    std::cout << "now_temp = " << now_temp << std::endl;
+    std::cout << "per = " << per << std::endl;
 
     std::uniform_real_distribution<> rand_double(0.0,1.0);
 
@@ -145,8 +141,9 @@ int SimulatedAnnealing::retRandom(int st, int en){
 }
 
 
-bool SimulatedAnnealing::buttleAgents(GeneticAgent& first, GeneticAgent& second){
+double SimulatedAnnealing::buttleAgents(GeneticAgent& first, GeneticAgent& second,bool is_rand){
 
+    int buttle_count = (is_rand ? buttle_rand.second : buttle_direct.second) / cpu_num * cpu_num;
 
     auto buttle = [&](bool flag, int index){//2で割った余りによって反転する(得点が同じ時の処理が順番依存なので一応)
         int turn = retRandom(60, 120);
@@ -170,7 +167,7 @@ bool SimulatedAnnealing::buttleAgents(GeneticAgent& first, GeneticAgent& second)
     for(int index = 0; index < cpu_num; ++index){
 
         threads.at(index) = std::thread( [=,&win_count]{
-            for(int count = 0;count<buttle_count/cpu_num;++count)win_count += buttle(count % 2, index);
+            for(int count = 0;count<buttle_count/cpu_num;++count){win_count += buttle(count % 2, index);}
         } );
 
     }
@@ -178,5 +175,5 @@ bool SimulatedAnnealing::buttleAgents(GeneticAgent& first, GeneticAgent& second)
         threads.at(index).join();
     }
 
-    return win_count * 2 >= (buttle_count / cpu_num) * cpu_num;
+    return 1.0 * win_count / buttle_count;
 }
