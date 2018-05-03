@@ -18,6 +18,10 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
 
     int side_r = (side == 0 ? 1 : 0);//敵側
 
+    std::vector<int> win_count;
+    std::vector<int> try_count;
+    int try_sum = 0;
+
     const procon::Field& field = manager->getField();
 
     auto retRandom = [&](int st,int en){ //[st,en]
@@ -74,7 +78,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
         return win;
     };
 
-    auto ucb = [&](int index){return 1.0 * win_count.at(index) / try_count.at(index) + ucb_val * sqrt(( 2.0 * std::log(try_sum)) / try_count.at(index));};
 
     std::vector<int> can_move_list;
 
@@ -99,6 +102,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
     }
 
 
+    //脳がないのでUCBは使いません！ｗ
+    auto ucb = [&](int index){return 1.0 * win_count.at(index) / try_count.at(index) + ucb_val * sqrt(( 2.0 * std::log(try_sum)) / try_count.at(index));};
 
     auto simulation = [&](int cpu){
 
@@ -155,10 +160,19 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
     std::cout << "count : " << count * cpu_num << std::endl;
     std::cout << "move : " << max_move << std::endl;
 
-    for(unsigned int index = 0; index < try_count.size(); ++index)
-        std::cout << try_count.at(index) << " ";std::cout << std::endl;
-    for(unsigned int index = 0; index < try_count.size(); ++index)
-        std::cout << win_count.at(index) << " ";std::cout << std::endl;
+    for(unsigned int index = 0; index < try_count.size(); ++index){
+        // std::cout << try_count.at(index) << " ";
+        std::cout <<  win_count.at(index) << " ";
+        //std::cout << 1.0 * win_count.at(index) /  try_count.at(index) << " ";
+    }
+    std::cout << std::endl;
+
+    /*
+    for(unsigned int index = 0; index < try_count.size(); ++index){
+        std::cout << win_count.at(index) << " ";
+    }
+    std::cout << std::endl;
+    */
 
     std::pair<int,int> agent_1_move = std::make_pair( x_list.at( max_move / 9), y_list.at( max_move / 9) );
     std::pair<int,int> agent_2_move = std::make_pair( x_list.at( max_move % 9), y_list.at( max_move % 9) );

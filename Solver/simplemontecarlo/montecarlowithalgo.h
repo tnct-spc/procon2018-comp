@@ -40,14 +40,11 @@ private:
 
     unsigned int cpu_num;
 
-    const double ucb_val = 0.5;//定数
+    const double ucb_val = 1.4;//定数
 
     //合計での試行回数
     unsigned int try_time = 3 * 1e6;
 
-    std::vector<int> win_count;
-    std::vector<int> try_count;
-    int try_sum = 0;
 
     //ここにパラメータを置く(いい結果が出たら他のアルゴも出せるようにする
     int values_size = 20;
