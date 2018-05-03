@@ -155,6 +155,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
     std::cout << "count : " << count * cpu_num << std::endl;
     std::cout << "move : " << max_move << std::endl;
 
+    for(unsigned int index = 0; index < try_count.size(); ++index)
+        std::cout << try_count.at(index) << " ";std::cout << std::endl;
+    for(unsigned int index = 0; index < try_count.size(); ++index)
+        std::cout << win_count.at(index) << " ";std::cout << std::endl;
+
     std::pair<int,int> agent_1_move = std::make_pair( x_list.at( max_move / 9), y_list.at( max_move / 9) );
     std::pair<int,int> agent_2_move = std::make_pair( x_list.at( max_move % 9), y_list.at( max_move % 9) );
 
