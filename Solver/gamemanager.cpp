@@ -200,10 +200,12 @@ void GameManager::changeTurn(){
             std::tie(type, pos_x, pos_y) = act_stack.at(turn_flag).at(agent_num);
             std::pair<int,int> pos = std::make_pair(pos_x, pos_y);
 
-            dest_map[ pos ].push_back( std::make_pair(turn_flag, agent_num) );
-
+            if(type == 1){
+                dest_map[ pos ].push_back( std::make_pair(turn_flag, agent_num) );
+            }else
             if(type == 2){
                 tile_map[ pos ].push_back( std::make_pair(turn_flag, agent_num) );
+                dest_map[ field->getAgent(turn_flag,agent_num) ].push_back( std::make_pair(turn_flag, agent_num) );
             }
         }
 
@@ -214,6 +216,10 @@ void GameManager::changeTurn(){
 
         if(field->getState(elements.first.first, elements.first.second).first == (elements.second.at(0).first == 0 ? 2 : 1))
             continue;
+
+        if(field->getAgent(elements.second.at(0).first,(elements.second.at(0).second ? 0 : 1 )) == elements.first)
+            continue;
+
         field->setAgent(elements.second.at(0).first, elements.second.at(0).second, elements.first.first, elements.first.second);
         field->setState(elements.first.first, elements.first.second, elements.second.at(0).first + 1);
     }
