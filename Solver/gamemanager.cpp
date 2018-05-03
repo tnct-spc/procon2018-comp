@@ -4,6 +4,7 @@
 #include "simplemontecarlo/simplemontecarlo.h"
 #include "montecarlotreesearch/montecarlotreesearch.h"
 #include "dummyalgorithm.h"
+#include "simplemontecarlo/montecarlowithalgo.h"
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
@@ -57,12 +58,16 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_1 = std::make_shared<DummyAlgorithm>(share);
     } else if (QString::compare("GeneticAlgo", my_algo) == 0) {
         team_1 = std::make_shared<GeneticAlgo>(share);
+    } else if (QString::compare("MontecarloWithAlgo", my_algo) == 0) {
+        team_1 = std::make_shared<MontecarloWithAlgo>(share);
     }
 
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
         team_2 = std::make_shared<DummyAlgorithm>(team_1->getManagerPtr());
     } else if (QString::compare("GeneticAlgo", opponent_algo) == 0) {
         team_2 = std::make_shared<GeneticAlgo>(team_1->getManagerPtr());
+    } else if (QString::compare("MontecarloWithAlgo", opponent_algo) == 0) {
+        team_2 = std::make_shared<MontecarloWithAlgo>(team_1->getManagerPtr());
     }
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
