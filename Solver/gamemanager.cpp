@@ -45,6 +45,10 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
 
 }
 
+void GameManager::setField(const procon::Field& pro){
+    field = std::make_shared<procon::Field>(pro);
+}
+
 void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
    // std::shared_ptr<GameManager> share(this);

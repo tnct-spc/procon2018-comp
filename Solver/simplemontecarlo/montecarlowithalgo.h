@@ -2,24 +2,43 @@
 #define MONTECARLOWITHALGO_H
 
 #include "algorithmwrapper.h"
+#include "gamemanager.h"
+
+#include "geneticalgo/geneticagent.h"
 
 #include <vector>
+#include <cmath>
 
 class MontecarloWithAlgo : public AlgorithmWrapper
 {
     //深さ1のノード(81パターン)を生成してUCBでやる
     //二手目以降はお互いにGeneticAlgoからの厳選パターン(10種程度)を適用する
 
-    using AlgorithmWrapper::AlgorithmWrapper;
+    //using AlgorithmWrapper::AlgorithmWrapper;
 
 public:
+    MontecarloWithAlgo(std::shared_ptr<GameManager> manager_ptr);
+
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
 
 private:
+
+    std::random_device rnd;
+    std::mt19937 mt;
+
+    std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
+    std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
+
+    GameManager* mgr;
+
     //合計での試行回数
     unsigned int try_time = 3 * 1e6;
 
+    std::vector<int> win_count;
+    std::vector<int> try_count;
+
     //ここにパラメータを置く(いい結果が出たら他のアルゴも出せるようにする
+    int values_size = 20;
     std::vector<std::vector<double>> values = {
         {0.114629, 0.535032, 0.457792, 0.641425, 0.443441, 0.38267, 0.72858 },
         {0.114629, 0.535032, 0.457792, 0.641425, 0.443441, 0.683652, 0.72858 },

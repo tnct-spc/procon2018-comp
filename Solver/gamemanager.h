@@ -23,10 +23,12 @@ class GameManager : public QObject
 public:
     explicit GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show = true, const int turn_max = 60, QObject *parent = 0);
 
+    void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
 
     void resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show = true, const int t_max = 60);
 
     procon::Field& getField();
+    void setField(const procon::Field& pro);
 
     void setFieldCount(const unsigned int number);
     unsigned int getFieldCount();
@@ -39,6 +41,7 @@ public:
 
     bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2);
     void setAutoMode(bool value);
+
 
     std::shared_ptr<Visualizer> getVisualizer();
 
@@ -86,7 +89,6 @@ private:
     //2:タイル除去 移動方向をintで設定する
     std::vector<std::vector<std::tuple<int,int,int>>> act_stack; //ここは絶対座標での入力なので注意！
 
-    void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
     void changeTurn();
 
     void nextMoveForManualMode();
