@@ -84,7 +84,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
         int max_index = 0;
         //最大要素を確認する
         for(unsigned int index = 0; index < can_move_list.size(); ++index){
-            double ucb_index = ucb(can_move_list.at(index) );
+            double ucb_index = ucb(index);
 
             if(ucb_max < ucb_index){
                 ucb_max = ucb_index;
