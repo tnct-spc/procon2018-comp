@@ -44,8 +44,16 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
         agent_2_pos.second += y_list.at(move % 9);
 
         mgr->agentAct(0, 0, std::make_tuple( (field.getState(agent_1_pos.first, agent_1_pos.second).first == 2 ? 2 : 1) , x_list.at(move / 9), y_list.at(move / 9)));
-        mgr->agentAct(0, 0, std::make_tuple( (field.getState(agent_2_pos.first, agent_2_pos.second).first == 2 ? 2 : 1) , x_list.at(move % 9), y_list.at(move % 9)));
+        mgr->agentAct(0, 1, std::make_tuple( (field.getState(agent_2_pos.first, agent_2_pos.second).first == 2 ? 2 : 1) , x_list.at(move % 9), y_list.at(move % 9)));
 
+        GeneticAlgo algo(manager,*side_2);
+        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> act = algo.agentAct(1);
+        mgr->agentAct(1, 0, act.first);
+        mgr->agentAct(1, 1, act.second);
+
+        mgr->changeTurn();
+
+        bool win = mgr->simulationGenetic(*side_1, *side_2, 0);
 
     };
 

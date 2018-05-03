@@ -42,6 +42,7 @@ public:
     bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2);
     void setAutoMode(bool value);
 
+    void changeTurn();
 
     std::shared_ptr<Visualizer> getVisualizer();
 
@@ -89,7 +90,6 @@ private:
     //2:タイル除去 移動方向をintで設定する
     std::vector<std::vector<std::tuple<int,int,int>>> act_stack; //ここは絶対座標での入力なので注意！
 
-    void changeTurn();
 
     void nextMoveForManualMode();
 

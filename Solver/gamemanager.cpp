@@ -86,7 +86,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
     //うぇーいｗｗｗｗｗｗｗ
     if(is_auto){
         now_turn = 0;
-        for(int now_turn = 0; now_turn < turn_max; ++now_turn){
+        for(; now_turn < turn_max; ++now_turn){
 
 
             std::cout << "turn " << now_turn + 1 << " started" << std::endl << std::endl;
@@ -176,7 +176,7 @@ bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAg
         team_2 = std::make_shared<GeneticAlgo>(share, agent_2);
     }
 
-    for(int now_turn = 0; now_turn < turn_max; ++now_turn){
+    for(; now_turn < turn_max; ++now_turn){
 
 
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
