@@ -34,6 +34,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
 
         GameManager* mgr_target = mgr.at(cpu);
 
+        //*mgr_target = *manager;
+
         std::vector<double> val_1 = values.at(retRandom(0,19));
         std::vector<double> val_2 = values.at(retRandom(0,19));
 
@@ -44,9 +46,9 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
         side_2->setData(val_2);
 
 
-        mgr_target->resetManager(retRandom(8,12), retRandom(8,12), false, retRandom(60,120));
+        //mgr_target->resetManager(retRandom(8,12), retRandom(8,12), false, retRandom(60,120));
 
-        mgr_target->setField(field);
+        mgr_target->setField(field, manager->getTurnCount(), manager->getFinalTurn());
 
         std::pair<int,int> agent_1_pos = field.getAgent(side, 0);
         std::pair<int,int> agent_2_pos = field.getAgent(side, 1);
@@ -74,6 +76,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
             win ^= 1;
 
         ++try_sum;
+
+        // std::cout << (win ? "yes" : "no" ) << std::endl;
 
         return win;
     };

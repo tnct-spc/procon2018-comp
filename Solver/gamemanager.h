@@ -28,7 +28,6 @@ public:
     void resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show = true, const int t_max = 60);
 
     procon::Field& getField();
-    void setField(const procon::Field& pro);
 
     void setFieldCount(const unsigned int number);
     unsigned int getFieldCount();
@@ -47,6 +46,8 @@ public:
     std::shared_ptr<Visualizer> getVisualizer();
 
     int getTurnCount();
+
+    void setField(const procon::Field& pro, int now_t, int max_t);
 
 signals:
     void signalAutoMode(bool value);

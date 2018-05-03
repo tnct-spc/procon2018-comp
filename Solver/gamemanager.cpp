@@ -46,7 +46,10 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
 
 }
 
-void GameManager::setField(const procon::Field& pro){
+void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
+
+    now_turn = now_t;
+    turn_max = max_t;
     field = std::make_shared<procon::Field>(pro);
 }
 
