@@ -4,7 +4,13 @@ MontecarloWithAlgo::MontecarloWithAlgo(std::shared_ptr<GameManager> manager_ptr)
     AlgorithmWrapper(manager_ptr),
     mt(rnd())
 {
-    mgr = new GameManager(12, 12, false, 60);
+    cpu_num = std::thread::hardware_concurrency();
+
+    mgr.resize(cpu_num);
+    threads.resize(cpu_num);
+
+    for(unsigned int index = 0; index < cpu_num; ++index)
+        mgr.at(index) = new GameManager(12, 12, false, 60);
 
 }
 
@@ -20,7 +26,9 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
         return rand(mt);
     };
 
-    auto playout = [&](int move){
+    auto playout = [&](int move, int cpu){
+
+        GameManager* mgr_target = mgr.at(cpu);
 
         std::vector<double> val_1 = values.at(retRandom(0,19));
         std::vector<double> val_2 = values.at(retRandom(0,19));
@@ -32,9 +40,9 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
         side_2->setData(val_2);
 
 
-        mgr->resetManager(retRandom(8,12), retRandom(8,12), false, retRandom(60,120));
+        mgr_target->resetManager(retRandom(8,12), retRandom(8,12), false, retRandom(60,120));
 
-        mgr->setField(field);
+        mgr_target->setField(field);
 
         std::pair<int,int> agent_1_pos = field.getAgent(side, 0);
         std::pair<int,int> agent_2_pos = field.getAgent(side, 1);
@@ -45,17 +53,17 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
         agent_2_pos.first += x_list.at(move % 9);
         agent_2_pos.second += y_list.at(move % 9);
 
-        mgr->agentAct(side, 0, std::make_tuple( (field.getState(agent_1_pos.first, agent_1_pos.second).first == 2 ? 2 : 1) , x_list.at(move / 9), y_list.at(move / 9)));
-        mgr->agentAct(side, 1, std::make_tuple( (field.getState(agent_2_pos.first, agent_2_pos.second).first == 2 ? 2 : 1) , x_list.at(move % 9), y_list.at(move % 9)));
+        mgr_target->agentAct(side, 0, std::make_tuple( (field.getState(agent_1_pos.first, agent_1_pos.second).first == 2 ? 2 : 1) , x_list.at(move / 9), y_list.at(move / 9)));
+        mgr_target->agentAct(side, 1, std::make_tuple( (field.getState(agent_2_pos.first, agent_2_pos.second).first == 2 ? 2 : 1) , x_list.at(move % 9), y_list.at(move % 9)));
 
         GeneticAlgo algo(manager,*side_2);
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> act = algo.agentAct(1);
-        mgr->agentAct(side_r, 0, act.first);
-        mgr->agentAct(side_r, 1, act.second);
+        mgr_target->agentAct(side_r, 0, act.first);
+        mgr_target->agentAct(side_r, 1, act.second);
 
-        mgr->changeTurn();
+        mgr_target->changeTurn();
 
-        bool win = mgr->simulationGenetic(*side_1, *side_2, 0);
+        bool win = mgr_target->simulationGenetic(*side_1, *side_2, 0);
 
         //反転
         if(side == 1)
@@ -69,16 +77,30 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
     auto ucb = [&](int index){return 1.0 * win_count.at(index) / try_count.at(index) + ucb_val * sqrt(( 2.0 * std::log(try_sum)) / try_count.at(index));};
 
     std::vector<int> can_move_list;
+
     for(int count = 0; count < 81; ++count)
         if(manager->canPut(side, count / 9, count % 9)){
 
             can_move_list.push_back(count);
             try_count.push_back(1);
-            win_count.push_back( playout(count) );
+            // win_count.push_back( playout(count) );
+            win_count.push_back(0);
+
         }
 
+    //ここでマルチスレッド
+    for(unsigned int index = 0; index < (can_move_list.size() + cpu_num - 1) / cpu_num;++index){
+        unsigned int thread_count = std::min(static_cast<unsigned int>(can_move_list.size() -  index * cpu_num), cpu_num);
 
-    auto simulation = [&]{
+        for(unsigned int cpu_cou = 0; cpu_cou < thread_count; ++cpu_cou)
+            threads.at(cpu_cou) = std::thread([&](int cpu){std::lock_guard<std::mutex> lock(mtx);win_count.at(index * cpu_num + cpu) = playout(can_move_list.at(index * cpu_num + cpu), cpu);},cpu_cou);
+        for(unsigned int cpu_cou = 0; cpu_cou < thread_count; ++cpu_cou)
+            threads.at(cpu_cou).join();
+    }
+
+
+
+    auto simulation = [&](int cpu){
 
         double ucb_max = -1;
         int max_index = 0;
@@ -93,7 +115,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
         }
 
         //ucbの最大値でシミュレーション
-        bool win = playout(can_move_list.at(max_index));
+        bool win = playout(can_move_list.at(max_index), cpu);
 
         ++try_count.at(max_index);
         win_count.at(max_index) += win;
@@ -111,15 +133,27 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
                 break;
         }
 
-        simulation();
+        for(unsigned int cpu_cou = 0; cpu_cou < cpu_num; ++cpu_cou){
+            threads.at(cpu_cou) = std::thread([&](unsigned int cpu){
+                std::lock_guard<std::mutex> lock(mtx);
+                simulation(cpu);
+            },cpu_cou);
+        }
+
+        for(unsigned int cpu_cou = 0; cpu_cou < cpu_num; ++cpu_cou)
+            threads.at(cpu_cou).join();
 
     }
+
 
     auto max_itr = std::max_element(try_count.begin(), try_count.end());
 
     int index = std::distance(try_count.begin(), max_itr);
 
     int max_move = can_move_list.at(index);
+
+    std::cout << "count : " << count * cpu_num << std::endl;
+    std::cout << "move : " << max_move << std::endl;
 
     std::pair<int,int> agent_1_move = std::make_pair( x_list.at( max_move / 9), y_list.at( max_move / 9) );
     std::pair<int,int> agent_2_move = std::make_pair( x_list.at( max_move % 9), y_list.at( max_move % 9) );

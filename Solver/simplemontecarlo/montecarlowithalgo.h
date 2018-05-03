@@ -6,8 +6,11 @@
 
 #include "geneticalgo/geneticagent.h"
 
+#include <thread>
 #include <vector>
 #include <cmath>
+#include <queue>
+#include <mutex>
 
 class MontecarloWithAlgo : public AlgorithmWrapper
 {
@@ -23,13 +26,19 @@ public:
 
 private:
 
+    std::mutex mtx;
+
     std::random_device rnd;
     std::mt19937 mt;
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
-    GameManager* mgr;
+    std::vector<GameManager*> mgr;
+
+    std::vector<std::thread> threads;
+
+    unsigned int cpu_num;
 
     const double ucb_val = 0.5;//定数
 
