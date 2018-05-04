@@ -206,8 +206,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
 
     for(unsigned int index = 0; index < try_count.size(); ++index){
         // std::cout << try_count.at(index) << " ";
-        std::cout <<  win_count.at(index) << " ";
-        //std::cout << 1.0 * win_count.at(index) /  try_count.at(index) << " ";
+        //std::cout <<  win_count.at(index) << " ";
+        std::cout << 1.0 * win_count.at(index) /  try_count.at(index) << " ";
     }
     std::cout << std::endl;
 
