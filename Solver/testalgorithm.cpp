@@ -80,11 +80,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TestAlgorithm:
         auto lower_it = std::lower_bound(rotate_value.begin(), rotate_value.end(), random_dist(mt));
 
         if(lower_it == rotate_value.end())
-            (agent_num ? return_val.first : return_val.second) = std::make_tuple(0, 0, 0);
+            (agent_num ? return_val.second : return_val.first) = std::make_tuple(0, 0, 0);
 
         else{
             std::tuple<int,int,int> return_tuple = hyouka_max.at(std::distance(rotate_value.begin(), lower_it));
-            (agent_num ? return_val.first : return_val.second) = return_tuple;
+            (agent_num ? return_val.second : return_val.first) = return_tuple;
         }
     }
 
