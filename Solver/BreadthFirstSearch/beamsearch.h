@@ -15,7 +15,7 @@ public:
     beamsearch();
     const int beam_range = 100;
     const int beam_turn = 10;
-    int Evaluation_Field(procon::Field field);
+    int Evaluation_Field(procon::Field field,int side);
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
     std::pair<int,int> agent1,agent2;
     const double var1=0,var2=0,var3=0,var4=0,var5=0;

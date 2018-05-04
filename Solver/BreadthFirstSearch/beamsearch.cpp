@@ -1,7 +1,7 @@
 #include "beamsearch.h"
 typedef std::pair<int,std::tuple<procon::Field,int,int>> origin;
 using namespace std;
-int beamsearch::Evaluation_Field(procon::Field field){
+int beamsearch::Evaluation_Field(procon::Field field,int side){
     /*
     std::pair<int,int> size = field.getSize();
     int Eva_manhattan = 0;
@@ -32,7 +32,8 @@ int beamsearch::Evaluation_Field(procon::Field field){
     std::mt19937 mt(rnd());
     std::uniform_int_distribution<> rand1000(0, 999);
     //cout<<Eva_manhattan<<endl;
-    return red-blue;
+    cout<<(!side?red-blue:blue-red)<<endl;
+    return (!side?red-blue:blue-red);
 }
 
 
@@ -126,7 +127,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
 
                     procon::Field ins_field = agentmove(field,pos);
 
-                    int Eva = Evaluation_Field(ins_field);
+                    int Eva = Evaluation_Field(ins_field,side);
 
                     ways.at(a).at(b).first=way1;
                     ways.at(a).at(b).second=way2;
@@ -198,7 +199,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
                        pos.push_back(ins_pos);
                    }
                     procon::Field ins_field = agentmove(Neo_ins_field,pos);
-                    int Eva = Evaluation_Field(ins_field);
+                    int Eva = Evaluation_Field(ins_field,side);
                     std::tuple<procon::Field,int,int> ins_value = beam.top().second;
 
                     beam_ins.push(make_pair(Eva,make_tuple(ins_field,std::get<1>(ins_value),std::get<2>(ins_value))));
@@ -259,9 +260,6 @@ procon::Field beamsearch::agentmove(procon::Field ins_field, std::vector<std::ve
             continue;
 
         if(field.getState(elements.first.first, elements.first.second).first == (elements.second.at(0).first == 0 ? 2 : 1))
-            continue;
-
-        if(field.getAgent(elements.second.at(0).first,(elements.second.at(0).second ? 0 : 1 )) == elements.first)
             continue;
 
         field.setAgent(elements.second.at(0).first, elements.second.at(0).second, elements.first.first, elements.first.second);
