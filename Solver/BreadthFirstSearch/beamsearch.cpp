@@ -32,7 +32,6 @@ int beamsearch::Evaluation_Field(procon::Field field,int side){
     std::mt19937 mt(rnd());
     std::uniform_int_distribution<> rand1000(0, 999);
     //cout<<Eva_manhattan<<endl;
-    cout<<(!side?red-blue:blue-red)<<endl;
     return (!side?red-blue:blue-red);
 }
 
@@ -69,8 +68,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
     std::vector<std::vector<std::pair<int,int>>> ways(8,std::vector<std::pair<int,int>>(8 , std::make_pair(0,0)));
     std::priority_queue<origin,std::vector<origin>,
             function<bool(origin,origin)>>
-            beam([](origin a,origin b) -> bool {if(a.first<b.first){return true;}else{return false;}}),
-            beam_ins([](origin a,origin b) -> bool{return a.first < b.first;});
+            beam([](origin a,origin b) -> bool {if(a.first<b.first){return true;}else{return false;}});
     for(int turn = 0;turn < beam_turn;turn++){
         if(turn == 0){
 
