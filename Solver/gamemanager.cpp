@@ -4,6 +4,7 @@
 #include "simplemontecarlo/simplemontecarlo.h"
 #include "montecarlotreesearch/montecarlotreesearch.h"
 #include "dummyalgorithm.h"
+#include "simplemontecarlo/montecarlowithalgo.h"
 #include "BreadthFirstSearch/beamsearch.h"
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
@@ -46,6 +47,13 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
 
 }
 
+void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
+
+    now_turn = now_t;
+    turn_max = max_t;
+    field = std::make_shared<procon::Field>(pro);
+}
+
 void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
    // std::shared_ptr<GameManager> share(this);
@@ -54,6 +62,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_1 = std::make_shared<DummyAlgorithm>(share);
     } else if (QString::compare("GeneticAlgo", my_algo) == 0) {
         team_1 = std::make_shared<GeneticAlgo>(share);
+    } else if (QString::compare("MontecarloWithAlgo", my_algo) == 0) {
+        team_1 = std::make_shared<MontecarloWithAlgo>(share);
     }else if(QString::compare("BeamSearch", my_algo) == 0){
         team_1 = std::make_shared<beamsearch>(share);
     }
@@ -62,6 +72,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_2 = std::make_shared<DummyAlgorithm>(team_1->getManagerPtr());
     } else if (QString::compare("GeneticAlgo", opponent_algo) == 0) {
         team_2 = std::make_shared<GeneticAlgo>(team_1->getManagerPtr());
+    } else if (QString::compare("MontecarloWithAlgo", opponent_algo) == 0) {
+        team_2 = std::make_shared<MontecarloWithAlgo>(team_1->getManagerPtr());
     }else if(QString::compare("BeamSearch", opponent_algo)==0){
         team_2 = std::make_shared<beamsearch>(team_1->getManagerPtr());
     }
@@ -87,7 +99,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
     //うぇーいｗｗｗｗｗｗｗ
     if(is_auto){
         now_turn = 0;
-        for(int now_turn = 0; now_turn < turn_max; ++now_turn){
+        for(; now_turn < turn_max; ++now_turn){
 
 
             std::cout << "turn " << now_turn + 1 << " started" << std::endl << std::endl;
@@ -177,7 +189,7 @@ bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAg
         team_2 = std::make_shared<GeneticAlgo>(share, agent_2);
     }
 
-    for(int now_turn = 0; now_turn < turn_max; ++now_turn){
+    for(; now_turn < turn_max; ++now_turn){
 
 
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);

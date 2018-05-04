@@ -27,6 +27,7 @@ SOURCES += \
         dummyalgorithm.cpp \
     geneticalgo/geneticalgo.cpp \
     geneticalgo/geneticagent.cpp \
+    simplemontecarlo/montecarlowithalgo.cpp \
     gamemanager.cpp \
     gamesimulator.cpp \
     algorithmwrapper.cpp
@@ -41,7 +42,8 @@ HEADERS += \
         montecarlotreesearch/searchnode.h \
     BreadthFirstSearch/beamsearch.h \
         dummyalgorithm.h \
-    geneticalgo/geneticalgo.h \
+    geneticalgo/geneticagent.h \
+    simplemontecarlo/montecarlowithalgo.h \
     geneticalgo/geneticagent.h
 unix {
     target.path = /usr/lib
