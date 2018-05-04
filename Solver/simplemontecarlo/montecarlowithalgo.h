@@ -11,6 +11,7 @@
 #include <cmath>
 #include <queue>
 #include <mutex>
+#include <set>
 
 class MontecarloWithAlgo : public AlgorithmWrapper
 {

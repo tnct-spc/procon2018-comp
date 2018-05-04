@@ -85,6 +85,9 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
 
     std::vector<int> can_move_list;
 
+
+    // これだとガバが発生しやすいので他のagentで試した有効手のみを候補に入れる
+    /*
     for(int count = 0; count < 81; ++count)
         if(manager->canPut(side, count / 9, count % 9)){
 
@@ -94,10 +97,48 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
             win_count.push_back(0);
 
         }
+    */
+
+    //動きの候補を追加する
+    auto addMoveList = [&]{
+        std::set<std::pair<int,int>> move_list_1,move_list_2;
+
+        //全てのエージェントで動きを試してみる
+        for(int agent_num = 0; agent_num < 20; ++agent_num){
+            GeneticAgent agent(7);
+            agent.setData(values.at(agent_num) );
+            GeneticAlgo algo(manager, agent);
+            std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> act = algo.agentAct(side);
+            move_list_1.insert( std::make_pair(std::get<1>(act.first), std::get<2>(act.first) ) );
+            move_list_2.insert( std::make_pair(std::get<1>(act.second), std::get<2>(act.second) ) );
+
+        }
+
+        //クッソ分かりづらい上に無駄なコードだけど雰囲気で読んでください
+        std::vector<int> move_list_1_vector;
+        std::vector<int> move_list_2_vector;
+
+        for(int index = 0; index < 9; ++index){
+            if(move_list_1.count(std::make_pair(x_list.at(index), y_list.at(index)) ))
+                move_list_1_vector.push_back(index);
+            if(move_list_2.count(std::make_pair(x_list.at(index), y_list.at(index)) ))
+                move_list_2_vector.push_back(index);
+        }
+
+        for(auto move_1 : move_list_1_vector)
+            for(auto move_2 : move_list_2_vector){
+                can_move_list.emplace_back(move_1 * 9 + move_2);
+                try_count.push_back(1);
+                win_count.push_back(0);
+            }
+    };
+
+    addMoveList();
 
     //ここでマルチスレッド
     for(unsigned int index = 0; index < (can_move_list.size() + cpu_num - 1) / cpu_num;++index){
         unsigned int thread_count = std::min(static_cast<unsigned int>(can_move_list.size() -  index * cpu_num), cpu_num);
+
 
         for(unsigned int cpu_cou = 0; cpu_cou < thread_count; ++cpu_cou)
             threads.at(cpu_cou) = std::thread([&](int cpu){std::lock_guard<std::mutex> lock(mtx);win_count.at(index * cpu_num + cpu) = playout(can_move_list.at(index * cpu_num + cpu), cpu);},cpu_cou);
@@ -106,7 +147,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
     }
 
 
-    //脳がないのでUCBは使いません！ｗ
     auto ucb = [&](int index){return 1.0 * win_count.at(index) / try_count.at(index) + ucb_val * sqrt(( 2.0 * std::log(try_sum)) / try_count.at(index));};
 
     auto simulation = [&](int cpu){
