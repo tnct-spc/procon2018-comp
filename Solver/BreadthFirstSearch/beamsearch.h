@@ -13,7 +13,7 @@ class beamsearch : public AlgorithmWrapper
     using AlgorithmWrapper::AlgorithmWrapper;
 public:
     beamsearch();
-    const int beam_range = 100;
+    const int beam_range = 1000;
     const int beam_turn = 10;
     int Evaluation_Field(procon::Field field,int side);
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);

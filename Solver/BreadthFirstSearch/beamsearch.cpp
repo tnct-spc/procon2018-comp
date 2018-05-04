@@ -31,7 +31,7 @@ int beamsearch::Evaluation_Field(procon::Field field,int side){
     std::mt19937 mt(rnd());
     std::uniform_int_distribution<> rand100(1, 100);
     //cout<<Eva_manhattan<<endl;
-    return (!side?red-blue:blue-red)*rand100(mt);
+    return (!side?red-blue:blue-red);
 }
 
 
@@ -67,7 +67,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
     std::vector<std::vector<std::pair<int,int>>> ways(8,std::vector<std::pair<int,int>>(8 , std::make_pair(0,0)));
     std::priority_queue<origin,std::vector<origin>,
             std::function<bool(origin,origin)>>
-            beam([](origin a,origin b) -> bool {if(a.first<b.first){return true;}else{return false;}});
+            beam([](origin a,origin b) -> bool {if(a.first>b.first){return true;}else{return false;}});
     for(int turn = 0;turn < beam_turn;turn++){
         if(turn == 0){
 
@@ -139,7 +139,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
             int beam_size = beam.size();
             std::priority_queue<origin,std::vector<origin>,
                    std::function<bool(origin,origin)>>
-                    beam_ins([](origin a,origin b) -> bool{return a.first < b.first;});
+                    beam_ins([](origin a,origin b) -> bool{return a.first > b.first;});
          //   cout<<beam_size<<endl;
             for(int range = 0;range < std::min(beam_range,beam_size);range++){
             procon::Field Neo_ins_field = std::get<0>(beam.top().second);
@@ -213,16 +213,18 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
 
 
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> ans;
-    int most_Eva = 0;
+    int most_Eva = -100000000;
     for(int a = 0;a < 8;a++){
         for(int b = 0;b < 8;b++){
             if(Eva_stack.at(a).at(b).second==0)continue;
             if(most_Eva<=Eva_stack.at(a).at(b).first/Eva_stack.at(a).at(b).second){
                 most_Eva=Eva_stack.at(a).at(b).first/Eva_stack.at(a).at(b).second;
+               std::cout<<most_Eva<<std::endl;
                 ans= std::make_pair(std::make_tuple(ways.at(a).at(b).first,age1.at(a).first,age1.at(a).second),std::make_tuple(ways.at(a).at(b).second,age2.at(b).first,age2.at(b).second));
             }
         }
     }
+
    std::cout<<"("<<std::get<0>(ans.first)<<","<<std::get<1>(ans.first)<<","<<std::get<2>(ans.first)<<")"<<"("<<std::get<0>(ans.second)<<","<<std::get<1>(ans.second)<<","<<std::get<2>(ans.second)<<")"<<std::endl;
     std::cout<<count<<std::endl;
     return ans;
