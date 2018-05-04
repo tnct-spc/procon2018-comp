@@ -45,11 +45,11 @@ double beamsearch::Evaluation_Field(procon::Field field,int side){
 
     for(int a = 0;a < field.getSize().first;a++){
         for(int b = 0;b < field.getSize().second;b++){
-            if(field.getState(a,b).second < 0)minus_point+=field.getState(a,b).second;
+            if(field.getState(a,b).first==side+1&&field.getState(a,b).second < 0)minus_point+=field.getState(a,b).second;
         }
     }
 
-    Eva4 = 1.0000 * (100 - minus_point)/100;  //マイナスのポイントを以下に踏んでいないか
+    Eva4 = 1.0000 * (100 - minus_point)/100;  //マイナスのポイントをいかに踏んでいないか
 
     std::pair<int,int> enemy_1=field.getAgent((side?0:1),0),enemy_2 = field.getAgent((side?0:1),1);
 
