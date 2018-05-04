@@ -39,6 +39,11 @@
       </item>
       <item>
        <property name="text">
+        <string>BeamSearch</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>DummyAlgorithm</string>
        </property>
       </item>
@@ -55,6 +60,11 @@
       <item>
        <property name="text">
         <string>GeneticAlgo</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>BeamSearch</string>
        </property>
       </item>
       <item>
@@ -232,7 +242,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>30</height>
+     <height>18</height>
     </rect>
    </property>
   </widget>

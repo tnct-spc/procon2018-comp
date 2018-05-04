@@ -23,17 +23,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        testalgorithm.cpp \
-        algorithmwrapper.cpp \
-        gamemanager.cpp \
-        simplemontecarlo/simplemontecarlo.cpp \
-        gamesimulator.cpp \
-        montecarlotreesearch/montecarlotreesearch.cpp \
-        montecarlotreesearch/searchnode.cpp \
+    BreadthFirstSearch/beamsearch.cpp \
         dummyalgorithm.cpp \
     geneticalgo/geneticalgo.cpp \
-    geneticalgo/geneticagent.cpp
-
+    geneticalgo/geneticagent.cpp \
+    gamemanager.cpp \
+    gamesimulator.cpp \
+    algorithmwrapper.cpp
 HEADERS += \
         algorithm_global.h \ 
         testalgorithm.h \
@@ -43,10 +39,10 @@ HEADERS += \
         gamesimulator.h \
         montecarlotreesearch/montecarlotreesearch.h \
         montecarlotreesearch/searchnode.h \
+    BreadthFirstSearch/beamsearch.h \
         dummyalgorithm.h \
     geneticalgo/geneticalgo.h \
     geneticalgo/geneticagent.h
-
 unix {
     target.path = /usr/lib
     INSTALLS += target

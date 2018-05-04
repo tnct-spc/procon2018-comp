@@ -4,6 +4,7 @@
 #include "simplemontecarlo/simplemontecarlo.h"
 #include "montecarlotreesearch/montecarlotreesearch.h"
 #include "dummyalgorithm.h"
+#include "BreadthFirstSearch/beamsearch.h"
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
@@ -53,12 +54,16 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_1 = std::make_shared<DummyAlgorithm>(share);
     } else if (QString::compare("GeneticAlgo", my_algo) == 0) {
         team_1 = std::make_shared<GeneticAlgo>(share);
+    }else if(QString::compare("BeamSearch", my_algo) == 0){
+        team_1 = std::make_shared<beamsearch>(share);
     }
 
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
         team_2 = std::make_shared<DummyAlgorithm>(team_1->getManagerPtr());
     } else if (QString::compare("GeneticAlgo", opponent_algo) == 0) {
         team_2 = std::make_shared<GeneticAlgo>(team_1->getManagerPtr());
+    }else if(QString::compare("BeamSearch", opponent_algo)==0){
+        team_2 = std::make_shared<beamsearch>(team_1->getManagerPtr());
     }
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
@@ -285,7 +290,6 @@ void GameManager::agentAct(const int turn, const int agent, const std::tuple<int
 
     std::pair<int,int> agent_pos = field->getAgent(turn, agent);
     std::pair<int,int> grid_size = field->getSize();
-
     int x_pos = agent_pos.first + x_inp;
     int y_pos = agent_pos.second + y_inp;
 
@@ -299,9 +303,7 @@ void GameManager::agentAct(const int turn, const int agent, const std::tuple<int
         return ;
     }
     act_stack.at(turn).at(agent) = std::make_tuple(type, x_pos, y_pos);
-
 }
-
 void GameManager::changeTurn(){
 
     std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> dest_map;
@@ -315,10 +317,12 @@ void GameManager::changeTurn(){
             std::tie(type, pos_x, pos_y) = act_stack.at(turn_flag).at(agent_num);
             std::pair<int,int> pos = std::make_pair(pos_x, pos_y);
 
-            dest_map[ pos ].push_back( std::make_pair(turn_flag, agent_num) );
-
+            if(type == 1){
+                dest_map[ pos ].push_back( std::make_pair(turn_flag, agent_num) );
+            }else
             if(type == 2){
                 tile_map[ pos ].push_back( std::make_pair(turn_flag, agent_num) );
+                dest_map[ field->getAgent(turn_flag,agent_num) ].push_back( std::make_pair(turn_flag, agent_num) );
             }
         }
 
@@ -329,6 +333,7 @@ void GameManager::changeTurn(){
 
         if(field->getState(elements.first.first, elements.first.second).first == (elements.second.at(0).first == 0 ? 2 : 1))
             continue;
+
 
         field->setAgent(elements.second.at(0).first, elements.second.at(0).second, elements.first.first, elements.first.second);
         field->setState(elements.first.first, elements.first.second, elements.second.at(0).first + 1);

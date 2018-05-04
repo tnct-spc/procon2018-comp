@@ -61,10 +61,11 @@ private:
     std::shared_ptr<Visualizer> visualizer;
     std::vector<std::shared_ptr<procon::Field>> field_vec;
 
-    std::shared_ptr<ProgresDock> progresdock;
-
     std::shared_ptr<AlgorithmWrapper> team_1;
     std::shared_ptr<AlgorithmWrapper> team_2;
+
+    std::shared_ptr<ProgresDock> progresdock;
+
 
     unsigned int now_field = 0;
 
@@ -79,7 +80,7 @@ private:
     int now_turn = -1;
 
     //これがtrueなら自動進行
-    bool is_auto = false;
+    bool is_auto = true;
 
     //行動を保存しておく
     //1:移動 移動方向をintで設定する
