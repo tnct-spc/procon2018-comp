@@ -57,7 +57,6 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
 void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
    // std::shared_ptr<GameManager> share(this);
-
     if (QString::compare("DummyAlgorithm", my_algo) == 0) {
         team_1 = std::make_shared<DummyAlgorithm>(share);
     } else if (QString::compare("GeneticAlgo", my_algo) == 0) {
@@ -147,7 +146,6 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         //visualizerにもauto解除する事を伝える
         emit signalAutoMode(false);
     }
-
         // 探索→候補を表示→クリック待機
         // これをnow_turn回繰り返す
 

@@ -1,6 +1,7 @@
 #include "beamsearch.h"
-typedef std::pair<int,std::tuple<procon::Field,int,int>> origin;
-int beamsearch::Evaluation_Field(procon::Field field,int side){
+double most_Eva_value = 0;
+typedef std::pair<double,std::tuple<procon::Field,int,int>> origin;
+double beamsearch::Evaluation_Field(procon::Field field,int side){
     /*
     std::pair<int,int> size = field.getSize();
     int Eva_manhattan = 0;
@@ -13,7 +14,7 @@ int beamsearch::Evaluation_Field(procon::Field field,int side){
             if((std::min(std::abs(agent2.first-a),std::abs(agent2.second-b))+std::max(std::abs(agent2.first-a),std::abs(agent2.second-b))-std::min(std::abs(agent2.first-a),std::abs(agent2.second-b)))){
             Eva_manhattan += (value.at(a).at(b)+16)/(std::min(std::abs(agent2.first-a),std::abs(agent2.second-b))+std::max(std::abs(agent2.first-a),std::abs(agent2.second-b))-std::min(std::abs(agent2.first-a),std::abs(agent2.second-b)));
             }
-        }
+        }s
     }
     */
     int red = 0,blue = 0;
@@ -27,7 +28,33 @@ int beamsearch::Evaluation_Field(procon::Field field,int side){
                 }
             }
        }
-    return (!side?red-blue:blue-red);
+    double Eva1,Eva2,Eva3,Eva4,Eva5;
+    Eva1 = (!side?red-blue:blue-red);
+ // most_Eva_value = std::max(Eva1,most_Eva_value);
+    Eva1 = (1.0000*Eva1+100)/192;     //マスのポイント
+    std::random_device rnd;
+    std::mt19937 mt(rnd());
+    std::uniform_int_distribution<> rand1000(1, 1000);
+    Eva2 = 1.0000 * rand1000(mt)/1000; //乱択要素
+
+    std::pair<int,int> agent_1=field.getAgent(side,0),agent_2=field.getAgent(side,1);
+
+    Eva3 = 1.0000 * abs(agent_1.first-agent_2.first)+abs(agent_1.second-agent_2.second) / (field.getSize().first+field.getSize().second);//味方のagentとのマンハッタン距離
+
+    int minus_point = 0;
+
+    for(int a = 0;a < field.getSize().first;a++){
+        for(int b = 0;b < field.getSize().second;b++){
+            if(field.getState(a,b).second < 0)minus_point+=field.getState(a,b).second;
+        }
+    }
+
+    Eva4 = 1.0000 * (100 - minus_point)/100;  //マイナスのポイントを以下に踏んでいないか
+
+    std::pair<int,int> enemy_1=field.getAgent((side?0:1),0),enemy_2 = field.getAgent((side?0:1),1);
+
+    Eva5 = 1.0000 *(abs(agent_1.first-enemy_1.first)+abs(agent_1.second-enemy_1.second)+abs(agent_1.first-enemy_2.first)+abs(agent_1.second-enemy_2.second)+abs(agent_2.first-enemy_1.first)+abs(agent_2.second-enemy_1.second)+abs(agent_2.first-enemy_2.first)+abs(agent_2.second-enemy_2.second))/60;//敵のagentとのきょり
+    return var1*Eva1+var2*Eva2+var3*Eva3+var4*Eva4+var5*Eva5;
 }
 
 
@@ -59,11 +86,11 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
     age1.push_back(std::make_pair(-1,-1));
 
     age2 = age1;
-    std::vector<std::vector<std::pair<int,int>>> Eva_stack(8 ,std::vector<std::pair<int,int>>(8 , std::make_pair(0,0))); //age1,age2の組み合わせの得点/回数
+    std::vector<std::vector<std::pair<double,int>>> Eva_stack(8 ,std::vector<std::pair<double,int>>(8 , std::make_pair(0,0))); //age1,age2の組み合わせの得点/回数
     std::vector<std::vector<std::pair<int,int>>> ways(8,std::vector<std::pair<int,int>>(8 , std::make_pair(0,0)));
     std::priority_queue<origin,std::vector<origin>,
             std::function<bool(origin,origin)>>
-            beam([](origin a,origin b) -> bool {if(a.first>b.first){return true;}else{return false;}});
+            beam([](origin a,origin b) -> bool {if(a.first<b.first){return true;}else{return false;}});
     int RemainingTurn = manager->getFinalTurn()-manager->getTurnCount();
     beam_turn = std::min(beam_turn,RemainingTurn);
     for(int turn = 0;turn < beam_turn;turn++){
@@ -122,7 +149,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
 
                     procon::Field ins_field = agentmove(field,pos);
 
-                    int Eva = Evaluation_Field(ins_field,side);
+                    double Eva = Evaluation_Field(ins_field,side);
 
                     ways.at(a).at(b).first=way1;
                     ways.at(a).at(b).second=way2;
@@ -137,12 +164,13 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
             int beam_size = beam.size();
             std::priority_queue<origin,std::vector<origin>,
                    std::function<bool(origin,origin)>>
-                    beam_ins([](origin a,origin b) -> bool{return a.first > b.first;});
+                    beam_ins([](origin a,origin b) -> bool{return a.first < b.first;});
          //   cout<<beam_size<<endl;
             for(int range = 0;range < std::min(beam_range,beam_size);range++){
             procon::Field Neo_ins_field = std::get<0>(beam.top().second);
             agent1 = Neo_ins_field.getAgent(side,0);
             agent2 = Neo_ins_field.getAgent(side,1);
+         //   std::cout<<beam.top().first<<std::endl;
             for(int a = 0;a < 8;a++){
 
                 if(age1.at(a).first+agent1.first < 0)continue;
@@ -194,7 +222,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
                        pos.push_back(ins_pos);
                    }
                     procon::Field ins_field = agentmove(Neo_ins_field,pos);
-                    int Eva = Evaluation_Field(ins_field,side);
+                    double Eva = Evaluation_Field(ins_field,side);
                     std::tuple<procon::Field,int,int> ins_value = beam.top().second;
 
                     beam_ins.push(std::make_pair(Eva,std::make_tuple(ins_field,std::get<1>(ins_value),std::get<2>(ins_value))));
@@ -211,13 +239,13 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
 
 
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> ans;
-    int most_Eva = -100000000;
+    double most_Eva = -1000000;
     for(int a = 0;a < 8;a++){
         for(int b = 0;b < 8;b++){
             if(Eva_stack.at(a).at(b).second==0)continue;
-            if(most_Eva<=Eva_stack.at(a).at(b).first/Eva_stack.at(a).at(b).second){
+            std::cout<<Eva_stack.at(a).at(b).first<<std::endl;
+            if(most_Eva<=1.0000*Eva_stack.at(a).at(b).first/Eva_stack.at(a).at(b).second){
                 most_Eva=Eva_stack.at(a).at(b).first/Eva_stack.at(a).at(b).second;
-               std::cout<<most_Eva<<std::endl;
                 ans= std::make_pair(std::make_tuple(ways.at(a).at(b).first,age1.at(a).first,age1.at(a).second),std::make_tuple(ways.at(a).at(b).second,age2.at(b).first,age2.at(b).second));
             }
         }
@@ -225,6 +253,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
 
    std::cout<<"("<<std::get<0>(ans.first)<<","<<std::get<1>(ans.first)<<","<<std::get<2>(ans.first)<<")"<<"("<<std::get<0>(ans.second)<<","<<std::get<1>(ans.second)<<","<<std::get<2>(ans.second)<<")"<<std::endl;
     std::cout<<count<<std::endl;
+    //std::cout<<most_Eva_value<<std::endl;
     return ans;
 }
 procon::Field beamsearch::agentmove(procon::Field ins_field, std::vector<std::vector<std::pair<int,std::pair<int,int>>>> pos)
