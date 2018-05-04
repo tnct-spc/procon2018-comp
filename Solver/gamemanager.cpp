@@ -4,58 +4,84 @@
 #include "simplemontecarlo/simplemontecarlo.h"
 #include "montecarlotreesearch/montecarlotreesearch.h"
 #include "dummyalgorithm.h"
+#include "BreadthFirstSearch/beamsearch.h"
 
-GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, QObject *parent)
-    : QObject(parent)
+GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
+    : QObject(parent),
+    share(std::shared_ptr<GameManager>(this)),
+    turn_max(turn_max),
+    vis_show(vis_show)
 {
 
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
-    visualizer = std::make_shared<Visualizer>(*field);
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
+    if(vis_show){
+        visualizer = std::make_shared<Visualizer>(*field);
+        connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
+        connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
+        connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
+    }else{
+        is_auto = true;//この場合は自動進行
+    }
+}
 
-    connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
-    connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
-    connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
+void GameManager::resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show, const int t_max){
+    turn_max = t_max;
+    vis_show = v_show;
+
+    field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
+
+    act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
+
+    if(vis_show){
+        visualizer = std::make_shared<Visualizer>(*field);
+        connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
+        connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
+        connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
+    }else{
+        is_auto = true;//この場合は自動進行
+    }
+
 }
 
 void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
-    std::shared_ptr<GameManager> share(this);
+   // std::shared_ptr<GameManager> share(this);
 
-    if (QString::compare("MonteCarloTreeSearch", my_algo) == 0) {
-        team_1 = std::make_shared<MonteCarloTreeSearch>(share);
-    } else if (QString::compare("SimpleMonteCalro", my_algo) == 0) {
-        team_1 = std::make_shared<SimpleMonteCalro>(share);
-    } else if (QString::compare("TestAlgorithm", my_algo) == 0) {
-        team_1 = std::make_shared<TestAlgorithm>(share);
-    } else if (QString::compare("DummyAlgorithm", my_algo) == 0) {
+    if (QString::compare("DummyAlgorithm", my_algo) == 0) {
         team_1 = std::make_shared<DummyAlgorithm>(share);
-    } else if (QString::compare("beamsearch", my_algo) == 0){
+    } else if (QString::compare("GeneticAlgo", my_algo) == 0) {
+        team_1 = std::make_shared<GeneticAlgo>(share);
+    }else if(QString::compare("BeamSearch", my_algo) == 0){
         team_1 = std::make_shared<beamsearch>(share);
     }
 
-    if (QString::compare("MonteCarloTreeSearch", opponent_algo) == 0) {
-        team_2 = std::make_shared<MonteCarloTreeSearch>(share);
-    } else if (QString::compare("SimpleMonteCalro", opponent_algo) == 0) {
-        team_2 = std::make_shared<SimpleMonteCalro>(share);
-    } else if (QString::compare("TestAlgorithm", opponent_algo) == 0) {
-        team_2 = std::make_shared<TestAlgorithm>(share);
-    } else if (QString::compare("DummyAlgorithm", my_algo) == 0) {
-        team_2 = std::make_shared<DummyAlgorithm>(share);
-    } else if (QString::compare("beamsearch", opponent_algo) == 0){
-        team_2 = std::make_shared<beamsearch>(share);
+    if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
+        team_2 = std::make_shared<DummyAlgorithm>(team_1->getManagerPtr());
+    } else if (QString::compare("GeneticAlgo", opponent_algo) == 0) {
+        team_2 = std::make_shared<GeneticAlgo>(team_1->getManagerPtr());
+    }else if(QString::compare("BeamSearch", opponent_algo)==0){
+        team_2 = std::make_shared<beamsearch>(team_1->getManagerPtr());
     }
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
 
-    progresdock = std::make_shared<ProgresDock>();
 
+
+
+    // progressdockは一旦表示しない事にします(使う事があまりないため)
+    /*
+    progresdock = std::make_shared<ProgresDock>();
     field_vec.push_back(std::make_shared<procon::Field>(*field));
     progresdock->addAnswer(*(field_vec.back()));
+    */
 
-    visualizer->update();
+    if(vis_show){
+        visualizer->update();
+        visualizer->setField(*field, 0, turn_max);
+    }
 
 
     //うぇーいｗｗｗｗｗｗｗ
@@ -89,7 +115,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
             field_vec.push_back(std::make_shared<procon::Field>(*field));
 
-            progresdock->addAnswer(*(field_vec.back()));
+//            progresdock->addAnswer(*(field_vec.back()));
 
 
 
@@ -98,7 +124,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
         now_turn = -1;
 
-        progresdock->show();
+        // progresdock->show();
 
     }else{
 
@@ -142,8 +168,54 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         */
 
 
+}
+
+bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAgent &agent_2, int algo_number){
+
+    if(algo_number == 0){
+        team_1 = std::make_shared<GeneticAlgo>(share, agent_1);
+        team_2 = std::make_shared<GeneticAlgo>(share, agent_2);
+    }
+
+    for(int now_turn = 0; now_turn < turn_max; ++now_turn){
 
 
+        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
+        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
+
+        /* マルチスレッド用
+        std::thread th1([&]{team_1_ans =  team_1->agentAct(0);});
+        std::thread th2([&]{team_2_ans =  team_2->agentAct(1);});
+
+        th1.join();
+        th2.join();
+        */
+
+
+        team_1_ans = team_1->agentAct(0);
+        team_2_ans = team_2->agentAct(1);
+
+        agentAct(0,0,team_1_ans.first);
+        agentAct(0,1,team_1_ans.second);
+        agentAct(1,0,team_2_ans.first);
+        agentAct(1,1,team_2_ans.second);
+
+        changeTurn();
+
+    }
+
+    // todo: ここで点数計算を行い勝率を出す
+    int point_1 = 0;
+    int point_2 = 0;
+    for(int x = 0; x < field->getSize().first; ++x)
+        for(int y = 0; y < field->getSize().second; ++y){
+            if(field->getState(x, y).first == 1)
+                point_1 += field->getState(x, y).second;
+            else if(field->getState(x, y).first == 2)
+                point_2 += field->getState(x, y).second;
+        }
+
+    return point_1 > point_2;
 }
 
 procon::Field& GameManager::getField(){
@@ -155,14 +227,59 @@ unsigned int GameManager::getFieldCount(){
 }
 void GameManager::setFieldCount(const unsigned int number){
     if(number >= field_vec.size())return ;
-    visualizer->setField(*field_vec.at(number));
     now_field = number;
-    visualizer->update();
-    visualizer->repaint();
+    if(vis_show){
+        visualizer->setField(*field_vec.at(number), number+1, turn_max);
+        visualizer->update();
+        visualizer->repaint();
+    }
 }
 
 unsigned int GameManager::getFinalTurn(){
     return turn_max;
+}
+
+bool GameManager::canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2){
+
+    std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
+    std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
+
+    auto check_outofrange = [&](int agent){
+
+        std::pair<int,int> agent_pos = field->getAgent(side, agent);
+
+        int move = (agent == 0 ? move_1 : move_2);
+
+        agent_pos.first += x_list.at(move);
+        agent_pos.second += y_list.at(move);
+
+
+        return !(agent_pos.first < 0 || agent_pos.second < 0 || agent_pos.first >= field->getSize().first || agent_pos.second >= field->getSize().second);
+    };
+
+    auto check_conflict = [&]{
+
+        std::pair<int,int> agent_pos_1 = field->getAgent(side, 0);
+
+        if(field->getState(agent_pos_1.first + x_list.at(move_1), agent_pos_1.second + y_list.at(move_1) ).first != (side == 0 ? 2 : 1) ){
+
+            agent_pos_1.first += x_list.at(move_1);
+            agent_pos_1.second += y_list.at(move_1);
+        }
+
+        std::pair<int,int> agent_pos_2 = field->getAgent(side, 1);
+
+        if(field->getState(agent_pos_2.first + x_list.at(move_2), agent_pos_2.second + y_list.at(move_2) ).first != (side == 0 ? 2 : 1) ){
+
+            agent_pos_2.first += x_list.at(move_2);
+            agent_pos_2.second += y_list.at(move_2);
+        }
+
+        return (agent_pos_1 != agent_pos_2);
+    };
+
+
+    return ( check_outofrange(0) && check_outofrange(1) && check_conflict());
 }
 
 void GameManager::agentAct(const int turn, const int agent, const std::tuple<int, int, int> tuple_val){
@@ -258,7 +375,7 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
     if(now_turn == -1)
         return ;
 
-    std::cout << "turn : " << now_turn << std::endl << std::endl;
+    std::cout << "turn : " << now_turn+1 << std::endl << std::endl;
 
     for(int side = 0; side < 2; ++side)
         for(int agent = 0; agent < 2; ++agent){
@@ -280,7 +397,7 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
 
     field_vec.push_back(std::make_shared<procon::Field>(*field));
 
-    progresdock->addAnswer(*(field_vec.back()));
+//     progresdock->addAnswer(*(field_vec.back()));
 
 
 
@@ -295,7 +412,7 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
         now_turn = -1;
 
         emit signalAutoMode(false);
-        progresdock->show();
+        // progresdock->show();
     }else
         nextMoveForManualMode();
 

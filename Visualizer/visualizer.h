@@ -24,7 +24,7 @@ public:
     explicit Visualizer(procon::Field& inp_field, QWidget *parent = 0);
     ~Visualizer();
 
-    void setField(procon::Field& inp_field);
+    void setField(const procon::Field& inp_field, int now_turn, int max_t);
 
     const std::vector<std::vector<std::pair<int,int>>>& getNextAgents();
 
@@ -41,19 +41,23 @@ private:
     Ui::Visualizer *ui;
     void paintEvent(QPaintEvent *event);
 
-    procon::Field& field;
+    procon::Field field;
 
     void mousePressEvent(QMouseEvent *event);
 
     void checkClickedAgent(std::pair<int, int> mass);
 
-    bool checkClickGrid(std::pair<int, int> mass);
+    void checkClickGrid(std::pair<int, int> mass);
 
     int window_width;
     int window_height;
 
     int vertical_margin;
     int horizontal_margin;
+
+    int turn = 0;
+
+    int max_turn = 0;
 
     int grid_size;
 

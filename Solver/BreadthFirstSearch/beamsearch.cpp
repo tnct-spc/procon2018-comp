@@ -30,9 +30,9 @@ int beamsearch::Evaluation_Field(procon::Field field,int side){
         }
     std::random_device rnd;
     std::mt19937 mt(rnd());
-    std::uniform_int_distribution<> rand1000(0, 999);
+    std::uniform_int_distribution<> rand100(1, 100);
     //cout<<Eva_manhattan<<endl;
-    return (!side?red-blue:blue-red);
+    return (!side?red-blue:blue-red)*rand100(mt);
 }
 
 

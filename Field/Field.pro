@@ -24,8 +24,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         field.cpp \
+    csvio.cpp
 
 HEADERS += \
         field.h \
-        field_global.h
+        field_global.h \
+    csvio.h
 

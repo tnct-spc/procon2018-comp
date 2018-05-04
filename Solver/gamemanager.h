@@ -3,8 +3,10 @@
 
 #include "field.h"
 #include "visualizer.h"
+#include "csvio.h"
 #include "progresdock.h"
-#include "BreadthFirstSearch/beamsearch.h"
+#include "geneticalgo/geneticalgo.h"
+#include "geneticalgo/geneticagent.h"
 
 #include <thread>
 #include <vector>
@@ -16,10 +18,13 @@ class AlgorithmWrapper;
 class GameManager : public QObject
 {
     Q_OBJECT
+    //Q_DISABLE_COPY(GameManager)
 
 public:
+    explicit GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show = true, const int turn_max = 60, QObject *parent = 0);
 
-    explicit GameManager(const unsigned int x_size, const unsigned int y_size, QObject *parent = 0);
+
+    void resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show = true, const int t_max = 60);
 
     procon::Field& getField();
 
@@ -27,8 +32,12 @@ public:
     unsigned int getFieldCount();
 
     void startSimulation(QString my_algo, QString opponent_algo);
+
+    bool simulationGenetic(const GeneticAgent& agent_1, const GeneticAgent& agent_2, int algo_number);
+
     unsigned int getFinalTurn();
 
+    bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2);
     void setAutoMode(bool value);
 
     std::shared_ptr<Visualizer> getVisualizer();
@@ -45,6 +54,9 @@ public slots:
 
 
 private:
+    std::shared_ptr<GameManager> share;
+
+
     std::shared_ptr<procon::Field> field;
     std::shared_ptr<Visualizer> visualizer;
     std::vector<std::shared_ptr<procon::Field>> field_vec;
@@ -61,7 +73,9 @@ private:
     //ここは仕様を変えたり変えなかったりしよう
     const int max_val = 16;
     const int min_val = -16;
-    const int turn_max = 60;
+
+    int turn_max;
+    bool vis_show;
 
     int now_turn = -1;
 

@@ -21,8 +21,10 @@ Visualizer::~Visualizer()
     delete ui;
 }
 
-void Visualizer::setField(procon::Field& inp_field){
+void Visualizer::setField(const procon::Field& inp_field, int now_turn, int max_t){
     field = inp_field;
+    turn = now_turn;
+    max_turn = max_t;
 }
 
 void Visualizer::paintEvent(QPaintEvent *event){
@@ -201,6 +203,20 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     };
 
+    auto drawTurnCount = [&]{
+
+        QPoint text_point;
+        text_point.setX(horizontal_margin);
+        text_point.setY(vertical_margin - 0.3 * grid_size);
+        painter.setFont(QFont("Decorative", grid_size*0.6, QFont::Thin)); // text font
+        painter.setPen(QPen(QBrush(QColor(250,80,80,80)),0.3));
+        std::string str;
+        str += std::to_string(turn);
+        str += " / ";
+        str += std::to_string(max_turn);
+        painter.drawText(text_point,QString::fromStdString(str));
+    };
+
 
 
     drawBackGround();
@@ -214,6 +230,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     drawValues();
     drawAgents();
+
+    drawTurnCount();
 
 }
 
@@ -245,13 +263,13 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         // 移動をを入力するエージェントが選ばれているか
         if (selected) {
 
-        // グリッドはエージェントの移動先に含まれているか
-        checkClickGrid(clicked_grid);
+            // グリッドはエージェントの移動先に含まれているか
+            checkClickGrid(clicked_grid);
 
         } else {
 
-        // クリックされたエージェントまたはマスを照合
-        checkClickedAgent(clicked_grid);
+            // クリックされたエージェントまたはマスを照合
+            checkClickedAgent(clicked_grid);
         }
     }
 
@@ -291,12 +309,30 @@ void Visualizer::checkClickedAgent(std::pair<int, int> mass)
 }
 
 // エージェントの移動先を決定
-bool Visualizer::checkClickGrid(std::pair<int, int> mass)
+void Visualizer::checkClickGrid(std::pair<int, int> mass)
 {
     // クリックされた場所がエージェントの移動範囲に含まれているか確認
     if (((selected_agent_grid.first - 1) > mass.first) || ((selected_agent_grid.first + 1) < mass.first)
             || ((selected_agent_grid.second - 1) > mass.second) || ((selected_agent_grid.second + 1) < mass.second)) {
-        return false;
+
+        // 選択を解除
+        selected = false;
+
+        // すでに登録されている場合リセット
+        if (next_grids.at(selected_agent.first).at(selected_agent.second).first != -1) {
+
+            next_grids.at(selected_agent.first).at(selected_agent.second) = std::make_pair(-1, -1);
+            confirm_count--;
+
+        }
+
+        // 初期化
+        selected_agent = std::make_pair(INT_MAX, INT_MAX);
+        selected_agent_grid = std::make_pair(INT_MAX, INT_MAX);
+
+        this->update();
+
+        return;
     }
 
 
@@ -325,8 +361,6 @@ bool Visualizer::checkClickGrid(std::pair<int, int> mass)
         candidate = std::vector<std::vector<std::pair<int, int>>>(2,std::vector<std::pair<int,int>>(2,std::make_pair(-1,-1)));
         emit nextMove(return_val);
     }
-
-    return true;
 }
 
 // 決定されたエージェントの移動先を返す
