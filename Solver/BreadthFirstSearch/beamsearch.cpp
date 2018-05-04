@@ -26,11 +26,7 @@ int beamsearch::Evaluation_Field(procon::Field field,int side){
                     blue+=field.getState(a,b).second;
                 }
             }
-        }
-    std::random_device rnd;
-    std::mt19937 mt(rnd());
-    std::uniform_int_distribution<> rand100(1, 100);
-    //cout<<Eva_manhattan<<endl;
+       }
     return (!side?red-blue:blue-red);
 }
 
@@ -68,6 +64,8 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
     std::priority_queue<origin,std::vector<origin>,
             std::function<bool(origin,origin)>>
             beam([](origin a,origin b) -> bool {if(a.first>b.first){return true;}else{return false;}});
+    int RemainingTurn = manager->getFinalTurn()-manager->getTurnCount();
+    beam_turn = std::min(beam_turn,RemainingTurn);
     for(int turn = 0;turn < beam_turn;turn++){
         if(turn == 0){
 
