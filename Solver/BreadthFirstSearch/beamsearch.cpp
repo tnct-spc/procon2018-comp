@@ -1,6 +1,5 @@
 #include "beamsearch.h"
 typedef std::pair<int,std::tuple<procon::Field,int,int>> origin;
-using namespace std;
 int beamsearch::Evaluation_Field(procon::Field field,int side){
     /*
     std::pair<int,int> size = field.getSize();
@@ -48,26 +47,26 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
         agent1=Agents.at(side).at(0);
         agent2=Agents.at(side).at(1);
 
-    cout<<"("<<agent1.first<<","<<agent1.second<<")"<<"("<<agent2.first<<","<<agent2.second<<")"<<endl;
+    std::cout<<"("<<agent1.first<<","<<agent1.second<<")"<<"("<<agent2.first<<","<<agent2.second<<")"<<std::endl;
 
     std::pair<int,int> grid_size = field.getSize();
 
-    vector<pair<int,int>> age1,age2;
+    std::vector<std::pair<int,int>> age1,age2;
 
-    age1.push_back(make_pair(0,1));
-    age1.push_back(make_pair(0,-1));
-    age1.push_back(make_pair(1,0));
-    age1.push_back(make_pair(1,1));
-    age1.push_back(make_pair(1,-1));
-    age1.push_back(make_pair(-1,1));
-    age1.push_back(make_pair(-1,0));
-    age1.push_back(make_pair(-1,-1));
+    age1.push_back(std::make_pair(0,1));
+    age1.push_back(std::make_pair(0,-1));
+    age1.push_back(std::make_pair(1,0));
+    age1.push_back(std::make_pair(1,1));
+    age1.push_back(std::make_pair(1,-1));
+    age1.push_back(std::make_pair(-1,1));
+    age1.push_back(std::make_pair(-1,0));
+    age1.push_back(std::make_pair(-1,-1));
 
     age2 = age1;
     std::vector<std::vector<std::pair<int,int>>> Eva_stack(8 ,std::vector<std::pair<int,int>>(8 , std::make_pair(0,0))); //age1,age2の組み合わせの得点/回数
     std::vector<std::vector<std::pair<int,int>>> ways(8,std::vector<std::pair<int,int>>(8 , std::make_pair(0,0)));
     std::priority_queue<origin,std::vector<origin>,
-            function<bool(origin,origin)>>
+            std::function<bool(origin,origin)>>
             beam([](origin a,origin b) -> bool {if(a.first<b.first){return true;}else{return false;}});
     for(int turn = 0;turn < beam_turn;turn++){
         if(turn == 0){
@@ -130,7 +129,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
                     ways.at(a).at(b).first=way1;
                     ways.at(a).at(b).second=way2;
 
-                    beam.push(make_pair(Eva,make_tuple(ins_field,a,b)));
+                    beam.push(std::make_pair(Eva,std::make_tuple(ins_field,a,b)));
                     Eva_stack.at(a).at(b).first+=Eva;
                     Eva_stack.at(a).at(b).second++;
                     count++;
@@ -139,7 +138,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
         }else{
             int beam_size = beam.size();
             std::priority_queue<origin,std::vector<origin>,
-                    function<bool(origin,origin)>>
+                   std::function<bool(origin,origin)>>
                     beam_ins([](origin a,origin b) -> bool{return a.first < b.first;});
          //   cout<<beam_size<<endl;
             for(int range = 0;range < std::min(beam_range,beam_size);range++){
@@ -200,7 +199,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
                     int Eva = Evaluation_Field(ins_field,side);
                     std::tuple<procon::Field,int,int> ins_value = beam.top().second;
 
-                    beam_ins.push(make_pair(Eva,make_tuple(ins_field,std::get<1>(ins_value),std::get<2>(ins_value))));
+                    beam_ins.push(std::make_pair(Eva,std::make_tuple(ins_field,std::get<1>(ins_value),std::get<2>(ins_value))));
                     Eva_stack.at(std::get<1>(ins_value)).at(std::get<2>(ins_value)).first+=Eva;
                     Eva_stack.at(std::get<1>(ins_value)).at(std::get<2>(ins_value)).second++;
                     count++;
@@ -224,8 +223,8 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
             }
         }
     }
-    cout<<"("<<std::get<0>(ans.first)<<","<<std::get<1>(ans.first)<<","<<std::get<2>(ans.first)<<")"<<"("<<std::get<0>(ans.second)<<","<<std::get<1>(ans.second)<<","<<std::get<2>(ans.second)<<")"<<endl;
-    cout<<count<<endl;
+   std::cout<<"("<<std::get<0>(ans.first)<<","<<std::get<1>(ans.first)<<","<<std::get<2>(ans.first)<<")"<<"("<<std::get<0>(ans.second)<<","<<std::get<1>(ans.second)<<","<<std::get<2>(ans.second)<<")"<<std::endl;
+    std::cout<<count<<std::endl;
     return ans;
 }
 procon::Field beamsearch::agentmove(procon::Field ins_field, std::vector<std::vector<std::pair<int,std::pair<int,int>>>> pos)
