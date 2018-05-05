@@ -86,7 +86,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
         agent1=Agents.at(side).at(0);
         agent2=Agents.at(side).at(1);
 
-    std::cout<<"("<<agent1.first<<","<<agent1.second<<")"<<"("<<agent2.first<<","<<agent2.second<<")"<<std::endl;
+    // std::cout<<"("<<agent1.first<<","<<agent1.second<<")"<<"("<<agent2.first<<","<<agent2.second<<")"<<std::endl;
 
     std::pair<int,int> grid_size = field.getSize();
 
@@ -259,7 +259,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
     for(int a = 0;a < 8;a++){
         for(int b = 0;b < 8;b++){
             if(Eva_stack.at(a).at(b).second==0)continue;
-            std::cout<<Eva_stack.at(a).at(b).first<<std::endl;
+            //std::cout<<Eva_stack.at(a).at(b).first<<std::endl;
             if(most_Eva<=1.0000*Eva_stack.at(a).at(b).first/Eva_stack.at(a).at(b).second){
                 most_Eva=Eva_stack.at(a).at(b).first/Eva_stack.at(a).at(b).second;
                 ans= std::make_pair(std::make_tuple(ways.at(a).at(b).first,age1.at(a).first,age1.at(a).second),std::make_tuple(ways.at(a).at(b).second,age2.at(b).first,age2.at(b).second));
@@ -267,9 +267,11 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
         }
     }
 
-   std::cout<<"("<<std::get<0>(ans.first)<<","<<std::get<1>(ans.first)<<","<<std::get<2>(ans.first)<<")"<<"("<<std::get<0>(ans.second)<<","<<std::get<1>(ans.second)<<","<<std::get<2>(ans.second)<<")"<<std::endl;
+    /*
+    std::cout<<"("<<std::get<0>(ans.first)<<","<<std::get<1>(ans.first)<<","<<std::get<2>(ans.first)<<")"<<"("<<std::get<0>(ans.second)<<","<<std::get<1>(ans.second)<<","<<std::get<2>(ans.second)<<")"<<std::endl;
     std::cout<<count<<std::endl;
-    //std::cout<<most_Eva_value<<std::endl;
+    std::cout<<most_Eva_value<<std::endl;
+    */
     return ans;
 }
 procon::Field beamsearch::agentmove(procon::Field ins_field, std::vector<std::vector<std::pair<int,std::pair<int,int>>>> pos)

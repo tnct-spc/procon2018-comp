@@ -14,8 +14,14 @@ Genetic::Genetic(int algo_number) :
     //乱択で生成する
     while(agents.size() < agent_num){
 
-        if(algo_number == 0) // この辺個別処理
+        if(algo_number == 0){ // この辺個別処理
             agents.emplace_back(GeneticAgent(7));
+            buttle_count = 100;
+
+        }else if(algo_number == 1){ // この辺個別処理
+            agents.emplace_back(GeneticAgent(5));
+            buttle_count = 10;
+        }
     }
 }
 
