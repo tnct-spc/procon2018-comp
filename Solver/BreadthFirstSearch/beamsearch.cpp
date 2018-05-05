@@ -12,13 +12,13 @@ double beamsearch::Evaluation_Field(procon::Field field,int side){
 
     std::vector<double> agent_value = agent_data.getData();
 
-    const double var1=1,var2=0,var3=0,var4=0,var5=0;
+    double var1=1,var2=0,var3=0,var4=0,var5=0;
 
-    agent_value.at(0) = var1;
-    agent_value.at(1) = var2;
-    agent_value.at(2) = var3;
-    agent_value.at(3) = var4;
-    agent_value.at(4) = var5;
+    var1 = agent_value.at(0);
+    var2 = agent_value.at(1);
+    var3 = agent_value.at(2);
+    var4 = agent_value.at(3);
+    var5 = agent_value.at(4);
 
     /*
     std::pair<int,int> size = field.getSize();
