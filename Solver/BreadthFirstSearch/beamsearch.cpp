@@ -1,7 +1,23 @@
 #include "beamsearch.h"
-double most_Eva_value = 0;
 typedef std::pair<double,std::tuple<procon::Field,int,int>> origin;
+
+beamsearch::beamsearch(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent) :
+    AlgorithmWrapper(manager_ptr),
+    agent_data(agent)
+{
+
+}
+
 double beamsearch::Evaluation_Field(procon::Field field,int side){
+
+    std::vector<double> agent_value = agent_data.getData();
+
+    agent_value.at(0) = var1;
+    agent_value.at(1) = var2;
+    agent_value.at(2) = var3;
+    agent_value.at(3) = var4;
+    agent_value.at(4) = var5;
+
     /*
     std::pair<int,int> size = field.getSize();
     int Eva_manhattan = 0;
