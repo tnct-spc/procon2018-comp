@@ -185,6 +185,9 @@ bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAg
     if(algo_number == 0){
         team_1 = std::make_shared<GeneticAlgo>(share, agent_1);
         team_2 = std::make_shared<GeneticAlgo>(share, agent_2);
+    }else if(algo_number == 1){
+        team_1 = std::make_shared<beamsearch>(share, agent_1);
+        team_2 = std::make_shared<beamsearch>(share, agent_2);
     }
 
     for(; now_turn < turn_max; ++now_turn){

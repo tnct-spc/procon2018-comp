@@ -1,7 +1,23 @@
 #include "beamsearch.h"
-double most_Eva_value = 0;
 typedef std::pair<double,std::tuple<procon::Field,int,int>> origin;
+
+beamsearch::beamsearch(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent) :
+    AlgorithmWrapper(manager_ptr),
+    agent_data(agent)
+{
+
+}
+
 double beamsearch::Evaluation_Field(procon::Field field,int side){
+
+    std::vector<double> agent_value = agent_data.getData();
+
+    agent_value.at(0) = var1;
+    agent_value.at(1) = var2;
+    agent_value.at(2) = var3;
+    agent_value.at(3) = var4;
+    agent_value.at(4) = var5;
+
     /*
     std::pair<int,int> size = field.getSize();
     int Eva_manhattan = 0;
@@ -70,7 +86,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
         agent1=Agents.at(side).at(0);
         agent2=Agents.at(side).at(1);
 
-    std::cout<<"("<<agent1.first<<","<<agent1.second<<")"<<"("<<agent2.first<<","<<agent2.second<<")"<<std::endl;
+    // std::cout<<"("<<agent1.first<<","<<agent1.second<<")"<<"("<<agent2.first<<","<<agent2.second<<")"<<std::endl;
 
     std::pair<int,int> grid_size = field.getSize();
 
@@ -243,7 +259,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
     for(int a = 0;a < 8;a++){
         for(int b = 0;b < 8;b++){
             if(Eva_stack.at(a).at(b).second==0)continue;
-            std::cout<<Eva_stack.at(a).at(b).first<<std::endl;
+            //std::cout<<Eva_stack.at(a).at(b).first<<std::endl;
             if(most_Eva<=1.0000*Eva_stack.at(a).at(b).first/Eva_stack.at(a).at(b).second){
                 most_Eva=Eva_stack.at(a).at(b).first/Eva_stack.at(a).at(b).second;
                 ans= std::make_pair(std::make_tuple(ways.at(a).at(b).first,age1.at(a).first,age1.at(a).second),std::make_tuple(ways.at(a).at(b).second,age2.at(b).first,age2.at(b).second));
@@ -251,9 +267,11 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
         }
     }
 
-   std::cout<<"("<<std::get<0>(ans.first)<<","<<std::get<1>(ans.first)<<","<<std::get<2>(ans.first)<<")"<<"("<<std::get<0>(ans.second)<<","<<std::get<1>(ans.second)<<","<<std::get<2>(ans.second)<<")"<<std::endl;
+    /*
+    std::cout<<"("<<std::get<0>(ans.first)<<","<<std::get<1>(ans.first)<<","<<std::get<2>(ans.first)<<")"<<"("<<std::get<0>(ans.second)<<","<<std::get<1>(ans.second)<<","<<std::get<2>(ans.second)<<")"<<std::endl;
     std::cout<<count<<std::endl;
-    //std::cout<<most_Eva_value<<std::endl;
+    std::cout<<most_Eva_value<<std::endl;
+    */
     return ans;
 }
 procon::Field beamsearch::agentmove(procon::Field ins_field, std::vector<std::vector<std::pair<int,std::pair<int,int>>>> pos)
@@ -293,7 +311,7 @@ procon::Field beamsearch::agentmove(procon::Field ins_field, std::vector<std::ve
     }
 
     for(auto elements : tile_map){
-        bool state_flag = true;
+        // bool state_flag = true;
         if(elements.second.size() > 1)
             continue;
 
@@ -301,7 +319,7 @@ procon::Field beamsearch::agentmove(procon::Field ins_field, std::vector<std::ve
         for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
             for(int agent_num = 0; agent_num < 2; ++agent_num)
                 if(field.getAgent(turn_flag, agent_num) == elements.first){
-                    state_flag = false;
+                    // state_flag = false;
                     break;
                 }
     }

@@ -7,6 +7,7 @@
 #include "progresdock.h"
 #include "geneticalgo/geneticalgo.h"
 #include "geneticalgo/geneticagent.h"
+#include "BreadthFirstSearch/beamsearch.h"
 
 #include <thread>
 #include <vector>

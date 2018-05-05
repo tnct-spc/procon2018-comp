@@ -1,17 +1,22 @@
 #ifndef BEAMSEARCH_H
 #define BEAMSEARCH_H
+#include <queue>
+#include <algorithm>
+#include <iostream>
+
 #include "field.h"
 #include "gamemanager.h"
 #include "algorithmwrapper.h"
 #include "visualizer.h"
-#include <queue>
-#include <algorithm>
-#include <iostream>
+#include "geneticalgo/geneticagent.h"
+
 class beamsearch : public AlgorithmWrapper
 {
-    using AlgorithmWrapper::AlgorithmWrapper;
+    // using AlgorithmWrapper::AlgorithmWrapper;
 public:
-    beamsearch();
+    beamsearch(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent = GeneticAgent(5));
+
+    //beamsearch();
     const int beam_range = 100;
     int beam_turn = 15;
     double Evaluation_Field(procon::Field field,int side);
@@ -22,6 +27,10 @@ public:
 private:
     procon::Field agentmove(procon::Field field,std::vector<std::vector<std::pair<int,std::pair<int,int>>>> pos);
     std::shared_ptr<ProgresDock> progresdock_beamsearch;
+
+    double most_Eva_value = 0;
+
+    GeneticAgent agent_data;
 };
 
 #endif // BEAMSEARCH_H
