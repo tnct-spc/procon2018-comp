@@ -10,15 +10,15 @@
 #include "visualizer.h"
 #include "geneticalgo/geneticagent.h"
 
-class beamsearch : public AlgorithmWrapper
+class BeamSearch : public AlgorithmWrapper
 {
     // using AlgorithmWrapper::AlgorithmWrapper;
 public:
-    beamsearch(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent = GeneticAgent(5));
+    BeamSearch(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent = GeneticAgent(5));
 
     //beamsearch();
-    const int beam_range = 100;
-    int beam_turn = 100;
+    const int beam_range = 300;
+    int beam_turn = 10;
     double Evaluation_Field(procon::Field field,int side);
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
     std::pair<int,int> agent1,agent2;

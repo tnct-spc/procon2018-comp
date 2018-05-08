@@ -64,7 +64,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
     } else if (QString::compare("MontecarloWithAlgo", my_algo) == 0) {
         team_1 = std::make_shared<MontecarloWithAlgo>(share);
     }else if(QString::compare("BeamSearch", my_algo) == 0){
-        team_1 = std::make_shared<beamsearch>(share);
+        team_1 = std::make_shared<BeamSearch>(share);
     }
 
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
@@ -74,7 +74,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
     } else if (QString::compare("MontecarloWithAlgo", opponent_algo) == 0) {
         team_2 = std::make_shared<MontecarloWithAlgo>(team_1->getManagerPtr());
     }else if(QString::compare("BeamSearch", opponent_algo)==0){
-        team_2 = std::make_shared<beamsearch>(team_1->getManagerPtr());
+        team_2 = std::make_shared<BeamSearch>(team_1->getManagerPtr());
     }
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
@@ -83,11 +83,11 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
 
     // progressdockは一旦表示しない事にします(使う事があまりないため)
-    /*
+
     progresdock = std::make_shared<ProgresDock>();
     field_vec.push_back(std::make_shared<procon::Field>(*field));
     progresdock->addAnswer(*(field_vec.back()));
-    */
+
 
     if(vis_show){
         visualizer->update();
@@ -126,7 +126,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
             field_vec.push_back(std::make_shared<procon::Field>(*field));
 
-//            progresdock->addAnswer(*(field_vec.back()));
+           progresdock->addAnswer(*(field_vec.back()));
 
 
 
@@ -135,7 +135,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
         now_turn = -1;
 
-        // progresdock->show();
+         progresdock->show();
 
     }else{
 
@@ -186,8 +186,8 @@ bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAg
         team_1 = std::make_shared<GeneticAlgo>(share, agent_1);
         team_2 = std::make_shared<GeneticAlgo>(share, agent_2);
     }else if(algo_number == 1){
-        team_1 = std::make_shared<beamsearch>(share, agent_1);
-        team_2 = std::make_shared<beamsearch>(share, agent_2);
+        team_1 = std::make_shared<BeamSearch>(share, agent_1);
+        team_2 = std::make_shared<BeamSearch>(share, agent_2);
     }
 
     for(; now_turn < turn_max; ++now_turn){

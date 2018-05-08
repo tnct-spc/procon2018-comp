@@ -1,24 +1,24 @@
 #include "beamsearch.h"
 typedef std::pair<double,std::tuple<procon::Field,int,int>> point_field_pos;
 
-beamsearch::beamsearch(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent) :
+BeamSearch::BeamSearch(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent) :
     AlgorithmWrapper(manager_ptr),
     agent_data(agent)
 {
 
 }
 
-double beamsearch::Evaluation_Field(procon::Field field,int side){
+double BeamSearch::Evaluation_Field(procon::Field field,int side){
 
     std::vector<double> agent_value = agent_data.getData();
 
     double var1=1,var2=0,var3=0,var4=0,var5=0;
 
-    var1 = agent_value.at(0);
-    var2 = agent_value.at(1);
-    var3 = agent_value.at(2);
-    var4 = agent_value.at(3);
-    var5 = agent_value.at(4);
+   // var1 = agent_value.at(0);
+    //var2 = agent_value.at(1);
+    //var3 = agent_value.at(2);
+    //var4 = agent_value.at(3);
+    //var5 = agent_value.at(4);
 
     /*
     std::pair<int,int> size = field.getSize();
@@ -72,12 +72,12 @@ double beamsearch::Evaluation_Field(procon::Field field,int side){
     std::pair<int,int> enemy_1=field.getAgent((side?0:1),0),enemy_2 = field.getAgent((side?0:1),1);
 
     Eva5 = 1.0000 *(abs(agent_1.first-enemy_1.first)+abs(agent_1.second-enemy_1.second)+abs(agent_1.first-enemy_2.first)+abs(agent_1.second-enemy_2.second)+abs(agent_2.first-enemy_1.first)+abs(agent_2.second-enemy_1.second)+abs(agent_2.first-enemy_2.first)+abs(agent_2.second-enemy_2.second))/60;//敵のagentとのきょり
-    return var1*Eva1+var2*Eva2+var3*Eva3+var4*Eva4+var5*Eva5;
+    return var1*var1*Eva1+var2*2*Eva2+var3/2*Eva3+var4*var4*var4*Eva4+var5*Eva5;
 }
 
 
 
-const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(int side){
+const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> BeamSearch::agentAct(int side){
 
     int count = 0;
 
@@ -269,14 +269,14 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
         }
     }
 
-    /*
-    std::cout<<"("<<std::get<0>(ans.first)<<","<<std::get<1>(ans.first)<<","<<std::get<2>(ans.first)<<")"<<"("<<std::get<0>(ans.second)<<","<<std::get<1>(ans.second)<<","<<std::get<2>(ans.second)<<")"<<std::endl;
+
+    //std::cout<<"("<<std::get<0>(ans.first)<<","<<std::get<1>(ans.first)<<","<<std::get<2>(ans.first)<<")"<<"("<<std::get<0>(ans.second)<<","<<std::get<1>(ans.second)<<","<<std::get<2>(ans.second)<<")"<<std::endl;
     std::cout<<count<<std::endl;
-    std::cout<<most_Eva_value<<std::endl;
-    */
+   // std::cout<<most_Eva_value<<std::endl;
+
     return ans;
 }
-procon::Field beamsearch::agentmove(procon::Field ins_field, std::vector<std::vector<std::pair<int,std::pair<int,int>>>> pos)
+procon::Field BeamSearch::agentmove(procon::Field ins_field, std::vector<std::vector<std::pair<int,std::pair<int,int>>>> pos)
 {
     procon::Field field = ins_field;
 
