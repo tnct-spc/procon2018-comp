@@ -104,12 +104,14 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> BeamSearch::age
     age1.push_back(std::make_pair(-1,-1));
 
     age2 = age1;
+        auto sortEva = [&](std::pair<int,std::tuple<procon::Field,int,int>> const& a,std::pair<int,std::tuple<procon::Field,int,int>> const& b)->bool
+        {
+          return a.first < b.first;
+        };
     std::vector<std::vector<std::pair<double,int>>> Eva_stack(8 ,std::vector<std::pair<double,int>>(8 , std::make_pair(0,0))); //age1,age2の組み合わせの得点/回数
     std::vector<std::vector<std::pair<int,int>>> ways(8,std::vector<std::pair<int,int>>(8 , std::make_pair(0,0)));
     //agent1,agen2が使う能力の種類age1,age2と関連性があり、それぞれのindexをways.at(a).at(b)と打つことでagent1が向きage1.at(a)をagent2が向きage2.at(b)を持ったときpair(agent1が移動or破壊,agent2が移動or破壊)が返ってくる
-    std::priority_queue<point_field_pos,std::vector<point_field_pos>,
-            std::function<bool(point_field_pos,point_field_pos)>>
-            beam([](point_field_pos a,point_field_pos b) -> bool {if(a.first<b.first){return true;}else{return false;}});//priority_queueで.firstつまり評価値を比べて高い順に先頭から並べる
+    std::vector<point_field_pos> beam;//priority_queueで.firstつまり評価値を比べて高い順に先頭から並べる
     int RemainingTurn = manager->getFinalTurn()-manager->getTurnCount(); //残りターン数
     beam_turn = std::min(beam_turn,RemainingTurn); //残りターン数を超えるところまで探索しても無意味で無価値なので、そこを調整
     for(int turn = 0;turn < beam_turn;turn++){ //探索ターン数分探索
@@ -174,7 +176,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> BeamSearch::age
                     ways.at(a).at(b).first=way1;                  //waysに移動方法を格納
                     ways.at(a).at(b).second=way2;                 //同上
 
-                    beam.push(std::make_pair(Eva,std::make_tuple(ins_field,a,b)));//beamにpush!
+                    beam.push_back(std::make_pair(Eva,std::make_tuple(ins_field,a,b)));//beamにpush!
                     Eva_stack.at(a).at(b).first+=Eva;//手の得点の総和を格納
                     Eva_stack.at(a).at(b).second++;//得点を足した回数
                     count++;
@@ -182,79 +184,82 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> BeamSearch::age
             }
         }else{
             int beam_size = beam.size();//beamのsizeを格納
-            std::priority_queue<point_field_pos,std::vector<point_field_pos>,
-                   std::function<bool(point_field_pos,point_field_pos)>>
-                    beam_ins([](point_field_pos a,point_field_pos b) -> bool{return a.first < b.first;});//beamの代替品
-            for(int range = 0;range < std::min(beam_range,beam_size);range++){                           //beamから高い順にmin(beamの大きさ,beam幅)個考えて回す
-            procon::Field Neo_ins_field = std::get<0>(beam.top().second);                                //ここから一ターン目とだいたいおんなじことやってます
-            agent1 = Neo_ins_field.getAgent(side,0);
-            agent2 = Neo_ins_field.getAgent(side,1);
-            for(int a = 0;a < 8;a++){
+            std::vector<point_field_pos> beam_ins;//beamの代替品
+            auto search = [&](int start,int end){
+                for(int range = start;range < end;range){
+                procon::Field origin_field = std::get<0>(beam.at(range));
+                agent1 = origin_field.getAgent(side,0);
+                agent2 = origin_field.getAgent(side,1);
+                for(int a = 0;a < 8;a++){
 
-                if(age1.at(a).first+agent1.first < 0)continue;
-                if(age1.at(a).first+agent1.first >= grid_size.first)continue;
-                if(age1.at(a).second+agent1.second < 0)continue;
-                if(age1.at(a).second+agent1.second >= grid_size.second)continue;
+                    if(age1.at(a).first+agent1.first < 0)continue;
+                    if(age1.at(a).first+agent1.first >= grid_size.first)continue;
+                    if(age1.at(a).second+agent1.second < 0)continue;
+                    if(age1.at(a).second+agent1.second >= grid_size.second)continue;
 
-                for(int b = 0;b < 8;b++){
-                    if(age2.at(b).first+agent2.first < 0)continue;
-                    if(age2.at(b).first+agent2.first >= grid_size.first)continue;
-                    if(age2.at(b).second+agent2.second < 0)continue;
-                    if(age2.at(b).second+agent2.second >= grid_size.second)continue;
+                    for(int b = 0;b < 8;b++){
+                        if(age2.at(b).first+agent2.first < 0)continue;
+                        if(age2.at(b).first+agent2.first >= grid_size.first)continue;
+                        if(age2.at(b).second+agent2.second < 0)continue;
+                        if(age2.at(b).second+agent2.second >= grid_size.second)continue;
 
-                    std::vector<std::vector<std::pair<int,std::pair<int,int>>>> pos;
+                        std::vector<std::vector<std::pair<int,std::pair<int,int>>>> pos;
 
-                    std::vector<std::pair<int,std::pair<int,int>>> ins_pos;
+                        std::vector<std::pair<int,std::pair<int,int>>> ins_pos;
 
-                    int way1=1,way2=1;
+                        int way1=1,way2=1;
 
-                   if(side==0){
-                    way1 = (Neo_ins_field.getState(agent1.first+age1.at(a).first,agent1.second+age1.at(a).second).first == ( side ? 1 : 2 ) ? 2 : 1 );
+                       if(side==0){
+                        way1 = (origin_field.getState(agent1.first+age1.at(a).first,agent1.second+age1.at(a).second).first == ( side ? 1 : 2 ) ? 2 : 1 );
 
-                    way2 = (Neo_ins_field.getState(agent2.first+age2.at(b).first,agent2.second+age2.at(b).second).first == ( side ? 1 : 2 ) ? 2 : 1 );
+                        way2 = (origin_field.getState(agent2.first+age2.at(b).first,agent2.second+age2.at(b).second).first == ( side ? 1 : 2 ) ? 2 : 1 );
 
-                    ins_pos.push_back(std::make_pair(way1,std::make_pair(agent1.first+age1.at(a).first,agent1.second+age1.at(a).second)));
-                    ins_pos.push_back(std::make_pair(way2,std::make_pair(agent2.first+age2.at(b).first,agent2.second+age2.at(b).second)));
+                        ins_pos.push_back(std::make_pair(way1,std::make_pair(agent1.first+age1.at(a).first,agent1.second+age1.at(a).second)));
+                        ins_pos.push_back(std::make_pair(way2,std::make_pair(agent2.first+age2.at(b).first,agent2.second+age2.at(b).second)));
 
-                    pos.push_back(ins_pos);
+                        pos.push_back(ins_pos);
 
-                    ins_pos.clear();
-                    ins_pos.push_back(std::make_pair(0,std::make_pair(agent1.first,agent1.second)));
-                    ins_pos.push_back(std::make_pair(0,std::make_pair(agent2.first,agent2.second)));
-                    pos.push_back(ins_pos);
+                        ins_pos.clear();
+                        ins_pos.push_back(std::make_pair(0,std::make_pair(agent1.first,agent1.second)));
+                        ins_pos.push_back(std::make_pair(0,std::make_pair(agent2.first,agent2.second)));
+                        pos.push_back(ins_pos);
 
-                   }else{
+                       }else{
 
-                       ins_pos.push_back(std::make_pair(0,std::make_pair(agent1.first,agent1.second)));
-                       ins_pos.push_back(std::make_pair(0,std::make_pair(agent2.first,agent2.second)));
-                       pos.push_back(ins_pos);
-                       ins_pos.clear();
+                           ins_pos.push_back(std::make_pair(0,std::make_pair(agent1.first,agent1.second)));
+                           ins_pos.push_back(std::make_pair(0,std::make_pair(agent2.first,agent2.second)));
+                           pos.push_back(ins_pos);
+                           ins_pos.clear();
 
-                       way1 = (field.getState(agent1.first+age1.at(a).first,agent1.second+age1.at(a).second).first == ( side ? 1 : 2 ) ? 2 : 1 );
+                           way1 = (field.getState(agent1.first+age1.at(a).first,agent1.second+age1.at(a).second).first == ( side ? 1 : 2 ) ? 2 : 1 );
 
-                       way2 = (field.getState(agent2.first+age2.at(b).first,agent2.second+age2.at(b).second).first == ( side ? 1 : 2 ) ? 2 : 1 );
+                           way2 = (field.getState(agent2.first+age2.at(b).first,agent2.second+age2.at(b).second).first == ( side ? 1 : 2 ) ? 2 : 1 );
 
-                       ins_pos.push_back(std::make_pair(way1,std::make_pair(agent1.first+age1.at(a).first,agent1.second+age1.at(a).second)));
-                       ins_pos.push_back(std::make_pair(way2,std::make_pair(agent2.first+age2.at(b).first,agent2.second+age2.at(b).second)));
+                           ins_pos.push_back(std::make_pair(way1,std::make_pair(agent1.first+age1.at(a).first,agent1.second+age1.at(a).second)));
+                           ins_pos.push_back(std::make_pair(way2,std::make_pair(agent2.first+age2.at(b).first,agent2.second+age2.at(b).second)));
 
-                       pos.push_back(ins_pos);
-                   }
-                    procon::Field ins_field = agentmove(Neo_ins_field,pos);
-                    double Eva = Evaluation_Field(ins_field,side);
-                    std::tuple<procon::Field,int,int> ins_value = beam.top().second;
+                           pos.push_back(ins_pos);
+                       }
+                        procon::Field ins_field = agentmove(origin_field,pos);
+                        double Eva = Evaluation_Field(ins_field,side);
+                        std::tuple<procon::Field,int,int> ins_value = ordinaly.second;
 
-                    beam_ins.push(std::make_pair(Eva,std::make_tuple(ins_field,std::get<1>(ins_value),std::get<2>(ins_value))));
-                    Eva_stack.at(std::get<1>(ins_value)).at(std::get<2>(ins_value)).first+=Eva;
-                    Eva_stack.at(std::get<1>(ins_value)).at(std::get<2>(ins_value)).second++;
-                    count++;
+                        beam_ins.push_back(std::make_pair(Eva,std::make_tuple(ins_field,std::get<1>(ins_value),std::get<2>(ins_value))));
+                        Eva_stack.at(std::get<1>(ins_value)).at(std::get<2>(ins_value)).first+=Eva;
+                        Eva_stack.at(std::get<1>(ins_value)).at(std::get<2>(ins_value)).second++;
+                        count++;
+                        }
                     }
                 }
-            beam.pop();//探索済みの値を削除
+            };
+            int must_search = std::min(beam_range,beam_size);
+            for(int range = 0;range < must_search;range++){                           //beamから高い順にmin(beamの大きさ,beam幅)個考えて回す
+
             }
+            std::sort(beam_ins.begin(),beam_ins.end(),sortEva);
             beam = beam_ins;//beamにbeam_insを代入
         }
     }
-
 
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> ans;//最終的なagentactの意志
     double most_Eva = -1000000;                                    //最も高い答えを格納
