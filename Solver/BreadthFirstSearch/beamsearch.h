@@ -3,6 +3,7 @@
 #include <queue>
 #include <algorithm>
 #include <iostream>
+#include <thread>
 
 #include "field.h"
 #include "gamemanager.h"
@@ -17,7 +18,7 @@ public:
     BeamSearch(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent = GeneticAgent(5));
 
     //beamsearch();
-    const int beam_range = 300;
+    const int beam_range = 1000;
     int beam_turn = 10;
     double Evaluation_Field(procon::Field field,int side);
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
