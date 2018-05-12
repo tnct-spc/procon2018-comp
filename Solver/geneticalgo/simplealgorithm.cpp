@@ -18,20 +18,23 @@ double SimpleAlgorithm::evaluateMove(int side, std::pair<int, int> move){
 
     procon::Field& field = manager->getField();
 
-    std::vector<double>& agent_data = agent_data.getData();
+    const std::vector<double>& data = agent_data.getData();
 
-    std::vector<int,int> move_vec(2); //ここの実装くそ
+    std::vector<int> move_vec(2); //ここの実装くそ
     move_vec.at(0) = move.first;
     move_vec.at(1) = move.second;
 
     std::vector<std::pair<int,int>> now_pos(2); //移動前
     std::vector<std::pair<int,int>> move_pos(2); //移動後
+    std::vector<std::pair<int,int>> state(2);//移動先のデータ
 
     for(int index = 0; index < 2; ++index){
         now_pos.at(index) = field.getAgent(side, index);
         move_pos.at(index) = now_pos.at(index);
         move_pos.at(index).first += x_list.at(move_vec.at(index));
         move_pos.at(index).second += y_list.at(move_vec.at(index));
+        state.at(index) = field.getState(move_pos.at(index).first, move_pos.at(index).second);
     }
+
 
 }
