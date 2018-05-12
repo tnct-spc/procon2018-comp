@@ -32,20 +32,20 @@ void Genetic::run(){
         for(auto val : agents){
 
 
-            //std::cout << "{ ";
+            std::cout << "{ ";
             output << "{";
             int siz = val.size;
 
             const std::vector<double>& data = val.getData();
             for(int index = 0; index < siz-1; ++index){
-                //std::cout << data.at(index) << ", ";
+                std::cout << data.at(index) << ", ";
                 output << data.at(index) << ", ";
             }
 
-            //std::cout << data.at(siz - 1) << " }" << std::endl;
+            std::cout << data.at(siz - 1) << " }" << std::endl;
             output << data.at(siz - 1) << " }" << std::endl;
         }
-        //std::cout << std::endl;
+        std::cout << std::endl;
 
         output.close();
     };
@@ -60,7 +60,8 @@ void Genetic::run(){
         //選別してtournament_count体に絞り込む
         startTournament();
 
-        debug_output();
+        if(gen == max_gen - 1 || gen % (max_gen / 200) == 0)
+            debug_output();
 
         if(gen != max_gen - 1)
             generateAgents();
