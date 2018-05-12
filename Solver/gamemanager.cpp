@@ -236,6 +236,7 @@ bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAg
                 point_2 += field->getState(x, y).second;
         }
 
+    // if(point_1 != point_2)std::cout << "diff : " << std::abs(point_1 - point_2) << std::endl;
     return point_1 > point_2;
 }
 

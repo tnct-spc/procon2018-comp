@@ -295,6 +295,7 @@ bool Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
     for(int index = 0; index < cpu_num; ++index){
 
         threads.at(index) = std::thread( [=,&win_count]{
+            std::lock_guard<std::mutex> lock(mtx);
             for(int count = 0;count<buttle_count/cpu_num;++count)win_count += buttle(count % 2, index);
         } );
 

@@ -12,12 +12,14 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleAlgorith
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
-    double max_value = -1000000007;
+    double max_value = -200000;
     int max_count = 0;
 
     for(int count = 0; count < 81; ++count){
 
         double value = evaluateMove(side, std::make_pair( count / 9, count % 9 ));
+
+        if(value != -100000)std::cout << value << std::endl;
 
         if(max_value < value){
 
@@ -54,7 +56,7 @@ double SimpleAlgorithm::evaluateMove(int side, std::pair<int, int> move){
 
     //例外処理
     if(!manager->canPut(side, move.first, move.second))
-        return -1000000007;
+        return -100000;
 
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};

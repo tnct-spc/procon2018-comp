@@ -4,6 +4,7 @@
 #include <fstream>
 #include <random>
 #include <unordered_set>
+#include <mutex>
 
 #include "gamemanager.h"
 #include "geneticalgo/geneticalgo.h"
@@ -23,6 +24,8 @@ private:
     */
 
     int algo_number;
+
+    std::mutex mtx;
 
     std::vector<GameManager*> managers;
 
