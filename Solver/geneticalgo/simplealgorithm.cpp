@@ -36,17 +36,11 @@ double SimpleAlgorithm::evaluateMove(int side, std::pair<int, int> move){
 
     const std::vector<double>& data = agent_data.getData();
 
-    /*
-
-      除去,タイル無しに移動,自タイルに移動
-      0点除去,+除去,-除去,+移動,-移動,0点移動,自タイル移動
-
-    */
 
     double const_minus_move = -1.0 * data.at(0) * 100 + 30;//マイナスを踏んだ時の定数
     double const_plus_move = data.at(1) * 100 - 30;
 
-    double per_minus_move = -1.0 * data.at(2) * 20 + 6;//マイナスを踏んだ時の得点にかかる倍率
+    double per_minus_move = data.at(2) * 20 - 6;//マイナスを踏んだ時の得点にかかる倍率
     double per_plus_move = data.at(3) * 20 - 6;
 
     double const_back_move = -1.0 * data.at(4) * 100 + 30;//自分の陣地に戻った時の定数
@@ -58,6 +52,50 @@ double SimpleAlgorithm::evaluateMove(int side, std::pair<int, int> move){
 
     double per_region = data.at(8) * 20 - 6;//領域ポイントにかかる倍率
 
+    double per_point = data.at(9) * 100;//移動先の得点にかかる倍率
 
+
+    //得点計算
+    auto calc = [&](int agent){
+        double value = 0;
+
+        int reg = state.at(agent).first;
+        int point = state.at(agent).second;
+
+        // 動かない時(この時はconst_back_moveと二重判定が起きる)
+        if(move_vec.at(agent) == 8)
+            value += const_no_move;
+
+        if(reg == side + 1)//もう自分の色な場合
+            value += const_back_move;
+
+        if(reg == (side == 0 ? 2 : 1)){ //除去の場合
+
+            //除去するため得点増減が逆になる
+            point *= -1.0;
+
+            value += const_delete_move;
+            value += per_delete_move * point;
+
+        }
+
+        if(point > 0){
+
+            value += const_plus_move;
+            value += per_plus_move * point;
+
+        }else if(point < 0){
+
+            value += const_minus_move;
+            value += per_minus_move;
+
+        }
+
+        value += point * per_point;
+
+        return value;
+    };
+
+    return calc(0) + calc(1);
 
 }
