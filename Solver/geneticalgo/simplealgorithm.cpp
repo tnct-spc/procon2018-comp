@@ -13,8 +13,14 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleAlgorith
 
 double SimpleAlgorithm::evaluateMove(int side, std::pair<int, int> move){
 
+    //例外処理
+    if(!manager->canPut(side, move.first, move.second))
+        return -1000000007;
+
+
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
+
 
     procon::Field& field = manager->getField();
 
