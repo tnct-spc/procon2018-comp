@@ -132,6 +132,9 @@ void Genetic::generateAgents(){
 
         std::vector<double> agent_data(siz);
 
+
+
+        /*
         for(int index = 0; index < siz; ++index)
             agent_data.at(index) = (retRandom(0, 1)
                                     ? data_2.at(index)
@@ -149,6 +152,7 @@ void Genetic::generateAgents(){
                 agent_data.at(index) = std::max(agent_data.at(index), 0.0);
             }
         }
+        */
 
         GeneticAgent new_agent(agents.at(0).size, false);
         new_agent.setData(agent_data);
