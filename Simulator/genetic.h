@@ -47,11 +47,9 @@ private:
     double mutate_per = 0.003;//突然変異率(これ以外は交叉)
     //double mutate_per = 0.2;
 
-    double change_alpha_val = 0.3;//ブレンド交叉時のアレ
-    /*
-    double cross_change_per = 0.0;//交叉時にパラメータを少し変化させる確率
+    double change_alpha_val = 0.2;//ブレンド交叉時のアレ
+    double cross_change_per = 0.2;//交叉時にパラメータを少し変化させる確率
     double cross_change_val = 0.2;//交叉時のパラメータの最大変化量
-    */
 
     //集合の数
     const unsigned int agent_num = 100;

@@ -132,6 +132,16 @@ void Genetic::generateAgents(){
 
         std::vector<double> agent_data(siz);
 
+        for(int index = 0; index < siz; ++index){
+
+            double data_diff = std::abs(data_1.at(index) - data_2.at(index));
+            double min_val = std::min(data_1.at(index), data_2.at(index));
+
+            //はい
+            std::uniform_real_distribution<> rand_double(std::max(0.0, min_val - (data_diff * change_alpha_val)), std::min(1.0, min_val + (data_diff * (1.0 + change_alpha_val) )));
+
+            agent_data.at(index) = rand_double(mt);
+        }
 
 
         /*
@@ -139,6 +149,7 @@ void Genetic::generateAgents(){
             agent_data.at(index) = (retRandom(0, 1)
                                     ? data_2.at(index)
                                     : data_1.at(index) );
+        */
 
 
         // 交叉時にも一定確率で変化させる
@@ -152,7 +163,6 @@ void Genetic::generateAgents(){
                 agent_data.at(index) = std::max(agent_data.at(index), 0.0);
             }
         }
-        */
 
         GeneticAgent new_agent(agents.at(0).size, false);
         new_agent.setData(agent_data);
