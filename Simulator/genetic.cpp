@@ -16,6 +16,8 @@ Genetic::Genetic(int algo_number) :
 
         if(algo_number == 0) // この辺個別処理
             agents.emplace_back(GeneticAgent(7));
+        if(algo_number == 1)
+            agents.emplace_back(GeneticAgent(10));
     }
 }
 
@@ -89,7 +91,12 @@ void Genetic::generateAgents(){
         //これだけの数を適当に切り出して乱数で決め直す
         int change_count = retRandom(1, siz / 3);
 
-        std::vector<int> val(7);
+        std::vector<int> val;
+        if(algo_number == 0)
+            val.resize(7);
+        if(algo_number == 2)
+            val.resize(10);
+
         std::iota(val.begin(), val.end(), 0);
 
         std::uniform_real_distribution<> rand_double(0.0, 1.0);
