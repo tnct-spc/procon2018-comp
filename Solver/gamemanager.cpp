@@ -6,6 +6,7 @@
 #include "dummyalgorithm.h"
 #include "simplemontecarlo/montecarlowithalgo.h"
 #include "BreadthFirstSearch/beamsearch.h"
+#include "geneticalgo/simplealgorithm.h"
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
@@ -64,6 +65,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_1 = std::make_shared<GeneticAlgo>(share);
     } else if (QString::compare("MontecarloWithAlgo", my_algo) == 0) {
         team_1 = std::make_shared<MontecarloWithAlgo>(share);
+    }else if(QString::compare("SimpleAlgorithm", my_algo) == 0){
+        team_1 = std::make_shared<SimpleAlgorithm>(share);
     }else if(QString::compare("BeamSearch", my_algo) == 0){
         team_1 = std::make_shared<beamsearch>(share);
     }
@@ -74,6 +77,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_2 = std::make_shared<GeneticAlgo>(team_1->getManagerPtr());
     } else if (QString::compare("MontecarloWithAlgo", opponent_algo) == 0) {
         team_2 = std::make_shared<MontecarloWithAlgo>(team_1->getManagerPtr());
+    } else if (QString::compare("SimpleAlgorithm", opponent_algo) == 0) {
+        team_2 = std::make_shared<SimpleAlgorithm>(team_1->getManagerPtr());
     }else if(QString::compare("BeamSearch", opponent_algo)==0){
         team_2 = std::make_shared<beamsearch>(team_1->getManagerPtr());
     }

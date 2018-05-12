@@ -39,6 +39,11 @@
       </item>
       <item>
        <property name="text">
+        <string>SimpleAlgorithm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>MontecarloWithAlgo</string>
        </property>
       </item>
@@ -65,6 +70,11 @@
       <item>
        <property name="text">
         <string>GeneticAlgo</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>SimpleAlgorithm</string>
        </property>
       </item>
       <item>
