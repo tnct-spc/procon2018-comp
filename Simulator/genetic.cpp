@@ -16,7 +16,7 @@ Genetic::Genetic(int algo_number) :
 
         if(algo_number == 0) // この辺個別処理
             agents.emplace_back(GeneticAgent(7));
-        if(algo_number == 1)
+        if(algo_number == 2)
             agents.emplace_back(GeneticAgent(10));
     }
 }
