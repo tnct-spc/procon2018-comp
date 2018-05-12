@@ -60,8 +60,8 @@ void Genetic::run(){
         //選別してtournament_count体に絞り込む
         startTournament();
 
-        if(gen == max_gen - 1 || gen % (max_gen / 200) == 0)
-            debug_output();
+        //if(gen == max_gen - 1 || gen % (max_gen / 200) == 0)
+        debug_output();
 
         if(gen != max_gen - 1)
             generateAgents();
@@ -273,6 +273,7 @@ void Genetic::startTournament(){
 bool Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
 
 
+
     auto buttle = [&](bool flag, int index){//2で割った余りによって反転する(得点が同じ時の処理が順番依存なので一応)
         int turn = retRandom(60, 120);
         std::pair<int,int> size = std::make_pair( retRandom(8,12), retRandom(8, 12) );
@@ -280,6 +281,7 @@ bool Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
         //visualizerは表示しない
         managers.at(index)->resetManager(size.first, size.second, false, turn);
 
+        // std::cout << "buttle" << std::endl;
         //firstが勝ったらtrue
         return (flag ? managers.at(index)->simulationGenetic(first, second, algo_number)
                      : ! managers.at(index)->simulationGenetic(second, first, algo_number));

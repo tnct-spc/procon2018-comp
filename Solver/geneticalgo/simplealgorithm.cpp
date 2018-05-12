@@ -19,7 +19,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleAlgorith
 
         double value = evaluateMove(side, std::make_pair( count / 9, count % 9 ));
 
-        if(value != -100000)std::cout << value << std::endl;
+        //if(value != -100000)std::cout << value << std::endl;
 
         if(max_value < value){
 

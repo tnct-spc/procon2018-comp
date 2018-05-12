@@ -59,7 +59,7 @@ private:
     //トーナメントでの対戦数
     const int tournament_buttle = 5;
     //一回の試行でのプレイアウト回数
-    const int buttle_count = 20;
+    const int buttle_count = 10;
     //世代数の最大
     const int max_gen = 20000;
 };

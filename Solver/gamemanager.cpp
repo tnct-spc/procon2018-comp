@@ -33,6 +33,8 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
     turn_max = t_max;
     vis_show = v_show;
 
+    now_turn = 0;
+
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
@@ -189,6 +191,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
 bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAgent &agent_2, int algo_number){
 
+    //std::cout << "simulationGenetic" << std::endl;
+
     if(algo_number == 0){
         team_1 = std::make_shared<GeneticAlgo>(share, agent_1);
         team_2 = std::make_shared<GeneticAlgo>(share, agent_2);
@@ -237,6 +241,7 @@ bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAg
         }
 
     // if(point_1 != point_2)std::cout << "diff : " << std::abs(point_1 - point_2) << std::endl;
+    // std::cout << point_1 << " , " << point_2 << std::endl;
     return point_1 > point_2;
 }
 
