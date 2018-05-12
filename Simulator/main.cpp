@@ -25,11 +25,12 @@ int main()
 
     std::cout << "please select algorithm" << std::endl;
     std::cout << "0: GeneticAlgo" << std::endl;
+    std::cout << "2: SimpleAlgorithm" << std::endl;
 
     while(1){
         std::cout << "algorithm number : ";
         std::cin >> algo_number;
-        if(algo_number >= 0 && algo_number <= 0)
+        if(algo_number == 0 || algo_number == 2)
             break;
         std::cout << "incorrect" << std::endl;
     }
