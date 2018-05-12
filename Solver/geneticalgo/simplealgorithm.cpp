@@ -4,7 +4,6 @@ SimpleAlgorithm::SimpleAlgorithm(std::shared_ptr<GameManager> manager_ptr, const
     AlgorithmWrapper(manager_ptr),
     agent_data(agent)
 {
-
 }
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleAlgorithm::agentAct(int side){

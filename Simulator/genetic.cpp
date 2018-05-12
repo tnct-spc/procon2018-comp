@@ -32,20 +32,20 @@ void Genetic::run(){
         for(auto val : agents){
 
 
-            std::cout << "{ ";
+            //std::cout << "{ ";
             output << "{";
             int siz = val.size;
 
             const std::vector<double>& data = val.getData();
             for(int index = 0; index < siz-1; ++index){
-                std::cout << data.at(index) << ", ";
+                //std::cout << data.at(index) << ", ";
                 output << data.at(index) << ", ";
             }
 
-            std::cout << data.at(siz - 1) << " }" << std::endl;
+            //std::cout << data.at(siz - 1) << " }" << std::endl;
             output << data.at(siz - 1) << " }" << std::endl;
         }
-        std::cout << std::endl;
+        //std::cout << std::endl;
 
         output.close();
     };
@@ -55,7 +55,7 @@ void Genetic::run(){
     for(int gen = 0; gen < max_gen; ++gen){
 
         std::cout << "gen " << gen + 1 << " started" << std::endl << std::endl;
-        std::cout << "agent count : " << agents.size() << std::endl;
+        //std::cout << "agent count : " << agents.size() << std::endl;
 
         //選別してtournament_count体に絞り込む
         startTournament();
@@ -79,7 +79,7 @@ int Genetic::retRandom(int st, int en){
 
 void Genetic::generateAgents(){
 
-    std::cout << "generate agent" << std::endl << std::endl;
+    //std::cout << "generate agent" << std::endl << std::endl;
 
     int generate_count = agent_num - tournament_count;//この数だけ新たに生成する
 
@@ -227,9 +227,9 @@ void Genetic::startTournament(){
             }else if(value == max_val)
                 max_index_list.emplace_back(index);
 
-            std::cout << value << " ";
+            //std::cout << value << " ";
         }
-        std::cout << " max_per : " << max_val << std::endl << std::endl;
+        //std::cout << " max_per : " << max_val << std::endl << std::endl;
 
         int max_index = max_index_list.at(retRandom(0, max_index_list.size() - 1));
 
@@ -258,7 +258,7 @@ void Genetic::startTournament(){
             agents.erase(agents.begin() + rand_index);
         }
 
-        std::cout << "tournament " << count + 1 << " started" << std::endl;
+        //std::cout << "tournament " << count + 1 << " started" << std::endl;
 
         battleTournament(tournaments);
 
