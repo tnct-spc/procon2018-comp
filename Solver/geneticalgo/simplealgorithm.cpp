@@ -4,6 +4,9 @@ SimpleAlgorithm::SimpleAlgorithm(std::shared_ptr<GameManager> manager_ptr, const
     AlgorithmWrapper(manager_ptr),
     agent_data(agent)
 {
+
+    std::vector<double> vec = {0.644264, 0.745097, 0.376591, 0.185352, 0.934623, 0.336869, 0.921761, 0.0428713, 0.600968, 0.0303786 };
+    agent_data.setData(vec);
 }
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleAlgorithm::agentAct(int side){
