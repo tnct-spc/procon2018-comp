@@ -9,6 +9,46 @@ SimpleAlgorithm::SimpleAlgorithm(std::shared_ptr<GameManager> manager_ptr, const
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleAlgorithm::agentAct(int side){
 
+    procon::Field& field = manager->getField();
+    std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
+    std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
+
+    double max_value = -1000000007;
+    int max_count = 0;
+
+    for(int count = 0; count < 81; ++count){
+
+        double value = evaluateMove(side, std::make_pair( count / 9, count % 9 ));
+
+        if(max_value < value){
+
+            max_value = value;
+            max_count = count;
+        }
+
+    }
+
+    std::vector<int> move_vec(2);
+    move_vec.at(0) = max_count / 9;
+    move_vec.at(1) = max_count % 9;
+
+    std::vector<std::pair<int,int>> agent_pos(2);
+    for(int index = 0; index < 2; ++index){
+        agent_pos.at(index) = field.getAgent(side, index);
+        agent_pos.at(index).first += x_list.at(move_vec.at(index));
+        agent_pos.at(index).second += y_list.at(move_vec.at(index));
+    }
+    std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> tup;//たぷー
+
+    tup.first = std::make_tuple((field.getState(agent_pos.at(0).first, agent_pos.at(0).second).first == (side == 0 ? 2 : 1) ? 2 : 1),
+                                x_list.at(move_vec.at(0)),
+                                y_list.at(move_vec.at(0)));
+
+    tup.second = std::make_tuple((field.getState(agent_pos.at(1).first, agent_pos.at(1).second).first == (side == 0 ? 2 : 1) ? 2 : 1),
+                                x_list.at(move_vec.at(1)),
+                                y_list.at(move_vec.at(1)));
+
+    return tup;
 }
 
 double SimpleAlgorithm::evaluateMove(int side, std::pair<int, int> move){
