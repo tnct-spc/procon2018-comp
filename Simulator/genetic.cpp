@@ -190,7 +190,7 @@ void Genetic::startTournament(){
     std::vector<GeneticAgent> new_agents;
 
     //ここで最適なチームを出す
-    auto battleTournament = [&](std::vector<GeneticAgent>& input_data){
+    auto buttleTournament = [&](std::vector<GeneticAgent>& input_data){
 
         std::shuffle(input_data.begin(), input_data.end(), mt);
 
@@ -273,9 +273,9 @@ void Genetic::startTournament(){
             agents.erase(agents.begin() + rand_index);
         }
 
-        //std::cout << "tournament " << count + 1 << " started" << std::endl;
+        std::cout << "tournament " << count + 1 << " started" << std::endl;
 
-        battleTournament(tournaments);
+        buttleTournament(tournaments);
 
     }
 
