@@ -246,7 +246,7 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
     */
 
     if(point_1 == point_2)return -1;
-    return point_1 > point_2;
+    return (point_1 > point_2 ? 1 : 0);
 }
 
 procon::Field& GameManager::getField(){
