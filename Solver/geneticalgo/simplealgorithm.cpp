@@ -5,7 +5,8 @@ SimpleAlgorithm::SimpleAlgorithm(std::shared_ptr<GameManager> manager_ptr, const
     agent_data(agent)
 {
 
-    std::vector<double> vec = {0.644264, 0.745097, 0.376591, 0.185352, 0.934623, 0.336869, 0.921761, 0.0428713, 0.600968, 0.0303786 };
+    //std::vector<double> vec = {0.644264, 0.745097, 0.376591, 0.185352, 0.934623, 0.336869, 0.921761, 0.0428713, 0.600968, 0.0303786 };
+    std::vector<double> vec = {0.665872, 0.111844, 0.099833, 0.172764, 0.371144, 0.779744, 0.55906, 0.0657503, 0.162525, 0.745207 };
     agent_data.setData(vec);
 }
 

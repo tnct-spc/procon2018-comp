@@ -307,18 +307,33 @@ bool Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
 
     std::vector<std::thread> threads(cpu_num);
 
-
     for(int index = 0; index < cpu_num; ++index){
 
-        threads.at(index) = std::thread( [=,&win_count]{
+        int thread_buttle_cou = buttle_count / cpu_num + (buttle_count % cpu_num > index);
+
+        threads.at(index) = std::thread( [=,&win_count](int buttle_cou){
+
             std::lock_guard<std::mutex> lock(mtx);
-            for(int count = 0;count<buttle_count/cpu_num;++count)win_count += buttle(count % 2, index);
-        } );
+
+            int now_count = 0;
+
+            //buttle_count / cpu_num回繰り返す
+            while(now_count < buttle_cou){
+
+                int point_flag = buttle(now_count % 2, index);
+
+                if(point_flag == -1)//引き分けの場合
+                    continue;
+
+                ++now_count;
+                win_count += point_flag;
+            }
+        }, thread_buttle_cou );
 
     }
     for(int index = 0; index < cpu_num; ++index){
         threads.at(index).join();
     }
 
-    return win_count * 2 >= (buttle_count / cpu_num) * cpu_num;
+    return win_count * 2 >= buttle_count;
 }

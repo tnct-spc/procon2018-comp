@@ -189,7 +189,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
 }
 
-bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAgent &agent_2, int algo_number){
+int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAgent &agent_2, int algo_number){
 
     //std::cout << "simulationGenetic" << std::endl;
 
@@ -240,8 +240,12 @@ bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAg
                 point_2 += field->getState(x, y).second;
         }
 
-    // if(point_1 != point_2)std::cout << "diff : " << std::abs(point_1 - point_2) << std::endl;
-    // std::cout << point_1 << " , " << point_2 << std::endl;
+    /*
+    if(point_1 != point_2)
+        std::cout << point_1 << " , " << point_2 << std::endl;
+    */
+
+    if(point_1 == point_2)return -1;
     return point_1 > point_2;
 }
 
