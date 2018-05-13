@@ -283,9 +283,7 @@ void Genetic::startTournament(){
 
 }
 
-
 bool Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
-
 
 
     auto buttle = [&](bool flag, int index){//2で割った余りによって反転する(得点が同じ時の処理が順番依存なので一応)
@@ -297,8 +295,15 @@ bool Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
 
         // std::cout << "buttle" << std::endl;
         //firstが勝ったらtrue
-        return (flag ? managers.at(index)->simulationGenetic(first, second, algo_number)
-                     : ! managers.at(index)->simulationGenetic(second, first, algo_number));
+
+        int win_num = (flag ? managers.at(index)->simulationGenetic(first, second, algo_number)
+                            : managers.at(index)->simulationGenetic(second, first, algo_number));
+
+        if(win_num == -1)return -1;
+
+        win_num = (win_num == 0 ? 1 : 0);//反転してるだけ
+
+        return win_num;
     };
 
 
@@ -335,5 +340,5 @@ bool Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
         threads.at(index).join();
     }
 
-    return win_count * 2 >= buttle_count;
+    return (win_count * 2 > buttle_count);
 }
