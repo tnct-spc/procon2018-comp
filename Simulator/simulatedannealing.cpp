@@ -13,6 +13,8 @@ SimulatedAnnealing::SimulatedAnnealing(int algo_number) :
     //初期エージェントを選択
     if(algo_number == 0)
         agent = new GeneticAgent(7);
+    if(algo_number == 2)
+        agent = new GeneticAgent(10);
 
 }
 
@@ -67,8 +69,10 @@ void SimulatedAnnealing::updateAgent(int now_count){
 
     if(algo_number==0)
         new_agent = new GeneticAgent(7,false);
+    else if(algo_number==2)
+        new_agent = new GeneticAgent(10,false);
     else
-        new_agent = new GeneticAgent(7,false);//warning回避のためこの書き方をしているけど、ここが呼ばれる事はありえないです
+        new_agent = new GeneticAgent(10,false);//warning回避のためこの書き方をしているけど、ここが呼ばれる事はありえないです
 
     std::vector<double> agent_data = agent->getData();
 
@@ -95,6 +99,8 @@ void SimulatedAnnealing::updateAgent(int now_count){
         GeneticAgent* buttle_agent;
         if(algo_number==0)
             buttle_agent = new GeneticAgent(7,false);
+        else if(algo_number==2)
+            buttle_agent = new GeneticAgent(10,false);
         else
             buttle_agent = new GeneticAgent(7,false);//warning回避のためこの書き方をしているけど、ここが呼ばれる事はありえないです
 
