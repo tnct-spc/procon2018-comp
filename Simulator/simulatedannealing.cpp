@@ -73,14 +73,15 @@ void SimulatedAnnealing::updateAgent(int now_count){
 
     std::vector<double> agent_data = agent->getData();
 
-    for(int index = 0; index < new_agent->size; ++index){
 
-        std::uniform_real_distribution<> rand_double(std::max(-max_change_val, -agent_data.at(index) ), std::min(max_change_val, 1 - agent_data.at(index)) );
+    //一つだけ変える
+    int index = retRandom(0, new_agent->size - 1);
 
-        agent_data.at(index) += rand_double(mt);
-        agent_data.at(index) = std::min(agent_data.at(index), 1.0);
-        agent_data.at(index) = std::max(agent_data.at(index), 0.0);
-    }
+    std::uniform_real_distribution<> rand_double(std::max(-max_change_val, -agent_data.at(index) ), std::min(max_change_val, 1 - agent_data.at(index)) );
+
+    agent_data.at(index) += rand_double(mt);
+    agent_data.at(index) = std::min(agent_data.at(index), 1.0);
+    agent_data.at(index) = std::max(agent_data.at(index), 0.0);
 
     new_agent->setData(agent_data);
 
@@ -123,9 +124,9 @@ void SimulatedAnnealing::updateAgent(int now_count){
     std::cout << "now_temp = " << now_temp << std::endl;
     std::cout << "per = " << per << std::endl;
 
-    std::uniform_real_distribution<> rand_double(0.0,1.0);
+    std::uniform_real_distribution<> rand_per(0.0,1.0);
 
-    if(rand_double(mt) <= per)
+    if(rand_per(mt) <= per)
         agent = new_agent;
 
 }
