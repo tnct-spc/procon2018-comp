@@ -32,7 +32,7 @@ private:
     std::random_device rnd;
     std::mt19937 mt;
 
-    double max_change_val = 0.2;//パラメータの最大変化量
+    double max_change_val = 0.3;//パラメータの最大変化量
     //合計の試行回数
     const int max_try = 1e4;
 
@@ -44,7 +44,7 @@ private:
     const std::pair<double,int> buttle_direct = std::make_pair(9.5, 9);
 
     //開始時の温度(温度は線形で変化させる)
-    const double start_temp = 0.03 * (buttle_rand.first + buttle_direct.first);
+    const double start_temp = 0.125 * (buttle_rand.first + buttle_direct.first);
     const double end_temp = 1;
 
     GeneticAgent* agent;
