@@ -141,9 +141,11 @@ int SimulatedAnnealing::retRandom(int st, int en){
 }
 
 
-double SimulatedAnnealing::buttleAgents(GeneticAgent& first, GeneticAgent& second,bool is_rand){
 
-    int buttle_count = (is_rand ? buttle_rand.second : buttle_direct.second) / cpu_num * cpu_num;
+double SimulatedAnnealing::buttleAgents(GeneticAgent& first, GeneticAgent& second, bool is_rand){
+
+    int buttle_count = (is_rand ? buttle_rand.second : buttle_direct.second);
+
 
     auto buttle = [&](bool flag, int index){//2で割った余りによって反転する(得点が同じ時の処理が順番依存なので一応)
         int turn = retRandom(60, 120);
@@ -152,6 +154,7 @@ double SimulatedAnnealing::buttleAgents(GeneticAgent& first, GeneticAgent& secon
         //visualizerは表示しない
         managers.at(index)->resetManager(size.first, size.second, false, turn);
 
+        // std::cout << "buttle" << std::endl;
         //firstが勝ったらtrue
         return (flag ? managers.at(index)->simulationGenetic(first, second, algo_number)
                      : ! managers.at(index)->simulationGenetic(second, first, algo_number));
@@ -163,12 +166,28 @@ double SimulatedAnnealing::buttleAgents(GeneticAgent& first, GeneticAgent& secon
 
     std::vector<std::thread> threads(cpu_num);
 
-
     for(int index = 0; index < cpu_num; ++index){
 
-        threads.at(index) = std::thread( [=,&win_count]{
-            for(int count = 0;count<buttle_count/cpu_num;++count){win_count += buttle(count % 2, index);}
-        } );
+        int thread_buttle_cou = buttle_count / cpu_num + (buttle_count % cpu_num > index);
+
+        threads.at(index) = std::thread( [=,&win_count](int buttle_cou){
+
+            std::lock_guard<std::mutex> lock(mtx);
+
+            int now_count = 0;
+
+            //buttle_count / cpu_num回繰り返す
+            while(now_count < buttle_cou){
+
+                int point_flag = buttle(now_count % 2, index);
+
+                if(point_flag == -1)//引き分けの場合
+                    continue;
+
+                ++now_count;
+                win_count += point_flag;
+            }
+        }, thread_buttle_cou );
 
     }
     for(int index = 0; index < cpu_num; ++index){

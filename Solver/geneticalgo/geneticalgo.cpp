@@ -5,6 +5,7 @@ GeneticAlgo::GeneticAlgo(std::shared_ptr<GameManager> manager_ptr, const Genetic
     agent_data(agent)
 {
 
+
 }
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::agentAct(int side)

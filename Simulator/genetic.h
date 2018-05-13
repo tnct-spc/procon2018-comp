@@ -63,7 +63,7 @@ private:
     //一回の試行でのプレイアウト回数
     const int buttle_count = 7;
     //世代数の最大
-    const int max_gen = 20000;
+    const int max_gen = 200;
 };
 
 #endif // GENETIC_H

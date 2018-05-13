@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <cmath>
+#include <mutex>
 
 #include "gamemanager.h"
 #include "geneticalgo/geneticalgo.h"
@@ -21,6 +22,8 @@ private:
     int retRandom(int st, int en);
 
     std::vector<GameManager*> managers;
+
+    std::mutex mtx;
 
     int cpu_num;
 
