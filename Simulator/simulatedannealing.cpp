@@ -84,10 +84,9 @@ void SimulatedAnnealing::updateAgent(int now_count){
 
     new_agent->setData(agent_data);
 
-    double win = buttleAgents((*agent), (*new_agent), false);
 
-    double old_agent_win = 0;
-    double new_agent_win = 0;
+    double old_val = 0;
+    double new_val = 0;
 
     for(int count = 0; count < buttle_rand.first; ++count){
 
@@ -97,13 +96,11 @@ void SimulatedAnnealing::updateAgent(int now_count){
         else
             buttle_agent = new GeneticAgent(7,false);//warning回避のためこの書き方をしているけど、ここが呼ばれる事はありえないです
 
-        old_agent_win += buttleAgents((*agent), (*buttle_agent), true);
-        new_agent_win += buttleAgents((*new_agent), (*buttle_agent), true);
+        old_val += buttleAgents((*agent), (*buttle_agent), true);
+        new_val += buttleAgents((*new_agent), (*buttle_agent), true);
     }
 
-
-    double old_val = old_agent_win;
-    double new_val = new_agent_win + (win - 0.5) * buttle_direct.first;
+    (buttleAgents((*agent), (*new_agent), false) ? old_val : new_val) += buttle_direct.first;
 
 
     double now_temp = 	1.0 * (start_temp - end_temp) * (max_try - now_count) / max_try + end_temp;
@@ -142,7 +139,7 @@ int SimulatedAnnealing::retRandom(int st, int en){
 
 
 
-double SimulatedAnnealing::buttleAgents(GeneticAgent& first, GeneticAgent& second, bool is_rand){
+bool SimulatedAnnealing::buttleAgents(GeneticAgent& first, GeneticAgent& second, bool is_rand){
 
     int buttle_count = (is_rand ? buttle_rand.second : buttle_direct.second);
 
@@ -194,5 +191,5 @@ double SimulatedAnnealing::buttleAgents(GeneticAgent& first, GeneticAgent& secon
         threads.at(index).join();
     }
 
-    return 1.0 * win_count / buttle_count;
+    return win_count * 2 > buttle_count;
 }
