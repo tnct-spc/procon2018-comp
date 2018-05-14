@@ -16,6 +16,10 @@ public:
 
 private:
     GeneticAgent agent_data;
+    std::random_device rnd;
+    std::mt19937 mt;
+
+    std::uniform_real_distribution<> rand_double;
 };
 
 #endif // SIMPLEALGORITHM_H
