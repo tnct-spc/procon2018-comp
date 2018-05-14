@@ -14,7 +14,7 @@ SimulatedAnnealing::SimulatedAnnealing(int algo_number) :
     if(algo_number == 0)
         agent = new GeneticAgent(7);
     if(algo_number == 2)
-        agent = new GeneticAgent(10);
+        agent = new GeneticAgent(11);
 
 }
 
@@ -70,7 +70,7 @@ void SimulatedAnnealing::updateAgent(int now_count){
     if(algo_number==0)
         new_agent = new GeneticAgent(7,false);
     else if(algo_number==2)
-        new_agent = new GeneticAgent(10,false);
+        new_agent = new GeneticAgent(11,false);
     else
         new_agent = new GeneticAgent(10,false);//warning回避のためこの書き方をしているけど、ここが呼ばれる事はありえないです
 
@@ -100,7 +100,7 @@ void SimulatedAnnealing::updateAgent(int now_count){
         if(algo_number==0)
             buttle_agent = new GeneticAgent(7,false);
         else if(algo_number==2)
-            buttle_agent = new GeneticAgent(10,false);
+            buttle_agent = new GeneticAgent(11,false);
         else
             buttle_agent = new GeneticAgent(7,false);//warning回避のためこの書き方をしているけど、ここが呼ばれる事はありえないです
 

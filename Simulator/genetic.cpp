@@ -17,7 +17,7 @@ Genetic::Genetic(int algo_number) :
         if(algo_number == 0) // この辺個別処理
             agents.emplace_back(GeneticAgent(7));
         if(algo_number == 2)
-            agents.emplace_back(GeneticAgent(10));
+            agents.emplace_back(GeneticAgent(11));
     }
 }
 
@@ -96,7 +96,7 @@ void Genetic::generateAgents(){
         if(algo_number == 0)
             val.resize(7);
         if(algo_number == 2)
-            val.resize(10);
+            val.resize(11);
 
         std::iota(val.begin(), val.end(), 0);
 

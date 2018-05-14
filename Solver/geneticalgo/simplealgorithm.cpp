@@ -5,9 +5,6 @@ SimpleAlgorithm::SimpleAlgorithm(std::shared_ptr<GameManager> manager_ptr, const
     agent_data(agent)
 {
 
-    //std::vector<double> vec = {0.644264, 0.745097, 0.376591, 0.185352, 0.934623, 0.336869, 0.921761, 0.0428713, 0.600968, 0.0303786 };
-    std::vector<double> vec = {0.665872, 0.111844, 0.099833, 0.172764, 0.371144, 0.779744, 0.55906, 0.0657503, 0.162525, 0.745207 };
-    agent_data.setData(vec);
 }
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleAlgorithm::agentAct(int side){
@@ -22,8 +19,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleAlgorith
     for(int count = 0; count < 81; ++count){
 
         double value = evaluateMove(side, std::make_pair( count / 9, count % 9 ));
-
-        //if(value != -100000)std::cout << value << std::endl;
 
         if(max_value < value){
 
@@ -105,6 +100,8 @@ double SimpleAlgorithm::evaluateMove(int side, std::pair<int, int> move){
 
     double per_point = data.at(9) * 100;//移動先の得点にかかる倍率
 
+    double const_random = data.at(10) * 300;//乱択の度合い
+
 
     //得点計算
     auto calc = [&](int agent){
@@ -141,6 +138,13 @@ double SimpleAlgorithm::evaluateMove(int side, std::pair<int, int> move){
             value += per_minus_move;
 
         }
+
+        std::random_device rnd;
+        std::mt19937 mt(rnd());
+
+        std::uniform_real_distribution<> rand_double(0.0, const_random);
+
+        value += rand_double(mt);
 
         value += point * per_point;
 
