@@ -16,6 +16,8 @@ Genetic::Genetic(int algo_number) :
 
         if(algo_number == 0) // この辺個別処理
             agents.emplace_back(GeneticAgent(7));
+        if(algo_number == 2)
+            agents.emplace_back(GeneticAgent(11));
     }
 }
 
@@ -53,11 +55,12 @@ void Genetic::run(){
     for(int gen = 0; gen < max_gen; ++gen){
 
         std::cout << "gen " << gen + 1 << " started" << std::endl << std::endl;
-        std::cout << "agent count : " << agents.size() << std::endl;
+        //std::cout << "agent count : " << agents.size() << std::endl;
 
         //選別してtournament_count体に絞り込む
         startTournament();
 
+        //if(gen == max_gen - 1 || gen % (max_gen / 200) == 0)
         debug_output();
 
         if(gen != max_gen - 1)
@@ -77,7 +80,7 @@ int Genetic::retRandom(int st, int en){
 
 void Genetic::generateAgents(){
 
-    std::cout << "generate agent" << std::endl << std::endl;
+    //std::cout << "generate agent" << std::endl << std::endl;
 
     int generate_count = agent_num - tournament_count;//この数だけ新たに生成する
 
@@ -89,7 +92,12 @@ void Genetic::generateAgents(){
         //これだけの数を適当に切り出して乱数で決め直す
         int change_count = retRandom(1, siz / 3);
 
-        std::vector<int> val(7);
+        std::vector<int> val;
+        if(algo_number == 0)
+            val.resize(7);
+        if(algo_number == 2)
+            val.resize(11);
+
         std::iota(val.begin(), val.end(), 0);
 
         std::uniform_real_distribution<> rand_double(0.0, 1.0);
@@ -124,10 +132,24 @@ void Genetic::generateAgents(){
 
         std::vector<double> agent_data(siz);
 
+        for(int index = 0; index < siz; ++index){
+
+            double data_diff = std::abs(data_1.at(index) - data_2.at(index));
+            double min_val = std::min(data_1.at(index), data_2.at(index));
+
+            //はい
+            std::uniform_real_distribution<> rand_double(std::max(0.0, min_val - (data_diff * change_alpha_val)), std::min(1.0, min_val + (data_diff * (1.0 + change_alpha_val) )));
+
+            agent_data.at(index) = rand_double(mt);
+        }
+
+
+        /*
         for(int index = 0; index < siz; ++index)
             agent_data.at(index) = (retRandom(0, 1)
                                     ? data_2.at(index)
                                     : data_1.at(index) );
+        */
 
 
         // 交叉時にも一定確率で変化させる
@@ -168,7 +190,7 @@ void Genetic::startTournament(){
     std::vector<GeneticAgent> new_agents;
 
     //ここで最適なチームを出す
-    auto battleTournament = [&](std::vector<GeneticAgent>& input_data){
+    auto buttleTournament = [&](std::vector<GeneticAgent>& input_data){
 
         std::shuffle(input_data.begin(), input_data.end(), mt);
 
@@ -220,9 +242,9 @@ void Genetic::startTournament(){
             }else if(value == max_val)
                 max_index_list.emplace_back(index);
 
-            std::cout << value << " ";
+            //std::cout << value << " ";
         }
-        std::cout << " max_per : " << max_val << std::endl << std::endl;
+        //std::cout << " max_per : " << max_val << std::endl << std::endl;
 
         int max_index = max_index_list.at(retRandom(0, max_index_list.size() - 1));
 
@@ -253,14 +275,13 @@ void Genetic::startTournament(){
 
         std::cout << "tournament " << count + 1 << " started" << std::endl;
 
-        battleTournament(tournaments);
+        buttleTournament(tournaments);
 
     }
 
     agents = std::move(new_agents);
 
 }
-
 
 bool Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
 
@@ -272,9 +293,17 @@ bool Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
         //visualizerは表示しない
         managers.at(index)->resetManager(size.first, size.second, false, turn);
 
+        // std::cout << "buttle" << std::endl;
         //firstが勝ったらtrue
-        return (flag ? managers.at(index)->simulationGenetic(first, second, algo_number)
-                     : ! managers.at(index)->simulationGenetic(second, first, algo_number));
+
+        int win_num = (flag ? managers.at(index)->simulationGenetic(first, second, algo_number)
+                            : managers.at(index)->simulationGenetic(second, first, algo_number));
+
+        if(win_num == -1)return -1;
+
+        win_num = (win_num == 0 ? 1 : 0);//反転してるだけ
+
+        return win_num;
     };
 
 
@@ -283,17 +312,33 @@ bool Genetic::buttleAgents(GeneticAgent& first, GeneticAgent& second){
 
     std::vector<std::thread> threads(cpu_num);
 
-
     for(int index = 0; index < cpu_num; ++index){
 
-        threads.at(index) = std::thread( [=,&win_count]{
-            for(int count = 0;count<buttle_count/cpu_num;++count)win_count += buttle(count % 2, index);
-        } );
+        int thread_buttle_cou = buttle_count / cpu_num + (buttle_count % cpu_num > index);
+
+        threads.at(index) = std::thread( [=,&win_count](int buttle_cou){
+
+            std::lock_guard<std::mutex> lock(mtx);
+
+            int now_count = 0;
+
+            //buttle_count / cpu_num回繰り返す
+            while(now_count < buttle_cou){
+
+                int point_flag = buttle(now_count % 2, index);
+
+                if(point_flag == -1)//引き分けの場合
+                    continue;
+
+                ++now_count;
+                win_count += point_flag;
+            }
+        }, thread_buttle_cou );
 
     }
     for(int index = 0; index < cpu_num; ++index){
         threads.at(index).join();
     }
 
-    return win_count * 2 >= (buttle_count / cpu_num) * cpu_num;
+    return (win_count * 2 > buttle_count);
 }

@@ -6,6 +6,7 @@
 #include "dummyalgorithm.h"
 #include "simplemontecarlo/montecarlowithalgo.h"
 #include "BreadthFirstSearch/beamsearch.h"
+#include "geneticalgo/simplealgorithm.h"
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
@@ -31,6 +32,8 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, b
 void GameManager::resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show, const int t_max){
     turn_max = t_max;
     vis_show = v_show;
+
+    now_turn = 0;
 
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
 
@@ -64,6 +67,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_1 = std::make_shared<GeneticAlgo>(share);
     } else if (QString::compare("MontecarloWithAlgo", my_algo) == 0) {
         team_1 = std::make_shared<MontecarloWithAlgo>(share);
+    }else if(QString::compare("SimpleAlgorithm", my_algo) == 0){
+        team_1 = std::make_shared<SimpleAlgorithm>(share);
     }else if(QString::compare("BeamSearch", my_algo) == 0){
         team_1 = std::make_shared<beamsearch>(share);
     }
@@ -74,6 +79,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_2 = std::make_shared<GeneticAlgo>(team_1->getManagerPtr());
     } else if (QString::compare("MontecarloWithAlgo", opponent_algo) == 0) {
         team_2 = std::make_shared<MontecarloWithAlgo>(team_1->getManagerPtr());
+    } else if (QString::compare("SimpleAlgorithm", opponent_algo) == 0) {
+        team_2 = std::make_shared<SimpleAlgorithm>(team_1->getManagerPtr());
     }else if(QString::compare("BeamSearch", opponent_algo)==0){
         team_2 = std::make_shared<beamsearch>(team_1->getManagerPtr());
     }
@@ -182,11 +189,17 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
 }
 
-bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAgent &agent_2, int algo_number){
+int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAgent &agent_2, int algo_number){
+
+    //std::cout << "simulationGenetic" << std::endl;
 
     if(algo_number == 0){
         team_1 = std::make_shared<GeneticAlgo>(share, agent_1);
         team_2 = std::make_shared<GeneticAlgo>(share, agent_2);
+    }
+    if(algo_number == 2){
+        team_1 = std::make_shared<SimpleAlgorithm>(share, agent_1);
+        team_2 = std::make_shared<SimpleAlgorithm>(share, agent_2);
     }
 
     for(; now_turn < turn_max; ++now_turn){
@@ -227,7 +240,13 @@ bool GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAg
                 point_2 += field->getState(x, y).second;
         }
 
-    return point_1 > point_2;
+    /*
+    if(point_1 != point_2)
+        std::cout << point_1 << " , " << point_2 << std::endl;
+    */
+
+    if(point_1 == point_2)return -1;
+    return (point_1 > point_2 ? 1 : 0);
 }
 
 procon::Field& GameManager::getField(){

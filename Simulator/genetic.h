@@ -4,6 +4,7 @@
 #include <fstream>
 #include <random>
 #include <unordered_set>
+#include <mutex>
 
 #include "gamemanager.h"
 #include "geneticalgo/geneticalgo.h"
@@ -24,6 +25,8 @@ private:
 
     int algo_number;
 
+    std::mutex mtx;
+
     std::vector<GameManager*> managers;
 
     std::random_device rnd;
@@ -41,10 +44,12 @@ private:
 
     int cpu_num;
 
-    double mutate_per = 0.6;//突然変異率(これ以外は交叉)
+    double mutate_per = 0.003;//突然変異率(これ以外は交叉)
+    //double mutate_per = 0.2;
 
-    double cross_change_per = 0.4;//交叉時にパラメータを少し変化させる確率
-    double cross_change_val = 0.3;//交叉時のパラメータの最大変化量
+    double change_alpha_val = 0.2;//ブレンド交叉時のアレ
+    double cross_change_per = 0.2;//交叉時にパラメータを少し変化させる確率
+    double cross_change_val = 0.2;//交叉時のパラメータの最大変化量
 
     //集合の数
     const unsigned int agent_num = 100;
@@ -56,7 +61,7 @@ private:
     //トーナメントでの対戦数
     const int tournament_buttle = 5;
     //一回の試行でのプレイアウト回数
-    const int buttle_count = 100;
+    const int buttle_count = 7;
     //世代数の最大
     const int max_gen = 200;
 };
