@@ -48,7 +48,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     grid_x = size_x;
     grid_y = size_y;
 
-    while(size_x * size_y < 80){
+    while(grid_x * grid_y < 80){
 
         if(grid_x==12)++grid_y;
         else if(grid_y==12)++grid_x;
@@ -56,10 +56,10 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     }
 
 
-    agents = { { std::make_pair(0, 0), std::make_pair(size_x - 1, size_y - 1) }, { std::make_pair(size_x - 1, 0), std::make_pair(0, size_y - 1) } };
+    agents = { { std::make_pair(0, 0), std::make_pair(grid_x - 1, grid_y - 1) }, { std::make_pair(grid_x - 1, 0), std::make_pair(0, grid_y - 1) } };
 
-    field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 0 ));
-    value_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 0 ));
+    field_data = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0 ));
+    value_data = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0 ));
 
 
     /*
@@ -80,9 +80,10 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
 
     int val = rndtri(mt);
 
+
     if(!val){
-        for(unsigned int x = 0; x < size_x / 2 + 1; ++x){
-            for(unsigned int y = 0; y < size_y / 2 + 1; ++y){
+        for(unsigned int x = 0; x < grid_x / 2 + 1; ++x){
+            for(unsigned int y = 0; y < grid_y / 2 + 1; ++y){
 
                 int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
                 value = std::max(min_val, value);
@@ -94,9 +95,19 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
             }
         }
 
+        std::uniform_int_distribution<> random_x(0,grid_x / 2);
+        std::uniform_int_distribution<> random_y(0,grid_y / 2);
+
+        int agent_x = random_x(mt);
+        int agent_y = random_y(mt);
+        agents.at(0).at(0) = std::make_pair(agent_x, agent_y);
+        agents.at(0).at(1) = std::make_pair(grid_x - agent_x - 1, grid_y - agent_y - 1);
+        agents.at(1).at(0) = std::make_pair(agent_x, grid_y - agent_y - 1);
+        agents.at(1).at(1) = std::make_pair(grid_x - agent_x - 1, agent_y);
+
     }else if(val==1||val==2){
-        for(unsigned int x = 0; x < size_x; ++x){
-            for(unsigned int y = 0; y < size_y / 2 + 1; ++y){
+        for(unsigned int x = 0; x < grid_x; ++x){
+            for(unsigned int y = 0; y < grid_y / 2 + 1; ++y){
 
                 int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
                 value = std::max(min_val, value);
@@ -107,8 +118,8 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         }
 
     }else{
-        for(unsigned int x = 0; x < size_x / 2 + 1; ++x){
-            for(unsigned int y = 0; y < size_y; ++y){
+        for(unsigned int x = 0; x < grid_x / 2 + 1; ++x){
+            for(unsigned int y = 0; y < grid_y; ++y){
 
                 int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
                 value = std::max(min_val, value);
