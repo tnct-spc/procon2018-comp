@@ -72,27 +72,56 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     std::lognormal_distribution<> dist(3.0,0.25);
 
 
-    //ここは「x軸かつy軸方向に垂直」で解釈します
+    //ここは「x軸かつy軸方向に垂直」で解釈します←するなよ！！！！！運営を許すな
 
+    std::uniform_int_distribution<> rndtri(0,4);
 
-    for(unsigned int x = 0; x < size_x / 2 + 1; ++x){
-        for(unsigned int y = 0; y < size_y / 2 + 1; ++y){
+    //面倒なのでコピペでクソコードを書きます 運営を許すな
 
-            /*
-            int value = (double_rnd(mt) > minus_per
-                                      ? plus_rnd(mt)
-                                      : minus_rnd(mt) );
-            */
+    int val = rndtri(mt);
 
-            int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
-            value = std::max(min_val, value);
+    if(!val){
+        for(unsigned int x = 0; x < size_x / 2 + 1; ++x){
+            for(unsigned int y = 0; y < size_y / 2 + 1; ++y){
 
-            value_data.at(x).at(y) = value;
-            value_data.at(grid_x - x - 1).at(grid_y - y - 1) = value;
-            value_data.at(x).at(grid_y - y - 1) = value;
-            value_data.at(grid_x - x - 1).at(y) = value;
+                int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
+                value = std::max(min_val, value);
+
+                value_data.at(x).at(y) = value;
+                value_data.at(grid_x - x - 1).at(grid_y - y - 1) = value;
+                value_data.at(x).at(grid_y - y - 1) = value;
+                value_data.at(grid_x - x - 1).at(y) = value;
+            }
         }
+
+    }else if(val==1||val==2){
+        for(unsigned int x = 0; x < size_x; ++x){
+            for(unsigned int y = 0; y < size_y / 2 + 1; ++y){
+
+                int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
+                value = std::max(min_val, value);
+
+                value_data.at(x).at(y) = value;
+                value_data.at(x).at(grid_y - y - 1) = value;
+            }
+        }
+
+    }else{
+        for(unsigned int x = 0; x < size_x / 2 + 1; ++x){
+            for(unsigned int y = 0; y < size_y; ++y){
+
+                int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
+                value = std::max(min_val, value);
+
+                value_data.at(x).at(y) = value;
+                value_data.at(grid_x - x - 1).at(y) = value;
+            }
+        }
+
     }
+
+
+
 
     for(int side = 0; side < 2; ++side)
         for(int agent = 0; agent < 2; ++agent){
