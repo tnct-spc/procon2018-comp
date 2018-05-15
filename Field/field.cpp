@@ -23,6 +23,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     grid_x = size_x;
     grid_y = size_y;
 
+
     agents = { { std::make_pair(0, 0), std::make_pair(size_x - 1, size_y - 1) }, { std::make_pair(size_x - 1, 0), std::make_pair(0, size_y - 1) } };
 
     field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
@@ -37,17 +38,29 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         }
 }
 
+//ここサイズ対応します
 procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const int max_val, const int min_val){
+    std::random_device rnd;
+    std::mt19937 mt (rnd());
+
+    std::uniform_int_distribution<> rndor(0,1);//[0,1]
+
     grid_x = size_x;
     grid_y = size_y;
+
+    while(size_x * size_y < 80){
+
+        if(grid_x==12)++grid_y;
+        else if(grid_y==12)++grid_x;
+        else ++(rndor(mt)?grid_x:grid_y);
+    }
+
 
     agents = { { std::make_pair(0, 0), std::make_pair(size_x - 1, size_y - 1) }, { std::make_pair(size_x - 1, 0), std::make_pair(0, size_y - 1) } };
 
     field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 0 ));
     value_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 0 ));
 
-    std::random_device rnd;
-    std::mt19937 mt (rnd());
 
     /*
     std::uniform_int_distribution<> plus_rnd(0,max_val);
