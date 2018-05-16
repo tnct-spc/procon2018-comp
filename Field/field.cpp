@@ -95,8 +95,8 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
             }
         }
 
-        std::uniform_int_distribution<> random_x(0,grid_x / 2);
-        std::uniform_int_distribution<> random_y(0,grid_y / 2);
+        std::uniform_int_distribution<> random_x(0,(grid_x - 1) / 2);
+        std::uniform_int_distribution<> random_y(0,(grid_y - 1) / 2);
 
         int agent_x = random_x(mt);
         int agent_y = random_y(mt);
@@ -117,6 +117,23 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
             }
         }
 
+        std::uniform_int_distribution<> random_x(0,grid_x - 1);
+        std::uniform_int_distribution<> random_y(0,(grid_y - 1) / 2);
+
+        int agent_x = random_x(mt);
+        int agent_y = random_y(mt);
+        int agent_x_dif = agent_x;
+        agents.at(0).at(0) = std::make_pair(agent_x, agent_y);
+        agents.at(1).at(0) = std::make_pair(agent_x, grid_y - agent_y - 1);
+
+        while(agent_x == agent_x_dif)
+            agent_x = random_x(mt);
+
+        agent_y = random_y(mt);
+
+        agents.at(0).at(1) = std::make_pair(agent_x, grid_y - agent_y - 1);
+        agents.at(1).at(1) = std::make_pair(agent_x, agent_y);
+
     }else{
         for(unsigned int x = 0; x < grid_x / 2 + 1; ++x){
             for(unsigned int y = 0; y < grid_y; ++y){
@@ -129,6 +146,22 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
             }
         }
 
+        std::uniform_int_distribution<> random_x(0,(grid_x - 1) / 2);
+        std::uniform_int_distribution<> random_y(0,grid_y - 1);
+
+        int agent_x = random_x(mt);
+        int agent_y = random_y(mt);
+        int agent_y_dif = agent_y;
+        agents.at(0).at(0) = std::make_pair(grid_x - agent_x - 1, agent_y);
+        agents.at(1).at(0) = std::make_pair(agent_x, agent_y);
+
+        while(agent_y == agent_y_dif)
+            agent_y = random_y(mt);
+
+        agent_x = random_x(mt);
+
+        agents.at(0).at(1) = std::make_pair(agent_x, agent_y);
+        agents.at(1).at(1) = std::make_pair(grid_x - agent_x - 1, agent_y);
     }
 
 
