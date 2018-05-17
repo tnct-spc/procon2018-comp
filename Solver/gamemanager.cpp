@@ -337,6 +337,45 @@ void GameManager::agentAct(const int turn, const int agent, const std::tuple<int
 }
 void GameManager::changeTurn(){
 
+    //[(x,y)]:(上書き時の色,(色,エージェント)) わかりづらいね
+    std::map<std::pair<int,int>,std::pair<int,std::pair<int,int>>> counts;
+
+    int type, pos_x, pos_y;
+
+    for(int side = 0; side < 2; ++side){
+        for(int agent = 0; agent < 2; ++agent){
+            std::tie(type, pos_x, pos_y) = act_stack.at(side).at(agent);
+
+            //移動しないなら
+            if(type != 1){
+                std::pair<int,int> not_move = field->getAgent(side, agent);
+                counts[not_move] = std::make_pair(-1,std::make_pair(-1, -1));
+            }
+
+            int color = 0;
+            if(type != 2)
+                color = side + 1;
+
+            //もう既に存在しているなら
+            if(counts.count(std::make_pair(pos_x, pos_y) )){
+                counts[std::make_pair(pos_x, pos_y)].first = -1;
+                continue;
+            }
+
+            counts[std::make_pair(pos_x, pos_y)] = std::make_pair(color ,std::make_pair(side,agent));
+        }
+    }
+    for(auto moves : counts){
+        if(moves.second.first == -1)
+            continue;
+
+        field->setState(moves.first.first, moves.first.second, moves.second.first);
+
+        if(moves.second.first != 0)
+            field->setAgent(moves.second.second.first, moves.second.second.second, moves.first.first, moves.first.second);
+    }
+
+    /*
     std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> dest_map;
     std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> tile_map;
 
@@ -385,6 +424,7 @@ void GameManager::changeTurn(){
         if(state_flag)
             field->setState(elements.first.first, elements.first.second, 0);
     }
+    */
 
 
 }
