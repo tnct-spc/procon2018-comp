@@ -30,7 +30,8 @@ SOURCES += \
     simplemontecarlo/montecarlowithalgo.cpp \
     gamemanager.cpp \
     gamesimulator.cpp \
-    algorithmwrapper.cpp
+    algorithmwrapper.cpp \
+    geneticalgo/simplealgorithm.cpp
 HEADERS += \
         algorithm_global.h \ 
         testalgorithm.h \
@@ -44,7 +45,8 @@ HEADERS += \
         dummyalgorithm.h \
     geneticalgo/geneticagent.h \
     simplemontecarlo/montecarlowithalgo.h \
-    geneticalgo/geneticagent.h
+    geneticalgo/geneticagent.h \
+    geneticalgo/simplealgorithm.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

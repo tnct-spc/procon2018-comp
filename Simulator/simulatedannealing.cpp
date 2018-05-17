@@ -13,6 +13,8 @@ SimulatedAnnealing::SimulatedAnnealing(int algo_number) :
     //初期エージェントを選択
     if(algo_number == 0)
         agent = new GeneticAgent(7);
+    if(algo_number == 2)
+        agent = new GeneticAgent(11);
 
 }
 
@@ -62,48 +64,51 @@ void SimulatedAnnealing::run(){
 
 void SimulatedAnnealing::updateAgent(int now_count){
 
-     std::cout << "update" << std::endl;
 
     GeneticAgent* new_agent;
 
     if(algo_number==0)
         new_agent = new GeneticAgent(7,false);
+    else if(algo_number==2)
+        new_agent = new GeneticAgent(11,false);
     else
-        new_agent = new GeneticAgent(7,false);//warning回避のためこの書き方をしているけど、ここが呼ばれる事はありえないです
+        new_agent = new GeneticAgent(10,false);//warning回避のためこの書き方をしているけど、ここが呼ばれる事はありえないです
 
     std::vector<double> agent_data = agent->getData();
 
-    for(int index = 0; index < new_agent->size; ++index){
 
-        std::uniform_real_distribution<> rand_double(std::max(-max_change_val, -agent_data.at(index) ), std::min(max_change_val, 1 - agent_data.at(index)) );
+    //一つだけ変える
+    int index = retRandom(0, new_agent->size - 1);
 
-        agent_data.at(index) += rand_double(mt);
-        agent_data.at(index) = std::min(agent_data.at(index), 1.0);
-        agent_data.at(index) = std::max(agent_data.at(index), 0.0);
-    }
+    double max_change_val = max_change_val_st - (1.0 * now_count / max_try) * (max_change_val_st - max_change_val_en);
+
+    std::uniform_real_distribution<> rand_double(std::max(-max_change_val, -agent_data.at(index) ), std::min(max_change_val, 1 - agent_data.at(index)) );
+
+    agent_data.at(index) += rand_double(mt);
+    agent_data.at(index) = std::min(agent_data.at(index), 1.0);
+    agent_data.at(index) = std::max(agent_data.at(index), 0.0);
 
     new_agent->setData(agent_data);
 
-    double win = buttleAgents((*agent), (*new_agent), false);
 
-    double old_agent_win = 0;
-    double new_agent_win = 0;
+    double old_val = 0;
+    double new_val = 0;
 
     for(int count = 0; count < buttle_rand.first; ++count){
 
         GeneticAgent* buttle_agent;
         if(algo_number==0)
             buttle_agent = new GeneticAgent(7,false);
+        else if(algo_number==2)
+            buttle_agent = new GeneticAgent(11,false);
         else
             buttle_agent = new GeneticAgent(7,false);//warning回避のためこの書き方をしているけど、ここが呼ばれる事はありえないです
 
-        old_agent_win += buttleAgents((*agent), (*buttle_agent), true);
-        new_agent_win += buttleAgents((*new_agent), (*buttle_agent), true);
+        old_val += buttleAgents((*agent), (*buttle_agent), true);
+        new_val += buttleAgents((*new_agent), (*buttle_agent), true);
     }
 
-
-    double old_val = old_agent_win;
-    double new_val = new_agent_win + (win - 0.5) * buttle_direct.first;
+    (buttleAgents((*agent), (*new_agent), false) ? old_val : new_val) += buttle_direct.first;
 
 
     double now_temp = 	1.0 * (start_temp - end_temp) * (max_try - now_count) / max_try + end_temp;
@@ -123,12 +128,13 @@ void SimulatedAnnealing::updateAgent(int now_count){
 
     std::cout << "val = " << old_val << std::endl;
     std::cout << "diff = " << old_val - new_val << std::endl;
+    std::cout << "max_change = " << max_change_val << std::endl;
     std::cout << "now_temp = " << now_temp << std::endl;
     std::cout << "per = " << per << std::endl;
 
-    std::uniform_real_distribution<> rand_double(0.0,1.0);
+    std::uniform_real_distribution<> rand_per(0.0,1.0);
 
-    if(rand_double(mt) <= per)
+    if(rand_per(mt) <= per)
         agent = new_agent;
 
 }
@@ -141,9 +147,11 @@ int SimulatedAnnealing::retRandom(int st, int en){
 }
 
 
-double SimulatedAnnealing::buttleAgents(GeneticAgent& first, GeneticAgent& second,bool is_rand){
 
-    int buttle_count = (is_rand ? buttle_rand.second : buttle_direct.second) / cpu_num * cpu_num;
+bool SimulatedAnnealing::buttleAgents(GeneticAgent& first, GeneticAgent& second, bool is_rand){
+
+    int buttle_count = (is_rand ? buttle_rand.second : buttle_direct.second);
+
 
     auto buttle = [&](bool flag, int index){//2で割った余りによって反転する(得点が同じ時の処理が順番依存なので一応)
         int turn = retRandom(60, 120);
@@ -152,9 +160,17 @@ double SimulatedAnnealing::buttleAgents(GeneticAgent& first, GeneticAgent& secon
         //visualizerは表示しない
         managers.at(index)->resetManager(size.first, size.second, false, turn);
 
+        // std::cout << "buttle" << std::endl;
         //firstが勝ったらtrue
-        return (flag ? managers.at(index)->simulationGenetic(first, second, algo_number)
-                     : ! managers.at(index)->simulationGenetic(second, first, algo_number));
+
+        int win_num = (flag ? managers.at(index)->simulationGenetic(first, second, algo_number)
+                            : managers.at(index)->simulationGenetic(second, first, algo_number));
+
+        if(win_num == -1)return -1;
+
+        win_num = (win_num == 0 ? 1 : 0);//反転してるだけ
+
+        return win_num;
     };
 
 
@@ -163,17 +179,33 @@ double SimulatedAnnealing::buttleAgents(GeneticAgent& first, GeneticAgent& secon
 
     std::vector<std::thread> threads(cpu_num);
 
-
     for(int index = 0; index < cpu_num; ++index){
 
-        threads.at(index) = std::thread( [=,&win_count]{
-            for(int count = 0;count<buttle_count/cpu_num;++count){win_count += buttle(count % 2, index);}
-        } );
+        int thread_buttle_cou = buttle_count / cpu_num + (buttle_count % cpu_num > index);
+
+        threads.at(index) = std::thread( [=,&win_count](int buttle_cou){
+
+            std::lock_guard<std::mutex> lock(mtx);
+
+            int now_count = 0;
+
+            //buttle_count / cpu_num回繰り返す
+            while(now_count < buttle_cou){
+
+                int point_flag = buttle(now_count % 2, index);
+
+                if(point_flag == -1)//引き分けの場合
+                    continue;
+
+                ++now_count;
+                win_count += point_flag;
+            }
+        }, thread_buttle_cou );
 
     }
     for(int index = 0; index < cpu_num; ++index){
         threads.at(index).join();
     }
 
-    return 1.0 * win_count / buttle_count;
+    return (win_count * 2 > buttle_count);
 }
