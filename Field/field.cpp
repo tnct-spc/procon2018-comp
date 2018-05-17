@@ -44,6 +44,9 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     std::mt19937 mt (rnd());
 
     std::uniform_int_distribution<> rndor(0,1);//[0,1]
+    std::uniform_int_distribution<> rndminus(0,9);
+    std::lognormal_distribution<> dist(3.0,0.25);
+    std::chi_squared_distribution<> dist2(3.0);
 
     grid_x = size_x;
     grid_y = size_y;
@@ -69,7 +72,6 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     */
     std::uniform_int_distribution<> plus_rnd(0,max_val / 3);
 
-    std::lognormal_distribution<> dist(3.0,0.25);
 
 
     //ここは「x軸かつy軸方向に垂直」で解釈します←するなよ！！！！！運営を許すな
@@ -87,6 +89,9 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
 
                 int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
                 value = std::max(min_val, value);
+
+                value = (rndminus(mt) ? std::abs(value) : -1 * std::abs(value) );
+
 
                 value_data.at(x).at(y) = value;
                 value_data.at(grid_x - x - 1).at(grid_y - y - 1) = value;
