@@ -7,6 +7,7 @@
 #include "simplemontecarlo/montecarlowithalgo.h"
 #include "BreadthFirstSearch/beamsearch.h"
 #include "geneticalgo/simplealgorithm.h"
+#include "doubleagent/agentmanager.h"
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
@@ -71,6 +72,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_1 = std::make_shared<SimpleAlgorithm>(share);
     }else if(QString::compare("BeamSearch", my_algo) == 0){
         team_1 = std::make_shared<beamsearch>(share);
+    }else if(QString::compare("TestDoubleAgentAlgo", my_algo) == 0){
+        team_1 = std::make_shared<AgentManager>(share, 0);
     }
 
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
@@ -83,6 +86,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_2 = std::make_shared<SimpleAlgorithm>(team_1->getManagerPtr());
     }else if(QString::compare("BeamSearch", opponent_algo)==0){
         team_2 = std::make_shared<beamsearch>(team_1->getManagerPtr());
+    }else if(QString::compare("TestDoubleAgentAlgo", opponent_algo) == 0){
+        team_2 = std::make_shared<AgentManager>(share, 0);
     }
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
