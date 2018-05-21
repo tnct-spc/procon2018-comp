@@ -17,7 +17,7 @@ const std::tuple<int,int,int> TestDoubleAgentAlgo::agentMove(){
     std::tuple<int,int,int> max_move = std::make_tuple(0, 0, 0);
 
     for(int count = 0; count < 9; ++count){
-        std::pair<double,bool> value = evaluateMove(std::make_pair(x_list.at(count), y_list.at(count)));
+        std::pair<double,bool> value = evaluateMove(count);
 
         if(max_value < value.first){
 
@@ -30,7 +30,12 @@ const std::tuple<int,int,int> TestDoubleAgentAlgo::agentMove(){
 
 }
 
-std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(std::pair<int, int> move){
+std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
+
+    procon::Field field = manager->getField();
+
+    if(manager->canPut(side, agent, move, false))
+        return std::make_pair(-300000, false);
 
     //moveはx,yを相対座標のペアで渡す
 
