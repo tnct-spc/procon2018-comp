@@ -31,7 +31,9 @@ SOURCES += \
     gamemanager.cpp \
     gamesimulator.cpp \
     algorithmwrapper.cpp \
-    geneticalgo/simplealgorithm.cpp
+    geneticalgo/simplealgorithm.cpp \
+    doubleagent/agents/agentwrapper.cpp \
+    doubleagent/agentmanager/agentmanagerwrapper.cpp
 HEADERS += \
         algorithm_global.h \ 
         testalgorithm.h \
@@ -46,7 +48,9 @@ HEADERS += \
     geneticalgo/geneticagent.h \
     simplemontecarlo/montecarlowithalgo.h \
     geneticalgo/geneticagent.h \
-    geneticalgo/simplealgorithm.h
+    geneticalgo/simplealgorithm.h \
+    doubleagent/agents/agentwrapper.h \
+    doubleagent/agentmanager/agentmanagerwrapper.h
 unix {
     target.path = /usr/lib
     INSTALLS += target
