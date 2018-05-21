@@ -33,7 +33,7 @@ SOURCES += \
     algorithmwrapper.cpp \
     geneticalgo/simplealgorithm.cpp \
     doubleagent/agents/agentwrapper.cpp \
-    doubleagent/agentmanager/agentmanagerwrapper.cpp
+    doubleagent/agentmanager.cpp
 HEADERS += \
         algorithm_global.h \ 
         testalgorithm.h \
@@ -50,7 +50,7 @@ HEADERS += \
     geneticalgo/geneticagent.h \
     geneticalgo/simplealgorithm.h \
     doubleagent/agents/agentwrapper.h \
-    doubleagent/agentmanager/agentmanagerwrapper.h
+    doubleagent/agentmanager.h
 unix {
     target.path = /usr/lib
     INSTALLS += target
