@@ -1,13 +1,13 @@
 #include "testdoubleagentalgo.h"
 
-TestDoubleAgentAlgo::TestDoubleAgentAlgo(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent &agent) :
-    AgentWrapper(manager_ptr),
-    agent_data(agent)
+TestDoubleAgentAlgo::TestDoubleAgentAlgo(std::shared_ptr<GameManager> manager_ptr, int side, int agent_num, const GeneticAgent &agent_data) :
+    AgentWrapper(side, agent_num, manager_ptr),
+    agent_data(agent_data)
 {
 
 }
 
-const std::tuple<int,int,int> TestDoubleAgentAlgo::agentMove(int side){
+const std::tuple<int,int,int> TestDoubleAgentAlgo::agentMove(){
 
     procon::Field& field = manager->getField();
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
@@ -30,7 +30,7 @@ const std::tuple<int,int,int> TestDoubleAgentAlgo::agentMove(int side){
 
 }
 
-std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int side, std::pair<int, int> move){
+std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(std::pair<int, int> move){
 
     //moveはx,yを相対座標のペアで渡す
 
