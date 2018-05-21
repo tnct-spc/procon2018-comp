@@ -11,6 +11,7 @@ public:
     TestDoubleAgentAlgo(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent = GeneticAgent(7));
 
     const std::tuple<int,int,int> agentMove(int side);
+    std::pair<double,bool> evaluateMove(int side,std::pair<int,int> move);
 
 private:
 
