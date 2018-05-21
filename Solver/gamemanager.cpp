@@ -87,7 +87,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
     }else if(QString::compare("BeamSearch", opponent_algo)==0){
         team_2 = std::make_shared<beamsearch>(team_1->getManagerPtr());
     }else if(QString::compare("TestDoubleAgentAlgo", opponent_algo) == 0){
-        team_2 = std::make_shared<AgentManager>(share, 0);
+        team_2 = std::make_shared<AgentManager>(team_2->getManagerPtr(), 0);
     }
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);

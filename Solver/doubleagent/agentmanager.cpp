@@ -5,9 +5,11 @@ AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int algorit
     AlgorithmWrapper(manager_ptr)
 {
 
+    agents.resize(2);
+
     if(algorithm_number == 0){
-        agents.at(0) = std::make_shared<TestDoubleAgentAlgo>(manager_ptr);
-        agents.at(1) = std::make_shared<TestDoubleAgentAlgo>(manager_ptr);
+        agents.at(0) = std::make_shared<TestDoubleAgentAlgo>(getManagerPtr());
+        agents.at(1) = std::make_shared<TestDoubleAgentAlgo>(getManagerPtr());
     }
 
 }
