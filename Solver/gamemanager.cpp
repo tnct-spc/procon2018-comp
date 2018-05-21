@@ -318,7 +318,7 @@ bool GameManager::canPut(const unsigned int side, const unsigned int move_1, con
     return ( check_outofrange(0) && check_outofrange(1) && check_conflict());
 }
 
-bool GameManager::canPut(const unsigned int side, int agent, const unsigned int move){
+bool GameManager::canPut(const unsigned int side, int agent, const unsigned int move, bool){
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};

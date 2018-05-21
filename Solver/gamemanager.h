@@ -39,7 +39,7 @@ public:
     unsigned int getFinalTurn();
 
     bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2);
-    bool canPut(const unsigned int side, int agent, const unsigned int move);
+    bool canPut(const unsigned int side, int agent, const unsigned int move, bool);
     void setAutoMode(bool value);
 
     void changeTurn();
