@@ -1,6 +1,6 @@
 #include "testdoubleagentalgo.h"
 
-TestDoubleAgentAlgo::TestDoubleAgentAlgo(std::shared_ptr<GameManager> manager_ptr, int side, int agent_num, const GeneticAgent &agent_data) :
+TestDoubleAgentAlgo::TestDoubleAgentAlgo(int side, int agent_num, std::shared_ptr<GameManager> manager_ptr, const GeneticAgent &agent_data) :
     AgentWrapper(side, agent_num, manager_ptr),
     agent_data(agent_data)
 {
@@ -17,7 +17,7 @@ const std::tuple<int,int,int> TestDoubleAgentAlgo::agentMove(){
     std::tuple<int,int,int> max_move = std::make_tuple(0, 0, 0);
 
     for(int count = 0; count < 9; ++count){
-        std::pair<double,bool> value = evaluateMove(side, std::make_pair(x_list.at(count), y_list.at(count)));
+        std::pair<double,bool> value = evaluateMove(std::make_pair(x_list.at(count), y_list.at(count)));
 
         if(max_value < value.first){
 
