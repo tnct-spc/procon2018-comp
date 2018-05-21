@@ -14,7 +14,7 @@ class AgentManager : public AlgorithmWrapper
 public:
     AgentManager(std::shared_ptr<GameManager> manager_ptr, int algorithm_number = 0);
 
-    const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int);
+    const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
 
     std::vector<std::shared_ptr<AgentWrapper>> agents;//各エージェント
 };
