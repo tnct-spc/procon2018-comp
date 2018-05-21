@@ -275,7 +275,7 @@ unsigned int GameManager::getFinalTurn(){
     return turn_max;
 }
 
-bool GameManager::canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2){
+bool GameManager::canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2, bool double_move){
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
@@ -314,28 +314,22 @@ bool GameManager::canPut(const unsigned int side, const unsigned int move_1, con
         return (agent_pos_1 != agent_pos_2);
     };
 
+    //クソ実装を許せ
+    if(double_move == false){
+
+        std::pair<int,int> agent_pos = field->getAgent(side, move_1);
+
+        agent_pos.first += x_list.at(move_2);
+        agent_pos.second += y_list.at(move_2);
+
+
+        return !(agent_pos.first < 0 || agent_pos.second < 0 || agent_pos.first >= field->getSize().first || agent_pos.second >= field->getSize().second);
+
+    }
 
     return ( check_outofrange(0) && check_outofrange(1) && check_conflict());
 }
 
-bool GameManager::canPut(const unsigned int side, int agent, const unsigned int move, bool){
-
-    std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
-    std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
-
-    auto check_outofrange = [&](){
-
-        std::pair<int,int> agent_pos = field->getAgent(side, agent);
-
-        agent_pos.first += x_list.at(move);
-        agent_pos.second += y_list.at(move);
-
-
-        return !(agent_pos.first < 0 || agent_pos.second < 0 || agent_pos.first >= field->getSize().first || agent_pos.second >= field->getSize().second);
-    };
-
-    return check_outofrange();
-}
 
 void GameManager::agentAct(const int turn, const int agent, const std::tuple<int, int, int> tuple_val){
 
