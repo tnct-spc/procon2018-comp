@@ -55,6 +55,10 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleAlgorith
 
 double SimpleAlgorithm::evaluateMove(int side, std::pair<int, int> move){
 
+    //ここについて大幅にコードを変更します
+    //いくつかの評価値に対する重みの総和が1になるように値付けをする
+    //定数の辺りの処理が完全に不必要になるようにする
+
     //例外処理
     if(!manager->canPut(side, move.first, move.second))
         return -100000;
