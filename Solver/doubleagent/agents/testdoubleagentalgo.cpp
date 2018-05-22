@@ -37,6 +37,7 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
     procon::Field field = manager->getField();
 
+    //枝切り
     if(manager->canPut(side, agent, move, false))
         return std::make_pair(-300000, false);
 
@@ -44,6 +45,7 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
     //この関数は(評価値,除去すべきかどうか)をpairで返す
     //相手のタイルがある時は(評価値,true)、何もない時は(評価値,false)を返す
     //pairのsecondが意味を持つのは自分のタイル側に移動する場合のみ
+
 
     std::vector<double>& data = agent_data.getData();
 
@@ -60,22 +62,24 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
     double evaluate_val = 0.0;
     bool is_delete = false;
 
-    std::pair<int,int> old_pos = field.getAgent(side, agent);
-
-    std::pair<int,int> new_pos = old_pos;
+    //移動後の位置
+    std::pair<int,int> new_pos = field.getAgent(side, agent);
     new_pos.first += x_list.at(move);
     new_pos.second += y_list.at(move);
 
-    int tile_value = field.getState(new_pos.first, new_pos.second).second;
-    int tile_color = field.getState(new_pos.first, new_pos.second).first;
+    //移動先のタイル状況
+    std::pair<int,int> tile_data = field.getState(new_pos.first, new_pos.second);
+    int tile_value = tile_data.second;
+    int tile_color = tile_data.first;
 
     auto calc = [&](bool delete_move){
 
         double return_value = 0.0;
 
-        //自陣に移動するなら
+        //移動しないなら
         if(move == 8)
             return_value += const_no_move;
+        //自陣に移動するなら
         if(tile_value == side + 1 && !delete_move){
             return_value += const_back_move;
 
@@ -116,6 +120,4 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
     return std::make_pair(evaluate_val, is_delete);
 
-
-    // return std::make_pair(-300000,false);
 }
