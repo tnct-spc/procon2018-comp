@@ -18,6 +18,45 @@ AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int side, i
 }
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::agentAct(int side){
+
     std::vector<std::pair<double,std::tuple<int,int,int>>> move_1 = agents.at(0)->agentMove();
     std::vector<std::pair<double,std::tuple<int,int,int>>> move_2 = agents.at(1)->agentMove();
+
+    //2つのvectorは評価値が高い順にソートされているので、それらのうち「コンフリクトが起きないもの」でペアを組み、利得が最も高いものを選ぶ
+    //ここの実装なんかめんどそうじゃない？辛い
+
+    std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
+    double max_value = -400001;
+
+    std::pair<int,int> old_pos_1 = manager->getField().getAgent(side, 0);
+    std::pair<int,int> old_pos_2 = manager->getField().getAgent(side, 1);
+
+    for(auto value_1 : move_1){
+
+        std::pair<int,int> new_pos_1 = old_pos_1;
+        if(std::get<0>(value_1.second) == 2){
+            //除去するならその先とコンフリクトしてもダメ
+            new_pos_1.first += std::get<1>(value_1.second);
+            new_pos_1.second += std::get<2>(value_1.second);
+        }
+
+        for(auto value_2 : move_2){
+
+            std::pair<int,int> new_pos_2 = old_pos_2;
+            if(std::get<0>(value_2.second) == 2){
+                new_pos_2.first += std::get<1>(value_2.second);
+                new_pos_2.second += std::get<2>(value_2.second);
+            }
+
+            if(!(old_pos_1 == new_pos_2 || new_pos_1 == old_pos_2 || new_pos_1 == new_pos_2)
+               && (max_value < value_1.first + value_2.first)){
+
+                max_value = value_1.first + value_2.first;
+                max_move = std::make_pair(value_1.second, value_2.second);
+            }
+        }
+    }
+
+    return max_move;
+
 }
