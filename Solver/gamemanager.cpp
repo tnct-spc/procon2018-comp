@@ -346,7 +346,7 @@ void GameManager::agentAct(const int turn, const int agent, const std::tuple<int
         x_pos < 0 || x_pos >= grid_size.first ||
         y_pos < 0 || y_pos >= grid_size.second ||
         (type == 1 && field->getState(x_pos, y_pos).first == (turn==1 ? 1 : 2)) ||
-        (type == 2 && field->getState(x_pos, y_pos).first != (turn==1 ? 1 : 2))
+        (type == 2 && field->getState(x_pos, y_pos).first == 0)
         ){
         act_stack.at(turn).at(agent) = std::make_tuple(0, 0, 0);
         return ;
