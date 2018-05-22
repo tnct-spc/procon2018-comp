@@ -7,7 +7,7 @@ TestDoubleAgentAlgo::TestDoubleAgentAlgo(int side, int agent_num, std::shared_pt
 
 }
 
-const std::tuple<int,int,int> TestDoubleAgentAlgo::agentMove(){
+const std::vector<std::pair<double, std::tuple<int,int,int>>>& TestDoubleAgentAlgo::agentMove(){
 
     procon::Field& field = manager->getField();
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};

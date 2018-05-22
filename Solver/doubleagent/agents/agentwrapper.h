@@ -7,7 +7,9 @@ class AgentWrapper
 {
 public:
     AgentWrapper(int side, int agent_num, std::shared_ptr<GameManager> manager_ptr);
-    virtual const std::tuple<int,int,int> agentMove() = 0;
+
+    //(評価値,移動方法)のvectorを渡してもらう
+    virtual const std::vector<std::pair<double, std::tuple<int,int,int>>>& agentMove() = 0;
 
 protected:
     int side,agent;
