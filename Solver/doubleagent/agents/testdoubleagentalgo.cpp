@@ -49,15 +49,28 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
     std::vector<double>& data = agent_data.getData();
 
-    double const_back_move = -1.0 * data.at(0) * 100 + 5;
+    //定数 [-950,50]
+    double const_back_move = -1.0 * data.at(0) * 1000 + 50;
 
-    double const_no_move = -1.0 * data.at(1) * 100 + 5;
+    //定数 [-950,50] これはconst_back_moveと重複する
+    double const_no_move = -1.0 * data.at(1) * 1000 + 50;
 
-    double per_delete_move = data.at(2) * 100 - 20;
+    //per_delete_move * -1 * 削除したマスの得点 になる
+    //[-300, 980](有利な除去なら)
+    double per_delete_move = data.at(2) * 80 - 300;
 
-    double per_region = data.at(3) * 100 - 20;
+    //per_region * 囲ったマスの得点合計 になる
+    double per_region = data.at(3) * 100 - 10;
 
+    //これは「タイルの得点」を元に計算する
+    //per_point * タイル除去による(領域以外の)得点の変動値 になる
+    //[-1600, 1600]
     double per_point = data.at(4) * 100;
+
+    //これは「得点の変動値の合計」を元に計算する
+    //per_point_sum * 行動をした後の得点の変動値 になる
+    //領域なしで[-640,640]、領域を含むと2000点程度が加算されたりする
+    double per_point_sum = data.at(5) * 40;
 
     double evaluate_val = 0.0;
     bool is_delete = false;
@@ -74,6 +87,11 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
     auto calc = [&](bool delete_move){
 
+        if(tile_color == side + 1 && delete_move == true && tile_value >= 0){
+            //これはどのように考えても有効な手にならない
+            return -500000.0;
+        }
+
         double return_value = 0.0;
 
         //移動しないなら
@@ -89,7 +107,8 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
         //得点の変動値
         int pos_value = tile_value;
-        if(delete_move)pos_value *= -1;
+        //自分のタイルを除去する場合
+        if(delete_move && (tile_color == side + 1))pos_value *= -1;
 
         return_value += pos_value * per_point;
 
@@ -97,6 +116,9 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
             return_value += pos_value * per_delete_move;
 
         //ここに領域ポイントの処理を追加する(未実装ですが！！！！)
+        int point_diff = pos_value;//実際はここに + region_valueがされる
+
+        return_value += point_diff * per_point_sum;
 
         return return_value;
     };
