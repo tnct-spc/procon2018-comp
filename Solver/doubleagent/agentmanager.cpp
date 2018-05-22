@@ -34,21 +34,17 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::
     for(auto value_1 : move_1){
 
         std::pair<int,int> new_pos_1 = old_pos_1;
-        if(std::get<0>(value_1.second) == 2){
-            //除去するならその先とコンフリクトしてもダメ
-            new_pos_1.first += std::get<1>(value_1.second);
-            new_pos_1.second += std::get<2>(value_1.second);
-        }
+        new_pos_1.first += std::get<1>(value_1.second);
+        new_pos_1.second += std::get<2>(value_1.second);
 
         for(auto value_2 : move_2){
 
             std::pair<int,int> new_pos_2 = old_pos_2;
-            if(std::get<0>(value_2.second) == 2){
-                new_pos_2.first += std::get<1>(value_2.second);
-                new_pos_2.second += std::get<2>(value_2.second);
-            }
+            new_pos_2.first += std::get<1>(value_2.second);
+            new_pos_2.second += std::get<2>(value_2.second);
 
-            if(!(old_pos_1 == new_pos_2 || new_pos_1 == old_pos_2 || new_pos_1 == new_pos_2)
+            //移動するのならold_posを参照する必要はない
+            if(!( ( std::get<0>(value_1.second) != 1 && old_pos_1 == new_pos_2) || (std::get<1>(value_2.second) != 1 && new_pos_1 == old_pos_2) || new_pos_1 == new_pos_2)
                && (max_value < value_1.first + value_2.first)){
 
                 max_value = value_1.first + value_2.first;
