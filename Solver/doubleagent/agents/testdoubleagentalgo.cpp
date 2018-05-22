@@ -47,19 +47,15 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
     std::vector<double>& data = agent_data.getData();
 
-    double per_minus_move = -1.0 * data.at(0) * 100 + 20;
+    double const_back_move = -1.0 * data.at(0) * 100 + 5;
 
-    double per_plus_move =  data.at(1) * 100 - 20;
+    double const_no_move = -1.0 * data.at(1) * 100 + 5;
 
-    double const_back_move = -1.0 * data.at(2) * 100 + 20;
+    double per_delete_move = data.at(2) * 100 - 20;
 
-    double const_no_move = -1.0 * data.at(3) * 100 + 20;
+    double per_region = data.at(3) * 100 - 20;
 
-    double per_delete_move = data.at(4) * 100 - 20;
-
-    double per_region = data.at(5) * 100 - 20;
-
-    double per_point = data.at(6) * 100;
+    double per_point = data.at(4) * 100;
 
     double evaluate_val = 0.0;
     bool is_delete = false;
@@ -75,6 +71,30 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
     auto calc = [&](bool delete_move){
 
+        double return_value = 0.0;
+
+        //自陣に移動するなら
+        if(move == 8)
+            return_value += const_no_move;
+        if(tile_value == side + 1 && !delete_move){
+            return_value += const_back_move;
+
+            //自陣に移動する時は評価をここで打ち切る(現時点の実装ではこうする)
+            return return_value;
+        }
+
+        //得点の変動値
+        int pos_value = tile_value;
+        if(delete_move)pos_value *= -1;
+
+        return_value += pos_value * per_point;
+
+        if(delete_move)
+            return_value += pos_value * per_delete_move;
+
+        //ここに領域ポイントの処理を追加する(未実装ですが！！！！)
+
+        return return_value;
     };
 
     //自分の色で塗られている場合
