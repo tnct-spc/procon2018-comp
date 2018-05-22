@@ -62,6 +62,7 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
     double per_point = data.at(6) * 100;
 
     double evaluate_val = 0.0;
+    bool is_delete = false;
 
     std::pair<int,int> old_pos = field.getAgent(side, agent);
 
@@ -72,7 +73,29 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
     int tile_value = field.getState(new_pos.first, new_pos.second).second;
     int tile_color = field.getState(new_pos.first, new_pos.second).first;
 
+    auto calc = [&](bool delete_move){
+
+    };
+
+    //自分の色で塗られている場合
+    if(tile_color == side + 1){
+        double not_delete_val = calc(false);
+        double delete_val = calc(true);
+
+        if(not_delete_val < delete_val)
+            is_delete = true;
+        evaluate_val = std::max(not_delete_val, delete_val);
+    }
+    //相手の色で塗られている場合
+    else if(tile_color){
+        is_delete = true;
+        evaluate_val = calc(true);
+    }
+    //塗られていない場合
+    else evaluate_val = calc(false);
+
+    return std::make_pair(evaluate_val, is_delete);
 
 
-    return std::make_pair(-300000,false);
+    // return std::make_pair(-300000,false);
 }
