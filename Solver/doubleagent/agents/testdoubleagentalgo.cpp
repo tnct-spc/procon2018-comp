@@ -47,7 +47,7 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
     //pairのsecondが意味を持つのは自分のタイル側に移動する場合のみ
 
 
-    std::vector<double>& data = agent_data.getData();
+    const std::vector<double>& data = agent_data.getData();
 
     //定数 [-950,50]
     double const_back_move = -1.0 * data.at(0) * 1000 + 50;
