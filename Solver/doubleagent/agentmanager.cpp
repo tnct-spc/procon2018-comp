@@ -18,5 +18,6 @@ AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int side, i
 }
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::agentAct(int side){
-    return std::make_pair(agents.at(0)->agentMove(), agents.at(1)->agentMove());
+    std::vector<std::pair<double,std::tuple<int,int,int>>> move_1 = agents.at(0)->agentMove();
+    std::vector<std::pair<double,std::tuple<int,int,int>>> move_2 = agents.at(1)->agentMove();
 }

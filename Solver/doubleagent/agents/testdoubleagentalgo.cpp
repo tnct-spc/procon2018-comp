@@ -7,26 +7,27 @@ TestDoubleAgentAlgo::TestDoubleAgentAlgo(int side, int agent_num, std::shared_pt
 
 }
 
-const std::vector<std::pair<double, std::tuple<int,int,int>>>& TestDoubleAgentAlgo::agentMove(){
+const std::vector<std::pair<double, std::tuple<int,int,int>>> TestDoubleAgentAlgo::agentMove(){
 
     procon::Field& field = manager->getField();
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
-    double max_value = -200000;
-    std::tuple<int,int,int> max_move = std::make_tuple(0, 0, 0);
+    std::vector<std::pair<double,std::tuple<int,int,int>>> return_val;
+
+    return_val.push_back(std::make_pair(-200000, std::make_tuple(0, 0, 0)));
+
 
     for(int count = 0; count < 9; ++count){
         std::pair<double,bool> value = evaluateMove(count);
 
-        if(max_value < value.first){
-
-            max_value = value.first;
-            max_move = std::make_tuple(value.second + 1, x_list.at(count), y_list.at(count));
-        }
+        if(value.first > -200000)//置けないパターンがあるのでそれを着る
+            return_val.push_back(std::make_pair(value.first, std::make_tuple(value.second + 1, x_list.at(count), y_list.at(count))));
     }
+    //昇順ソート
+    sort(return_val.begin(), return_val.end(), std::greater<std::pair<double,std::tuple<int,int,int>>>());
 
-    return max_move;
+    return return_val;
 
 }
 
