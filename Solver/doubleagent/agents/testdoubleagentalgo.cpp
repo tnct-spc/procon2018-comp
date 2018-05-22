@@ -99,7 +99,7 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
         if(move == 8)
             return_value += const_no_move;
         //自陣に移動するなら
-        if(tile_value == side + 1 && !delete_move){
+        if(tile_color == side + 1 && delete_move == false){
             return_value += const_back_move;
 
             //自陣に移動する時は評価をここで打ち切る(現時点の実装ではこうする)
@@ -113,6 +113,8 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
         return_value += pos_value * per_point;
 
+        std::cout << "diff : " << side << " , " << pos_value << std::endl;
+
         if(delete_move)
             return_value += pos_value * per_delete_move;
 
@@ -121,6 +123,7 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
         return_value += point_diff * per_point_sum;
 
+        std::cout << "ret : " << return_value << std::endl << std::endl;
         return return_value;
     };
 

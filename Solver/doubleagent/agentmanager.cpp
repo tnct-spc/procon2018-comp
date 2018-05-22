@@ -22,8 +22,20 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::
     std::vector<std::pair<double,std::tuple<int,int,int>>> move_1 = agents.at(0)->agentMove();
     std::vector<std::pair<double,std::tuple<int,int,int>>> move_2 = agents.at(1)->agentMove();
 
+    /*
+    for(auto value_1 : move_1){
+        std::cout << value_1.first << std::endl;// << " : " << value_1.second << "\n";
+    }
+    std::cout << "\n";
+    */
+
     //2つのvectorは評価値が高い順にソートされているので、それらのうち「コンフリクトが起きないもの」でペアを組み、利得が最も高いものを選ぶ
     //ここの実装なんかめんどそうじゃない？辛い
+
+
+    std::cout << std::get<0>(move_1.front().second) << " : " << std::get<1>(move_1.front().second) << " , " << std::get<2>(move_1.front().second) << "\n";
+    std::cout << std::get<0>(move_2.front().second) << " : " << std::get<1>(move_2.front().second) << " , " << std::get<2>(move_2.front().second) << "\n";
+    std::cout << "\n\n";
 
     std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
     double max_value = -400001;
