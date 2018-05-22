@@ -38,7 +38,7 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
     procon::Field field = manager->getField();
 
     //枝切り
-    if(manager->canPut(side, agent, move, false))
+    if(!manager->canPut(side, agent, move, false))
         return std::make_pair(-300000, false);
 
 
