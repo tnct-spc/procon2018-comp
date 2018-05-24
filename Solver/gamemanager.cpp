@@ -376,8 +376,10 @@ void GameManager::changeTurn(){
         }
 
         //動作順によって正常に動作しない場合がある
+        //後に処理した側がコンフリクトを起こした時の問題
+        //これ、side,agentが0,0になっていてヤバ
 
-        std::cout << "hoge " << std::endl;
+        std::cout << "hoge " << agent_data.first << " , "  <<  agent_data.second << std::endl;
         counts[not_move] = std::make_pair(-1, std::make_pair(-1, -1));
     };
 
@@ -390,8 +392,10 @@ void GameManager::changeTurn(){
             if(type != 1){
                 std::pair<int,int> not_move = field->getAgent(side, agent);
 
-                if(counts[not_move].first > 0)//移動しようとしているアレのコンフリクト
+                if(counts[not_move].first > 0){//移動しようとしているアレのコンフリクト
                     delete_move(counts[not_move].second);
+                    delete_move(std::make_pair(side, agent));
+                }
 
                 counts[not_move] = std::make_pair(-1,std::make_pair(-1, -1));
             }
@@ -399,8 +403,10 @@ void GameManager::changeTurn(){
             //もう既に存在しているなら
             if(counts.count(std::make_pair(pos_x, pos_y) )){
 
-                if(counts[std::make_pair(pos_x, pos_y)].first > 0)
+                if(counts[std::make_pair(pos_x, pos_y)].first > 0){
                     delete_move(counts[std::make_pair(pos_x, pos_y)].second);
+                    delete_move(std::make_pair(side, agent));
+                }
 
                 counts[std::make_pair(pos_x, pos_y)] = std::make_pair(-1, std::make_pair(-1, -1));
             }else{
