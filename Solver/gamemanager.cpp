@@ -375,11 +375,6 @@ void GameManager::changeTurn(){
             delete_move(next_delete_move);
         }
 
-        //動作順によって正常に動作しない場合がある
-        //後に処理した側がコンフリクトを起こした時の問題
-        //これ、side,agentが0,0になっていてヤバ
-
-        std::cout << "hoge " << agent_data.first << " , "  <<  agent_data.second << std::endl;
         counts[not_move] = std::make_pair(-1, std::make_pair(-1, -1));
     };
 
