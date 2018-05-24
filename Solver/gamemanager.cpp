@@ -114,7 +114,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         for(; now_turn < turn_max; ++now_turn){
 
 
-            std::cout << "turn " << now_turn + 1 << " started" << std::endl << std::endl;
+            //std::cout << "turn " << now_turn + 1 << " started" << std::endl << std::endl;
 
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
@@ -140,7 +140,6 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
             field_vec.push_back(std::make_shared<procon::Field>(*field));
 
 //            progresdock->addAnswer(*(field_vec.back()));
-
 
 
             setFieldCount(field_vec.size() - 1);
@@ -369,6 +368,8 @@ void GameManager::changeTurn(){
         std::pair<int,int> not_move = field->getAgent(agent_data.first, agent_data.second);
 
         //もう既に埋まっていて、それが移動予定erなら
+
+        //ここで死んでる！！！
         if(counts[not_move].first > 0){
             std::pair<int,int> next_delete_move = counts[not_move].second;
 
@@ -423,7 +424,6 @@ void GameManager::changeTurn(){
         if(moves.second.first != 0)
             field->setAgent(moves.second.second.first, moves.second.second.second, moves.first.first, moves.first.second);
     }
-
 }
 
 void GameManager::setAutoMode(bool value){
