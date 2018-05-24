@@ -12,6 +12,7 @@
 #include <vector>
 #include <memory>
 #include <map>
+#include <functional>
 
 class AlgorithmWrapper;
 
