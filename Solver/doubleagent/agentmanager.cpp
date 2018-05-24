@@ -33,10 +33,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::
     //ここの実装なんかめんどそうじゃない？辛い
 
 
-    std::cout << std::get<0>(move_1.front().second) << " : " << std::get<1>(move_1.front().second) << " , " << std::get<2>(move_1.front().second) << "\n";
-    std::cout << std::get<0>(move_2.front().second) << " : " << std::get<1>(move_2.front().second) << " , " << std::get<2>(move_2.front().second) << "\n";
-    std::cout << "\n\n";
-
     std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
     double max_value = -400001;
 

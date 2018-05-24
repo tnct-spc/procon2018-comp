@@ -423,58 +423,6 @@ void GameManager::changeTurn(){
             field->setAgent(moves.second.second.first, moves.second.second.second, moves.first.first, moves.first.second);
     }
 
-    /*
-    std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> dest_map;
-    std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> tile_map;
-
-    int type, pos_x, pos_y;
-
-    for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
-        for(int agent_num = 0; agent_num < 2; ++agent_num){
-
-            std::tie(type, pos_x, pos_y) = act_stack.at(turn_flag).at(agent_num);
-            std::pair<int,int> pos = std::make_pair(pos_x, pos_y);
-
-            if(type == 1){
-                dest_map[ pos ].push_back( std::make_pair(turn_flag, agent_num) );
-            }else
-            if(type == 2){
-                tile_map[ pos ].push_back( std::make_pair(turn_flag, agent_num) );
-                dest_map[ field->getAgent(turn_flag,agent_num) ].push_back( std::make_pair(turn_flag, agent_num) );
-            }
-        }
-
-    for(auto elements : dest_map){
-
-        if(elements.second.size() > 1)
-            continue;
-
-        if(field->getState(elements.first.first, elements.first.second).first == (elements.second.at(0).first == 0 ? 2 : 1))
-            continue;
-
-
-        field->setAgent(elements.second.at(0).first, elements.second.at(0).second, elements.first.first, elements.first.second);
-        field->setState(elements.first.first, elements.first.second, elements.second.at(0).first + 1);
-    }
-
-    for(auto elements : tile_map){
-        bool state_flag = true;
-        if(elements.second.size() > 1)
-            continue;
-
-
-        for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
-            for(int agent_num = 0; agent_num < 2; ++agent_num)
-                if(field->getAgent(turn_flag, agent_num) == elements.first){
-                    state_flag = false;
-                    break;
-                }
-        if(state_flag)
-            field->setState(elements.first.first, elements.first.second, 0);
-    }
-    */
-
-
 }
 
 void GameManager::setAutoMode(bool value){

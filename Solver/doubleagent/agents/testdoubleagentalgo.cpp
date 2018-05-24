@@ -113,7 +113,6 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
         return_value += pos_value * per_point;
 
-        std::cout << "diff : " << side << " , " << pos_value << std::endl;
 
         if(delete_move)
             return_value += pos_value * per_delete_move;
@@ -123,7 +122,6 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
         return_value += point_diff * per_point_sum;
 
-        std::cout << "ret : " << return_value << std::endl << std::endl;
         return return_value;
     };
 
