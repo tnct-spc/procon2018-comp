@@ -17,12 +17,6 @@ void TestAgentParam::run(){
     //テストなので複数アルゴリズムへの対応はしません！やった！
     //両方のエージェントに対して同じアルゴリズムを使うよ
 
-    for(int count = 0; count < rand_agent_count; ++count)
-        random_agents.push_back(GeneticAgent(6));
-
-
-    //ここめっちゃ変えるぞ！！！！！！
-    //総和が一定になるようにしないといけない
 
     int agent_count_sum = 1;
     for(int count = 0; count < 6; ++count)
@@ -80,6 +74,11 @@ void TestAgentParam::run(){
 
     for(int rand_index = 0; rand_index < rand_agent_count; ++rand_index){
 
+        std::cout << "rand_agent_number : " << rand_index + 1 << std::endl;
+
+        //乱択で対戦相手を選択
+        GeneticAgent rand_agent_data(6);
+
         for(int agent_index = 0; agent_index < agent_count; ++agent_index){
 
             //ここ変える(連続で勝負させる マルチスレッド)
@@ -90,7 +89,7 @@ void TestAgentParam::run(){
 
                         std::lock_guard<std::mutex> lock(mtx);
 
-                        int win_flag = buttle(buttle_agents.at(agent_index), random_agents.at(rand_index),cpu_index);
+                        int win_flag = buttle(buttle_agents.at(agent_index), rand_agent_data, cpu_index);
 
                         if(win_flag != 0)
                             ++try_count.at(index);
@@ -104,10 +103,20 @@ void TestAgentParam::run(){
             }
 
         }
-        for(int index = 0; index < agent_count; ++index)
-            std::cout << index << "  :  " << win_count.at(index) << " / " << try_count.at(index) << "   :   " << 1.0 * win_count.at(index) / try_count.at(index) << std::endl;
 
+        std::ofstream output("../../procon2018-comp/Data/TestAgentParam/learning_data");
+
+        for(int index = 0; index < agent_count; ++index){
+            const std::vector<double>& data = buttle_agents.at(index).getData();
+
+            for(int count = 0; count < 6; ++count)
+                output << data.at(count) << " , ";
+
+            output << win_count.at(index) << " , " << try_count.at(index) << " , " << 1.0 * win_count.at(index) / try_count.at(index) << std::endl;
+            std::cout << index << "  :  " << win_count.at(index) << " / " << try_count.at(index) << "   :   " << 1.0 * win_count.at(index) / try_count.at(index) << std::endl;
+        }
         std::cout << std::endl;
+        output.close();
     }
 
 
