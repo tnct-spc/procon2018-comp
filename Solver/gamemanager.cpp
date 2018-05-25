@@ -193,7 +193,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
 }
 
-int GameManager::simulationGenetic(GeneticAgent &agent_1, GeneticAgent &agent_2, int algo_number, GeneticAgent* agent_data_1, GeneticAgent* agent_data_2){
+int GameManager::simulationGenetic(GeneticAgent &agent_1, GeneticAgent &agent_2, int algo_number){
 
     //std::cout << "simulationGenetic" << std::endl;
 

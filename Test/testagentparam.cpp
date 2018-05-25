@@ -54,19 +54,32 @@ void TestAgentParam::run(){
 
         int win_num = managers.at(index)->simulationGenetic(agent_1_data, agent_2_data, 3);
 
-        if(win_num == -1)return -1;
+        if(win_num == -1)return 0;
 
-        return win_num;
+        //引き分けなら0,勝ちなら正で負けなら負
+        return (win_num ? 1 : -1);
     };
 
+    std::vector<std::thread> threads(cpu_num);
 
     for(int rand_index = 0; rand_index < rand_agent_count; ++rand_index){
 
         for(int agent_index = 0; agent_index < agent_count; ++agent_index){
 
+            int point = 0;
+
             //ここ変える(連続で勝負させる マルチスレッド)
-            bool win_flag = buttle(buttle_agents.at(agent_index), random_agents.at(rand_index));
-            win_count.at(agent_index) += win_flag;
+            for(int index = 0; index < (buttle_count + cpu_num - 1) / cpu_num; ++index)
+                threads.at(index) = std::thread([&](int index_num){
+                    std::lock_guard<std::mutex> lock(mtx);
+                    point += buttle(buttle_agents.at(agent_index), random_agents.at(rand_index),index_num);
+                }, index);
+
+            for(int index = 0; index < (buttle_count + cpu_num - 1) / cpu_num; ++index)
+                threads.at(index).join();
+
+            //引き分け以上なら加算する
+            win_count.at(agent_index) += (point >= 0);
 
         }
 
