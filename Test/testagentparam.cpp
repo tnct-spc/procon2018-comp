@@ -15,7 +15,7 @@ void TestAgentParam::run(){
     for(int count = 0; count < rand_agent_count; ++count)
         random_agents.push_back(GeneticAgent(6));
 
-    int agent_count = 1;//std::pow使いたくないです
+    agent_count = 1;
     for(int count = 0; count < 6; ++count)
         agent_count *= rand_param_count;
 
@@ -31,5 +31,24 @@ void TestAgentParam::run(){
         }
         buttle_agents.back().setData(agent_data);
     }
+
+    win_count.resize(agent_count,0);
+
+    auto buttle = [&](GeneticAgent& agent_1_data, GeneticAgent& agent_2_data){
+        //前者が勝ったらtrueを返す
+
+    };
+
+    for(int rand_index = 0; rand_index < rand_agent_count; ++rand_index){
+
+        for(int agent_index = 0; agent_index < agent_count; ++agent_index){
+
+            bool win_flag = buttle(buttle_agents.at(agent_index), random_agents.at(rand_index));
+            win_count.at(agent_index) += win_flag;
+
+        }
+
+    }
+
 
 }

@@ -19,9 +19,12 @@ private:
     int rand_param_count = 4;
 
     double rand_param_diff;
+    int agent_count;
 
     std::vector<GeneticAgent> random_agents;
     std::vector<GeneticAgent> buttle_agents;
+
+    std::vector<int> win_count;
 
 };
 
