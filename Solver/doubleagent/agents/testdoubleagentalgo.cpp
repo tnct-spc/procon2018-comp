@@ -4,7 +4,7 @@ TestDoubleAgentAlgo::TestDoubleAgentAlgo(int side, int agent_num, std::shared_pt
     AgentWrapper(side, agent_num, manager_ptr, agent_data)
 {
     if(this->agent_data.size != 6)
-        this->agent_data = GeneticAgent(6);
+        this->agent_data = GeneticAgent(6, 2);
 }
 
 const std::vector<std::pair<double, std::tuple<int,int,int>>> TestDoubleAgentAlgo::agentMove(){

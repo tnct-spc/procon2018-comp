@@ -3,12 +3,15 @@
 
 #include <random>
 #include <vector>
+#include <algorithm>
 
 class GeneticAgent
 {
 public:
-    //flagがtrueなら乱択で初期パラメータ生成
-    GeneticAgent(int size, bool flag = true);
+    //flagが0ならパラメータは初期値
+    //flagが1なら乱択
+    //flagが2なら総和1の乱択
+    GeneticAgent(int size, int flag = 1);
 
 
     void setData(const std::vector<double>& inp);

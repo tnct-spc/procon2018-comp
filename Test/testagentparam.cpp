@@ -84,7 +84,7 @@ void TestAgentParam::run(){
         std::cout << "rand_agent_number : " << rand_index + 1 << std::endl;
 
         //乱択で対戦相手を選択
-        GeneticAgent rand_agent_data(6, true);
+        GeneticAgent rand_agent_data(6, 2);
 
         for(int cpu = 0; cpu < cpu_num; ++cpu)
             threads.at(cpu) = std::thread([&](int cpu_index){
