@@ -13,12 +13,15 @@ public:
 
 private:
     //ランダムで生成するエージェントの数
-    int rand_agent_number = 100;
+    int rand_agent_count = 100;
 
-    //パラメータのバラケ具合
-    int rand_param_count = 10;
+    //パラメータのバラケ具合(エージェントの数はrand_param_count^6になる)
+    int rand_param_count = 4;
+
+    double rand_param_diff;
 
     std::vector<GeneticAgent> random_agents;
+    std::vector<GeneticAgent> buttle_agents;
 
 };
 
