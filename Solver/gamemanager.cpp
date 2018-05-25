@@ -205,6 +205,10 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
         team_1 = std::make_shared<SimpleAlgorithm>(share, agent_1);
         team_2 = std::make_shared<SimpleAlgorithm>(share, agent_2);
     }
+    if(algo_number == 3){
+        team_1 = std::make_shared<AgentManager>(share, 0, 0);
+        team_2 = std::make_shared<AgentManager>(share, 1, 0);
+    }
 
     for(; now_turn < turn_max; ++now_turn){
 

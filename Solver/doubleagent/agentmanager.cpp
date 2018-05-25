@@ -1,7 +1,7 @@
 #include "agentmanager.h"
 #include "agents/testdoubleagentalgo.h"
 
-AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int side, int algorithm_number) :
+AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int side, int algorithm_number, GeneticAgent* agent_data_1, GeneticAgent* agent_data_2) :
     AlgorithmWrapper(manager_ptr)
 {
 
@@ -11,6 +11,10 @@ AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int side, i
         agents.at(0) = std::make_shared<TestDoubleAgentAlgo>(side, 0, getManagerPtr());
         agents.at(1) = std::make_shared<TestDoubleAgentAlgo>(side, 1, getManagerPtr());
     }
+    if(agent_data_1 != nullptr)
+        setAgentData(*agent_data_1, 0);
+    if(agent_data_2 != nullptr)
+        setAgentData(*agent_data_2, 0);
 
 }
 

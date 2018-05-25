@@ -37,6 +37,7 @@ void TestAgentParam::run(){
     auto buttle = [&](GeneticAgent& agent_1_data, GeneticAgent& agent_2_data){
         //前者が勝ったらtrueを返す
 
+        return true;
     };
 
     for(int rand_index = 0; rand_index < rand_agent_count; ++rand_index){
