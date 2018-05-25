@@ -7,9 +7,6 @@ AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int side, i
 
     agents.resize(2);
 
-    std::shared_ptr<TestDoubleAgentAlgo> hoge;
-    hoge = std::make_shared<TestDoubleAgentAlgo>(side, 0, manager_ptr);
-
     if(algorithm_number == 0){
         agents.at(0) = std::make_shared<TestDoubleAgentAlgo>(side, 0, getManagerPtr());
         agents.at(1) = std::make_shared<TestDoubleAgentAlgo>(side, 1, getManagerPtr());
@@ -21,13 +18,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::
 
     std::vector<std::pair<double,std::tuple<int,int,int>>> move_1 = agents.at(0)->agentMove();
     std::vector<std::pair<double,std::tuple<int,int,int>>> move_2 = agents.at(1)->agentMove();
-
-    /*
-    for(auto value_1 : move_1){
-        std::cout << value_1.first << std::endl;// << " : " << value_1.second << "\n";
-    }
-    std::cout << "\n";
-    */
 
     //2つのvectorは評価値が高い順にソートされているので、それらのうち「コンフリクトが起きないもの」でペアを組み、利得が最も高いものを選ぶ
     //ここの実装なんかめんどそうじゃない？辛い
