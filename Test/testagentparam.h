@@ -1,6 +1,7 @@
 #ifndef TESTAGENTPARAM_H
 #define TESTAGENTPARAM_H
 
+#include "gamemanager.h"
 #include "doubleagent/agents/agentwrapper.h"
 #include "doubleagent/agents/testdoubleagentalgo.h"
 #include "doubleagent/agentmanager.h"
@@ -20,6 +21,10 @@ private:
 
     double rand_param_diff;
     int agent_count;
+
+    int cpu_num;
+
+    std::vector<GameManager*> managers;
 
     std::vector<GeneticAgent> random_agents;
     std::vector<GeneticAgent> buttle_agents;
