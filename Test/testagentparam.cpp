@@ -16,8 +16,8 @@ void TestAgentParam::run(){
         random_agents.push_back(GeneticAgent(6));
 
     int agent_count = 1;//std::pow使いたくないです
-    for(int count = 0; count < rand_param_count; ++count)
-        agent_count *= 6;
+    for(int count = 0; count < 6; ++count)
+        agent_count *= rand_param_count;
 
     for(int agent_index = 0; agent_index < agent_count; ++agent_index){
 
@@ -26,8 +26,8 @@ void TestAgentParam::run(){
         int agent_number = agent_index;
         for(int index = 0; index < 6; ++index){
 
-            agent_data.at(index) = std::min(1.0, rand_param_diff * (agent_number % 6));
-            agent_number /= 6;
+            agent_data.at(index) = std::min(1.0, rand_param_diff * (agent_number % rand_param_count));
+            agent_number /= rand_param_count;
         }
         buttle_agents.back().setData(agent_data);
     }
