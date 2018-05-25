@@ -67,6 +67,7 @@ void TestAgentParam::run(){
         if(win_num == -1)return 0;
 
         //引き分けなら0,勝ちなら正で負けなら負
+        std::cout << (win_num ? "Yes\n" : "No\n");
         return (win_num ? 1 : -1);
     };
 

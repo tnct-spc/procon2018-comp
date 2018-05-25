@@ -375,6 +375,7 @@ void GameManager::changeTurn(){
         if(counts[not_move].first > 0){
             std::pair<int,int> next_delete_move = counts[not_move].second;
 
+            counts[not_move] = std::make_pair(-1, std::make_pair(-1, -1));
             //循環参照ケースの回避
             if(next_delete_move != agent_data)
                 delete_move(next_delete_move);
