@@ -16,6 +16,9 @@ public:
 
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
 
+    void setAgentData(const GeneticAgent& agent_data, int agent_number);
+
+private:
     std::vector<std::shared_ptr<AgentWrapper>> agents;//各エージェント
 };
 
