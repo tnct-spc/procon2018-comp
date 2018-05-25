@@ -1,4 +1,5 @@
 #include <iostream>
+#include "testagentparam.h"
 
 
 int main()
@@ -19,6 +20,11 @@ int main()
             break;
 
         std::cout << "incorrect" << std::endl;
+    }
+
+    if(test_number == 0){
+        TestAgentParam test;
+        test.run();
     }
 
 
