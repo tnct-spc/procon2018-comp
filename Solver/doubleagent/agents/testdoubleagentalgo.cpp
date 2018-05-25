@@ -59,7 +59,7 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
     //per_delete_move * -1 * 削除したマスの得点 になる
     //[-300, 980](有利な除去なら)
-    double per_delete_move = data.at(2) * 80 - 6;
+    double per_delete_move = data.at(2) * 80 - 3;
 
     //per_region * 囲ったマスの得点合計 になる
     double per_region = data.at(3) * 100 - 2;
