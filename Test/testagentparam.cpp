@@ -20,24 +20,40 @@ void TestAgentParam::run(){
     for(int count = 0; count < rand_agent_count; ++count)
         random_agents.push_back(GeneticAgent(6));
 
-    agent_count = 1;
+
+    //ここめっちゃ変えるぞ！！！！！！
+    //総和が一定になるようにしないといけない
+
+    int agent_count_sum = 1;
     for(int count = 0; count < 6; ++count)
-        agent_count *= rand_param_count;
+        agent_count_sum *= rand_param_count;
 
-    for(int agent_index = 0; agent_index < agent_count; ++agent_index){
+    for(int agent_index = 0; agent_index < agent_count_sum; ++agent_index){
 
-        buttle_agents.push_back(GeneticAgent(6, false));
+        int param_sum = 0;
         std::vector<double> agent_data(6);
         int agent_number = agent_index;
         for(int index = 0; index < 6; ++index){
 
             agent_data.at(index) = std::min(1.0, rand_param_diff * (agent_number % rand_param_count));
+            param_sum += (agent_number % rand_param_count);
             agent_number /= rand_param_count;
+
+            if(param_sum > rand_param_count)
+                break;
         }
-        buttle_agents.back().setData(agent_data);
+
+        if(param_sum == rand_param_count){
+            buttle_agents.push_back(GeneticAgent(6, false));
+            buttle_agents.back().setData(agent_data);
+        }
     }
 
+    agent_count = buttle_agents.size();
+    std::cout << agent_count << std::endl;
+
     win_count.resize(agent_count,0);
+    try_count.resize(agent_count,0);
 
     std::random_device rnd;
     std::mt19937 mt(rnd());
@@ -66,23 +82,32 @@ void TestAgentParam::run(){
 
         for(int agent_index = 0; agent_index < agent_count; ++agent_index){
 
-            int point = 0;
-
             //ここ変える(連続で勝負させる マルチスレッド)
-            for(int index = 0; index < (buttle_count + cpu_num - 1) / cpu_num; ++index)
-                threads.at(index) = std::thread([&](int index_num){
-                    std::lock_guard<std::mutex> lock(mtx);
-                    point += buttle(buttle_agents.at(agent_index), random_agents.at(rand_index),index_num);
-                }, index);
+            for(int count = 0; count < (buttle_count + cpu_num - 1) / cpu_num; ++count){
 
-            for(int index = 0; index < (buttle_count + cpu_num - 1) / cpu_num; ++index)
-                threads.at(index).join();
+                for(int cpu = 0; cpu < cpu_num; ++cpu)
+                    threads.at(cpu) = std::thread([&](int cpu_index, int index){
 
-            //引き分け以上なら加算する
-            win_count.at(agent_index) += (point >= 0);
+                        std::lock_guard<std::mutex> lock(mtx);
+
+                        int win_flag = buttle(buttle_agents.at(agent_index), random_agents.at(rand_index),cpu_index);
+
+                        if(win_flag != 0)
+                            ++try_count.at(index);
+                        if(win_flag == 1)
+                            ++win_count.at(index);
+
+                    }, cpu, agent_index);
+
+                for(int cpu = 0; cpu < cpu_num; ++cpu)
+                    threads.at(cpu).join();
+            }
 
         }
+        for(int index = 0; index < agent_count; ++index)
+            std::cout << index << "  :  " << win_count.at(index) << " / " << try_count.at(index) << "   :   " << 1.0 * win_count.at(index) / try_count.at(index) << std::endl;
 
+        std::cout << std::endl;
     }
 
 

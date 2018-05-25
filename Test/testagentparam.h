@@ -21,9 +21,9 @@ private:
     int rand_agent_count = 100;
 
     //パラメータのバラケ具合(エージェントの数はrand_param_count^6になる)
-    int rand_param_count = 4;
+    int rand_param_count = 10;
 
-    int buttle_count = 12;//一セットの勝負回数 cpu_numで切り上げるので注意
+    int buttle_count = 16;//一セットの勝負回数 cpu_numで切り上げるので注意
 
     double rand_param_diff;
     int agent_count;
@@ -36,6 +36,7 @@ private:
     std::vector<GeneticAgent> buttle_agents;
 
     std::vector<int> win_count;
+    std::vector<int> try_count;
 
 };
 
