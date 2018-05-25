@@ -33,11 +33,11 @@ void TestAgentParam::run(){
             param_sum += (agent_number % rand_param_count);
             agent_number /= rand_param_count;
 
-            if(param_sum > rand_param_count)
+            if(param_sum > rand_param_count - 1)
                 break;
         }
 
-        if(param_sum == rand_param_count){
+        if(param_sum == rand_param_count - 1){
             buttle_agents.push_back(GeneticAgent(6, false));
             buttle_agents.back().setData(agent_data);
         }
@@ -72,13 +72,42 @@ void TestAgentParam::run(){
 
     std::vector<std::thread> threads(cpu_num);
 
+    std::vector<std::pair<int,int>> agent_buttle_cpu(cpu_num);//[開始地点,終了地点)で戦闘に対応するエージェントを記録しておく
+
+    agent_buttle_cpu.at(0) = std::make_pair(0, agent_count / cpu_num + (agent_count % cpu_num > 0));
+    for(int cpu = 1; cpu < cpu_num; ++cpu)
+        agent_buttle_cpu.at(cpu) = std::make_pair(agent_buttle_cpu.at(cpu - 1).second, agent_buttle_cpu.at(cpu - 1).second + agent_count / cpu_num + (agent_count % cpu_num > cpu));
+
     for(int rand_index = 0; rand_index < rand_agent_count; ++rand_index){
 
         std::cout << "rand_agent_number : " << rand_index + 1 << std::endl;
 
         //乱択で対戦相手を選択
-        GeneticAgent rand_agent_data(6);
+        GeneticAgent rand_agent_data(6, true);
 
+        for(int cpu = 0; cpu < cpu_num; ++cpu)
+            threads.at(cpu) = std::thread([&](int cpu_index){
+                std::lock_guard<std::mutex> lock(mtx);
+
+                for(int agent_index = agent_buttle_cpu.at(cpu_index).first; agent_index < agent_buttle_cpu.at(cpu_index).second; ++agent_index){
+                    for(int count = 0; count < buttle_count; ++count){
+
+                        int win_flag = buttle(buttle_agents.at(agent_index), rand_agent_data, cpu_index);
+
+                        if(win_flag != 0)
+                            ++try_count.at(agent_index);
+                        if(win_flag == 1)
+                            ++win_count.at(agent_index);
+
+                    }
+                }
+
+            }, cpu);
+
+        for(int cpu = 0; cpu < cpu_num; ++cpu)
+            threads.at(cpu).join();
+
+        /*
         for(int agent_index = 0; agent_index < agent_count; ++agent_index){
 
             //ここ変える(連続で勝負させる マルチスレッド)
@@ -86,6 +115,7 @@ void TestAgentParam::run(){
 
                 for(int cpu = 0; cpu < cpu_num; ++cpu)
                     threads.at(cpu) = std::thread([&](int cpu_index, int index){
+                        for(int count = 0; count < (buttle_count + cpu_num - 1) / cpu_num; ++count)
 
                         std::lock_guard<std::mutex> lock(mtx);
 
@@ -103,6 +133,7 @@ void TestAgentParam::run(){
             }
 
         }
+        */
 
         std::ofstream output("../../procon2018-comp/Data/TestAgentParam/learning_data");
 

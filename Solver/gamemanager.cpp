@@ -206,8 +206,8 @@ int GameManager::simulationGenetic(GeneticAgent &agent_1, GeneticAgent &agent_2,
         team_2 = std::make_shared<SimpleAlgorithm>(share, agent_2);
     }
     if(algo_number == 3){
-        team_1 = std::make_shared<AgentManager>(share, 0, 0, &agent_1, &agent_2);
-        team_2 = std::make_shared<AgentManager>(share, 1, 0, &agent_1, &agent_2);
+        team_1 = std::make_shared<AgentManager>(share, 0, 0, &agent_1, &agent_1);
+        team_2 = std::make_shared<AgentManager>(share, 1, 0, &agent_2, &agent_2);
     }
 
     for(; now_turn < turn_max; ++now_turn){
