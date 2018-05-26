@@ -1,15 +1,14 @@
 #include "testdoubleagentalgo.h"
 
 TestDoubleAgentAlgo::TestDoubleAgentAlgo(int side, int agent_num, std::shared_ptr<GameManager> manager_ptr, const GeneticAgent &agent_data) :
-    AgentWrapper(side, agent_num, manager_ptr),
-    agent_data(agent_data)
+    AgentWrapper(side, agent_num, manager_ptr, agent_data)
 {
-
+    if(this->agent_data.size != 6)
+        this->agent_data = GeneticAgent(6, 2);
 }
 
 const std::vector<std::pair<double, std::tuple<int,int,int>>> TestDoubleAgentAlgo::agentMove(){
 
-    procon::Field& field = manager->getField();
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
@@ -50,18 +49,20 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
     const std::vector<double>& data = agent_data.getData();
 
+    //パラメータの期待値が0.16程度
+
     //定数 [-950,50]
-    double const_back_move = -1.0 * data.at(0) * 1000 + 50;
+    double const_back_move = -1.0 * data.at(0) * 1000 + 10;
 
     //定数 [-950,50] これはconst_back_moveと重複する
-    double const_no_move = -1.0 * data.at(1) * 1000 + 50;
+    double const_no_move = -1.0 * data.at(1) * 1000 + 10;
 
     //per_delete_move * -1 * 削除したマスの得点 になる
     //[-300, 980](有利な除去なら)
-    double per_delete_move = data.at(2) * 80 - 300;
+    double per_delete_move = data.at(2) * 80 - 3;
 
     //per_region * 囲ったマスの得点合計 になる
-    double per_region = data.at(3) * 100 - 10;
+    double per_region = data.at(3) * 100 - 2;
 
     //これは「タイルの得点」を元に計算する
     //per_point * タイル除去による(領域以外の)得点の変動値 になる

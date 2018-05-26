@@ -1,4 +1,4 @@
-TEMPLATE = app
+TEMPLATE = app qt
 CONFIG += console c++11
 CONFIG -= app_bundle
 
@@ -6,9 +6,10 @@ QT += core gui widgets
 
 SOURCES += \
         main.cpp \
-    genetic.cpp \
-    simulatedannealing.cpp \
-    doubleagentgenetic.cpp
+    testagentparam.cpp
+
+HEADERS += \
+    testagentparam.h
 
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
@@ -21,8 +22,3 @@ DEPENDPATH += $$PWD/../Visualizer
 LIBS += -L$$OUT_PWD/../Solver/ -lSolver
 INCLUDEPATH += $$PWD/../Solver
 DEPENDPATH += $$PWD/../Solver
-
-HEADERS += \
-    genetic.h \
-    simulatedannealing.h \
-    doubleagentgenetic.h

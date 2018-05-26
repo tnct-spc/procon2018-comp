@@ -193,7 +193,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
 }
 
-int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAgent &agent_2, int algo_number){
+int GameManager::simulationGenetic(GeneticAgent &agent_1, GeneticAgent &agent_2, int algo_number){
 
     //std::cout << "simulationGenetic" << std::endl;
 
@@ -204,6 +204,10 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
     if(algo_number == 2){
         team_1 = std::make_shared<SimpleAlgorithm>(share, agent_1);
         team_2 = std::make_shared<SimpleAlgorithm>(share, agent_2);
+    }
+    if(algo_number == 3){
+        team_1 = std::make_shared<AgentManager>(share, 0, 0, &agent_1, &agent_1);
+        team_2 = std::make_shared<AgentManager>(share, 1, 0, &agent_2, &agent_2);
     }
 
     for(; now_turn < turn_max; ++now_turn){
@@ -244,10 +248,8 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
                 point_2 += field->getState(x, y).second;
         }
 
-    /*
-    if(point_1 != point_2)
-        std::cout << point_1 << " , " << point_2 << std::endl;
-    */
+    // std::cout << point_1 << " , " << point_2 << std::endl;
+
 
     if(point_1 == point_2)return -1;
     return (point_1 > point_2 ? 1 : 0);
@@ -373,6 +375,7 @@ void GameManager::changeTurn(){
         if(counts[not_move].first > 0){
             std::pair<int,int> next_delete_move = counts[not_move].second;
 
+            counts[not_move] = std::make_pair(-1, std::make_pair(-1, -1));
             //循環参照ケースの回避
             if(next_delete_move != agent_data)
                 delete_move(next_delete_move);

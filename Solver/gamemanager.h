@@ -35,7 +35,7 @@ public:
 
     void startSimulation(QString my_algo, QString opponent_algo);
 
-    int simulationGenetic(const GeneticAgent& agent_1, const GeneticAgent& agent_2, int algo_number);
+    int simulationGenetic(GeneticAgent& agent_1, GeneticAgent& agent_2, int algo_number);
 
     unsigned int getFinalTurn();
 
