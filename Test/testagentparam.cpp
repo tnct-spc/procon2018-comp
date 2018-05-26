@@ -44,7 +44,7 @@ void TestAgentParam::run(){
     }
 
     agent_count = buttle_agents.size();
-    std::cout << agent_count << std::endl;
+    std::cout << std::endl << "started   agent size : " << agent_count << std::endl << std::endl;
 
     win_count.resize(agent_count,0);
     try_count.resize(agent_count,0);
@@ -80,7 +80,7 @@ void TestAgentParam::run(){
 
     for(int rand_index = 0; rand_index < rand_agent_count; ++rand_index){
 
-        std::cout << "rand_agent_number : " << rand_index + 1 << std::endl;
+        std::cout << "count : " << rand_index + 1 << std::endl;
 
         //乱択で対戦相手を選択
         GeneticAgent rand_agent_data(6, 2);
@@ -110,8 +110,17 @@ void TestAgentParam::run(){
 
         std::ofstream output("../../procon2018-comp/Data/TestAgentParam/learning_data");
 
+        double min_per = 1.0;
+        double max_per = 0.0;
+
         for(int index = 0; index < agent_count; ++index){
+
             const std::vector<double>& data = buttle_agents.at(index).getData();
+
+            if(try_count.at(index)){
+                min_per = std::min(min_per, 1.0 * win_count.at(index) / try_count.at(index));
+                max_per = std::max(max_per, 1.0 * win_count.at(index) / try_count.at(index));
+            }
 
             for(int count = 0; count < 6; ++count)
                 output << data.at(count) << " , ";
@@ -119,6 +128,10 @@ void TestAgentParam::run(){
             output << win_count.at(index) << " , " << try_count.at(index) << " , " << 1.0 * win_count.at(index) / try_count.at(index) << std::endl;
         }
         output.close();
+
+        std::cout << "average value  :  " << std::accumulate(win_count.begin(), win_count.end(), 0.0) / std::accumulate(try_count.begin(), try_count.end(), 0.0) << std::endl;
+        std::cout << "min , max  :  " << min_per << " , " << max_per << std::endl;
+        std::cout << std::endl;
     }
 
 
