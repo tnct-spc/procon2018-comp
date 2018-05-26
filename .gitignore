@@ -42,4 +42,5 @@ CMakeLists.txt.user*
 
 Data/GeneticAgent/ga_data
 Data/GeneticAgent/sa_data
-Data/TestAgentParam/learning_data
+Data/TestAgentParam/learning_data_fix
+Data/TestAgentParam/learning_data_rand
