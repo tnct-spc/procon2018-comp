@@ -84,6 +84,8 @@ void TestAgentParam::run(){
 
         //乱択で対戦相手を選択
         GeneticAgent rand_agent_data(6, 2);
+        const std::vector<double>& data = rand_agent_data.getData();
+        for(auto xx : data)std::cout<<xx << " ";std::cout<<std::endl;
 
         for(int cpu = 0; cpu < cpu_num; ++cpu)
             threads.at(cpu) = std::thread([&](int cpu_index){
@@ -144,9 +146,9 @@ void TestAgentParam::run(){
                 output << data.at(count) << " , ";
 
             output << win_count.at(index) << " , " << try_count.at(index) << " , " << 1.0 * win_count.at(index) / try_count.at(index) << std::endl;
-            std::cout << index << "  :  " << win_count.at(index) << " / " << try_count.at(index) << "   :   " << 1.0 * win_count.at(index) / try_count.at(index) << std::endl;
+            //std::cout << index << "  :  " << win_count.at(index) << " / " << try_count.at(index) << "   :   " << 1.0 * win_count.at(index) / try_count.at(index) << std::endl;
         }
-        std::cout << std::endl;
+        //std::cout << std::endl;
         output.close();
     }
 

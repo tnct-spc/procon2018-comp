@@ -24,7 +24,7 @@ private:
     //パラメータのバラケ具合(エージェントの数はrand_param_count^6になる)
     int rand_param_count = 11;
 
-    int buttle_count = 8;//一セットの勝負回数 cpu_numで切り上げるので注意
+    int buttle_count = 1;
 
     double rand_param_diff;
     int agent_count;

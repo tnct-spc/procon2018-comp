@@ -27,6 +27,8 @@ GeneticAgent::GeneticAgent(int size, int flag) :
 
         for(int index = 0; index < size; ++index)
             status.at(index) = rand_status.at(index + 1) - rand_status.at(index);
+
+        std::shuffle(status.begin(), status.end(), mt);
     }
 
 }
