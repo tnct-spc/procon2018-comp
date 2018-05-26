@@ -34,6 +34,7 @@ public:
 
     std::pair<int,int> getSize() const;
 
+    void UpdatePoint();
 
 private:
     std::vector<std::vector<int>> field_data;
@@ -46,7 +47,9 @@ private:
     int grid_x;
     int grid_y;
 
+    std::vector<std::vector<bool>> region_red,region_blue;
 
+    std::pair<int,int> red_point,blue_point; //それぞれのチームの<踏んだマスの得点,領域得点>を格納
 };
 }
 

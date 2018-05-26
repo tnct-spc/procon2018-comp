@@ -1,4 +1,6 @@
 #include "field.h"
+#include<queue>
+#include<complex>
 
 procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
     grid_x = size_x;
@@ -9,6 +11,9 @@ procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
 
     field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
     value_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
+
+    region_blue = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
+    region_red = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
 
     for(int side = 0; side < 2; ++side)
         for(int agent = 0; agent < 2; ++agent){
@@ -28,6 +33,10 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
 
     field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
     value_data = input_val;
+
+    region_blue = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
+    region_red = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
+
 
     for(int side = 0; side < 2; ++side)
         for(int agent = 0; agent < 2; ++agent){
@@ -64,6 +73,8 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     field_data = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0 ));
     value_data = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0 ));
 
+    region_blue = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
+    region_red = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
 
     /*
     std::uniform_int_distribution<> plus_rnd(0,max_val);
@@ -234,4 +245,151 @@ void procon::Field::setAgents(const std::vector<std::vector<std::pair<int,int>>>
 
 void procon::Field::setStates(const std::vector<std::vector<int>>& values){
     field_data = values;
+}
+void procon::Field::UpdatePoint(){
+    int mass[grid_x][grid_y]={0};
+    //red region
+    for(int a = 0;a < grid_x;a++){
+        for(int b = 0;b < grid_y;b++){
+            if(mass[a][b]==0 && field_data.at(a).at(b) != 1){
+                std::queue<std::pair<int,int>> que,ins;
+                ins.push(std::make_pair(a,b));
+                que.push(std::make_pair(a,b));
+                bool result = true;
+                bool flag[grid_x][grid_y] = {true};
+                while(!que.empty()){
+                    std::pair<int,int> pa = que.front();
+                    que.pop();
+                    flag[pa.first][pa.second] = false;
+
+                    if(pa.first+1!=grid_x){
+                        if(flag[pa.first+1][pa.second]&&field_data.at(pa.first+1).at(pa.second) != 1){
+                            que.push(std::make_pair(pa.first+1,pa.second));
+                            ins.push(std::make_pair(pa.first+1,pa.second));
+                        }
+                    }else{
+                        result = false;
+                    }
+
+                    if(pa.first-1 != -1){
+                        if(flag[pa.first-1][pa.second]&&field_data.at(pa.first-1).at(pa.second) != 1){
+                            que.push(std::make_pair(pa.first-1,pa.second));
+                            ins.push(std::make_pair(pa.first-1,pa.second));
+                        }
+                    }else{
+                        result = false;
+                    }
+
+                    if(pa.second+1 != grid_y){
+                        if(flag[pa.first][pa.second+1]&&field_data.at(pa.first).at(pa.second+1) != 1){
+                            que.push(std::make_pair(pa.first,pa.second+1));
+                            ins.push(std::make_pair(pa.first,pa.second+1));
+                        }
+                    }else{
+                        result = false;
+                    }
+
+                    if(pa.second-1 == -1){
+                        if(flag[pa.first][pa.second-1]&&field_data.at(pa.first).at(pa.second-1) != 1){
+                            que.push(std::make_pair(pa.first,pa.second-1));
+                            ins.push(std::make_pair(pa.first,pa.second-1));
+                        }
+                    }else{
+                        result = false;
+                    }
+
+                }
+                while(!ins.empty()){
+                    std::pair<int,int> pa = ins.front();
+                    ins.pop();
+                    if(result){
+                        mass[pa.first][pa.second]=2;
+                        region_red.at(pa.first).at(pa.second)=true;
+                    }else{
+                        mass[pa.first][pa.second]=1;
+                    }
+                }
+            }
+        }
+    }
+    //blue region
+    for(int a = 0;a < grid_x;a++){
+        for(int b = 0;b < grid_y;b++){
+            mass[a][b]=0;
+        }
+    }
+    for(int a = 0;a < grid_x;a++){
+        for(int b = 0;b < grid_y;b++){
+            if(mass[a][b]==0 && field_data.at(a).at(b) != 2){
+                std::queue<std::pair<int,int>> que,ins;
+                ins.push(std::make_pair(a,b));
+                que.push(std::make_pair(a,b));
+                bool result = true;
+                bool flag[grid_x][grid_y] = {true};
+                while(!que.empty()){
+                    std::pair<int,int> pa = que.front();
+                    que.pop();
+                    flag[pa.first][pa.second] = false;
+
+                    if(pa.first+1!=grid_x){
+                        if(flag[pa.first+1][pa.second]&&field_data.at(pa.first+1).at(pa.second) != 2){
+                            que.push(std::make_pair(pa.first+1,pa.second));
+                            ins.push(std::make_pair(pa.first+1,pa.second));
+                        }
+                    }else{
+                        result = false;
+                    }
+
+                    if(pa.first-1 != -1){
+                        if(flag[pa.first-1][pa.second]&&field_data.at(pa.first-1).at(pa.second) != 2){
+                            que.push(std::make_pair(pa.first-1,pa.second));
+                            ins.push(std::make_pair(pa.first-1,pa.second));
+                        }
+                    }else{
+                        result = false;
+                    }
+
+                    if(pa.second+1 != grid_y){
+                        if(flag[pa.first][pa.second+1]&&field_data.at(pa.first).at(pa.second+1) != 2){
+                            que.push(std::make_pair(pa.first,pa.second+1));
+                            ins.push(std::make_pair(pa.first,pa.second+1));
+                        }
+                    }else{
+                        result = false;
+                    }
+
+                    if(pa.second-1 == -1){
+                        if(flag[pa.first][pa.second-1]&&field_data.at(pa.first).at(pa.second-1) != 2){
+                            que.push(std::make_pair(pa.first,pa.second-1));
+                            ins.push(std::make_pair(pa.first,pa.second-1));
+                        }
+                    }else{
+                        result = false;
+                    }
+
+                }
+                while(!ins.empty()){
+                    std::pair<int,int> pa = ins.front();
+                    ins.pop();
+                    if(result){
+                        mass[pa.first][pa.second]=2;
+                        region_blue.at(pa.first).at(pa.second)=true;
+                    }else{
+                        mass[pa.first][pa.second]=1;
+                    }
+                }
+            }
+        }
+    }
+    int red_region_point=0,blue_region_point=0,red_common=0,blue_common=0;
+    for(int a = 0;a < grid_x;a++){
+        for(int b = 0;b < grid_y;b++){
+            if(region_red.at(a).at(b))red_region_point+=std::abs(value_data.at(a).at(b));
+            if(region_blue.at(a).at(b))blue_region_point+=std::abs(value_data.at(a).at(b));
+            if(field_data.at(a).at(b)==1)red_common+=value_data.at(a).at(b);
+            if(field_data.at(a).at(b)==2)blue_common+=value_data.at(a).at(b);
+        }
+    }
+    red_point = std::make_pair(red_common, red_region_point);
+    blue_point = std::make_pair(blue_common, blue_region_point);
 }
