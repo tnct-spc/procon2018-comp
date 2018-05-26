@@ -27,7 +27,7 @@ private:
     int rand_param_count = 11;
 
     //ここはrunRand用 エージェント一人につきこれだけの実行を(rand_agent_count)回繰り返す
-    int one_agent_buttle_count = 500;
+    int one_agent_buttle_count = 1300;
 
 
     int buttle_count = 1;

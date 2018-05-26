@@ -97,7 +97,7 @@ void TestAgentParam::runFix(){
             threads.at(cpu).join();
 
 
-        std::ofstream output("../../procon2018-comp/Data/TestAgentParam/learning_data");
+        std::ofstream output("../../procon2018-comp/Data/TestAgentParam/learning_data_fix");
 
         double min_per = 1.0;
         double max_per = 0.0;
@@ -129,6 +129,9 @@ void TestAgentParam::runFix(){
 void TestAgentParam::runRand(){
 
     std::ofstream output("../../procon2018-comp/Data/TestAgentParam/learning_data_rand" , std::ios_base::app);
+
+    int sum_win = 0;
+    int sum_try = 0;
 
     //ここでほとんどの処理を行う
     auto agent_param_check = [&]{
@@ -167,8 +170,11 @@ void TestAgentParam::runRand(){
         for(int cpu = 0; cpu < cpu_num; ++cpu)
             threads.at(cpu).join();
 
-        const std::vector<double>& data = agent.getData();
 
+        sum_win += win_count;
+        sum_try += try_count;
+
+        const std::vector<double>& data = agent.getData();
 
         for(int count = 0; count < 6; ++count)
             output << data.at(count) << " , ";
@@ -183,6 +189,8 @@ void TestAgentParam::runRand(){
         std::cout << data.at(5) << " }  :  ";
 
         std::cout << win_count << " / " << try_count << "  :  " << 1.0 * win_count / try_count << std::endl;
+
+        std::cout << "average value  :  " << 1.0 * sum_win / sum_try << std::endl;
 
     };
 
@@ -204,9 +212,12 @@ int TestAgentParam::buttle(GeneticAgent& agent_1_data, GeneticAgent& agent_2_dat
 
     managers.at(index)->resetManager(size.first, size.second, false, turn);
 
-    int win_num = managers.at(index)->simulationGenetic(agent_1_data, agent_2_data, 3);
+    int win_num = (index % 2 ? managers.at(index)->simulationGenetic(agent_1_data, agent_2_data, 3) : managers.at(index)->simulationGenetic(agent_2_data, agent_1_data, 3));
 
     if(win_num == -1)return 0;
+
+    if(!(index % 2))
+        return (win_num ? -1 : 1);
 
     //引き分けなら0,勝ちなら正で負けなら負
     return (win_num ? 1 : -1);
