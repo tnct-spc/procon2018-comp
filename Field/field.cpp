@@ -257,19 +257,19 @@ void procon::Field::UpdatePoint(){
     //red region
     for(int a = 0;a < grid_x;a++){
         for(int b = 0;b < grid_y;b++){
-            if(mass[a][b]==0 && field_data.at(a).at(b) != 1){
+            if(field_data.at(a).at(b) != 1){
                 std::queue<std::pair<int,int>> que,ins;
                 ins.push(std::make_pair(a,b));
                 que.push(std::make_pair(a,b));
                 bool result = true;
-                bool flag[grid_x][grid_y] = {true};
+                std::vector<std::vector<bool>> flag=std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y,true));
                 while(!que.empty()){
                     std::pair<int,int> pa = que.front();
                     que.pop();
                     flag[pa.first][pa.second] = false;
 
                     if(pa.first+1!=grid_x){
-                        if(flag[pa.first+1][pa.second]&&field_data.at(pa.first+1).at(pa.second) != 1){
+                        if((flag[pa.first+1][pa.second])&&(field_data.at(pa.first+1).at(pa.second) != 1)){
                             que.push(std::make_pair(pa.first+1,pa.second));
                             ins.push(std::make_pair(pa.first+1,pa.second));
                         }
@@ -278,7 +278,7 @@ void procon::Field::UpdatePoint(){
                     }
 
                     if(pa.first != 0){
-                        if(flag[pa.first-1][pa.second]&&field_data.at(pa.first-1).at(pa.second) != 1){
+                        if((flag[pa.first-1][pa.second])&&(field_data.at(pa.first-1).at(pa.second) != 1)){
                             que.push(std::make_pair(pa.first-1,pa.second));
                             ins.push(std::make_pair(pa.first-1,pa.second));
                         }
@@ -287,7 +287,7 @@ void procon::Field::UpdatePoint(){
                     }
 
                     if(pa.second+1 != grid_y){
-                        if(flag[pa.first][pa.second+1]&&field_data.at(pa.first).at(pa.second+1) != 1){
+                        if((flag[pa.first][pa.second+1])&&(field_data.at(pa.first).at(pa.second+1) != 1)){
                             que.push(std::make_pair(pa.first,pa.second+1));
                             ins.push(std::make_pair(pa.first,pa.second+1));
                         }
@@ -296,7 +296,7 @@ void procon::Field::UpdatePoint(){
                     }
 
                     if(pa.second != 0){
-                        if(flag[pa.first][pa.second-1]&&field_data.at(pa.first).at(pa.second-1) != 1){
+                        if((flag[pa.first][pa.second-1])&&(field_data.at(pa.first).at(pa.second-1) != 1)){
                             que.push(std::make_pair(pa.first,pa.second-1));
                             ins.push(std::make_pair(pa.first,pa.second-1));
                         }
@@ -309,10 +309,10 @@ void procon::Field::UpdatePoint(){
                     std::pair<int,int> pa = ins.front();
                     ins.pop();
                     if(result){
-                        mass[pa.first][pa.second]=2;
+                     //   mass[pa.first][pa.second]=2;
                         region_red.at(pa.first).at(pa.second)=true;
                     }else{
-                        mass[pa.first][pa.second]=1;
+                      //  mass[pa.first][pa.second]=1;
                     }
                 }
             }
@@ -326,7 +326,7 @@ void procon::Field::UpdatePoint(){
     }
     for(int a = 0;a < grid_x;a++){
         for(int b = 0;b < grid_y;b++){
-            if(mass[a][b]==0 && field_data.at(a).at(b) != 2){
+            if(field_data.at(a).at(b) != 2){
                 std::queue<std::pair<int,int>> que,ins;
                 ins.push(std::make_pair(a,b));
                 que.push(std::make_pair(a,b));
@@ -378,10 +378,10 @@ void procon::Field::UpdatePoint(){
                     std::pair<int,int> pa = ins.front();
                     ins.pop();
                     if(result){
-                        mass[pa.first][pa.second]=2;
+                       // mass[pa.first][pa.second]=2;
                         region_blue.at(pa.first).at(pa.second)=true;
                     }else{
-                        mass[pa.first][pa.second]=1;
+                        //mass[pa.first][pa.second]=1;
                     }
                 }
             }
@@ -399,17 +399,17 @@ void procon::Field::UpdatePoint(){
     red_point = std::make_pair(red_common, red_region_point);
     blue_point = std::make_pair(blue_common, blue_region_point);
     std::cout<<"赤"<<std::endl;
-    for(int a = 0;a < grid_x;a++){
-        for(int b = 0;b < grid_y;b++){
-            std::cout<<region_red.at(a).at(b)?1:0<<" ";
+    for(int a = 0;a < grid_y;a++){
+        for(int b = 0;b < grid_x;b++){
+            std::cout<<(region_red.at(b).at(a)?1:0)<<" ";
         }
         std::cout<<std::endl;
     }
     std::cout<<std::endl;
     std::cout<<"青"<<std::endl;
-    for(int a = 0;a < grid_x;a++){
-        for(int b = 0;b < grid_y;b++){
-            std::cout<<region_blue.at(a).at(b)?1:0<<" ";
+    for(int a = 0;a < grid_y;a++){
+        for(int b = 0;b < grid_x;b++){
+            std::cout<<(region_blue.at(b).at(a)?1:0)<<" ";
         }
         std::cout<<std::endl;
     }
