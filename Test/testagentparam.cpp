@@ -201,13 +201,17 @@ void TestAgentParam::runRand(bool is_double){
         for(int count = 0; count < 5; ++count)
             std::cout << data.at(count) << " , ";
 
-        std::cout << data.at(5) << " }  ,  ";
+        std::cout << data.at(5);
+        std::cout << (is_double ? " }  ,  " : " }  :  ");
 
-        std::cout << "{ ";
-        for(int count = 0; count < 5; ++count)
-            std::cout << data_2.at(count) << " , ";
+        if(is_double){
 
-        std::cout << data_2.at(5) << " }  :  ";
+            std::cout << "{ ";
+            for(int count = 0; count < 5; ++count)
+                std::cout << data_2.at(count) << " , ";
+
+            std::cout << data_2.at(5) << " }  :  ";
+        }
 
         std::cout << win_count << " / " << try_count << "  :  " << 1.0 * win_count / try_count << std::endl;
 
