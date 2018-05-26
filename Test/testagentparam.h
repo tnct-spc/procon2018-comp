@@ -32,6 +32,14 @@ private:
 
     int cpu_num;
 
+    std::random_device rnd;
+    std::mt19937 mt;
+    std::uniform_int_distribution<> rand_turn;
+    std::uniform_int_distribution<> rand_size;
+
+
+    int buttle(GeneticAgent& agent_1_data, GeneticAgent& agent_2_data, int index);
+
     std::vector<GameManager*> managers;
 
     std::vector<GeneticAgent> buttle_agents;

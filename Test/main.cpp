@@ -24,7 +24,7 @@ int main()
 
     if(test_number == 0){
         TestAgentParam test;
-        int run_number = -1;
+        int test_number = -1;
 
         std::cout << "select mode" << std::endl;
         std::cout << "0 : runFix" << std::endl;
