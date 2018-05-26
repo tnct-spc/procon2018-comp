@@ -1,6 +1,7 @@
 #include "field.h"
 #include<queue>
 #include<complex>
+#include<iostream>
 
 procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
     grid_x = size_x;
@@ -247,7 +248,12 @@ void procon::Field::setStates(const std::vector<std::vector<int>>& values){
     field_data = values;
 }
 void procon::Field::UpdatePoint(){
-    int mass[grid_x][grid_y]={0};
+    int mass[grid_x][grid_y];
+    for(int a = 0;a < grid_x;a++){
+        for(int b = 0;b < grid_y;b++){
+            mass[a][b]=0;
+        }
+    }
     //red region
     for(int a = 0;a < grid_x;a++){
         for(int b = 0;b < grid_y;b++){
@@ -271,7 +277,7 @@ void procon::Field::UpdatePoint(){
                         result = false;
                     }
 
-                    if(pa.first-1 != -1){
+                    if(pa.first != 0){
                         if(flag[pa.first-1][pa.second]&&field_data.at(pa.first-1).at(pa.second) != 1){
                             que.push(std::make_pair(pa.first-1,pa.second));
                             ins.push(std::make_pair(pa.first-1,pa.second));
@@ -289,7 +295,7 @@ void procon::Field::UpdatePoint(){
                         result = false;
                     }
 
-                    if(pa.second-1 == -1){
+                    if(pa.second != 0){
                         if(flag[pa.first][pa.second-1]&&field_data.at(pa.first).at(pa.second-1) != 1){
                             que.push(std::make_pair(pa.first,pa.second-1));
                             ins.push(std::make_pair(pa.first,pa.second-1));
@@ -340,7 +346,7 @@ void procon::Field::UpdatePoint(){
                         result = false;
                     }
 
-                    if(pa.first-1 != -1){
+                    if(pa.first != 0){
                         if(flag[pa.first-1][pa.second]&&field_data.at(pa.first-1).at(pa.second) != 2){
                             que.push(std::make_pair(pa.first-1,pa.second));
                             ins.push(std::make_pair(pa.first-1,pa.second));
@@ -358,7 +364,7 @@ void procon::Field::UpdatePoint(){
                         result = false;
                     }
 
-                    if(pa.second-1 == -1){
+                    if(pa.second != 0){
                         if(flag[pa.first][pa.second-1]&&field_data.at(pa.first).at(pa.second-1) != 2){
                             que.push(std::make_pair(pa.first,pa.second-1));
                             ins.push(std::make_pair(pa.first,pa.second-1));
@@ -392,6 +398,21 @@ void procon::Field::UpdatePoint(){
     }
     red_point = std::make_pair(red_common, red_region_point);
     blue_point = std::make_pair(blue_common, blue_region_point);
+    std::cout<<"赤"<<std::endl;
+    for(int a = 0;a < grid_x;a++){
+        for(int b = 0;b < grid_y;b++){
+            std::cout<<region_red.at(a).at(b)?1:0<<" ";
+        }
+        std::cout<<std::endl;
+    }
+    std::cout<<std::endl;
+    std::cout<<"青"<<std::endl;
+    for(int a = 0;a < grid_x;a++){
+        for(int b = 0;b < grid_y;b++){
+            std::cout<<region_blue.at(a).at(b)?1:0<<" ";
+        }
+        std::cout<<std::endl;
+    }
 }
 std::pair<int,int> procon::Field::getPoints(int i){
     if(i==1){
