@@ -131,6 +131,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
             agentAct(1,1,team_2_ans.second);
 
             changeTurn();
+            field->UpdatePoint();
 
             field_vec.push_back(std::make_shared<procon::Field>(*field));
 

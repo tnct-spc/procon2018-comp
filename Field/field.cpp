@@ -393,3 +393,10 @@ void procon::Field::UpdatePoint(){
     red_point = std::make_pair(red_common, red_region_point);
     blue_point = std::make_pair(blue_common, blue_region_point);
 }
+std::pair<int,int> procon::Field::getPoints(int i){
+    if(i==1){
+        return red_point;
+    }else{
+        return blue_point;
+    }
+}
