@@ -10,6 +10,8 @@ TestAgentParam::TestAgentParam() :
     rand_turn = std::uniform_int_distribution<>(60, 120);
     rand_size = std::uniform_int_distribution<>(8, 12);
 
+    threads.resize(cpu_num);
+
     for(int index = 0; index < cpu_num; ++index){
         managers.push_back(new GameManager(12,12,false,60));
     }
@@ -21,6 +23,10 @@ void TestAgentParam::runFix(){
     //テストなので複数アルゴリズムへの対応はしません！やった！
     //両方のエージェントに対して同じアルゴリズムを使うよ
 
+    std::vector<GeneticAgent> buttle_agents;
+
+    std::vector<int> win_count;
+    std::vector<int> try_count;
 
     int agent_count_sum = 1;
     for(int count = 0; count < 6; ++count)
@@ -54,7 +60,6 @@ void TestAgentParam::runFix(){
     try_count.resize(agent_count,0);
 
 
-    std::vector<std::thread> threads(cpu_num);
 
     std::vector<std::pair<int,int>> agent_buttle_cpu(cpu_num);//[開始地点,終了地点)で戦闘に対応するエージェントを記録しておく
 
@@ -122,6 +127,73 @@ void TestAgentParam::runFix(){
 }
 
 void TestAgentParam::runRand(){
+
+    std::ofstream output("../../procon2018-comp/Data/TestAgentParam/learning_data_rand" , std::ios_base::app);
+
+    //ここでほとんどの処理を行う
+    auto agent_param_check = [&]{
+        GeneticAgent agent(6, 2);
+
+        std::vector<std::pair<int,int>> agent_buttle_cpu(cpu_num);
+        agent_buttle_cpu.at(0) = std::make_pair(0, one_agent_buttle_count / cpu_num + (one_agent_buttle_count % cpu_num > 0));
+        for(int cpu = 1; cpu < cpu_num; ++cpu)
+            agent_buttle_cpu.at(cpu) = std::make_pair(agent_buttle_cpu.at(cpu - 1).second, agent_buttle_cpu.at(cpu - 1).second + one_agent_buttle_count / cpu_num + (one_agent_buttle_count % cpu_num > cpu));
+
+        int try_count = 0;
+        int win_count = 0;
+
+        for(int cpu = 0; cpu < cpu_num; ++cpu)
+            threads.at(cpu) = std::thread([&](int cpu_index){
+                std::lock_guard<std::mutex> lock(mtx);
+
+                for(int agent_index = agent_buttle_cpu.at(cpu_index).first; agent_index < agent_buttle_cpu.at(cpu_index).second; ++agent_index){
+
+                    //対戦相手の生成
+                    GeneticAgent rand_agent_data(6, 2);
+
+                    for(int count = 0; count < buttle_count; ++count){
+
+                        int win_flag = buttle(agent, rand_agent_data, cpu_index);
+
+                        if(win_flag != 0)
+                            ++try_count;
+                        if(win_flag == 1)
+                            ++win_count;
+                    }
+                }
+
+            }, cpu);
+
+        for(int cpu = 0; cpu < cpu_num; ++cpu)
+            threads.at(cpu).join();
+
+        const std::vector<double>& data = agent.getData();
+
+
+        for(int count = 0; count < 6; ++count)
+            output << data.at(count) << " , ";
+
+        output << win_count << " , " << try_count << " , " << 1.0 * win_count / try_count << std::endl;
+
+
+        std::cout << "{ ";
+        for(int count = 0; count < 5; ++count)
+            std::cout << data.at(count) << " , ";
+
+        std::cout << data.at(5) << " }  :  ";
+
+        std::cout << win_count << " / " << try_count << "  :  " << 1.0 * win_count / try_count << std::endl;
+
+    };
+
+
+    for(int count = 0; count < rand_agent_count; ++count){
+        std::cout << std::endl;
+        std::cout << "count : " << count + 1 << std::endl;
+        agent_param_check();
+    }
+
+    output.close();
 
 }
 

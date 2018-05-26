@@ -19,11 +19,16 @@ public:
 private:
     std::mutex mtx;
 
-    //ランダムで生成するエージェントの数
+    //ランダムで生成するエージェントの数(試行回数なので木にしなくていいです)
+    //というより無限に試行しないために一応付けているだけです
     int rand_agent_count = 1e5;
 
     //パラメータのバラケ具合(エージェントの数はrand_param_count^6になる)
     int rand_param_count = 11;
+
+    //ここはrunRand用 エージェント一人につきこれだけの実行を(rand_agent_count)回繰り返す
+    int one_agent_buttle_count = 500;
+
 
     int buttle_count = 1;
 
@@ -42,10 +47,8 @@ private:
 
     std::vector<GameManager*> managers;
 
-    std::vector<GeneticAgent> buttle_agents;
+    std::vector<std::thread> threads;
 
-    std::vector<int> win_count;
-    std::vector<int> try_count;
 
 };
 
