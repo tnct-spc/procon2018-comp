@@ -1,6 +1,6 @@
 #include "agentwrapper.h"
 
-AgentWrapper::AgentWrapper(int side, int agent_num, std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent_data = GeneticAgent(6, 2)) :
+AgentWrapper::AgentWrapper(int side, int agent_num, std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent_data) :
     side(side),
     agent(agent_num),
     manager(manager_ptr),
