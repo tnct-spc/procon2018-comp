@@ -73,6 +73,7 @@ void TestAgentParam::runFix(){
 
         //乱択で対戦相手を選択
         GeneticAgent rand_agent_data(6, 2);
+        GeneticAgent rand_agent_data_2(6, 2);
 
         for(int cpu = 0; cpu < cpu_num; ++cpu)
             threads.at(cpu) = std::thread([&](int cpu_index){
@@ -81,7 +82,7 @@ void TestAgentParam::runFix(){
                 for(int agent_index = agent_buttle_cpu.at(cpu_index).first; agent_index < agent_buttle_cpu.at(cpu_index).second; ++agent_index){
                     for(int count = 0; count < buttle_count; ++count){
 
-                        int win_flag = buttle(buttle_agents.at(agent_index), rand_agent_data, cpu_index);
+                        int win_flag = buttle(buttle_agents.at(agent_index), buttle_agents.at(agent_index), rand_agent_data, rand_agent_data_2, cpu_index);
 
                         if(win_flag != 0)
                             ++try_count.at(agent_index);
@@ -126,9 +127,13 @@ void TestAgentParam::runFix(){
 
 }
 
-void TestAgentParam::runRand(){
+void TestAgentParam::runRand(bool is_double){
 
-    std::ofstream output("../../procon2018-comp/Data/TestAgentParam/learning_data_rand" , std::ios_base::app);
+    std::ofstream output;
+    if(is_double == false)
+        output = std::ofstream("../../procon2018-comp/Data/TestAgentParam/learning_data_rand" , std::ios_base::app);
+    else
+        output = std::ofstream("../../procon2018-comp/Data/TestAgentParam/learning_data_rand_double" , std::ios_base::app);
 
     int sum_win = 0;
     int sum_try = 0;
@@ -136,6 +141,9 @@ void TestAgentParam::runRand(){
     //ここでほとんどの処理を行う
     auto agent_param_check = [&]{
         GeneticAgent agent(6, 2);
+        GeneticAgent agent_2(6, 2);
+
+        if(!is_double)agent_2 = agent;
 
         std::vector<std::pair<int,int>> agent_buttle_cpu(cpu_num);
         agent_buttle_cpu.at(0) = std::make_pair(0, one_agent_buttle_count / cpu_num + (one_agent_buttle_count % cpu_num > 0));
@@ -153,10 +161,11 @@ void TestAgentParam::runRand(){
 
                     //対戦相手の生成
                     GeneticAgent rand_agent_data(6, 2);
+                    GeneticAgent rand_agent_data_2(6, 2);
 
                     for(int count = 0; count < buttle_count; ++count){
 
-                        int win_flag = buttle(agent, rand_agent_data, cpu_index);
+                        int win_flag = buttle(agent, agent_2, rand_agent_data, rand_agent_data_2, cpu_index);
 
                         if(win_flag != 0)
                             ++try_count;
@@ -175,18 +184,34 @@ void TestAgentParam::runRand(){
         sum_try += try_count;
 
         const std::vector<double>& data = agent.getData();
+        const std::vector<double>& data_2 = agent_2.getData();
 
         for(int count = 0; count < 6; ++count)
             output << data.at(count) << " , ";
 
+        if(is_double)
+            for(int count = 0; count < 6; ++count)
+                output << data_2.at(count) << " , ";
+
         output << win_count << " , " << try_count << " , " << 1.0 * win_count / try_count << std::endl;
+
 
 
         std::cout << "{ ";
         for(int count = 0; count < 5; ++count)
             std::cout << data.at(count) << " , ";
 
-        std::cout << data.at(5) << " }  :  ";
+        std::cout << data.at(5);
+        std::cout << (is_double ? " }  ,  " : " }  :  ");
+
+        if(is_double){
+
+            std::cout << "{ ";
+            for(int count = 0; count < 5; ++count)
+                std::cout << data_2.at(count) << " , ";
+
+            std::cout << data_2.at(5) << " }  :  ";
+        }
 
         std::cout << win_count << " / " << try_count << "  :  " << 1.0 * win_count / try_count << std::endl;
 
@@ -205,14 +230,15 @@ void TestAgentParam::runRand(){
 
 }
 
-int TestAgentParam::buttle(GeneticAgent& agent_1_data, GeneticAgent& agent_2_data, int index){
+int TestAgentParam::buttle(GeneticAgent &agent_1_data, GeneticAgent &agent_2_data, GeneticAgent &agent_3_data, GeneticAgent &agent_4_data, int index){
 
     int turn = rand_turn(mt);
     std::pair<int,int> size = std::make_pair( rand_size(mt), rand_size(mt));
 
     managers.at(index)->resetManager(size.first, size.second, false, turn);
 
-    int win_num = (index % 2 ? managers.at(index)->simulationGenetic(agent_1_data, agent_2_data, 3) : managers.at(index)->simulationGenetic(agent_2_data, agent_1_data, 3));
+    int win_num = (index % 2 ? managers.at(index)->simulationGenetic(agent_3_data, agent_4_data, 3, agent_1_data, agent_2_data)
+                             : managers.at(index)->simulationGenetic(agent_1_data, agent_2_data, 3, agent_3_data, agent_4_data));
 
     if(win_num == -1)return 0;
 

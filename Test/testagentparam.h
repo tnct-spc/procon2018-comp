@@ -14,7 +14,7 @@ class TestAgentParam
 public:
     TestAgentParam();
     void runFix();
-    void runRand();
+    void runRand(bool is_double);
 
 private:
     std::mutex mtx;
@@ -43,7 +43,7 @@ private:
     std::uniform_int_distribution<> rand_size;
 
 
-    int buttle(GeneticAgent& agent_1_data, GeneticAgent& agent_2_data, int index);
+    int buttle(GeneticAgent& agent_1_data, GeneticAgent& agent_2_data, GeneticAgent& agent_3_data, GeneticAgent& agent_4_data, int index);
 
     std::vector<GameManager*> managers;
 
