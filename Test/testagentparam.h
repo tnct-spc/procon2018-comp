@@ -13,7 +13,8 @@ class TestAgentParam
 {
 public:
     TestAgentParam();
-    void run();
+    void runFix();
+    void runRand();
 
 private:
     std::mutex mtx;

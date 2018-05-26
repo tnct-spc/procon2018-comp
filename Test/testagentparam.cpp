@@ -12,7 +12,7 @@ TestAgentParam::TestAgentParam()
 
 }
 
-void TestAgentParam::run(){
+void TestAgentParam::runFix(){
 
     //テストなので複数アルゴリズムへの対応はしません！やった！
     //両方のエージェントに対して同じアルゴリズムを使うよ
@@ -134,5 +134,9 @@ void TestAgentParam::run(){
         std::cout << std::endl;
     }
 
+
+}
+
+void TestAgentParam::runRand(){
 
 }

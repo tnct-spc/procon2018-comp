@@ -24,7 +24,27 @@ int main()
 
     if(test_number == 0){
         TestAgentParam test;
-        test.run();
+        int run_number = -1;
+
+        std::cout << "select mode" << std::endl;
+        std::cout << "0 : runFix" << std::endl;
+        std::cout << "1 : runRand" << std::endl;
+
+        while(1){
+
+            std::cout << "test number : ";
+            std::cin >> test_number;
+
+            if(test_number >= 0 && test_number <= 1)
+                break;
+
+            std::cout << "incorrect" << std::endl;
+        }
+
+        if(test_number == 0)
+            test.runFix();
+        if(test_number == 1)
+            test.runRand();
     }
 
 
