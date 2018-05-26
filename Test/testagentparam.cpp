@@ -84,8 +84,6 @@ void TestAgentParam::run(){
 
         //乱択で対戦相手を選択
         GeneticAgent rand_agent_data(6, 2);
-        const std::vector<double>& data = rand_agent_data.getData();
-        for(auto xx : data)std::cout<<xx << " ";std::cout<<std::endl;
 
         for(int cpu = 0; cpu < cpu_num; ++cpu)
             threads.at(cpu) = std::thread([&](int cpu_index){
@@ -109,33 +107,6 @@ void TestAgentParam::run(){
         for(int cpu = 0; cpu < cpu_num; ++cpu)
             threads.at(cpu).join();
 
-        /*
-        for(int agent_index = 0; agent_index < agent_count; ++agent_index){
-
-            //ここ変える(連続で勝負させる マルチスレッド)
-            for(int count = 0; count < (buttle_count + cpu_num - 1) / cpu_num; ++count){
-
-                for(int cpu = 0; cpu < cpu_num; ++cpu)
-                    threads.at(cpu) = std::thread([&](int cpu_index, int index){
-                        for(int count = 0; count < (buttle_count + cpu_num - 1) / cpu_num; ++count)
-
-                        std::lock_guard<std::mutex> lock(mtx);
-
-                        int win_flag = buttle(buttle_agents.at(agent_index), rand_agent_data, cpu_index);
-
-                        if(win_flag != 0)
-                            ++try_count.at(index);
-                        if(win_flag == 1)
-                            ++win_count.at(index);
-
-                    }, cpu, agent_index);
-
-                for(int cpu = 0; cpu < cpu_num; ++cpu)
-                    threads.at(cpu).join();
-            }
-
-        }
-        */
 
         std::ofstream output("../../procon2018-comp/Data/TestAgentParam/learning_data");
 
@@ -146,9 +117,7 @@ void TestAgentParam::run(){
                 output << data.at(count) << " , ";
 
             output << win_count.at(index) << " , " << try_count.at(index) << " , " << 1.0 * win_count.at(index) / try_count.at(index) << std::endl;
-            //std::cout << index << "  :  " << win_count.at(index) << " / " << try_count.at(index) << "   :   " << 1.0 * win_count.at(index) / try_count.at(index) << std::endl;
         }
-        //std::cout << std::endl;
         output.close();
     }
 
