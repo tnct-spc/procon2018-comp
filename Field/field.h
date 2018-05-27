@@ -5,6 +5,9 @@
 #include <vector>
 #include <utility>
 #include <random>
+#include<queue>
+#include<complex>
+#include<iostream>
 
 namespace procon {
 
