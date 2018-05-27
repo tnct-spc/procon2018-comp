@@ -246,8 +246,9 @@ void procon::Field::setStates(const std::vector<std::vector<int>>& values){
 }
 void procon::Field::UpdatePoint(){
     auto calc = [&](int i){
-        std::vector<std::vector<bool>> flag = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, true));
-        std::vector<std::vector<bool>> mass = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false));
+        std::vector<std::vector<bool>> flag = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, true)); //訪れたかどうかの判定
+        std::vector<std::vector<bool>> mass = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false));//状態を格納
+        //全マス訪れてそこから幅優先掛けてるだけなのん、自分のチームのマスだったり、すでに探索で訪れている場合には探索しないのん
         for(int x = 0;x < grid_x;x++){
             for(int y = 0;y < grid_y;y++){
                 if(flag.at(x).at(y)&&field_data.at(x).at(y)!=i){
@@ -310,12 +311,13 @@ void procon::Field::UpdatePoint(){
         }
         return mass;
     };
-    region_red = calc(1);
-    region_blue = calc(2);
-    int region_red_point = 0;
-    int region_blue_point = 0;
-    int common_red_point = 0;
-    int common_blue_point = 0;
+    region_red = calc(1);//赤チーム
+    region_blue = calc(2);//青チーム
+    int region_red_point = 0;//赤領域
+    int region_blue_point = 0;//青領域
+    int common_red_point = 0;//赤マスポイント
+    int common_blue_point = 0;//青マスポイント
+    //それぞれのマスにゴニョゴニョしてます(読めばわかる)
     for(int a = 0;a < grid_x;a++){
         for(int b = 0;b < grid_y;b++){
             if(field_data.at(a).at(b)==1)common_red_point+=value_data.at(a).at(b);
@@ -324,8 +326,8 @@ void procon::Field::UpdatePoint(){
             if(region_blue.at(a).at(b))region_blue_point+=std::abs(value_data.at(a).at(b));
         }
     }
-    red_point = std::make_pair(common_red_point,region_red_point);
-    blue_point = std::make_pair(common_blue_point,region_blue_point);
+    red_point = std::make_pair(common_red_point,region_red_point);//メンバに代入
+    blue_point = std::make_pair(common_blue_point,region_blue_point);//同上c
 }
 std::pair<int,int> procon::Field::getPoints(int i){
     if(i==1){
