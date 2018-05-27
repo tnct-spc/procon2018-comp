@@ -248,6 +248,71 @@ void procon::Field::setStates(const std::vector<std::vector<int>>& values){
     field_data = values;
 }
 void procon::Field::UpdatePoint(){
+    auto calc = [&](int i){
+        std::vector<std::vector<bool>> flag = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, true));
+        std::vector<std::vector<bool>> mass = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, true));
+        for(int x = 0;x < grid_x;x++){
+            for(int y = 0;y < grid_y;y++){
+                if(flag.at(x).at(y)&&field_data.at(x).at(y)!=i){
+                    std::queue<std::pair<int,int>> que,log;
+                    que.push(std::make_pair(x,y));
+                    log.push(std::make_pair(x,y));
+                    bool result = true;
+                    while(!que.empty()){
+                        std::pair<int,int> pos = que.front();
+                        que.pop();
+                        int pos_x = pos.first;
+                        int pos_y = pos.second;
+                        flag.at(pos_x).at(pos_y)=false;
+                        if(pos_x!=0){
+                            if(field_data.at(pos_x-1).at(pos_y)!=i && flag.at(pos_x-1).at(pos_y)){
+                                que.push(std::make_pair(pos_x-1,pos_y));
+                                log.push(std::make_pair(pos_x-1,pos_y));
+                            }
+                        }else{
+                            result = false;
+                        }
+
+                        if(pos_x!=grid_x-1){
+                            if(field_data.at(pos_x+1).at(pos_y)!=i && flag.at(pos_x+1).at(pos_y)){
+                                que.push(std::make_pair(pos_x+1,pos_y));
+                                log.push(std::make_pair(pos_x+1,pos_y));
+                            }
+                        }else{
+                            result = false;
+                        }
+
+                        if(pos_y!=0){
+                            if(field_data.at(pos_x).at(pos_y-1)!=i && flag.at(pos_x).at(pos_y-1)){
+                                que.push(std::make_pair(pos_x,pos_y-1));
+                                log.push(std::make_pair(pos_x,pos_y-1));
+                            }
+                        }else{
+                            result = false;
+                        }
+
+                        if(pos_y!=grid_y-1){
+                            if(field_data.at(pos_x).at(pos_y+1)!=i && flag.at(pos_x).at(pos_y+1)){
+                                que.push(std::make_pair(pos_x,pos_y+1));
+                                log.push(std::make_pair(pos_x,pos_y+1));
+                            }
+                        }else{
+                            result = false;
+                        }
+
+                    }
+                    while(!log.empty()){
+                        std::pair<int,int> p = log.front();
+                        log.pop();
+                        if(result){
+                            mass[p.first][p.second]=true;
+                        }
+                    }
+                }
+            }
+        }
+        return mass;
+    };
 
 }
 std::pair<int,int> procon::Field::getPoints(int i){
