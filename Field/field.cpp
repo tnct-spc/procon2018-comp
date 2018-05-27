@@ -1,7 +1,4 @@
 #include "field.h"
-#include<queue>
-#include<complex>
-#include<iostream>
 
 procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
     grid_x = size_x;
