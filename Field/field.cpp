@@ -250,7 +250,7 @@ void procon::Field::setStates(const std::vector<std::vector<int>>& values){
 void procon::Field::UpdatePoint(){
     auto calc = [&](int i){
         std::vector<std::vector<bool>> flag = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, true));
-        std::vector<std::vector<bool>> mass = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, true));
+        std::vector<std::vector<bool>> mass = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false));
         for(int x = 0;x < grid_x;x++){
             for(int y = 0;y < grid_y;y++){
                 if(flag.at(x).at(y)&&field_data.at(x).at(y)!=i){
