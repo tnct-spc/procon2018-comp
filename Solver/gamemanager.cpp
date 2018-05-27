@@ -131,7 +131,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
             agentAct(1,1,team_2_ans.second);
 
             changeTurn();
-            field->UpdatePoint();
+            field->updatePoint();
 
             std::pair<int,int> red_point,blue_point;
 
