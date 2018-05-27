@@ -313,7 +313,22 @@ void procon::Field::UpdatePoint(){
         }
         return mass;
     };
-
+    region_red = calc(1);
+    region_blue = calc(2);
+    int region_red_point = 0;
+    int region_blue_point = 0;
+    int common_red_point = 0;
+    int common_blue_point = 0;
+    for(int a = 0;a < grid_x;a++){
+        for(int b = 0;b < grid_y;b++){
+            if(field_data.at(a).at(b)==1)common_red_point+=value_data.at(a).at(b);
+            if(field_data.at(a).at(b)==2)common_blue_point+=value_data.at(a).at(b);
+            if(region_red.at(a).at(b))region_red_point+=std::abs(value_data.at(a).at(b));
+            if(region_blue.at(a).at(b))region_blue_point+=std::abs(value_data.at(a).at(b));
+        }
+    }
+    red_point = std::make_pair(common_red_point,region_red_point);
+    blue_point = std::make_pair(common_blue_point,region_blue_point);
 }
 std::pair<int,int> procon::Field::getPoints(int i){
     if(i==1){
