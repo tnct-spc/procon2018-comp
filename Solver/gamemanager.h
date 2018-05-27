@@ -12,6 +12,7 @@
 #include <vector>
 #include <memory>
 #include <map>
+#include <functional>
 
 class AlgorithmWrapper;
 
@@ -34,11 +35,12 @@ public:
 
     void startSimulation(QString my_algo, QString opponent_algo);
 
-    int simulationGenetic(const GeneticAgent& agent_1, const GeneticAgent& agent_2, int algo_number);
+    int simulationGenetic(const GeneticAgent& agent_1, const GeneticAgent& agent_2, int algo_number, const GeneticAgent& agent_3 = 0, const GeneticAgent& agent_4 = 0);
 
     unsigned int getFinalTurn();
 
-    bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2);
+    bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2, bool double_move = true);
+
     void setAutoMode(bool value);
 
     void changeTurn();

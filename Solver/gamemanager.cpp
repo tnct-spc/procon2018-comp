@@ -7,6 +7,7 @@
 #include "simplemontecarlo/montecarlowithalgo.h"
 #include "BreadthFirstSearch/beamsearch.h"
 #include "geneticalgo/simplealgorithm.h"
+#include "doubleagent/agentmanager.h"
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
@@ -71,6 +72,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_1 = std::make_shared<SimpleAlgorithm>(share);
     }else if(QString::compare("BeamSearch", my_algo) == 0){
         team_1 = std::make_shared<beamsearch>(share);
+    }else if(QString::compare("TestDoubleAgentAlgo", my_algo) == 0){
+        team_1 = std::make_shared<AgentManager>(share, 0, 0);
     }
 
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
@@ -83,6 +86,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_2 = std::make_shared<SimpleAlgorithm>(team_1->getManagerPtr());
     }else if(QString::compare("BeamSearch", opponent_algo)==0){
         team_2 = std::make_shared<beamsearch>(team_1->getManagerPtr());
+    }else if(QString::compare("TestDoubleAgentAlgo", opponent_algo) == 0){
+        team_2 = std::make_shared<AgentManager>(team_1->getManagerPtr(), 1, 0);
     }
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
@@ -109,7 +114,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         for(; now_turn < turn_max; ++now_turn){
 
 
-            std::cout << "turn " << now_turn + 1 << " started" << std::endl << std::endl;
+            //std::cout << "turn " << now_turn + 1 << " started" << std::endl << std::endl;
 
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
@@ -135,7 +140,6 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
             field_vec.push_back(std::make_shared<procon::Field>(*field));
 
 //            progresdock->addAnswer(*(field_vec.back()));
-
 
 
             setFieldCount(field_vec.size() - 1);
@@ -189,7 +193,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
 }
 
-int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAgent &agent_2, int algo_number){
+int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAgent &agent_2, int algo_number, const GeneticAgent& agent_3, const GeneticAgent& agent_4){
 
     //std::cout << "simulationGenetic" << std::endl;
 
@@ -200,6 +204,10 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
     if(algo_number == 2){
         team_1 = std::make_shared<SimpleAlgorithm>(share, agent_1);
         team_2 = std::make_shared<SimpleAlgorithm>(share, agent_2);
+    }
+    if(algo_number == 3){
+        team_1 = std::make_shared<AgentManager>(share, 0, 0, &agent_1, &agent_2);
+        team_2 = std::make_shared<AgentManager>(share, 1, 0, &agent_3, &agent_4);
     }
 
     for(; now_turn < turn_max; ++now_turn){
@@ -240,10 +248,8 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
                 point_2 += field->getState(x, y).second;
         }
 
-    /*
-    if(point_1 != point_2)
-        std::cout << point_1 << " , " << point_2 << std::endl;
-    */
+    // std::cout << point_1 << " , " << point_2 << std::endl;
+
 
     if(point_1 == point_2)return -1;
     return (point_1 > point_2 ? 1 : 0);
@@ -270,7 +276,7 @@ unsigned int GameManager::getFinalTurn(){
     return turn_max;
 }
 
-bool GameManager::canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2){
+bool GameManager::canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2, bool double_move){
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
@@ -309,9 +315,22 @@ bool GameManager::canPut(const unsigned int side, const unsigned int move_1, con
         return (agent_pos_1 != agent_pos_2);
     };
 
+    //クソ実装を許せ
+    if(double_move == false){
+
+        std::pair<int,int> agent_pos = field->getAgent(side, move_1);
+
+        agent_pos.first += x_list.at(move_2);
+        agent_pos.second += y_list.at(move_2);
+
+
+        return !(agent_pos.first < 0 || agent_pos.second < 0 || agent_pos.first >= field->getSize().first || agent_pos.second >= field->getSize().second);
+
+    }
 
     return ( check_outofrange(0) && check_outofrange(1) && check_conflict());
 }
+
 
 void GameManager::agentAct(const int turn, const int agent, const std::tuple<int, int, int> tuple_val){
 
@@ -325,12 +344,13 @@ void GameManager::agentAct(const int turn, const int agent, const std::tuple<int
     int y_pos = agent_pos.second + y_inp;
 
     if(
+        type == 0 ||
         x_pos < 0 || x_pos >= grid_size.first ||
         y_pos < 0 || y_pos >= grid_size.second ||
         (type == 1 && field->getState(x_pos, y_pos).first == (turn==1 ? 1 : 2)) ||
-        (type == 2 && field->getState(x_pos, y_pos).first != (turn==1 ? 1 : 2))
+        (type == 2 && field->getState(x_pos, y_pos).first == 0)
         ){
-        act_stack.at(turn).at(agent) = std::make_tuple(0, 0, 0);
+        act_stack.at(turn).at(agent) = std::make_tuple(1, agent_pos.first, agent_pos.second);
         return ;
     }
     act_stack.at(turn).at(agent) = std::make_tuple(type, x_pos, y_pos);
@@ -342,6 +362,29 @@ void GameManager::changeTurn(){
 
     int type, pos_x, pos_y;
 
+
+
+    //移動しようとしたエージェントが失敗した時に呼ばれる
+    std::function<void(std::pair<int,int>)> delete_move = [&](std::pair<int,int> agent_data){
+
+        std::pair<int,int> not_move = field->getAgent(agent_data.first, agent_data.second);
+
+        //もう既に埋まっていて、それが移動予定erなら
+
+        //ここで死んでる！！！
+        if(counts[not_move].first > 0){
+            std::pair<int,int> next_delete_move = counts[not_move].second;
+
+            counts[not_move] = std::make_pair(-1, std::make_pair(-1, -1));
+            //循環参照ケースの回避
+            if(next_delete_move != agent_data)
+                delete_move(next_delete_move);
+        }
+
+        counts[not_move] = std::make_pair(-1, std::make_pair(-1, -1));
+    };
+
+
     for(int side = 0; side < 2; ++side){
         for(int agent = 0; agent < 2; ++agent){
             std::tie(type, pos_x, pos_y) = act_stack.at(side).at(agent);
@@ -349,22 +392,34 @@ void GameManager::changeTurn(){
             //移動しないなら
             if(type != 1){
                 std::pair<int,int> not_move = field->getAgent(side, agent);
+
+                if(counts[not_move].first > 0){//移動しようとしているアレのコンフリクト
+                    delete_move(counts[not_move].second);
+                    delete_move(std::make_pair(side, agent));
+                }
+
                 counts[not_move] = std::make_pair(-1,std::make_pair(-1, -1));
             }
 
-            int color = 0;
-            if(type != 2)
-                color = side + 1;
-
             //もう既に存在しているなら
             if(counts.count(std::make_pair(pos_x, pos_y) )){
-                counts[std::make_pair(pos_x, pos_y)].first = -1;
-                continue;
-            }
 
-            counts[std::make_pair(pos_x, pos_y)] = std::make_pair(color ,std::make_pair(side,agent));
+                if(counts[std::make_pair(pos_x, pos_y)].first > 0){
+                    delete_move(counts[std::make_pair(pos_x, pos_y)].second);
+                    delete_move(std::make_pair(side, agent));
+                }
+
+                counts[std::make_pair(pos_x, pos_y)] = std::make_pair(-1, std::make_pair(-1, -1));
+            }else{
+                int color = 0;
+                if(type != 2)
+                    color = side + 1;
+
+                counts[std::make_pair(pos_x, pos_y)] = std::make_pair(color ,std::make_pair(side,agent));
+            }
         }
     }
+
     for(auto moves : counts){
         if(moves.second.first == -1)
             continue;
@@ -374,59 +429,6 @@ void GameManager::changeTurn(){
         if(moves.second.first != 0)
             field->setAgent(moves.second.second.first, moves.second.second.second, moves.first.first, moves.first.second);
     }
-
-    /*
-    std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> dest_map;
-    std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> tile_map;
-
-    int type, pos_x, pos_y;
-
-    for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
-        for(int agent_num = 0; agent_num < 2; ++agent_num){
-
-            std::tie(type, pos_x, pos_y) = act_stack.at(turn_flag).at(agent_num);
-            std::pair<int,int> pos = std::make_pair(pos_x, pos_y);
-
-            if(type == 1){
-                dest_map[ pos ].push_back( std::make_pair(turn_flag, agent_num) );
-            }else
-            if(type == 2){
-                tile_map[ pos ].push_back( std::make_pair(turn_flag, agent_num) );
-                dest_map[ field->getAgent(turn_flag,agent_num) ].push_back( std::make_pair(turn_flag, agent_num) );
-            }
-        }
-
-    for(auto elements : dest_map){
-
-        if(elements.second.size() > 1)
-            continue;
-
-        if(field->getState(elements.first.first, elements.first.second).first == (elements.second.at(0).first == 0 ? 2 : 1))
-            continue;
-
-
-        field->setAgent(elements.second.at(0).first, elements.second.at(0).second, elements.first.first, elements.first.second);
-        field->setState(elements.first.first, elements.first.second, elements.second.at(0).first + 1);
-    }
-
-    for(auto elements : tile_map){
-        bool state_flag = true;
-        if(elements.second.size() > 1)
-            continue;
-
-
-        for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
-            for(int agent_num = 0; agent_num < 2; ++agent_num)
-                if(field->getAgent(turn_flag, agent_num) == elements.first){
-                    state_flag = false;
-                    break;
-                }
-        if(state_flag)
-            field->setState(elements.first.first, elements.first.second, 0);
-    }
-    */
-
-
 }
 
 void GameManager::setAutoMode(bool value){

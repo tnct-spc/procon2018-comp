@@ -2,8 +2,10 @@
 
 SimpleAlgorithm::SimpleAlgorithm(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent) :
     AlgorithmWrapper(manager_ptr),
-    agent_data(agent)
+    agent_data(agent),
+    mt(rnd())
 {
+    rand_double = std::uniform_real_distribution<>(0.0, agent_data.getData().at(10) * 300);
 
 }
 
@@ -52,6 +54,10 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleAlgorith
 }
 
 double SimpleAlgorithm::evaluateMove(int side, std::pair<int, int> move){
+
+    //ここについて大幅にコードを変更します
+    //いくつかの評価値に対する重みの総和が1になるように値付けをする
+    //定数の辺りの処理が完全に不必要になるようにする
 
     //例外処理
     if(!manager->canPut(side, move.first, move.second))
@@ -139,12 +145,8 @@ double SimpleAlgorithm::evaluateMove(int side, std::pair<int, int> move){
 
         }
 
-        std::random_device rnd;
-        std::mt19937 mt(rnd());
-
-        std::uniform_real_distribution<> rand_double(0.0, const_random);
-
         value += rand_double(mt);
+
 
         value += point * per_point;
 
