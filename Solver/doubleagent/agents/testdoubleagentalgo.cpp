@@ -52,28 +52,25 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
     //パラメータの期待値が0.16程度
 
-    //定数 [-950,50]
-    double const_back_move = -1.0 * data.at(0) * 1000 + 10;
+    //定数
+    double const_back_move = -1.0 * data.at(0) * 1000 + 20;
 
-    //定数 [-950,50] これはconst_back_moveと重複する
-    double const_no_move = -1.0 * data.at(1) * 1000 + 10;
+    //定数 これはconst_back_moveと重複する
+    double const_no_move = -1.0 * data.at(1) * 1000 + 5;
 
     //per_delete_move * -1 * 削除したマスの得点 になる
-    //[-300, 980](有利な除去なら)
-    double per_delete_move = data.at(2) * 80 - 3;
+    double per_delete_move = data.at(2) * 80 - 5;
 
     //per_region * 囲ったマスの得点合計 になる
-    double per_region = data.at(3) * 100 - 2;
+    double per_region = data.at(3) * 100 - 6;
 
     //これは「タイルの得点」を元に計算する
     //per_point * タイル除去による(領域以外の)得点の変動値 になる
-    //[-1600, 1600]
     double per_point = data.at(4) * 100;
 
     //これは「得点の変動値の合計」を元に計算する
     //per_point_sum * 行動をした後の得点の変動値 になる
-    //領域なしで[-640,640]、領域を含むと2000点程度が加算されたりする
-    double per_point_sum = data.at(5) * 40;
+    double per_point_sum = data.at(5) * 50;
 
     double evaluate_val = 0.0;
     bool is_delete = false;
