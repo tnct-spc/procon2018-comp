@@ -36,7 +36,8 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
-    procon::Field field = manager->getField();
+    //ここのコストヤバいけど
+    procon::Field& field = manager->getField();
 
     //枝切り
     if(!manager->canPut(side, agent, move, false))
@@ -107,8 +108,14 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
         //変わる前の状況を保存しておく
         int before_state = field.getState(new_pos.first, new_pos.second).first;
+
+        std::vector<std::pair<int,int>> before_point(2);
+        before_point.at(0)= field.getPoints(side, false);
+        before_point.at(1) = field.getPoints((side == 1 ? 0 : 1), false);
+
         //仮に移動させてしまう
         field.setState(new_pos.first, new_pos.second, (delete_move ? 0 : side + 1) );
+
 
         //得点の変動値
         int pos_value = tile_value;
@@ -120,11 +127,6 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
         if(delete_move)
             return_value += pos_value * per_delete_move;
-
-        //side側かそうでないか(0ならside側)
-        std::vector<std::pair<int,int>> before_point(2);
-        before_point.at(0)= field.getPoints(side, false);
-        before_point.at(1) = field.getPoints((side == 1 ? 0 : 1), false);
 
 
 
@@ -156,7 +158,11 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
         return_value += point_diff * per_point_sum;
 
+        //変えたものを元に戻す
         field.setState(new_pos.first, new_pos.second, before_state );
+
+        field.setPoints(0, before_point.at(0));
+        field.setPoints(1, before_point.at(1));
 
         return return_value;
     };
