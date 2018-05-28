@@ -14,7 +14,7 @@ AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int side, i
     if(agent_data_1 != nullptr)
         setAgentData(*agent_data_1, 0);
     if(agent_data_2 != nullptr)
-        setAgentData(*agent_data_2, 0);
+        setAgentData(*agent_data_2, 1);
 
 }
 

@@ -32,6 +32,7 @@ const std::vector<std::pair<double, std::tuple<int,int,int>>> TestDoubleAgentAlg
 
 std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
+
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
