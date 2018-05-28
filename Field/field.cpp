@@ -349,12 +349,12 @@ void procon::Field::updatePoint(std::vector<std::vector<std::pair<int,int>>> nex
                             int new_pos_y = pos_y + y_list.at(index);
 
                             //ここ可読性
-                            if(new_pos_x != -1 && new_pos_x != grid_x && new_pos_y != -1 && new_pos_y != grid_y &&
-                                field_data.at(new_pos_x).at(new_pos_y) != side && flag.at(new_pos_x).at(new_pos_y) ){
+                            if(new_pos_x != -1 && new_pos_x != grid_x && new_pos_y != -1 && new_pos_y != grid_y){
+                                if(field_data.at(new_pos_x).at(new_pos_y) != side && flag.at(new_pos_x).at(new_pos_y) ){
 
-                                que.push(std::make_pair(new_pos_x, new_pos_y));
-                                log.push(std::make_pair(new_pos_x, new_pos_y));
-
+                                    que.push(std::make_pair(new_pos_x, new_pos_y));
+                                    log.push(std::make_pair(new_pos_x, new_pos_y));
+                                }
                             }else
                                 result = false;
                         }
