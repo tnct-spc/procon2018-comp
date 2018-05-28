@@ -5,6 +5,9 @@
 #include <vector>
 #include <utility>
 #include <random>
+#include<queue>
+#include<complex>
+#include<iostream>
 
 namespace procon {
 
@@ -19,6 +22,7 @@ public:
     std::pair<int,int> getAgent(const unsigned int turn, const unsigned int number) const;
     const std::vector<std::vector<int>>& getField() const;
     const std::vector<std::vector<int>>& getValue() const;
+    std::pair<int,int> getPoints(int side, bool update_flag = true); //iが1なら赤、それ以外なら青の<踏んだマス,領域点>を返す
 
     bool isPlaced(const unsigned int x, const unsigned int y);
     std::pair<int,int> getState(const unsigned int x, const unsigned int y) const;//pair<タイル状況,評価値>
@@ -34,6 +38,7 @@ public:
 
     std::pair<int,int> getSize() const;
 
+    void updatePoint();
 
 private:
     std::vector<std::vector<int>> field_data;
@@ -46,7 +51,9 @@ private:
     int grid_x;
     int grid_y;
 
+    std::vector<std::vector<bool>> region_red,region_blue;
 
+    std::pair<int,int> red_point,blue_point; //それぞれのチームの<踏んだマスの得点,領域得点>を格納
 };
 }
 

@@ -10,6 +10,9 @@ procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
     field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
     value_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
 
+    region_blue = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
+    region_red = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
+
     for(int side = 0; side < 2; ++side)
         for(int agent = 0; agent < 2; ++agent){
 
@@ -28,6 +31,10 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
 
     field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
     value_data = input_val;
+
+    region_blue = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
+    region_red = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
+
 
     for(int side = 0; side < 2; ++side)
         for(int agent = 0; agent < 2; ++agent){
@@ -64,6 +71,8 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     field_data = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0 ));
     value_data = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0 ));
 
+    region_blue = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
+    region_red = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
 
     /*
     std::uniform_int_distribution<> plus_rnd(0,max_val);
@@ -234,4 +243,107 @@ void procon::Field::setAgents(const std::vector<std::vector<std::pair<int,int>>>
 
 void procon::Field::setStates(const std::vector<std::vector<int>>& values){
     field_data = values;
+}
+void procon::Field::updatePoint(){
+
+    auto calc = [&](int side){
+
+        std::vector<std::vector<bool>> flag = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, true)); //訪れたかどうかの判定
+        std::vector<std::vector<bool>> mass = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false));//状態を格納
+
+        //全マス訪れてそこから幅優先掛けてるだけなのん、自分のチームのマスだったり、すでに探索で訪れている場合には探索しないのん
+
+        std::vector<int> x_list = {0, 1, 0, -1};
+        std::vector<int> y_list = {1, 0, -1, 0};
+
+        for(int x = 0; x < grid_x; x++){
+            for(int y = 0; y < grid_y; y++){
+
+                if(flag.at(x).at(y) && field_data.at(x).at(y) != side){
+
+                    std::queue<std::pair<int,int>> que, log;
+
+                    que.push(std::make_pair(x, y));
+                    log.push(std::make_pair(x, y));
+
+                    bool result = true;
+
+                    while(!que.empty()){
+
+                        std::pair<int,int> pos = que.front();
+                        que.pop();
+
+                        int pos_x = pos.first;
+                        int pos_y = pos.second;
+                        flag.at(pos_x).at(pos_y) = false;
+
+                        for(int index = 0; index < 4; ++index){
+                            int new_pos_x = pos_x + x_list.at(index);
+                            int new_pos_y = pos_y + y_list.at(index);
+
+                            //ここ可読性
+                            if(new_pos_x != -1 && new_pos_x != grid_x && new_pos_y != -1 && new_pos_y != grid_y &&
+                                field_data.at(new_pos_x).at(new_pos_y) != side && flag.at(new_pos_x).at(new_pos_y) ){
+
+                                que.push(std::make_pair(new_pos_x, new_pos_y));
+                                log.push(std::make_pair(new_pos_x, new_pos_y));
+
+                            }else
+                                result = false;
+                        }
+
+                    }
+
+                    while(!log.empty()){
+
+                        std::pair<int,int> p = log.front();
+                        log.pop();
+                        if(result)
+                            mass[p.first][p.second] = true;
+                    }
+
+                }
+            }
+        }
+        return mass;
+    };
+
+    region_red = calc(1);//赤チーム
+    region_blue = calc(2);//青チーム
+
+    int region_red_point = 0;//赤領域
+    int region_blue_point = 0;//青領域
+
+    int common_red_point = 0;//赤マスポイント
+    int common_blue_point = 0;//青マスポイント
+
+    //それぞれのマスにゴニョゴニョしてます(読めばわかる)
+    for(int a = 0;a < grid_x; a++){
+        for(int b = 0;b < grid_y; b++){
+
+            if(field_data.at(a).at(b) == 1)
+                common_red_point += value_data.at(a).at(b);
+            if(field_data.at(a).at(b) == 2)
+                common_blue_point += value_data.at(a).at(b);
+
+            if(region_red.at(a).at(b))
+                region_red_point += std::abs(value_data.at(a).at(b));
+
+            if(region_blue.at(a).at(b))
+                 region_blue_point += std::abs(value_data.at(a).at(b));
+
+        }
+    }
+
+    red_point = std::make_pair(common_red_point, region_red_point);//メンバに代入
+
+    blue_point = std::make_pair(common_blue_point, region_blue_point);//同上
+
+}
+std::pair<int,int> procon::Field::getPoints(int side, bool update_flag){
+
+    if(update_flag)
+        updatePoint();
+
+    return (side == 0 ? red_point : blue_point);
 }
