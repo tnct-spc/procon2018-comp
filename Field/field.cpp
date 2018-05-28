@@ -244,72 +244,61 @@ void procon::Field::setAgents(const std::vector<std::vector<std::pair<int,int>>>
 void procon::Field::setStates(const std::vector<std::vector<int>>& values){
     field_data = values;
 }
-void procon::Field::updatePoint(std::vector<std::vector<std::pair<int,int>>> next_move){
+void procon::Field::updatePoint(){
+    std::vector<std::vector<std::pair<int,int>>> next_move = agents;
+    for(int a = 0;a < grid_x;a++){
+        for(int b = 0;b < grid_y;b++){
+            if(field_data.at(a).at(b)==1)region_red.at(a).at(b)=false;
+            if(field_data.at(a).at(b)==2)region_blue.at(a).at(b)=false;
+        }
+    }
 
-    auto calc_near = [&](std::vector<std::pair<int,int>> next_pos,int side){
-
+    auto calc_near = [&](std::pair<int,int> pos){
         std::vector<std::vector<bool>> flag = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, true)); //訪れたかどうかの判定
-        std::vector<std::vector<bool>> mass = (side==1?region_red:region_blue);//状態を格納
-
+        std::vector<std::vector<bool>> mass = region_red;//状態を格納
         std::vector<int> x_list = {0, 1, 0, -1};
         std::vector<int> y_list = {1, 0, -1, 0};
 
-        int dx[]={1, 1, 1, 0, -1, -1, -1, 0};
-        int dy[]={1, 0, -1, -1, -1, 0, 1, 1};
-        for(int index_ = 0;index_ < next_pos.size();index_++){
-            std::pair<int,int> next_point = next_pos.at(index_);
-        for(int move_index = 0;move_index < 8;move_index++){
-                if(next_point.first + dx[move_index] < 0 || next_point.first + dx[move_index] >= grid_x)continue;
-                if(next_point.second + dy[move_index] < 0 || next_point.second + dy[move_index] >= grid_y)continue;
+        std::queue<std::pair<int,int>> que, log;
 
-                if(flag.at(next_point.first + dx[move_index]).at(next_point.second + dy[move_index]) && field_data.at(next_point.first + dx[move_index]).at(next_point.second + dy[move_index]) != side){
+        for(int force = 0;force < 4;force++){
+            std::pair<int,int> search_pair = std::make_pair(pos.first + x_list[force],pos.second + y_list[force]);
+            if(0 <= search_pair.first && search_pair.first < grid_x && 0 <= search_pair.second && search_pair.second < grid_y){
 
-                    std::queue<std::pair<int,int>> que, log;
+                if(field_data.at(search_pair.first).at(search_pair.second) != 1 && flag.at(search_pair.first).at(search_pair.second)){
 
-                    que.push(std::make_pair(next_point.first + dx[move_index], next_point.second + dy[move_index]));
-                    log.push(std::make_pair(next_point.first + dx[move_index], next_point.second + dy[move_index]));
-
+                    que.push(search_pair);
                     bool result = true;
-
                     while(!que.empty()){
-
-                        std::pair<int,int> pos = que.front();
+                        std::pair<int,int> p = que.front();
                         que.pop();
 
-                        int pos_x = pos.first;
-                        int pos_y = pos.second;
-                        flag.at(pos_x).at(pos_y) = false;
+                        for(int index = 0;index < 4;index++){
+                            if(0 <= p.first + x_list[index]&&p.first + x_list[index] < grid_x&&0 <= p.second + y_list[index] && p.second + y_list[index] < grid_y){
+                                if(field_data.at(p.first + x_list[index]).at(p.second + y_list[index]) != 1 && flag.at(p.first + x_list[index]).at(p.second + y_list[index])){
+                                    que.push(std::make_pair(p.first + x_list[index],p.second + y_list[index]));
+                                    log.push(std::make_pair(p.first + x_list[index],p.second + y_list[index]));
+                                    flag.at(p.first+x_list[index]).at(p.second+y_list[index])=false;
 
-                        for(int index = 0; index < 4; ++index){
-                            int new_pos_x = pos_x + x_list.at(index);
-                            int new_pos_y = pos_y + y_list.at(index);
-
-                            //ここ可読性
-                            if(new_pos_x != -1 && new_pos_x != grid_x && new_pos_y != -1 && new_pos_y != grid_y &&
-                                field_data.at(new_pos_x).at(new_pos_y) != side && flag.at(new_pos_x).at(new_pos_y) ){
-
-                                que.push(std::make_pair(new_pos_x, new_pos_y));
-                                log.push(std::make_pair(new_pos_x, new_pos_y));
-
-                            }else
+                                }
+                            }else{
                                 result = false;
+                            }
                         }
 
                     }
-
                     while(!log.empty()){
-
-                        std::pair<int,int> p = log.front();
+                        mass[log.front().first][log.front().second]=result;
                         log.pop();
-                        if(result)
-                            mass[p.first][p.second] = true;
                     }
-
                 }
 
+
+            }
         }
-        }
-        side ==1 ? region_red = mass : region_blue = mass ;
+
+        region_red = mass;
+
         return;
     };
 
@@ -375,17 +364,16 @@ void procon::Field::updatePoint(std::vector<std::vector<std::pair<int,int>>> nex
         side==1 ? region_red = mass : region_blue = mass;
         return;
     };
-
-    if(next_move.empty()){
-        calc_all(1);
-        calc_all(2);
-    }else{
-        calc_near(next_move.at(0),1);
-        calc_near(next_move.at(1),2);
-    }
+    //calc_all(1);
+    //calc_all(2);
+    calc_near(next_move.at(0).at(0));
+    calc_near(next_move.at(0).at(1));
+    calc_near(next_move.at(1).at(0));
+    calc_near(next_move.at(1).at(1));
 
     int region_red_point = 0;//赤領域
     int region_blue_point = 0;//青領域
+
 
     int common_red_point = 0;//赤マスポイント
     int common_blue_point = 0;//青マスポイント
@@ -413,10 +401,10 @@ void procon::Field::updatePoint(std::vector<std::vector<std::pair<int,int>>> nex
     blue_point = std::make_pair(common_blue_point, region_blue_point);//同上
 
 }
-std::pair<int,int> procon::Field::getPoints(int side, bool update_flag,std::vector<std::vector<int,int>> pos){
+std::pair<int,int> procon::Field::getPoints(int side, bool update_flag){
 
     if(update_flag)
-        updatePoint(pos);
+        updatePoint();
 
     return (side == 0 ? red_point : blue_point);
 }
