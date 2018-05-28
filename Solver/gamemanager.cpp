@@ -378,7 +378,7 @@ void GameManager::changeTurn(){
         //もう既に埋まっていて、それが移動予定erなら
 
         //ここで死んでる！！！
-        if(counts[not_move].first > 0){
+        if(counts[not_move].first >= 0){
             std::pair<int,int> next_delete_move = counts[not_move].second;
 
             counts[not_move] = std::make_pair(-1, std::make_pair(-1, -1));
