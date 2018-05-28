@@ -244,9 +244,13 @@ void procon::Field::setAgents(const std::vector<std::vector<std::pair<int,int>>>
 void procon::Field::setStates(const std::vector<std::vector<int>>& values){
     field_data = values;
 }
-void procon::Field::updatePoint(){
+void procon::Field::updatePoint(std::pair<int,int> next_move){
 
-    auto calc = [&](int side){
+    auto calc_near = [&](std::pair<int,int> next_pos){
+
+    };
+
+    auto calc_all = [&](int side){
 
         std::vector<std::vector<bool>> flag = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, true)); //訪れたかどうかの判定
         std::vector<std::vector<bool>> mass = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false));//状態を格納

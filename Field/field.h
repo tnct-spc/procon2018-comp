@@ -38,7 +38,7 @@ public:
 
     std::pair<int,int> getSize() const;
 
-    void updatePoint();
+    void updatePoint(int pos_pos_x = -1,int pos_pos_y = -1);
 
 private:
     std::vector<std::vector<int>> field_data;
