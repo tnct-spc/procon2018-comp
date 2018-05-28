@@ -31,6 +31,7 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, b
 }
 
 void GameManager::resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show, const int t_max){
+
     turn_max = t_max;
     vis_show = v_show;
 
@@ -48,6 +49,8 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
     }else{
         is_auto = true;//この場合は自動進行
     }
+
+    field->updatePoint();
 
 }
 
@@ -245,9 +248,6 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
 
         changeTurn();
 
-        //得点の更新処理(エージェント側でやるよりこちらの方がよい)
-        field->updatePoint();
-
     }
 
     std::pair<int,int> point_1_pair = field->getPoints(0, false);
@@ -434,6 +434,10 @@ void GameManager::changeTurn(){
         if(moves.second.first != 0)
             field->setAgent(moves.second.second.first, moves.second.second.second, moves.first.first, moves.first.second);
     }
+
+    //得点の更新処理(エージェント側でやるよりこちらの方がよい)
+    field->updatePoint();
+
 }
 
 void GameManager::setAutoMode(bool value){

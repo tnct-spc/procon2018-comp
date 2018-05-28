@@ -105,6 +105,11 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
             return return_value;
         }
 
+        //変わる前の状況を保存しておく
+        int before_state = field.getState(new_pos.first, new_pos.second).first;
+        //仮に移動させてしまう
+        field.setState(new_pos.first, new_pos.second, (delete_move ? 0 : side + 1) );
+
         //得点の変動値
         int pos_value = tile_value;
         //自分のタイルを除去する場合
@@ -127,7 +132,7 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
         //移動したものとして、ポイントを計算し直す
         //ここの得点更新処理を、差分を取る事で高速に計算できると非常によい
-        field.setState(new_pos.first, new_pos.second, (delete_move ? 0 : side + 1) );
+
 
         //ここの計算し直しが非効率的
         field.updatePoint();
@@ -150,6 +155,8 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
                        - ((after_point.at(1).first + after_point.at(1).second) - (before_point.at(1).first + before_point.at(1).second));
 
         return_value += point_diff * per_point_sum;
+
+        field.setState(new_pos.first, new_pos.second, before_state );
 
         return return_value;
     };
