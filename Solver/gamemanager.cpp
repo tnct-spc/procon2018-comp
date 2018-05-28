@@ -95,6 +95,9 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
 
+    field_vec.clear();
+    field_vec.push_back(std::make_shared<procon::Field>(*field));
+    setFieldCount(field_vec.size() - 1);
 
 
 
@@ -153,7 +156,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 //            progresdock->addAnswer(*(field_vec.back()));
 
 
-            setFieldCount(field_vec.size() - 1);
+            setFieldCount(field_vec.size() - 2);
         }
 
         now_turn = -1;
