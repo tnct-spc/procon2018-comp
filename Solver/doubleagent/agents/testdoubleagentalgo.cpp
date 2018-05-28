@@ -148,8 +148,8 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
 
         //(自分の変化量 - 相手の変化量)
-        int point_diff = (after_point.at(0).first + after_point.at(0).second) - (before_point.at(0).first + before_point.at(0).second)
-                       - (after_point.at(1).first + after_point.at(1).second) - (before_point.at(1).first + before_point.at(1).second);
+        int point_diff = ((after_point.at(0).first + after_point.at(0).second) - (before_point.at(0).first + before_point.at(0).second))
+                       - ((after_point.at(1).first + after_point.at(1).second) - (before_point.at(1).first + before_point.at(1).second));
 
         return_value += point_diff * per_point_sum;
 
