@@ -123,10 +123,19 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
         before_point.at(0)= field.getPoints(side, false);
         before_point.at(1) = field.getPoints((side == 1 ? 0 : 1), false);
 
+
+
+        //fieldをコピーしてしまっているのもとても良くないので、一箇所更新された時の変化量を計算するメンバも置いて干し稲
+
         //移動したものとして、ポイントを計算し直す
+        //ここの得点更新処理を、差分を取る事で高速に計算できると非常によい
         field.setState(new_pos.first, new_pos.second, (delete_move ? 0 : side + 1) );
 
+        //ここの計算し直しが非効率的
         field.updatePoint();
+
+
+
 
         std::vector<std::pair<int,int>> after_point(2);
         after_point.at(0)= field.getPoints(side, false);

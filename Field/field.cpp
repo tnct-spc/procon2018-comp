@@ -305,6 +305,11 @@ void procon::Field::updatePoint(){
                 }
             }
         }
+
+        for(int i = 0; i < grid_x; ++i)
+            for(int j = 0; j < grid_y; ++j)
+                if(mass[i][j])
+                    std::cout << i << " , " << j << std::endl;
         return mass;
     };
 
@@ -334,6 +339,11 @@ void procon::Field::updatePoint(){
 
         }
     }
+
+    /*
+    std::cout << region_red_point << std::endl;
+    std::cout << region_blue_point << std::endl;
+    */
 
     red_point = std::make_pair(common_red_point, region_red_point);//メンバに代入
 

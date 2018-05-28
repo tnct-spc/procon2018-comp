@@ -139,10 +139,12 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
             std::pair<int,int> red_point,blue_point;
 
-            red_point = field->getPoints(1);
-            blue_point = field->getPoints(2);
-           // std::cout<<"赤の素の得点は"<<red_point.first<<"点で、領域ポイントは"<<red_point.second<<"点です"<<std::endl;
-           // std::cout<<"青の素の得点は"<<blue_point.first<<"点で、領域ポイントは"<<blue_point.second<<"点です"<<std::endl;
+            red_point = field->getPoints(0);
+            blue_point = field->getPoints(1);
+
+           std::cout<<"赤の素の得点は"<<red_point.first<<"点で、領域ポイントは"<<red_point.second<<"点です"<<std::endl;
+           std::cout<<"青の素の得点は"<<blue_point.first<<"点で、領域ポイントは"<<blue_point.second<<"点です"<<std::endl;
+
             field_vec.push_back(std::make_shared<procon::Field>(*field));
 
 //            progresdock->addAnswer(*(field_vec.back()));
@@ -249,7 +251,7 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
     }
 
     std::pair<int,int> point_1_pair = field->getPoints(0, false);
-    std::pair<int,int> point_2_pair = field->getPoints(0, false);
+    std::pair<int,int> point_2_pair = field->getPoints(1, false);
 
     int point_1 = point_1_pair.first + point_1_pair.second;
     int point_2 = point_2_pair.first + point_2_pair.second;
