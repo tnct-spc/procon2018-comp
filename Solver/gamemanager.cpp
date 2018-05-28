@@ -216,6 +216,8 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
         team_2 = std::make_shared<AgentManager>(share, 1, 0, &agent_3, &agent_4);
     }
 
+    field->updatePoint();
+
     for(; now_turn < turn_max; ++now_turn){
 
 
@@ -241,21 +243,16 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
 
         changeTurn();
 
+        //得点の更新処理(エージェント側でやるよりこちらの方がよい)
+        field->updatePoint();
+
     }
 
-    // todo: ここで点数計算を行い勝率を出す
-    int point_1 = 0;
-    int point_2 = 0;
-    for(int x = 0; x < field->getSize().first; ++x)
-        for(int y = 0; y < field->getSize().second; ++y){
-            if(field->getState(x, y).first == 1)
-                point_1 += field->getState(x, y).second;
-            else if(field->getState(x, y).first == 2)
-                point_2 += field->getState(x, y).second;
-        }
+    std::pair<int,int> point_1_pair = field->getPoints(0, false);
+    std::pair<int,int> point_2_pair = field->getPoints(0, false);
 
-    // std::cout << point_1 << " , " << point_2 << std::endl;
-
+    int point_1 = point_1_pair.first + point_1_pair.second;
+    int point_2 = point_2_pair.first + point_2_pair.second;
 
     if(point_1 == point_2)return -1;
     return (point_1 > point_2 ? 1 : 0);
