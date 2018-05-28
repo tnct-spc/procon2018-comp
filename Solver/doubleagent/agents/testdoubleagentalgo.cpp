@@ -118,8 +118,29 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
         if(delete_move)
             return_value += pos_value * per_delete_move;
 
-        //ここに領域ポイントの処理を追加する(未実装ですが！！！！)
-        int point_diff = pos_value;//実際はここに + region_valueがされる
+        //side側かそうでないか(0ならside側)
+        std::vector<std::pair<int,int>> before_point(2);
+        before_point.at(0)= field.getPoints(side, false);
+        before_point.at(1) = field.getPoints((side == 1 ? 0 : 1), false);
+
+        //移動したものとして、ポイントを計算し直す
+        field.setState(new_pos.first, new_pos.second, (delete_move ? 0 : side + 1) );
+
+        field.updatePoint();
+
+        std::vector<std::pair<int,int>> after_point(2);
+        after_point.at(0)= field.getPoints(side, false);
+        after_point.at(1) = field.getPoints((side == 1 ? 0 : 1), false);
+
+        //領域ポイントの変化量
+        int region_diff = (after_point.at(0).second - before_point.at(0).second) - (after_point.at(1).second - before_point.at(1).second);
+
+        return_value += region_diff * per_region;
+
+
+        //(自分の変化量 - 相手の変化量)
+        int point_diff = (after_point.at(0).first + after_point.at(0).second) - (before_point.at(0).first + before_point.at(0).second)
+                       - (after_point.at(1).first + after_point.at(1).second) - (before_point.at(1).first + before_point.at(1).second);
 
         return_value += point_diff * per_point_sum;
 
