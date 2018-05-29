@@ -23,7 +23,7 @@ public:
     const std::vector<std::vector<int>>& getField() const;
     const std::vector<std::vector<int>>& getValue() const;
     std::pair<int,int> getPoints(int side, std::pair<int,int> pos);
-    std::pair<int,int> getPoints(int side, std::vector<std::vector<std::pair<int,int>>> pos); //agentみたいに渡せます vector<vector<pair<int,int>>>
+    std::pair<int,int> getPoints(int side, std::vector<std::pair<int,int>> pos); //agentみたいに渡せます vector<vector<pair<int,int>>>
     std::pair<int,int> getPoints(int side, bool update_flag = false); //iが1なら赤、それ以外なら青の<踏んだマス,領域点>を返す
 
     bool isPlaced(const unsigned int x, const unsigned int y);
@@ -42,7 +42,7 @@ public:
 
     void updatePoint();
     void updatePoint(std::pair<int,int> pos);
-    void updatePoint(std::vector<std::vector<std::pair<int,int>>> pos);
+    void updatePoint(std::vector<std::pair<int,int>> pos);
 
 private:
     std::vector<std::vector<int>> field_data;

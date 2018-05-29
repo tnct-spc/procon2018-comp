@@ -441,7 +441,7 @@ void procon::Field::updatePoint(std::pair<int,int> pos){
     blue_point = std::make_pair(common_blue_point, region_blue_point);//同上
 }
 
-void procon::Field::updatePoint(std::vector<std::vector<std::pair<int,int>>> _pos){
+void procon::Field::updatePoint(std::vector<std::pair<int,int>> _pos){
     for(int a = 0;a < grid_x;a++){
         for(int b = 0;b < grid_y;b++){
             if(field_data.at(a).at(b)==1)region_red.at(a).at(b)=false;
@@ -512,10 +512,10 @@ void procon::Field::updatePoint(std::vector<std::vector<std::pair<int,int>>> _po
 
 
 
-    calc_near(_pos.at(0).at(0));
-    calc_near(_pos.at(0).at(1));
-    calc_near(_pos.at(1).at(0));
-    calc_near(_pos.at(1).at(1));
+    calc_near(_pos.at(0));
+    calc_near(_pos.at(1));
+    calc_near(_pos.at(2));
+    calc_near(_pos.at(3));
 
     int region_red_point = 0;//赤領域
     int region_blue_point = 0;//青領域
@@ -563,7 +563,7 @@ std::pair<int,int> procon::Field::getPoints(int side, std::pair<int, int> pos){
     return (side == 0 ? red_point : blue_point);
 }
 
-std::pair<int,int> procon::Field::getPoints(int side, std::vector<std::vector<std::pair<int, int> > > pos){
+std::pair<int,int> procon::Field::getPoints(int side, std::vector<std::pair<int, int > > pos){
 
     updatePoint(pos);
 
