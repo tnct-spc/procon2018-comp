@@ -97,8 +97,6 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
     field_vec.clear();
     field_vec.push_back(std::make_shared<procon::Field>(*field));
-    setFieldCount(field_vec.size() - 1);
-
 
 
     // progressdockは一旦表示しない事にします(使う事があまりないため)
@@ -110,7 +108,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
     if(vis_show){
         visualizer->update();
-        visualizer->setField(*field, 0, turn_max);
+        visualizer->setField(*field, 1, turn_max);
     }
 
 
