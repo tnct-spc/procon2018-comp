@@ -16,6 +16,7 @@ AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int side, i
     if(agent_data_2 != nullptr)
         setAgentData(*agent_data_2, 1);
 
+
 }
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::agentAct(int side){

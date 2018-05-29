@@ -67,10 +67,13 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
     //これは「タイルの得点」を元に計算する
     //per_point * タイル除去による(領域以外の)得点の変動値 になる
+
     double per_point = data.at(4) * 100;
 
     //これは「得点の変動値の合計」を元に計算する
     //per_point_sum * 行動をした後の得点の変動値 になる
+
+
     double per_point_sum = data.at(5) * 40;
 
     double evaluate_val = 0.0;
@@ -129,7 +132,6 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
             return_value += pos_value * per_delete_move;
 
 
-
         //fieldをコピーしてしまっているのもとても良くないので、一箇所更新された時の変化量を計算するメンバも置いて干し稲
 
         //移動したものとして、ポイントを計算し直す
@@ -163,7 +165,7 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
         field.setPoints(0, before_point.at(0));
         field.setPoints(1, before_point.at(1));
-
+      
         return return_value;
     };
 

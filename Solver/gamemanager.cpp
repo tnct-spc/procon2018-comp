@@ -118,7 +118,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         for(; now_turn < turn_max; ++now_turn){
 
 
-            std::cout << "turn " << now_turn + 1 << " started" << std::endl << std::endl;
+            //std::cout << "turn " << now_turn + 1 << " started" << std::endl << std::endl;
 
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
@@ -219,7 +219,9 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
         team_2 = std::make_shared<AgentManager>(share, 1, 0, &agent_3, &agent_4);
     }
 
+
     field->updatePoint();
+
 
     for(; now_turn < turn_max; ++now_turn){
 
@@ -253,6 +255,7 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
 
     int point_1 = point_1_pair.first + point_1_pair.second;
     int point_2 = point_2_pair.first + point_2_pair.second;
+
 
     if(point_1 == point_2)return -1;
     return (point_1 > point_2 ? 1 : 0);
@@ -374,8 +377,8 @@ void GameManager::changeTurn(){
 
         //もう既に埋まっていて、それが移動予定erなら
 
-        //ここで死んでる！！！
         if(counts[not_move].first >= 0){
+          
             std::pair<int,int> next_delete_move = counts[not_move].second;
 
             counts[not_move] = std::make_pair(-1, std::make_pair(-1, -1));
@@ -435,6 +438,7 @@ void GameManager::changeTurn(){
 
     //得点の更新処理(エージェント側でやるよりこちらの方がよい)
     field->updatePoint();
+
 
 }
 
