@@ -307,6 +307,9 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         return;
         }
 
+        //右クリックかどうか
+        bool right_flag = (event->button() == Qt::RightButton);
+
         // クリックされたグリッド座標を保存
         std::pair<int, int> clicked_grid;
 
@@ -320,7 +323,7 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         if (selected) {
 
             // グリッドはエージェントの移動先に含まれているか
-            checkClickGrid(clicked_grid);
+            checkClickGrid(clicked_grid, right_flag);
 
         } else {
 
@@ -364,8 +367,9 @@ void Visualizer::checkClickedAgent(std::pair<int, int> mass)
 }
 
 // エージェントの移動先を決定
-void Visualizer::checkClickGrid(std::pair<int, int> mass)
+void Visualizer::checkClickGrid(std::pair<int, int> mass, bool right_flag)
 {
+
     // クリックされた場所がエージェントの移動範囲に含まれているか確認
     if (((selected_agent_grid.first - 1) > mass.first) || ((selected_agent_grid.first + 1) < mass.first)
             || ((selected_agent_grid.second - 1) > mass.second) || ((selected_agent_grid.second + 1) < mass.second)) {
@@ -397,6 +401,9 @@ void Visualizer::checkClickGrid(std::pair<int, int> mass)
 
     // 移動先を記録
     next_grids.at(selected_agent.first).at(selected_agent.second) = mass;
+
+    is_delete.at(selected_agent.first).at(selected_agent.second) = right_flag;
+
 
     // エージェントの移動先が決定済みであることを記録
     // decided_agents.at(selected_agent.first).at(selected_agent.second) = true;

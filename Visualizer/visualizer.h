@@ -43,7 +43,7 @@ private:
 
     void checkClickedAgent(std::pair<int, int> mass);
 
-    void checkClickGrid(std::pair<int, int> mass);
+    void checkClickGrid(std::pair<int, int> mass, bool right_flag);
 
     int window_width;
     int window_height;
