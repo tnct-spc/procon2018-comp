@@ -390,7 +390,7 @@ void GameManager::changeTurn(){
         }
         pos_vec.push_back(pos);
     }
-    field->updatePoint(pos_vec);
+    //field->updatePoint(pos_vec);
     /*
     std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> dest_map;
     std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> tile_map;
