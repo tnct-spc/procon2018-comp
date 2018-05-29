@@ -56,7 +56,7 @@ signals:
     void setCandidateMove(const std::vector<std::vector<std::pair<int,int>>>& move);
 
 public slots:
-    void changeMove(const std::vector<std::vector<std::pair<int,int>>>& move);
+    void changeMove(const std::vector<std::vector<std::pair<int,int>>>& move, std::vector<std::vector<int>> is_delete);
 
 
 

@@ -26,13 +26,9 @@ public:
 
     void setField(const procon::Field& inp_field, int now_turn, int max_t);
 
-    const std::vector<std::vector<std::pair<int,int>>>& getNextAgents();
-
-
-    // std::vector<std::vector<std::pair<int,int>>> clickWait(std::vector<std::vector<std::pair<int,int>>> val);
 
 signals:
-    void nextMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec);
+    void nextMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec, std::vector<std::vector<int>> is_delete);
 public slots:
     void slotAutoMode(bool value);
     void candidateMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec);
@@ -80,6 +76,8 @@ private:
 
     // 各エージェントの移動先を記録
     std::vector<std::vector<std::pair<int, int>>> next_grids;
+
+    std::vector<std::vector<int>> is_delete;
 
     //こっちはmanualmode用
     std::vector<std::vector<std::pair<int, int>>> candidate;

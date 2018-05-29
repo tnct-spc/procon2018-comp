@@ -10,8 +10,10 @@
     grid_x = field.getSize().first;
     grid_y = field.getSize().second;
 
-    next_grids = std::vector<std::vector<std::pair<int, int>>>(2,std::vector<std::pair<int,int>>(2,std::make_pair(-1,-1)));
-    candidate = std::vector<std::vector<std::pair<int, int>>>(2,std::vector<std::pair<int,int>>(2,std::make_pair(-1,-1)));
+    next_grids = std::vector<std::vector<std::pair<int, int>>>(2, std::vector<std::pair<int,int>>(2, std::make_pair(-1, -1)));
+    candidate = std::vector<std::vector<std::pair<int, int>>>(2, std::vector<std::pair<int,int>>(2, std::make_pair(-1, -1)));
+
+    is_delete = std::vector<std::vector<int>>(2, std::vector<int>(2, 0));
 
 
 }
@@ -327,7 +329,6 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         }
     }
 
-//    std::vector<std::vector<std::pair<int, int>>> box = getNextAgents();
 }
 
 // クリックされたエージェントまたはマスを照合
@@ -410,17 +411,16 @@ void Visualizer::checkClickGrid(std::pair<int, int> mass)
     if(confirm_count == 4){
 
         confirm_count = 0;
-        std::vector<std::vector<std::pair<int,int>>> return_val = getNextAgents();
+
+        std::vector<std::vector<std::pair<int,int>>> return_val = std::move(next_grids);
+        std::vector<std::vector<int>> return_delete_flag = std::move(is_delete);
+
         next_grids = std::vector<std::vector<std::pair<int, int>>>(2,std::vector<std::pair<int,int>>(2,std::make_pair(-1,-1)));
         candidate = std::vector<std::vector<std::pair<int, int>>>(2,std::vector<std::pair<int,int>>(2,std::make_pair(-1,-1)));
-        emit nextMove(return_val);
-    }
-}
 
-// 決定されたエージェントの移動先を返す
-const std::vector<std::vector<std::pair<int, int>>>& Visualizer::getNextAgents()
-{
-    return next_grids;
+        is_delete = std::vector<std::vector<int>>(2, std::vector<int>(2, 0));
+        emit nextMove(return_val, return_delete_flag);
+    }
 }
 
 void Visualizer::slotAutoMode(bool value){

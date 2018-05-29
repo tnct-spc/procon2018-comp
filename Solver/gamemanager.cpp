@@ -457,7 +457,8 @@ int GameManager::getTurnCount(){
     return now_turn;
 }
 
-void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>& move){
+void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>& move, std::vector<std::vector<int>> is_delete){
+    //is_deleteは自軍タイル除去時にのみ使う物 基本的に使わなさそう
 
     if(now_turn == -1)
         return ;
@@ -476,7 +477,8 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
             new_pos.first -= origin_pos.first;
             new_pos.second -= origin_pos.second;
 
-            agentAct(side, agent,  std::make_tuple( ( field->getState(pos.first, pos.second).first == (side == 0 ? 2 : 1) ? 2 : 1 ), new_pos.first, new_pos.second ) );
+            //is_deleteなら強制的に削除
+            agentAct(side, agent,  std::make_tuple( ( is_delete.at(side).at(agent) || (field->getState(pos.first, pos.second).first == (side == 0 ? 2 : 1)) ? 2 : 1 ), new_pos.first, new_pos.second ) );
 
         }
 
