@@ -118,7 +118,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         for(; now_turn < turn_max; ++now_turn){
 
 
-            //std::cout << "turn " << now_turn + 1 << " started" << std::endl << std::endl;
+            std::cout << "turn " << now_turn + 1 << " started" << std::endl << std::endl;
 
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
@@ -145,11 +145,6 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
             red_point = field->getPoints(0);
             blue_point = field->getPoints(1);
-
-            /*
-            std::cout<<"赤の素の得点は"<<red_point.first<<"点で、領域ポイントは"<<red_point.second<<"点です"<<std::endl;
-            std::cout<<"青の素の得点は"<<blue_point.first<<"点で、領域ポイントは"<<blue_point.second<<"点です"<<std::endl;
-            */
 
             field_vec.push_back(std::make_shared<procon::Field>(*field));
 
