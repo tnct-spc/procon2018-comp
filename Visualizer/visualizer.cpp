@@ -203,19 +203,71 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     };
 
+    auto drawPoints = [&]{
+
+        //とても汚いコピペコードで申し訳NASA
+        QPoint side_0_point;
+        side_0_point.setX(horizontal_margin);
+        side_0_point.setY(window_height  - vertical_margin + grid_size * 0.7);
+
+        painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
+
+        QColor paint_color_0 = team_color_a;
+        paint_color_0.setAlpha(100);
+
+        painter.setPen(QPen(QBrush(paint_color_0), 0.3));
+
+        std::vector<std::pair<int, int>> team_points(2);
+        team_points.at(0) = field.getPoints(0, false);
+        team_points.at(1) = field.getPoints(1, false);
+
+        std::string side_0_value;
+        side_0_value += std::to_string(team_points.at(0).first);
+        side_0_value += " + ";
+        side_0_value += std::to_string(team_points.at(0).second);
+        side_0_value += " : ";
+        side_0_value += std::to_string(team_points.at(0).first + team_points.at(0).second);
+
+        painter.drawText(side_0_point,QString::fromStdString(side_0_value));
+
+        QPoint side_1_point;
+        side_1_point.setX(window_width - horizontal_margin - grid_size * 3);
+        side_1_point.setY(window_height  - vertical_margin + grid_size * 0.7);
+
+        painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
+
+        QColor paint_color_1 = team_color_b;
+        paint_color_1.setAlpha(100);
+
+        painter.setPen(QPen(QBrush(paint_color_1), 0.3));
+
+        std::string side_1_value;
+        side_1_value += std::to_string(team_points.at(1).first);
+        side_1_value += " + ";
+        side_1_value += std::to_string(team_points.at(1).second);
+        side_1_value += " : ";
+        side_1_value += std::to_string(team_points.at(1).first + team_points.at(1).second);
+
+        painter.drawText(side_1_point,QString::fromStdString(side_1_value));
+    };
+
     auto drawTurnCount = [&]{
 
         QPoint text_point;
         text_point.setX(horizontal_margin);
         text_point.setY(vertical_margin - 0.3 * grid_size);
-        painter.setFont(QFont("Decorative", grid_size*0.6, QFont::Thin)); // text font
-        painter.setPen(QPen(QBrush(QColor(250,80,80,80)),0.3));
+
+        painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
+        painter.setPen(QPen(QBrush(QColor(250, 80, 80 , 80)), 0.3));
+
         std::string str;
         str += std::to_string(turn);
         str += " / ";
         str += std::to_string(max_turn);
+
         painter.drawText(text_point,QString::fromStdString(str));
     };
+
 
 
 
@@ -230,6 +282,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     drawValues();
     drawAgents();
+
+    drawPoints();
 
     drawTurnCount();
 
