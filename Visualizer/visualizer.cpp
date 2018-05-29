@@ -135,10 +135,10 @@ void Visualizer::paintEvent(QPaintEvent *event){
                            ? checked_color_a
                            : checked_color_b);
 
-                paint_color.setAlpha(100);
+                paint_color.setAlpha(60);
 
                 if(is_delete.at(team).at(index) || (field.getState(pos_x, pos_y).first == (team == 0 ? 2 : 1)))
-                    paint_color.setAlpha(20);
+                    paint_color.setAlpha(170);
 
                 painter.setBrush(QBrush(paint_color));
 
@@ -169,7 +169,7 @@ void Visualizer::paintEvent(QPaintEvent *event){
                 paint_color.setAlpha(100);
 
                 if(is_delete.at(team).at(index) || (field.getState(pos_x, pos_y).first == (team == 0 ? 2 : 1)))
-                    paint_color.setAlpha(20);
+                    paint_color.setAlpha(170);
 
                 painter.setBrush(QBrush(paint_color));
 
