@@ -244,7 +244,7 @@ void procon::Field::setAgents(const std::vector<std::vector<std::pair<int,int>>>
 void procon::Field::setStates(const std::vector<std::vector<int>>& values){
     field_data = values;
 }
-void procon::Field::updatePoint(){
+void procon::Field::updatePoint(std::vector<std::vector<std::pair<int,int>>> _pos){
     std::vector<std::vector<std::pair<int,int>>> next_move = agents;
     for(int a = 0;a < grid_x;a++){
         for(int b = 0;b < grid_y;b++){
@@ -268,6 +268,8 @@ void procon::Field::updatePoint(){
                 if(field_data.at(search_pair.first).at(search_pair.second) != 1 && flag.at(search_pair.first).at(search_pair.second)){
 
                     que.push(search_pair);
+                    log.push(search_pair);
+
                     bool result = true;
                     while(!que.empty()){
                         std::pair<int,int> p = que.front();
@@ -366,10 +368,10 @@ void procon::Field::updatePoint(){
     };
     //calc_all(1);
     //calc_all(2);
-    calc_near(next_move.at(0).at(0));
-    calc_near(next_move.at(0).at(1));
-    calc_near(next_move.at(1).at(0));
-    calc_near(next_move.at(1).at(1));
+    calc_near(_pos.at(0).at(0));
+    calc_near(_pos.at(0).at(1));
+    calc_near(_pos.at(1).at(0));
+    calc_near(_pos.at(1).at(1));
 
     int region_red_point = 0;//赤領域
     int region_blue_point = 0;//青領域
@@ -403,8 +405,8 @@ void procon::Field::updatePoint(){
 }
 std::pair<int,int> procon::Field::getPoints(int side, bool update_flag){
 
-    if(update_flag)
-        updatePoint();
+    //if(update_flag)
+        //updatePoint();
 
     return (side == 0 ? red_point : blue_point);
 }

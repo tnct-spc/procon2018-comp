@@ -382,7 +382,15 @@ void GameManager::changeTurn(){
         if(moves.second.first != 0)
             field->setAgent(moves.second.second.first, moves.second.second.second, moves.first.first, moves.first.second);
     }
-
+    std::vector<std::vector<std::pair<int,int>>> pos_vec;
+    for(int a = 0;a < 2;a++){
+        std::vector<std::pair<int,int>> pos;
+        for(int b = 0;b < 2;b++){
+            pos.push_back(std::make_pair(std::get<1>(act_stack.at(a).at(b)),std::get<2>(act_stack.at(a).at(b))));
+        }
+        pos_vec.push_back(pos);
+    }
+    field->updatePoint(pos_vec);
     /*
     std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> dest_map;
     std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> tile_map;
