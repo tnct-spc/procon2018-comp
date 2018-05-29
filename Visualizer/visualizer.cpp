@@ -124,19 +124,23 @@ void Visualizer::paintEvent(QPaintEvent *event){
         for(unsigned int team = 0; team < 2; ++team){
             for(unsigned int index = 0; index < 2; ++index){
 
+
+
+                int pos_x = next_grids.at(team).at(index).first;
+                int pos_y = next_grids.at(team).at(index).second;
+
+                if(pos_x == -1)continue;
+
                 QColor paint_color = ( team == 0
                            ? checked_color_a
                            : checked_color_b);
 
                 paint_color.setAlpha(100);
 
+                if(is_delete.at(team).at(index) || (field.getState(pos_x, pos_y).first == (team == 0 ? 2 : 1)))
+                    paint_color.setAlpha(20);
 
                 painter.setBrush(QBrush(paint_color));
-
-                int pos_x = next_grids.at(team).at(index).first;
-                int pos_y = next_grids.at(team).at(index).second;
-
-                if(pos_x == -1)continue;
 
                 painter.drawRect(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size);
             }
@@ -151,19 +155,23 @@ void Visualizer::paintEvent(QPaintEvent *event){
         for(unsigned int team = 0; team < 2; ++team){
             for(unsigned int index = 0; index < 2; ++index){
 
-                QColor paint_color = ( team == 0
-                           ? team_color_a
-                           : team_color_b);
 
-                paint_color.setAlpha(60);
-
-
-                painter.setBrush(QBrush(paint_color));
 
                 int pos_x = candidate.at(team).at(index).first;
                 int pos_y = candidate.at(team).at(index).second;
 
                 if(pos_x == -1 || candidate.at(team).at(index) == field.getAgent(team, index) )continue;
+
+                QColor paint_color = ( team == 0
+                           ? checked_color_a
+                           : checked_color_b);
+
+                paint_color.setAlpha(100);
+
+                if(is_delete.at(team).at(index) || (field.getState(pos_x, pos_y).first == (team == 0 ? 2 : 1)))
+                    paint_color.setAlpha(20);
+
+                painter.setBrush(QBrush(paint_color));
 
                 //角が取れた四角形らしいです
                 painter.drawRoundRect(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size );
