@@ -26,13 +26,9 @@ public:
 
     void setField(const procon::Field& inp_field, int now_turn, int max_t);
 
-    const std::vector<std::vector<std::pair<int,int>>>& getNextAgents();
-
-
-    // std::vector<std::vector<std::pair<int,int>>> clickWait(std::vector<std::vector<std::pair<int,int>>> val);
 
 signals:
-    void nextMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec);
+    void nextMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec, std::vector<std::vector<int>> is_delete);
 public slots:
     void slotAutoMode(bool value);
     void candidateMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec);
@@ -47,7 +43,7 @@ private:
 
     void checkClickedAgent(std::pair<int, int> mass);
 
-    void checkClickGrid(std::pair<int, int> mass);
+    void checkClickGrid(std::pair<int, int> mass, bool right_flag);
 
     int window_width;
     int window_height;
@@ -78,11 +74,10 @@ private:
     // 移動を入力するエージェントのグリッド座標
     std::pair<int, int> selected_agent_grid;
 
-    // 各エージェントが移動先を決定しているかどうか
-    // std::array<std::array<bool, 2>, 2> decided_agents = {false, false, false, false};
-
     // 各エージェントの移動先を記録
     std::vector<std::vector<std::pair<int, int>>> next_grids;
+
+    std::vector<std::vector<int>> is_delete;
 
     //こっちはmanualmode用
     std::vector<std::vector<std::pair<int, int>>> candidate;

@@ -305,6 +305,7 @@ void procon::Field::updatePoint(){
                 }
             }
         }
+
         return mass;
     };
 
@@ -335,6 +336,11 @@ void procon::Field::updatePoint(){
         }
     }
 
+    /*
+    std::cout << region_red_point << std::endl;
+    std::cout << region_blue_point << std::endl;
+    */
+
     red_point = std::make_pair(common_red_point, region_red_point);//メンバに代入
 
     blue_point = std::make_pair(common_blue_point, region_blue_point);//同上
@@ -346,4 +352,8 @@ std::pair<int,int> procon::Field::getPoints(int side, bool update_flag){
         updatePoint();
 
     return (side == 0 ? red_point : blue_point);
+}
+
+void procon::Field::setPoints(int side, std::pair<int, int> value){
+    (side == 0 ? red_point : blue_point) = value;
 }

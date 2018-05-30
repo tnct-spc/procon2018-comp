@@ -10,8 +10,10 @@
     grid_x = field.getSize().first;
     grid_y = field.getSize().second;
 
-    next_grids = std::vector<std::vector<std::pair<int, int>>>(2,std::vector<std::pair<int,int>>(2,std::make_pair(-1,-1)));
-    candidate = std::vector<std::vector<std::pair<int, int>>>(2,std::vector<std::pair<int,int>>(2,std::make_pair(-1,-1)));
+    next_grids = std::vector<std::vector<std::pair<int, int>>>(2, std::vector<std::pair<int,int>>(2, std::make_pair(-1, -1)));
+    candidate = std::vector<std::vector<std::pair<int, int>>>(2, std::vector<std::pair<int,int>>(2, std::make_pair(-1, -1)));
+
+    is_delete = std::vector<std::vector<int>>(2, std::vector<int>(2, 0));
 
 
 }
@@ -122,19 +124,23 @@ void Visualizer::paintEvent(QPaintEvent *event){
         for(unsigned int team = 0; team < 2; ++team){
             for(unsigned int index = 0; index < 2; ++index){
 
-                QColor paint_color = ( team == 0
-                           ? checked_color_a
-                           : checked_color_b);
 
-                paint_color.setAlpha(100);
-
-
-                painter.setBrush(QBrush(paint_color));
 
                 int pos_x = next_grids.at(team).at(index).first;
                 int pos_y = next_grids.at(team).at(index).second;
 
                 if(pos_x == -1)continue;
+
+                QColor paint_color = ( team == 0
+                           ? checked_color_a
+                           : checked_color_b);
+
+                paint_color.setAlpha(60);
+
+                if(is_delete.at(team).at(index) || (field.getState(pos_x, pos_y).first == (team == 0 ? 2 : 1)))
+                    paint_color.setAlpha(170);
+
+                painter.setBrush(QBrush(paint_color));
 
                 painter.drawRect(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size);
             }
@@ -149,19 +155,23 @@ void Visualizer::paintEvent(QPaintEvent *event){
         for(unsigned int team = 0; team < 2; ++team){
             for(unsigned int index = 0; index < 2; ++index){
 
-                QColor paint_color = ( team == 0
-                           ? team_color_a
-                           : team_color_b);
 
-                paint_color.setAlpha(60);
-
-
-                painter.setBrush(QBrush(paint_color));
 
                 int pos_x = candidate.at(team).at(index).first;
                 int pos_y = candidate.at(team).at(index).second;
 
                 if(pos_x == -1 || candidate.at(team).at(index) == field.getAgent(team, index) )continue;
+
+                QColor paint_color = ( team == 0
+                           ? checked_color_a
+                           : checked_color_b);
+
+                paint_color.setAlpha(100);
+
+                if(is_delete.at(team).at(index) || (field.getState(pos_x, pos_y).first == (team == 0 ? 2 : 1)))
+                    paint_color.setAlpha(170);
+
+                painter.setBrush(QBrush(paint_color));
 
                 //角が取れた四角形らしいです
                 painter.drawRoundRect(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size );
@@ -203,19 +213,71 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     };
 
+    auto drawPoints = [&]{
+
+        //とても汚いコピペコードで申し訳NASA
+        QPoint side_0_point;
+        side_0_point.setX(horizontal_margin);
+        side_0_point.setY(window_height  - vertical_margin + grid_size * 0.7);
+
+        painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
+
+        QColor paint_color_0 = team_color_a;
+        paint_color_0.setAlpha(100);
+
+        painter.setPen(QPen(QBrush(paint_color_0), 0.3));
+
+        std::vector<std::pair<int, int>> team_points(2);
+        team_points.at(0) = field.getPoints(0, false);
+        team_points.at(1) = field.getPoints(1, false);
+
+        std::string side_0_value;
+        side_0_value += std::to_string(team_points.at(0).first);
+        side_0_value += " + ";
+        side_0_value += std::to_string(team_points.at(0).second);
+        side_0_value += " : ";
+        side_0_value += std::to_string(team_points.at(0).first + team_points.at(0).second);
+
+        painter.drawText(side_0_point,QString::fromStdString(side_0_value));
+
+        QPoint side_1_point;
+        side_1_point.setX(window_width - horizontal_margin - grid_size * 5);
+        side_1_point.setY(window_height  - vertical_margin + grid_size * 0.7);
+
+        painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
+
+        QColor paint_color_1 = team_color_b;
+        paint_color_1.setAlpha(100);
+
+        painter.setPen(QPen(QBrush(paint_color_1), 0.3));
+
+        std::string side_1_value;
+        side_1_value += std::to_string(team_points.at(1).first);
+        side_1_value += " + ";
+        side_1_value += std::to_string(team_points.at(1).second);
+        side_1_value += " : ";
+        side_1_value += std::to_string(team_points.at(1).first + team_points.at(1).second);
+
+        painter.drawText(side_1_point,QString::fromStdString(side_1_value));
+    };
+
     auto drawTurnCount = [&]{
 
         QPoint text_point;
         text_point.setX(horizontal_margin);
         text_point.setY(vertical_margin - 0.3 * grid_size);
-        painter.setFont(QFont("Decorative", grid_size*0.6, QFont::Thin)); // text font
-        painter.setPen(QPen(QBrush(QColor(250,80,80,80)),0.3));
+
+        painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
+        painter.setPen(QPen(QBrush(QColor(250, 80, 80 , 80)), 0.3));
+
         std::string str;
         str += std::to_string(turn);
         str += " / ";
         str += std::to_string(max_turn);
+
         painter.drawText(text_point,QString::fromStdString(str));
     };
+
 
 
 
@@ -230,6 +292,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     drawValues();
     drawAgents();
+
+    drawPoints();
 
     drawTurnCount();
 
@@ -251,6 +315,9 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         return;
         }
 
+        //右クリックかどうか
+        bool right_flag = (event->button() == Qt::RightButton);
+
         // クリックされたグリッド座標を保存
         std::pair<int, int> clicked_grid;
 
@@ -264,7 +331,7 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         if (selected) {
 
             // グリッドはエージェントの移動先に含まれているか
-            checkClickGrid(clicked_grid);
+            checkClickGrid(clicked_grid, right_flag);
 
         } else {
 
@@ -273,7 +340,6 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         }
     }
 
-//    std::vector<std::vector<std::pair<int, int>>> box = getNextAgents();
 }
 
 // クリックされたエージェントまたはマスを照合
@@ -309,8 +375,9 @@ void Visualizer::checkClickedAgent(std::pair<int, int> mass)
 }
 
 // エージェントの移動先を決定
-void Visualizer::checkClickGrid(std::pair<int, int> mass)
+void Visualizer::checkClickGrid(std::pair<int, int> mass, bool right_flag)
 {
+
     // クリックされた場所がエージェントの移動範囲に含まれているか確認
     if (((selected_agent_grid.first - 1) > mass.first) || ((selected_agent_grid.first + 1) < mass.first)
             || ((selected_agent_grid.second - 1) > mass.second) || ((selected_agent_grid.second + 1) < mass.second)) {
@@ -343,6 +410,9 @@ void Visualizer::checkClickGrid(std::pair<int, int> mass)
     // 移動先を記録
     next_grids.at(selected_agent.first).at(selected_agent.second) = mass;
 
+    is_delete.at(selected_agent.first).at(selected_agent.second) = right_flag;
+
+
     // エージェントの移動先が決定済みであることを記録
     // decided_agents.at(selected_agent.first).at(selected_agent.second) = true;
 
@@ -356,61 +426,17 @@ void Visualizer::checkClickGrid(std::pair<int, int> mass)
     if(confirm_count == 4){
 
         confirm_count = 0;
-        std::vector<std::vector<std::pair<int,int>>> return_val = getNextAgents();
+
+        std::vector<std::vector<std::pair<int,int>>> return_val = std::move(next_grids);
+        std::vector<std::vector<int>> return_delete_flag = std::move(is_delete);
+
         next_grids = std::vector<std::vector<std::pair<int, int>>>(2,std::vector<std::pair<int,int>>(2,std::make_pair(-1,-1)));
         candidate = std::vector<std::vector<std::pair<int, int>>>(2,std::vector<std::pair<int,int>>(2,std::make_pair(-1,-1)));
-        emit nextMove(return_val);
+
+        is_delete = std::vector<std::vector<int>>(2, std::vector<int>(2, 0));
+        emit nextMove(return_val, return_delete_flag);
     }
 }
-
-// 決定されたエージェントの移動先を返す
-const std::vector<std::vector<std::pair<int, int>>>& Visualizer::getNextAgents()
-{
-
-    return next_grids;
-    /*
-    // decided_agentsの初期化. Return用のベクターづくり
-    std::vector<std::vector<std::pair<int, int>>> next_positions;
-
-    // すべてのエージェントが次の移動先を決定されているか確認
-    // 決定されていなかったら空の配列を返す
-    for(int team = 0; team < 2; team++) {
-        for (int agent = 0; agent < 2; agent++) {
-            if (!decided_agents.at(team).at(agent)) {
-                return next_positions;
-            }
-        }
-    }
-
-    for(int team = 0; team < 2; team++) {
-
-        std::vector<std::pair<int, int>> agent_grid;
-
-        for (int agent = 0; agent < 2; agent++) {
-
-            // decided_agents.at(team).at(agent) = false;
-            agent_grid.push_back(next_grids.at(team).at(agent));
-        }
-
-        next_positions.push_back(agent_grid);
-    }
-
-    return next_positions;
-    */
-}
-
-/*
-std::vector<std::vector<std::pair<int,int>>> Visualizer::clickWait(std::vector<std::vector<std::pair<int,int>>> val){
-
-    this->update();
-    this->repaint();
-    while(1){
-        this->update();
-        this->repaint();
-
-    }
-}
-*/
 
 void Visualizer::slotAutoMode(bool value){
     auto_mode = value;
