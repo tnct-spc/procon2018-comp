@@ -1,6 +1,6 @@
 #include "geneticagent.h"
 
-GeneticAgent::GeneticAgent(int size, bool flag) :
+GeneticAgent::GeneticAgent(int size, int flag) :
     size(size)
 {
 
@@ -11,9 +11,26 @@ GeneticAgent::GeneticAgent(int size, bool flag) :
 
     status.resize(size, 0.0);
 
-    if(flag)
+    if(flag == 1)
         for(int index = 0; index < size; ++index)
             status.at(index) = rand_double(mt);
+
+    if(flag == 2){
+        std::vector<double> rand_status(size + 1);
+        for(int count = 0; count < size - 1; ++count)
+            rand_status.at(count) = rand_double(mt);
+
+        rand_status.at(size - 1) = 0;
+        rand_status.at(size) = 1;
+
+        std::sort(rand_status.begin(), rand_status.end());
+
+        for(int index = 0; index < size; ++index)
+            status.at(index) = rand_status.at(index + 1) - rand_status.at(index);
+
+        std::shuffle(status.begin(), status.end(), mt);
+    }
+
 }
 bool GeneticAgent::operator<(const GeneticAgent &other) const {
     return 1.0 * win_count / try_count < 1.0 * other.win_count / other.try_count;
