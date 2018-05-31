@@ -246,79 +246,150 @@ void procon::Field::setStates(const std::vector<std::vector<int>>& values){
 }
 
 void procon::Field::updatePoint(){
-    int LookUpTable[400],flag[400];
-    for(int a = 1;a < 400;a++){
+    const int INF = 1e9;
+    int LookUpTable[200];
+    for(int a = 0;a < 200;a++){
         LookUpTable[a]=a;
-        flag[a]=0;
     }
-    int ins = 1;
+    int now_index = 1;
     int dx[] = {-1, 0};
-    int dy[] = {0, 1};
+    int dy[] = {0, -1};
     std::vector<std::vector<bool>> mass = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false));
     std::vector<std::vector<int>> labeling = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0));
-    auto calc =[&](int x,int y,int side){
+    std::vector<bool> flag = std::vector<bool>(200, true);
+    auto calc = [&](int x,int y,int side){
         if(field_data.at(x).at(y)==side)return;
-        std::set<int> se;
-        int inst = 1000000;
+        std::set<int> _set;
+        int ins_min = INF;
         for(int index = 0;index < 2;index++){
             if(0 <= x + dx[index] && x + dx[index] < grid_x && 0 <= y + dy[index] && y + dy[index] < grid_y){
-                if(field_data.at(x + dx[index]).at(y + dy[index]) != side){
-                    if(labeling.at(x + dx[index]).at(y + dy[index]) != 0){
-                        inst = std::min(inst,labeling.at(x + dx[index]).at(y + dy[index]));
-                        se.insert(labeling.at(x + dx[index]).at(y + dy[index]));
+                if(labeling.at(x + dx[index]).at(y + dy[index]) != 0 && field_data.at(x).at(y) != side ){
+                    ins_min = std::min(labeling.at(x + dx[index]).at(y + dy[index]),ins_min);
+                    _set.insert(labeling.at(x + dx[index]).at(y + dy[index]));
+                }
+            }
+        }
+        if(_set.empty()){
+            labeling.at(x).at(y)=now_index;
+            now_index++;
+        }else{
+            labeling.at(x).at(y)=ins_min;
+            for(int s:_set){
+                LookUpTable[s]=ins_min;
+            }
+        }
+        //std::cout<<ins_min<<std::endl;
+    };
+    //赤
+    for(int y = 0;y < grid_y;y++){
+        for(int x = 0;x < grid_x;x++){
+            calc(x,y,1);
+        }
+    }
+    std::vector<int> pos_x = {1,0,-1,0};
+    std::vector<int> pos_y = {0,1,0,-1};
+    for(int x = 0;x < grid_x;x++){
+        for(int y = 0;y < grid_y;y++){
+            if(labeling.at(x).at(y)!=0){
+                for(int index = 0;index < 4;index++){
+                    if(0 <= x + pos_x[index]&&x + pos_x[index] < grid_x && 0 <= y + pos_y[index] && y + pos_y[index] < grid_y){
+                        if(labeling.at(x+pos_x[index]).at(y+pos_y[index])!=0){
+                            LookUpTable[labeling.at(x).at(y)]=std::min(LookUpTable[labeling.at(x).at(y)],labeling.at(x+pos_x[index]).at(y+pos_y[index]));
+                        }
                     }
                 }
             }
         }
-        if(se.empty()){
-            labeling.at(x).at(y)=ins;
-            //std::cout<<ins<<std::endl;
-            ins++;
-        }else{
-            labeling.at(x).at(y)=inst;
-            //std::cout<<inst<<std::endl;
-            for(int s:se){
-                LookUpTable[s]=inst;
-            }
-        }
-    };
-    for(int a = 0;a < grid_x;a++){
-        for(int b = 0;b < grid_y;b++){
-            calc(a,b,1);
-        }
     }
-    for(int a = 0;a < grid_x;a++){
-        for(int b = 0;b < grid_y;b++){
-            labeling.at(a).at(b)=LookUpTable[labeling.at(a).at(b)];
-        }
-    }
-    for(int a = 0;a < grid_x;a++){
-        for(int b = 0;b < grid_y;b++){
-            if(a == 0 || a == grid_x-1 || b == 0 || b == grid_y-1){
-                if(labeling.at(a).at(b)!=0){
-              //  flag[labeling.at(a).at(b)]=1;
+    for(int index = 199; 0 <= index; index--){
+        if(LookUpTable[index] == index)continue;
+        for(int x = 0;x < grid_x;x++){
+            for(int y = 0;y < grid_y;y++){
+                if(labeling.at(x).at(y)==index){
+                    labeling.at(x).at(y)=LookUpTable[index];
                 }
             }
         }
     }
+    for(int x = 0;x < grid_x;x++){
+        for(int y = 0;y < grid_y;y++){
+            if(x == 0 || x == grid_x -1 || y == 0 || y == grid_y -1){
+                flag[labeling.at(x).at(y)] = false;
+            }
+        }
+    }
+    for(int x = 0; x < grid_x; x++){
+        for(int y = 0; y < grid_y; y++){
+            if(labeling.at(x).at(y) != 0 && flag[labeling.at(x).at(y)]){
+                mass.at(x).at(y) = true;
+            }
+        }
+    }
+
     std::cout<<std::endl;
-    for(int a = 0;a < grid_x;a++){
-        for(int b = 0;b < grid_y;b++){
-            std::cout<<labeling.at(a).at(b)<<" ";
+    for(int x = 0;x < grid_y;x++){
+        for(int y = 0;y < grid_x;y++){
+            std::cout<<labeling.at(y).at(x)<<" ";
         }
         std::cout<<std::endl;
     }
-    std::cout<<std::endl;
-    for(int a = 0;a < grid_x;a++){
-        for(int b = 0;b < grid_y;b++){
-            if(labeling.at(a).at(b)!=0){
-                if(flag[labeling.at(a).at(b)]==0){
-                    mass.at(a).at(b)=true;
+
+    region_red = mass;
+
+    mass = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false));
+    labeling = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0));
+    flag = std::vector<bool>(200, true);
+    now_index = 1;
+
+    for(int a = 0;a < 200;a++){
+        LookUpTable[a]=a;
+    }
+    for(int x = 0;x < grid_x;x++){
+        for(int y = 0;y < grid_y;y++){
+            calc(x,y,2);
+        }
+    }
+
+    for(int x = 0;x < grid_x;x++){
+        for(int y = 0;y < grid_y;y++){
+            if(labeling.at(x).at(y)!=0){
+                for(int index = 0;index < 4;index++){
+                    if(0 <= x + pos_x[index]&&x + pos_x[index] < grid_x && 0 <= y + pos_y[index] && y + pos_y[index] < grid_y){
+                        if(labeling.at(x+pos_x[index]).at(y+pos_y[index])!=0){
+                            LookUpTable[labeling.at(x).at(y)]=std::min(LookUpTable[labeling.at(x).at(y)],labeling.at(x+pos_x[index]).at(y+pos_y[index]));
+                        }
+                    }
                 }
             }
         }
     }
-    region_red = mass;
+
+    for(int index = 199; 0 <= index; index--){
+        if(LookUpTable[index]==index)continue;
+        for(int x = 0;x < grid_x;x++){
+            for(int y = 0;y < grid_y;y++){
+                if(labeling.at(x).at(y)==index){
+                    labeling.at(x).at(y)=LookUpTable[index];
+                }
+            }
+        }
+    }
+
+    for(int x = 0;x < grid_x;x++){
+        for(int y = 0;y < grid_y;y++){
+            if(x == 0 || x == grid_x -1 || y == 0 || y == grid_y -1){
+                flag[labeling.at(x).at(y)] = false;
+            }
+        }
+    }
+    for(int x = 0; x < grid_x; x++){
+        for(int y = 0; y < grid_y; y++){
+            if(labeling.at(x).at(y) != 0 && flag[labeling.at(x).at(y)]){
+                mass.at(x).at(y) = true;
+            }
+        }
+    }
+    region_blue = mass;
 
     int region_red_point = 0;//赤領域
     int region_blue_point = 0;//青領域
