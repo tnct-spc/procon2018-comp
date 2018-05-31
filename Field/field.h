@@ -5,9 +5,10 @@
 #include <vector>
 #include <utility>
 #include <random>
-#include<queue>
-#include<complex>
-#include<iostream>
+#include <queue>
+#include <complex>
+#include <iostream>
+#include <set>
 
 namespace procon {
 
@@ -22,6 +23,7 @@ public:
     std::pair<int,int> getAgent(const unsigned int turn, const unsigned int number) const;
     const std::vector<std::vector<int>>& getField() const;
     const std::vector<std::vector<int>>& getValue() const;
+
     std::pair<int,int> getPoints(int side, bool update_flag = true); //sideの<踏んだマス,領域点>を返す
     void setPoints(int side, std::pair<int,int> value);
 

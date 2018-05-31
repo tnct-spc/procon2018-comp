@@ -245,75 +245,103 @@ void procon::Field::setStates(const std::vector<std::vector<int>>& values){
     field_data = values;
 }
 void procon::Field::updatePoint(){
-
+    /*ラベリングを用いています、それが何か気になったらはむへいか会長に聞いてみて
+     */
+    const int INF = 1e9;
     auto calc = [&](int side){
-
-        std::vector<std::vector<bool>> flag = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, true)); //訪れたかどうかの判定
-        std::vector<std::vector<bool>> mass = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false));//状態を格納
-
-        //全マス訪れてそこから幅優先掛けてるだけなのん、自分のチームのマスだったり、すでに探索で訪れている場合には探索しないのん
-
-        std::vector<int> x_list = {0, 1, 0, -1};
-        std::vector<int> y_list = {1, 0, -1, 0};
-
-        for(int x = 0; x < grid_x; x++){
-            for(int y = 0; y < grid_y; y++){
-
-                if(flag.at(x).at(y) && field_data.at(x).at(y) != side){
-
-                    std::queue<std::pair<int,int>> que, log;
-
-                    que.push(std::make_pair(x, y));
-                    log.push(std::make_pair(x, y));
-
-                    bool result = true;
-
-                    while(!que.empty()){
-
-                        std::pair<int,int> pos = que.front();
-                        que.pop();
-
-                        int pos_x = pos.first;
-                        int pos_y = pos.second;
-                        flag.at(pos_x).at(pos_y) = false;
-
-                        for(int index = 0; index < 4; ++index){
-                            int new_pos_x = pos_x + x_list.at(index);
-                            int new_pos_y = pos_y + y_list.at(index);
-
-                            //ここ可読性
-                            if(new_pos_x != -1 && new_pos_x != grid_x && new_pos_y != -1 && new_pos_y != grid_y){
-                                if(field_data.at(new_pos_x).at(new_pos_y) != side && flag.at(new_pos_x).at(new_pos_y) ){
-
-                                    que.push(std::make_pair(new_pos_x, new_pos_y));
-                                    log.push(std::make_pair(new_pos_x, new_pos_y));
-                                }
-                            }else
-                                result = false;
+        int dx[] = {-1, 0};
+        int dy[] = {0, -1};
+        std::vector<std::vector<bool>> mass = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false)); //最終的にメンバに渡す変数
+        std::vector<std::vector<int>> labeling = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0)); //ラベリング本体
+        std::vector<bool> flag = std::vector<bool>(200, true); //その島が外側の枠と接しているか
+        int LookUpTable[200]; //ルックアップテーブル(ラベリングに必要なにか)
+        for(int a = 0;a < 200;a++){
+            LookUpTable[a]=a;
+        }
+        int now_index = 1;
+        for(int y = 0;y < grid_y;y++){
+            for(int x = 0;x < grid_x;x++){
+                if(field_data.at(x).at(y)==side)continue;
+                std::set<int> _set;
+                int ins_min = INF;
+                for(int index = 0;index < 2;index++){
+                    if(0 <= x + dx[index] && x + dx[index] < grid_x && 0 <= y + dy[index] && y + dy[index] < grid_y){
+                        if(labeling.at(x + dx[index]).at(y + dy[index]) != 0 && field_data.at(x).at(y) != side ){
+                            ins_min = std::min(labeling.at(x + dx[index]).at(y + dy[index]),ins_min);
+                            _set.insert(labeling.at(x + dx[index]).at(y + dy[index]));
                         }
-
                     }
-
-                    while(!log.empty()){
-
-                        std::pair<int,int> p = log.front();
-                        log.pop();
-                        if(result)
-                            mass[p.first][p.second] = true;
+                }
+                if(_set.empty()){
+                    labeling.at(x).at(y)=now_index;
+                    now_index++;
+                }else{
+                    labeling.at(x).at(y)=ins_min;
+                    for(int s:_set){
+                        LookUpTable[s]=ins_min;
                     }
-
+                }
+                //std::cout<<ins_min<<std::endl;
+            }
+        }
+        std::vector<int> pos_x = {1,0,-1,0};
+        std::vector<int> pos_y = {0,1,0,-1};
+        for(int x = 0;x < grid_x;x++){
+            for(int y = 0;y < grid_y;y++){
+                if(labeling.at(x).at(y)!=0){
+                    for(int index = 0;index < 4;index++){
+                        if(0 <= x + pos_x[index]&&x + pos_x[index] < grid_x && 0 <= y + pos_y[index] && y + pos_y[index] < grid_y){
+                            if(labeling.at(x+pos_x[index]).at(y+pos_y[index])!=0){
+                                LookUpTable[labeling.at(x).at(y)]=std::min(LookUpTable[labeling.at(x).at(y)],labeling.at(x+pos_x[index]).at(y+pos_y[index]));
+                            }
+                        }
+                    }
                 }
             }
         }
+        for(int index = 199; 0 <= index; index--){
+            if(LookUpTable[index] == index)continue;
+            for(int x = 0;x < grid_x;x++){
+                for(int y = 0;y < grid_y;y++){
+                    if(labeling.at(x).at(y)==index){
+                        labeling.at(x).at(y)=LookUpTable[index];
+                    }
+                }
+            }
+        }
+        for(int x = 0;x < grid_x;x++){
+            for(int y = 0;y < grid_y;y++){
+                if(x == 0 || x == grid_x -1 || y == 0 || y == grid_y -1){
+                    flag[labeling.at(x).at(y)] = false;
+                }
+            }
+        }
+        for(int x = 0; x < grid_x; x++){
+            for(int y = 0; y < grid_y; y++){
+                if(labeling.at(x).at(y) != 0 && flag[labeling.at(x).at(y)]){
+                    mass.at(x).at(y) = true;
+                }
+            }
+        }
+        /*
+        std::cout<<std::endl;
+        for(int x = 0;x < grid_y;x++){
+            for(int y = 0;y < grid_x;y++){
+                std::cout<<labeling.at(y).at(x)<<" ";
+            }
+            std::cout<<std::endl;
+        }
+        */
 
-        return mass;
+       (side == 1 ? region_red = mass: region_blue = mass);
     };
 
-    region_red = calc(1);//赤チーム
-    region_blue = calc(2);//青チーム
+    calc(1);
+    calc(2);
 
     int region_red_point = 0;//赤領域
     int region_blue_point = 0;//青領域
+
 
     int common_red_point = 0;//赤マスポイント
     int common_blue_point = 0;//青マスポイント
@@ -332,7 +360,6 @@ void procon::Field::updatePoint(){
 
             if(region_blue.at(a).at(b))
                  region_blue_point += std::abs(value_data.at(a).at(b));
-
         }
     }
 
@@ -342,10 +369,9 @@ void procon::Field::updatePoint(){
     */
 
     red_point = std::make_pair(common_red_point, region_red_point);//メンバに代入
-
     blue_point = std::make_pair(common_blue_point, region_blue_point);//同上
-
 }
+
 std::pair<int,int> procon::Field::getPoints(int side, bool update_flag){
 
     if(update_flag)
