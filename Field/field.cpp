@@ -244,16 +244,17 @@ void procon::Field::setAgents(const std::vector<std::vector<std::pair<int,int>>>
 void procon::Field::setStates(const std::vector<std::vector<int>>& values){
     field_data = values;
 }
-
 void procon::Field::updatePoint(){
+    /*ラベリングを用いています、それが何か気になったらはむへいか会長に聞いてみて
+     */
     const int INF = 1e9;
     auto calc = [&](int side){
         int dx[] = {-1, 0};
         int dy[] = {0, -1};
-        std::vector<std::vector<bool>> mass = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false));
-        std::vector<std::vector<int>> labeling = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0));
-        std::vector<bool> flag = std::vector<bool>(200, true);
-        int LookUpTable[200];
+        std::vector<std::vector<bool>> mass = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false)); //最終的にメンバに渡す変数
+        std::vector<std::vector<int>> labeling = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0)); //ラベリング本体
+        std::vector<bool> flag = std::vector<bool>(200, true); //その島が外側の枠と接しているか
+        int LookUpTable[200]; //ルックアップテーブル(ラベリングに必要なにか)
         for(int a = 0;a < 200;a++){
             LookUpTable[a]=a;
         }
