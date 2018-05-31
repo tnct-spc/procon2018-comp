@@ -32,10 +32,12 @@ const std::vector<std::pair<double, std::tuple<int,int,int>>> TestDoubleAgentAlg
 
 std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
+
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
-    procon::Field field = manager->getField();
+    //ここのコストヤバいけど
+    procon::Field& field = manager->getField();
 
     //枝切り
     if(!manager->canPut(side, agent, move, false))
@@ -51,27 +53,27 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
     //パラメータの期待値が0.16程度
 
-    //定数 [-950,50]
-    double const_back_move = -1.0 * data.at(0) * 1000 + 10;
+    //定数
+    double const_back_move = -1.0 * data.at(0) * 1000;
 
-    //定数 [-950,50] これはconst_back_moveと重複する
-    double const_no_move = -1.0 * data.at(1) * 1000 + 10;
+    //定数 これはconst_back_moveと重複する
+    double const_no_move = -1.0 * data.at(1) * 1000;
 
-    //per_delete_move * -1 * 削除したマスの得点 になる
-    //[-300, 980](有利な除去なら)
-    double per_delete_move = data.at(2) * 80 - 3;
+    //per_delete_move * 削除したマスの得点 になる
+    double per_delete_move = data.at(2) * 120;
 
     //per_region * 囲ったマスの得点合計 になる
-    double per_region = data.at(3) * 100 - 2;
+    double per_region = data.at(3) * 80;
 
     //これは「タイルの得点」を元に計算する
     //per_point * タイル除去による(領域以外の)得点の変動値 になる
-    //[-1600, 1600]
+
     double per_point = data.at(4) * 100;
 
     //これは「得点の変動値の合計」を元に計算する
     //per_point_sum * 行動をした後の得点の変動値 になる
-    //領域なしで[-640,640]、領域を含むと2000点程度が加算されたりする
+
+
     double per_point_sum = data.at(5) * 40;
 
     double evaluate_val = 0.0;
@@ -107,6 +109,17 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
             return return_value;
         }
 
+        //変わる前の状況を保存しておく
+        int before_state = field.getState(new_pos.first, new_pos.second).first;
+
+        std::vector<std::pair<int,int>> before_point(2);
+        before_point.at(0)= field.getPoints(side, false);
+        before_point.at(1) = field.getPoints((side == 1 ? 0 : 1), false);
+
+        //仮に移動させてしまう
+        field.setState(new_pos.first, new_pos.second, (delete_move ? 0 : side + 1) );
+
+
         //得点の変動値
         int pos_value = tile_value;
         //自分のタイルを除去する場合
@@ -118,11 +131,41 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
         if(delete_move)
             return_value += pos_value * per_delete_move;
 
-        //ここに領域ポイントの処理を追加する(未実装ですが！！！！)
-        int point_diff = pos_value;//実際はここに + region_valueがされる
+
+        //fieldをコピーしてしまっているのもとても良くないので、一箇所更新された時の変化量を計算するメンバも置いて干し稲
+
+        //移動したものとして、ポイントを計算し直す
+        //ここの得点更新処理を、差分を取る事で高速に計算できると非常によい
+
+
+        //ここの計算し直しが非効率的
+        field.updatePoint();
+
+
+
+
+        std::vector<std::pair<int,int>> after_point(2);
+        after_point.at(0)= field.getPoints(side, false);
+        after_point.at(1) = field.getPoints((side == 1 ? 0 : 1), false);
+
+        //領域ポイントの変化量
+        int region_diff = (after_point.at(0).second - before_point.at(0).second) - (after_point.at(1).second - before_point.at(1).second);
+
+        return_value += region_diff * per_region;
+
+
+        //(自分の変化量 - 相手の変化量)
+        int point_diff = ((after_point.at(0).first + after_point.at(0).second) - (before_point.at(0).first + before_point.at(0).second))
+                       - ((after_point.at(1).first + after_point.at(1).second) - (before_point.at(1).first + before_point.at(1).second));
 
         return_value += point_diff * per_point_sum;
 
+        //変えたものを元に戻す
+        field.setState(new_pos.first, new_pos.second, before_state );
+
+        field.setPoints(0, before_point.at(0));
+        field.setPoints(1, before_point.at(1));
+      
         return return_value;
     };
 

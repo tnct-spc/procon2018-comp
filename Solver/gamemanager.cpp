@@ -31,6 +31,7 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, b
 }
 
 void GameManager::resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show, const int t_max){
+
     turn_max = t_max;
     vis_show = v_show;
 
@@ -48,6 +49,8 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
     }else{
         is_auto = true;//この場合は自動進行
     }
+
+    field->updatePoint();
 
 }
 
@@ -92,7 +95,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
 
-
+    field_vec.clear();
+    field_vec.push_back(std::make_shared<procon::Field>(*field));
 
 
     // progressdockは一旦表示しない事にします(使う事があまりないため)
@@ -104,7 +108,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
     if(vis_show){
         visualizer->update();
-        visualizer->setField(*field, 0, turn_max);
+        visualizer->setField(*field, 1, turn_max);
     }
 
 
@@ -139,18 +143,21 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
             std::pair<int,int> red_point,blue_point;
 
-            red_point = field->getPoints(0,true);
-            blue_point = field->getPoints(1,true);
-
+            /*
             std::cout<<"赤の素の得点は"<<red_point.first<<"点で、領域ポイントは"<<red_point.second<<"点です"<<std::endl;
             std::cout<<"青の素の得点は"<<blue_point.first<<"点で、領域ポイントは"<<blue_point.second<<"点です"<<std::endl;
+            */
+
+            red_point = field->getPoints(0);
+            blue_point = field->getPoints(1);
+
 
             field_vec.push_back(std::make_shared<procon::Field>(*field));
 
 //            progresdock->addAnswer(*(field_vec.back()));
 
 
-            setFieldCount(field_vec.size() - 1);
+            setFieldCount(field_vec.size() - 2);
         }
 
         now_turn = -1;
@@ -218,6 +225,10 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
         team_2 = std::make_shared<AgentManager>(share, 1, 0, &agent_3, &agent_4);
     }
 
+
+    field->updatePoint();
+
+
     for(; now_turn < turn_max; ++now_turn){
 
 
@@ -245,18 +256,11 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
 
     }
 
-    // todo: ここで点数計算を行い勝率を出す
-    int point_1 = 0;
-    int point_2 = 0;
-    for(int x = 0; x < field->getSize().first; ++x)
-        for(int y = 0; y < field->getSize().second; ++y){
-            if(field->getState(x, y).first == 1)
-                point_1 += field->getState(x, y).second;
-            else if(field->getState(x, y).first == 2)
-                point_2 += field->getState(x, y).second;
-        }
+    std::pair<int,int> point_1_pair = field->getPoints(0, false);
+    std::pair<int,int> point_2_pair = field->getPoints(1, false);
 
-    // std::cout << point_1 << " , " << point_2 << std::endl;
+    int point_1 = point_1_pair.first + point_1_pair.second;
+    int point_2 = point_2_pair.first + point_2_pair.second;
 
 
     if(point_1 == point_2)return -1;
@@ -379,8 +383,8 @@ void GameManager::changeTurn(){
 
         //もう既に埋まっていて、それが移動予定erなら
 
-        //ここで死んでる！！！
-        if(counts[not_move].first > 0){
+        if(counts[not_move].first >= 0){
+          
             std::pair<int,int> next_delete_move = counts[not_move].second;
 
             counts[not_move] = std::make_pair(-1, std::make_pair(-1, -1));
@@ -489,6 +493,8 @@ void GameManager::changeTurn(){
     }
     */
 
+    //得点の更新処理(エージェント側でやるよりこちらの方がよい)
+    field->updatePoint();
 
 
 }
@@ -505,7 +511,8 @@ int GameManager::getTurnCount(){
     return now_turn;
 }
 
-void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>& move){
+void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>& move, std::vector<std::vector<int>> is_delete){
+    //is_deleteは自軍タイル除去時にのみ使う物 基本的に使わなさそう
 
     if(now_turn == -1)
         return ;
@@ -524,7 +531,8 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
             new_pos.first -= origin_pos.first;
             new_pos.second -= origin_pos.second;
 
-            agentAct(side, agent,  std::make_tuple( ( field->getState(pos.first, pos.second).first == (side == 0 ? 2 : 1) ? 2 : 1 ), new_pos.first, new_pos.second ) );
+            //is_deleteなら強制的に削除
+            agentAct(side, agent,  std::make_tuple( ( is_delete.at(side).at(agent) || (field->getState(pos.first, pos.second).first == (side == 0 ? 2 : 1)) ? 2 : 1 ), new_pos.first, new_pos.second ) );
 
         }
 
