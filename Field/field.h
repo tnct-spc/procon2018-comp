@@ -24,6 +24,8 @@ public:
     const std::vector<std::vector<int>>& getField() const;
     const std::vector<std::vector<int>>& getValue() const;
 
+    std::vector<std::vector<bool>> getRegion(int side);
+
     std::pair<int,int> getPoints(int side, bool update_flag = true); //sideの<踏んだマス,領域点>を返す
     void setPoints(int side, std::pair<int,int> value);
 
