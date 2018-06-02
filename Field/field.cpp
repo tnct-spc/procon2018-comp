@@ -383,3 +383,6 @@ std::pair<int,int> procon::Field::getPoints(int side, bool update_flag){
 void procon::Field::setPoints(int side, std::pair<int, int> value){
     (side == 0 ? red_point : blue_point) = value;
 }
+std::vector<std::vector<bool>> procon::Field::getRegion(int side){
+    return ( side == 0 ? region_red : region_blue);
+}
