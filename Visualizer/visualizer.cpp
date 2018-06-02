@@ -283,28 +283,29 @@ void Visualizer::paintEvent(QPaintEvent *event){
         QFont text_font;
         text_font.setPixelSize(grid_size * 0.3);
         painter.setFont(text_font);
-        painter.setPen(QPen(QColor(0,0,0)));
+        QColor Red_team_color = team_color_a;
+        QColor Blue_team_color = team_color_b;
+        Red_team_color.setAlpha(100);
+        Blue_team_color.setAlpha(100);
 
-        std::vector<std::vector<bool>> region = field.getRegion(1);
+        std::vector<std::vector<bool>> R_region = field.getRegion(0);
+        std::vector<std::vector<bool>> B_region = field.getRegion(1);
 
         for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
             for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
-                if(!region.at(x_pos).at(y_pos))continue;
 
+                if(R_region.at(x_pos).at(y_pos)){
                 QString text = QString::fromStdString( "R" );
+                painter.setPen(QPen(Red_team_color));
                 painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.8), vertical_margin + grid_size * y_pos + ( grid_size * 0.9 ) , text);
+                }
+                if(B_region.at(x_pos).at(y_pos)){
+                    QString text = QString::fromStdString( "B" );
+                    painter.setPen(QPen(Blue_team_color));
+                    painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.1), vertical_margin + grid_size * y_pos + ( grid_size * 0.9 ) , text);
+                }
             }
 
-        region = field.getRegion(2);
-
-
-        for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
-            for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
-                if(!region.at(x_pos).at(y_pos))continue;
-
-                QString text = QString::fromStdString( "B" );
-                painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.1), vertical_margin + grid_size * y_pos + ( grid_size * 0.9 ) , text);
-            }
 
     };
 
