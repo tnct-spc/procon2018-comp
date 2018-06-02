@@ -278,6 +278,35 @@ void Visualizer::paintEvent(QPaintEvent *event){
         painter.drawText(text_point,QString::fromStdString(str));
     };
 
+    auto drawRegion = [&]{
+
+        QFont text_font;
+        text_font.setPixelSize(grid_size * 0.3);
+        painter.setFont(text_font);
+        painter.setPen(QPen(QColor(0,0,0)));
+
+        std::vector<std::vector<bool>> region = field.getRegion(1);
+
+        for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
+            for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
+                if(!region.at(x_pos).at(y_pos))continue;
+
+                QString text = QString::fromStdString( "R" );
+                painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.8), vertical_margin + grid_size * y_pos + ( grid_size * 0.9 ) , text);
+            }
+
+        region = field.getRegion(2);
+
+
+        for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
+            for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
+                if(!region.at(x_pos).at(y_pos))continue;
+
+                QString text = QString::fromStdString( "B" );
+                painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.1), vertical_margin + grid_size * y_pos + ( grid_size * 0.9 ) , text);
+            }
+
+    };
 
 
 
@@ -296,6 +325,7 @@ void Visualizer::paintEvent(QPaintEvent *event){
     drawPoints();
 
     drawTurnCount();
+    drawRegion();
 
 }
 
