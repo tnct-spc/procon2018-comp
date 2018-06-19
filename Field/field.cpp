@@ -299,7 +299,7 @@ void procon::Field::updatePoint(){
                 }
             }
         }
-        for(int index = 199; 0 <= index; index--){
+        for(int index = now_index+1; 0 <= index; index--){
             if(LookUpTable[index] == index)continue;
             for(int x = 0;x < grid_x;x++){
                 for(int y = 0;y < grid_y;y++){
