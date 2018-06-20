@@ -21,12 +21,34 @@ const std::vector<std::pair<double, std::tuple<int,int,int>>> AgentWrapper::agen
     return_val.push_back(std::make_pair(-200000, std::make_tuple(0, 0, 0)));
 
 
-    for(int count = 0; count < 9; ++count){
-        std::pair<double,bool> value = evaluateMove(count);
+    procon::Field& field = manager->getField();
+    std::pair<int,int> agent_pos = field.getAgent(side, agent);
 
-        if(value.first > -200000)//置けないパターンがあるのでそれを着る
-            return_val.push_back(std::make_pair(value.first, std::make_tuple(value.second + 1, x_list.at(count), y_list.at(count))));
+    auto evaluate = [&](int count, bool is_delete){
+        double value = evaluateMove(count, is_delete);
+
+        if(value > -200000)//置けないパターンがあるのでそれを着る
+            return_val.push_back(std::make_pair(value, std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));
+
+    };
+
+    for(int count = 0; count < 9; ++count){
+
+        std::pair<int,int> new_pos = agent_pos;
+        new_pos.first += x_list.at(count);
+        new_pos.second += y_list.at(count);
+
+        if(new_pos.first < 0 || new_pos.first >= field.getSize().first || new_pos.second < 0 || new_pos.second >= field.getSize().second)
+            continue;
+
+        int state = field.getState(new_pos.first, new_pos.second).first;
+
+        if(state != side + 1)
+            evaluate(count, false);
+        if(state)
+            evaluate(count, true);
     }
+
     //昇順ソート
     sort(return_val.begin(), return_val.end(), std::greater<std::pair<double,std::tuple<int,int,int>>>());
 

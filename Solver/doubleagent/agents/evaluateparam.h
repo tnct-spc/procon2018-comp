@@ -9,7 +9,7 @@ class EvaluateParam : public AgentWrapper
 
 public:
     const std::vector<std::pair<double, std::tuple<int,int,int>>> agentMove();
-    const std::pair<double,bool> evaluateMove(int move);
+    double evaluateMove(int move, bool is_delete);
 };
 
 #endif // EVALUATEPARAM_H

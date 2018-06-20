@@ -10,7 +10,7 @@ public:
 
     //(評価値,移動方法)のvectorを渡してもらう
     const std::vector<std::pair<double, std::tuple<int,int,int>>> agentMove();
-    virtual const std::pair<double, bool> evaluateMove(int move) = 0;
+    virtual double evaluateMove(int move, bool is_delete) = 0;
 
     void setAgent(const GeneticAgent& agent);
 

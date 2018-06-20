@@ -1,7 +1,7 @@
 #include "testdoubleagentalgo.h"
 
 
-const std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
+double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete){
 
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
@@ -12,7 +12,7 @@ const std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
     //枝切り
     if(!manager->canPut(side, agent, move, false))
-        return std::make_pair(-300000, false);
+        return -300000;
 
 
     //この関数は(評価値,除去すべきかどうか)をpairで返す
@@ -46,9 +46,6 @@ const std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
 
     double per_point_sum = data.at(5) * 40;
-
-    double evaluate_val = 0.0;
-    bool is_delete = false;
 
     //移動後の位置
     std::pair<int,int> new_pos = field.getAgent(side, agent);
@@ -140,23 +137,7 @@ const std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
         return return_value;
     };
 
-    //自分の色で塗られている場合
-    if(tile_color == side + 1){
-        double not_delete_val = calc(false);
-        double delete_val = calc(true);
 
-        if(not_delete_val < delete_val)
-            is_delete = true;
-        evaluate_val = std::max(not_delete_val, delete_val);
-    }
-    //相手の色で塗られている場合
-    else if(tile_color){
-        is_delete = true;
-        evaluate_val = calc(true);
-    }
-    //塗られていない場合
-    else evaluate_val = calc(false);
-
-    return std::make_pair(evaluate_val, is_delete);
+    return calc(is_delete);
 
 }

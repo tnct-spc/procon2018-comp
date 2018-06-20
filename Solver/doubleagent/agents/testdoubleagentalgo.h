@@ -7,8 +7,7 @@ class TestDoubleAgentAlgo : public AgentWrapper
 {
     using AgentWrapper::AgentWrapper;
 public:
-
-    const std::pair<double,bool> evaluateMove(int move);
+    double evaluateMove(int move, bool is_delete);
 
 };
 

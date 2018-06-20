@@ -59,6 +59,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::
         }
     }
 
+    std::cout << max_value << "   :   " << std::get<0>(max_move.first) << " , " << std::get<0>(max_move.second) << std::endl;
+
     return max_move;
 
 }
