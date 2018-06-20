@@ -39,6 +39,11 @@
       </item>
       <item>
        <property name="text">
+        <string>EvaluateParam</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>TestDoubleAgentAlgo</string>
        </property>
       </item>
@@ -75,6 +80,11 @@
       <item>
        <property name="text">
         <string>GeneticAlgo</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>EvaluateParam</string>
        </property>
       </item>
       <item>
