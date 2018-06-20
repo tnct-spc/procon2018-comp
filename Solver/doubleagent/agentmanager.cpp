@@ -8,8 +8,8 @@ AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int side, i
     agents.resize(2);
 
     if(algorithm_number == 0){
-        agents.at(0) = std::make_shared<TestDoubleAgentAlgo>(side, 0, getManagerPtr());
-        agents.at(1) = std::make_shared<TestDoubleAgentAlgo>(side, 1, getManagerPtr());
+        agents.at(0) = std::make_shared<TestDoubleAgentAlgo>(side, 0, getManagerPtr(), 6);
+        agents.at(1) = std::make_shared<TestDoubleAgentAlgo>(side, 1, getManagerPtr(), 6);
     }
     if(agent_data_1 != nullptr)
         setAgentData(*agent_data_1, 0);

@@ -1,12 +1,5 @@
 #include "testdoubleagentalgo.h"
 
-TestDoubleAgentAlgo::TestDoubleAgentAlgo(int side, int agent_num, std::shared_ptr<GameManager> manager_ptr, const GeneticAgent &agent_data) :
-    AgentWrapper(side, agent_num, manager_ptr, agent_data)
-{
-    if(this->agent_data.size != 6)
-        this->agent_data = GeneticAgent(6, 2);
-}
-
 const std::vector<std::pair<double, std::tuple<int,int,int>>> TestDoubleAgentAlgo::agentMove(){
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};

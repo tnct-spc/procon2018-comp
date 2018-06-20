@@ -6,7 +6,7 @@
 class AgentWrapper
 {
 public:
-    AgentWrapper(int side, int agent_num, std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent_data = GeneticAgent(6, 2));
+    AgentWrapper(int side, int agent_num, std::shared_ptr<GameManager> manager_ptr, int param_count, const GeneticAgent& agent_data = GeneticAgent(6, 2));
 
     //(評価値,移動方法)のvectorを渡してもらう
     virtual const std::vector<std::pair<double, std::tuple<int,int,int>>> agentMove() = 0;
