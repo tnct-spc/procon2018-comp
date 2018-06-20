@@ -27,7 +27,7 @@ const std::vector<std::pair<double, std::tuple<int,int,int>>> AgentWrapper::agen
     auto evaluate = [&](int count, bool is_delete){
         double value = evaluateMove(count, is_delete);
 
-        if(value > -200000)//置けないパターンがあるのでそれを着る
+        if(value > -200000)//置けないパターンがあるのでそれを切る
             return_val.push_back(std::make_pair(value, std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));
 
     };
