@@ -43,9 +43,9 @@ const std::vector<std::pair<double, std::tuple<int,int,int>>> AgentWrapper::agen
 
         int state = field.getState(new_pos.first, new_pos.second).first;
 
-        if(state != side + 1)
+        if(state != (side ? 1 : 2))
             evaluate(count, false);
-        if(state)
+        if(state && count != 8)
             evaluate(count, true);
     }
 
