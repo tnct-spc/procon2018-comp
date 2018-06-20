@@ -26,7 +26,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete){
     std::pair<int,int> now_team_point = field.getPoints(side, false);
     std::pair<int,int> now_enemy_point = field.getPoints(side, false);
 
-    std::vector<std::function<double()>> func_vector(param_coun：t);
+    std::vector<std::function<double()>> func_vector(param_count);
 
     func_vector.at(0) = [&]{
 
