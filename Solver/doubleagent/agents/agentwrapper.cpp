@@ -11,7 +11,7 @@ AgentWrapper::AgentWrapper(int side, int agent_num, std::shared_ptr<GameManager>
 
 }
 
-const std::vector<std::pair<double, std::tuple<int,int,int>>>& AgentWrapper::agentMove(){
+const std::vector<std::pair<double, std::tuple<int,int,int>>> AgentWrapper::agentMove(){
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
@@ -30,7 +30,7 @@ const std::vector<std::pair<double, std::tuple<int,int,int>>>& AgentWrapper::age
     //昇順ソート
     sort(return_val.begin(), return_val.end(), std::greater<std::pair<double,std::tuple<int,int,int>>>());
 
-    return return_val;
+    return std::move(return_val);
 
 }
 
