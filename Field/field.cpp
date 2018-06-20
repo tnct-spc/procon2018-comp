@@ -299,7 +299,7 @@ void procon::Field::updatePoint(){
                 }
             }
         }
-        for(int index = 199; 0 <= index; index--){
+        for(int index = now_index+1; 0 <= index; index--){
             if(LookUpTable[index] == index)continue;
             for(int x = 0;x < grid_x;x++){
                 for(int y = 0;y < grid_y;y++){
@@ -382,4 +382,7 @@ std::pair<int,int> procon::Field::getPoints(int side, bool update_flag){
 
 void procon::Field::setPoints(int side, std::pair<int, int> value){
     (side == 0 ? red_point : blue_point) = value;
+}
+std::vector<std::vector<bool>> procon::Field::getRegion(int side){
+    return ( side == 0 ? region_red : region_blue);
 }
