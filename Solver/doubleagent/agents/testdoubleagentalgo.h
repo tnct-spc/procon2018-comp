@@ -9,8 +9,8 @@ class TestDoubleAgentAlgo : public AgentWrapper
 public:
 
 
-    const std::vector<std::pair<double, std::tuple<int,int,int>>> agentMove();
-    std::pair<double,bool> evaluateMove(int move);
+    const std::vector<std::pair<double, std::tuple<int,int,int>>>& agentMove();
+    const std::pair<double,bool> evaluateMove(int move);
 
 };
 
