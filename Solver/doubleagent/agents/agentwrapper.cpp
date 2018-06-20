@@ -6,8 +6,8 @@ AgentWrapper::AgentWrapper(int side, int agent_num, std::shared_ptr<GameManager>
     manager(manager_ptr),
     agent_data(agent_data)
 {
-    if(this->agent_data.size != 6)
-        this->agent_data = GeneticAgent(6, 2);
+    if(this->agent_data.size != param_count)
+        this->agent_data = GeneticAgent(param_count, 2);
 
 }
 
