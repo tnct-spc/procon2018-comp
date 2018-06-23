@@ -3,7 +3,8 @@
 #include "agents/evaluateparam.h"
 
 AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int side, int algorithm_number, const GeneticAgent* agent_data_1, const GeneticAgent* agent_data_2) :
-    AlgorithmWrapper(manager_ptr)
+    AlgorithmWrapper(manager_ptr),
+    side(side)
 {
 
     agents.resize(2);
@@ -25,6 +26,18 @@ AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int side, i
 }
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::agentAct(int side){
+
+    this->side = side;
+
+    if(algo_number == 0)
+        return simpleCalc();
+
+    if(algo_number == 1)
+        return simpleMC();
+
+}
+
+std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleCalc(){
 
     std::vector<std::pair<double,std::tuple<int,int,int>>> move_1 = agents.at(0)->agentMove();
     std::vector<std::pair<double,std::tuple<int,int,int>>> move_2 = agents.at(1)->agentMove();
@@ -64,9 +77,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::
         }
     }
 
+    return std::move(max_move);
 
-    return max_move;
+}
 
+std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleMC(){
 }
 
 void AgentManager::setAgentData(const GeneticAgent& agent_data, int agent_number){
