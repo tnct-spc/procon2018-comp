@@ -93,12 +93,15 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleM
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
-    std::vector<std::vector<std::pair<double,std::tuple<int,int,int>>>> return_val;
+    // ここでFieldのコピーをしてしまう (プレイアウト回数)だけコピーをしてしまうのは仕方ないです
+    procon::Field field = manager->getField();
+
+
+
+    std::vector<std::vector<std::pair<double,std::tuple<int,int,int>>>> can_move_list;
 
     for(int index = 0; index < 2; ++index)
-        return_val.at(index).push_back(std::make_pair(0.0, std::make_tuple(0, 0, 0)));
-
-    procon::Field& field = manager->getField();
+        can_move_list.at(index).push_back(std::make_pair(0.0, std::make_tuple(0, 0, 0)));
 
     auto agent_move = [&](int agent){
 
@@ -109,7 +112,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleM
             double value = agents.at(agent)->evaluateMove(count, is_delete);
 
             if(value > minus_bound)//置けないパターンがあるのでそれを切る
-                return_val.at(agent).push_back(std::make_pair(std::pow(value - minus_bound, value_weight), std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));
+                can_move_list.at(agent).push_back(std::make_pair(std::pow(value - minus_bound, value_weight), std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));
 
         };
 
