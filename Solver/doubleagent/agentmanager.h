@@ -5,6 +5,7 @@
 
 #include "algorithmwrapper.h"
 #include "doubleagent/agents/agentwrapper.h"
+#include "doubleagent/algorithms/simplemcforduble.h"
 
 class AgentManager : public AlgorithmWrapper
 {

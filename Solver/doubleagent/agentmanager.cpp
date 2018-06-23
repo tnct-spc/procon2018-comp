@@ -83,61 +83,9 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleC
 
 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleMC(){
 
-    // まずは有り得る手の列挙をする
+    SimpleMCForDuble mc(manager, agents, side);
 
-    // 探索候補に含める最小値(これ以下は探索しない)
-    const double minus_bound = -5000;
-    // 重みにかける累乗の(大きいほど評価の高い値を優先的に探索する)
-    const double value_weight = 1.0;
-
-    std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
-    std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
-
-    // ここでFieldのコピーをしてしまう (プレイアウト回数)だけコピーをしてしまうのは仕方ないです
-    procon::Field field = manager->getField();
-
-
-
-    std::vector<std::vector<std::pair<double,std::tuple<int,int,int>>>> can_move_list;
-
-    for(int index = 0; index < 2; ++index)
-        can_move_list.at(index).push_back(std::make_pair(0.0, std::make_tuple(0, 0, 0)));
-
-    auto agent_move = [&](int agent){
-
-        std::pair<int,int> agent_pos = field.getAgent(side, agent);
-
-        auto evaluate = [&](int count, bool is_delete){
-
-            double value = agents.at(agent)->evaluateMove(count, is_delete);
-
-            if(value > minus_bound)//置けないパターンがあるのでそれを切る
-                can_move_list.at(agent).push_back(std::make_pair(std::pow(value - minus_bound, value_weight), std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));
-
-        };
-
-        for(int count = 0; count < 9; ++count){
-
-            std::pair<int,int> new_pos = agent_pos;
-            new_pos.first += x_list.at(count);
-            new_pos.second += y_list.at(count);
-
-            if(new_pos.first < 0 || new_pos.first >= field.getSize().first || new_pos.second < 0 || new_pos.second >= field.getSize().second)
-                continue;
-
-            int state = field.getState(new_pos.first, new_pos.second).first;
-
-            if(state != (side ? 1 : 2))
-                evaluate(count, false);
-            if(state && count != 8)
-                evaluate(count, true);
-        }
-
-    };
-
-    agent_move(0);
-    agent_move(1);
-
+    return mc.calcMove();
 }
 
 void AgentManager::setAgentData(const GeneticAgent& agent_data, int agent_number){
