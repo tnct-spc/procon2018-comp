@@ -301,6 +301,7 @@ void procon::Field::updatePoint(){
         }
         for(int index = now_index+1; 0 <= index; index--){
             if(LookUpTable[index] == index)continue;
+
             for(int x = 0;x < grid_x;x++){
                 for(int y = 0;y < grid_y;y++){
                     if(labeling.at(x).at(y)==index){
@@ -308,13 +309,15 @@ void procon::Field::updatePoint(){
                     }
                 }
             }
+
         }
         for(int x = 0;x < grid_x;x++){
-            for(int y = 0;y < grid_y;y++){
-                if(x == 0 || x == grid_x -1 || y == 0 || y == grid_y -1){
-                    flag[labeling.at(x).at(y)] = false;
-                }
-            }
+            flag[labeling.at(x).at(0)]=false;
+            flag[labeling.at(x).at(grid_y-1)]=false;
+        }
+        for(int y = 0;y < grid_y;y++){
+            flag[labeling.at(0).at(y)]=false;
+            flag[labeling.at(grid_x-1).at(y)]=false;
         }
         for(int x = 0; x < grid_x; x++){
             for(int y = 0; y < grid_y; y++){
@@ -372,12 +375,45 @@ void procon::Field::updatePoint(){
     blue_point = std::make_pair(common_blue_point, region_blue_point);//同上
 }
 
-std::pair<int,int> procon::Field::getPoints(int side, bool update_flag){
-
-    if(update_flag)
+std::pair<int,int> procon::Field::getPoints(int side, bool flag){
+    if(flag){
         updatePoint();
-
+    }
     return (side == 0 ? red_point : blue_point);
+}
+
+std::pair<int,int> procon::Field::getPoints(int side, std::pair<int, std::pair<int,int>> pos, bool flag){
+    int dx[8]={1, 1, 1, 0, -1, -1, -1, 0};
+    int dy[8]={1, 0, -1, -1, -1, 0, 1, 1};
+    bool result = false;
+    for(int index = 0;index < 8;index++){
+        if(!(pos.second.first + dx[index] >= 0 && pos.second.first + dx[index] <= grid_x - 1 && pos.second.second + dy[index] >= 0 && pos.second.second + dy[index] <= grid_y - 1))continue;
+        if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first - 1){
+            result = true;
+        }
+    }
+    if(result && flag){
+        updatePoint();
+    }
+    return (side == 0 ? red_point : blue_point);
+}
+
+std::pair<int,int> procon::Field::getPoints(int side, std::vector<std::pair<int, std::pair<int, int> > > pos_vec, bool flag){
+    int dx[8]={1, 1, 1, 0, -1, -1, -1, 0};
+    int dy[8]={1, 0, -1, -1, -1, 0, 1, 1};
+    bool result = false;
+    for(std::pair<int, std::pair<int,int>> pos : pos_vec){
+        for(int index = 0;index < 8;index++){
+            if(!(pos.second.first + dx[index] >= 0 && pos.second.first + dx[index] <= grid_x - 1 && pos.second.second + dy[index] >= 0 && pos.second.second + dy[index] <= grid_y - 1))continue;
+            if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first - 1){
+                result = true;
+            }
+        }
+    }
+    if(result && flag){
+        updatePoint();
+    }
+    return (side == 0 ? red_point :blue_point);
 }
 
 void procon::Field::setPoints(int side, std::pair<int, int> value){
