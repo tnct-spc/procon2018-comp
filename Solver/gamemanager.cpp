@@ -509,7 +509,7 @@ void GameManager::changeTurn(){
     */
 
     //得点の更新処理(エージェント側でやるよりこちらの方がよい)
-    field->updatePoint();
+   // field->updatePoint();
 
 
 }
