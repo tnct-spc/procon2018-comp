@@ -26,7 +26,10 @@ public:
 
     std::vector<std::vector<bool>> getRegion(int side);
 
-    std::pair<int,int> getPoints(int side, bool update_flag = true); //sideの<踏んだマス,領域点>を返す
+    std::pair<int,int> getPoints(int side, bool flag = true);
+    std::pair<int,int> getPoints(int side, bool flag, std::pair<int, std::pair<int, int>> pos);     //sideの<踏んだマス,領域点>を返す,引数posには<影響を与える色<座標>>を投げて
+    std::pair<int,int> getPoints(int side, bool flag, std::vector<std::pair<int, std::pair<int, int>>> pos_vec);
+
     void setPoints(int side, std::pair<int,int> value);
 
     bool isPlaced(const unsigned int x, const unsigned int y);
