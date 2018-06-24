@@ -16,7 +16,7 @@ private:
     std::shared_ptr<GameManager> manager;
     std::vector<std::shared_ptr<AgentWrapper>> agents;
 
-    void changeTurn(GameManager* manager_ptr);
+    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> changeTurn(GameManager* manager_ptr);
 
     // 探索候補に含める最小値(これ以下は探索しない)
     const double minus_bound = -5000;

@@ -8,9 +8,12 @@ SimpleMCForDuble::SimpleMCForDuble(std::shared_ptr<GameManager> manager, std::ve
     agents(agents)
 {
     mt = std::mt19937(rnd());
+
 }
 
-void SimpleMCForDuble::changeTurn(GameManager* manager_ptr){
+std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::changeTurn(GameManager* manager_ptr){
+
+    // 有効手から重みをつけて結果を返す
 
     std::vector<std::vector<std::pair<double,std::tuple<int,int,int>>>> can_move_list;
 
@@ -51,6 +54,7 @@ void SimpleMCForDuble::changeTurn(GameManager* manager_ptr){
 
     };
 
+    // can_move_listに有り得る手を列挙している
     agent_move(0);
     agent_move(1);
 
@@ -64,17 +68,18 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
         return dist(mt);
     };
 
-    //answer[行動] = (勝数,試行回数)
-    std::map<std::tuple<int,int,int>, std::pair<int,int>> answer;
+    // answer[行動] = (勝数,試行回数)
+    // 冗長すぎるのでtypedef使わない？そうした方がよくないですか
+    std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> answer;
 
-    std::vector<std::future<std::map<std::tuple<int,int,int>,std::pair<int,int>>>> threads;
+    std::vector<std::future<std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>,std::pair<int,int>>>> threads;
     for(int count = 0; count < cpu_num; ++count)
         threads.push_back(std::async([&]{
 
             clock_t start = clock();
 
             // 返却する値
-            std::map<std::tuple<int,int,int>,std::pair<int,int>> return_map;
+            std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>,std::pair<int,int>> return_map;
 
             // 一定時間が経つまで
             while((double)(clock() - start) / CLOCKS_PER_SEC < calc_time){
@@ -83,15 +88,44 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
                 int turn_count = 60 + rand(60);
                 GameManager* manager_ptr = new GameManager(8 + rand(4), 8 + rand(4), false, turn_count);
 
-                for(int count = 0; count < turn_count; ++count)
-                    changeTurn(manager_ptr);
+                // 相手のアルゴリズムを決定
+                std::shared_ptr<AlgorithmWrapper> enemy_algo = std::make_shared<GeneticAlgo>(manager);
+
+                // このプレイアウト時の最初の手
+                std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> first_move;
+
+                for(int count = 0; count < turn_count; ++count){
+                    my_move = changeTurn(manager_ptr);
+
+                    if(!count)first_move = my_move;
+
+                    // 相手の動き
+                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> enemy_move = enemy_algo->agentAct(!side);
+
+                    manager_ptr->agentAct(side, 0, my_move.first);
+                    manager_ptr->agentAct(side, 1, my_move.second);
+                    manager_ptr->agentAct(!side, 0, enemy_move.first);
+                    manager_ptr->agentAct(!side, 1, enemy_move.second);
+                    manager_ptr->changeTurn();
+                }
+                // 得点を計算する
+                std::pair<int,int> my_point = manager->getField().getPoints(0,false);
+                std::pair<int,int> enemy_point = manager->getField().getPoints(1,false);
+
+                // 引き分けでないなら試行回数を増やしておく
+                if(my_point.first + my_point.second != enemy_point.first + enemy_point.second)
+                    ++return_map[first_move].second;
+
+                // 勝ったなら勝利数を増やしておく
+                if(my_point.first + my_point.second > enemy_point.first + enemy_point.second)
+                    ++return_map[first_move].first;
             }
 
             return return_map;
         }));
 
     for(auto &th : threads){
-        std::map<std::tuple<int,int,int>,std::pair<int,int>> return_val = th.get();
+        std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>,std::pair<int,int>> return_val = th.get();
 
         for(auto value : return_val){
             answer[value.first].first += value.second.first;
