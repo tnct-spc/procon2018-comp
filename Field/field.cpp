@@ -382,7 +382,7 @@ std::pair<int,int> procon::Field::getPoints(int side, bool flag){
     return (side == 0 ? red_point : blue_point);
 }
 
-std::pair<int,int> procon::Field::getPoints(int side, bool flag, std::pair<int, std::pair<int,int>> pos){
+std::pair<int,int> procon::Field::getPoints(int side, std::pair<int, std::pair<int,int>> pos, bool flag){
     int dx[8]={1, 1, 1, 0, -1, -1, -1, 0};
     int dy[8]={1, 0, -1, -1, -1, 0, 1, 1};
     bool result = false;
@@ -397,7 +397,7 @@ std::pair<int,int> procon::Field::getPoints(int side, bool flag, std::pair<int, 
     return (side == 0 ? red_point : blue_point);
 }
 
-std::pair<int,int> procon::Field::getPoints(int side, bool flag, std::vector<std::pair<int, std::pair<int, int> > > pos_vec){
+std::pair<int,int> procon::Field::getPoints(int side, std::vector<std::pair<int, std::pair<int, int> > > pos_vec, bool flag){
     int dx[8]={1, 1, 1, 0, -1, -1, -1, 0};
     int dy[8]={1, 0, -1, -1, -1, 0, 1, 1};
     bool result = false;
