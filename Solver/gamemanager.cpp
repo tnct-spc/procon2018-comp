@@ -163,8 +163,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
             std::cout<<"青の素の得点は"<<blue_point.first<<"点で、領域ポイントは"<<blue_point.second<<"点です"<<std::endl;
             */
 
-            red_point = field->getPoints(0);
-            blue_point = field->getPoints(1);
+            red_point = field->getPoints(0, pruning_pos);
+            blue_point = field->getPoints(1, pruning_pos);
 
 
             field_vec.push_back(std::make_shared<procon::Field>(*field));
