@@ -11,7 +11,7 @@ SimpleMCForDuble::SimpleMCForDuble(std::shared_ptr<GameManager> manager, std::ve
 
 }
 
-std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::changeTurn(GameManager* manager_ptr){
+std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::changeTurn(std::shared_ptr<GameManager> manager_ptr){
 
     // 有効手から重みをつけて結果を返す
 
@@ -85,17 +85,20 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
             while((double)(clock() - start) / CLOCKS_PER_SEC < calc_time){
 
                 //ここに書く
-                int turn_count = 60 + rand(60);
-                GameManager* manager_ptr = new GameManager(8 + rand(4), 8 + rand(4), false, turn_count);
+                int turn_count = manager->getFinalTurn() - manager->getTurnCount();
+
+                // managerの生成,初期化
+                std::shared_ptr<GameManager> manager_ptr = std::make_shared<GameManager>(8, 8, false, 60);
+                manager_ptr->setField(field, manager->getTurnCount(), manager->getFinalTurn());
 
                 // 相手のアルゴリズムを決定
-                std::shared_ptr<AlgorithmWrapper> enemy_algo = std::make_shared<GeneticAlgo>(manager);
+                std::shared_ptr<AlgorithmWrapper> enemy_algo = std::make_shared<GeneticAlgo>(manager_ptr);
 
                 // このプレイアウト時の最初の手
                 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> first_move;
 
                 for(int count = 0; count < turn_count; ++count){
-                    my_move = changeTurn(manager_ptr);
+                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> my_move = changeTurn(manager_ptr);
 
                     if(!count)first_move = my_move;
 
