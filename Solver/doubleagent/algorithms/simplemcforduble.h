@@ -20,7 +20,10 @@ private:
 
     // 探索候補に含める最小値(これ以下は探索しない)
     const double minus_bound = -5000;
-    // 重みにかける累乗の(大きいほど評価の高い値を優先的に探索する)
+
+    // 重みにかける倍率
+    const double value_ratio = 1.0;
+    // 重みにかける累乗の値(大きいほど評価の高い値を優先的に探索する)
     const double value_weight = 1.0;
 
     // 計算に書ける時間(sec)

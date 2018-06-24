@@ -69,7 +69,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleC
             new_pos_2.second += std::get<2>(value_2.second);
 
             //移動するのならold_posを参照する必要はない
-            if(!( ( std::get<0>(value_1.second) != 1 && old_pos_1 == new_pos_2) || (std::get<1>(value_2.second) != 1 && new_pos_1 == old_pos_2) || new_pos_1 == new_pos_2)){
+            if(!( ( std::get<0>(value_1.second) != 1 && old_pos_1 == new_pos_2) || (std::get<0>(value_2.second) != 1 && new_pos_1 == old_pos_2) || new_pos_1 == new_pos_2)){
 
                 max_value = value_1.first + value_2.first;
                 max_move = std::make_pair(value_1.second, value_2.second);

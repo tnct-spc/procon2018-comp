@@ -31,7 +31,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cha
             double value = agents.at(agent)->evaluateMove(count, is_delete);
 
             if(value > minus_bound)//置けないパターンがあるのでそれを切る
-                can_move_list.at(agent).push_back(std::make_pair(std::pow(value - minus_bound, value_weight), std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));
+                can_move_list.at(agent).push_back(std::make_pair(std::pow((value - minus_bound) * value_ratio, value_weight), std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));
 
         };
 
@@ -58,15 +58,48 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cha
     agent_move(0);
     agent_move(1);
 
+    for(int index = 0; index < 2; ++index){
+        // 重み順にソート
+        std::sort(can_move_list.at(index).begin(), can_move_list.at(index).end(), std::greater<std::pair<double,std::tuple<int,int,int>>>());
+
+        // 重みの累積を取る
+        for(int count = 1; count < can_move_list.at(index).size(); ++count)
+            can_move_list.at(index).at(count).first += can_move_list.at(index).at(count - 1).first;
+    }
+
+    // 乱数生成器
+    std::vector<std::uniform_real_distribution<>> dist(2);
+    for(int index = 0; index < 2; ++index)
+        dist.at(index) = std::uniform_real_distribution<>(0, can_move_list.at(index).back().first);
+
+    while(1){
+        std::vector<std::tuple<int,int,int>> my_move(2); // 行動の暫定値
+
+        // 二分探索でランダムに求める
+        for(int index = 0; index < 2; ++index)
+            my_move.at(index) = (*std::lower_bound(can_move_list.at(index).begin(), can_move_list.at(index).end(), std::make_pair(dist.at(index)(mt), std::make_tuple(0, 0, 0)))).second;
+
+        std::pair<int,int> old_pos_1 = manager->getField().getAgent(side, 0);
+        std::pair<int,int> old_pos_2 = manager->getField().getAgent(side, 1);
+
+        std::pair<int,int> new_pos_1 = old_pos_1;
+        new_pos_1.first += std::get<1>(my_move.at(0));
+        new_pos_1.second += std::get<2>(my_move.at(0));
+
+        std::pair<int,int> new_pos_2 = old_pos_2;
+        new_pos_2.first += std::get<1>(my_move.at(1));
+        new_pos_2.second += std::get<2>(my_move.at(1));
+
+        // コンフリクトが起きないなら終了
+        if(!( ( std::get<0>(my_move.at(0)) != 1 && old_pos_1 == new_pos_2) || (std::get<0>(my_move.at(1)) != 1 && new_pos_1 == old_pos_2) || new_pos_1 == new_pos_2))
+            return std::make_pair(my_move.at(0), my_move.at(1));
+    }
+
+
 }
 
 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::calcMove(){
     // ここがagentActから呼び出される
-
-    auto rand = [&](int max){
-        std::uniform_int_distribution<> dist(0, max);
-        return dist(mt);
-    };
 
     // answer[行動] = (勝数,試行回数)
     // 冗長すぎるのでtypedef使わない？そうした方がよくないですか
@@ -135,5 +168,4 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
             answer[value.first].second += value.second.second;
         }
     }
-
 }
