@@ -1,10 +1,10 @@
 #ifndef SIMPLEMCFORDUBLE_H
 #define SIMPLEMCFORDUBLE_H
 
-#include <future>
-
 #include "gamemanager.h"
 #include "doubleagent/agents/agentwrapper.h"
+#include <future>
+#include <memory>
 
 class SimpleMCForDuble
 {
@@ -13,6 +13,8 @@ public:
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> calcMove();
 
 private:
+    std::mutex mtx;
+
     std::shared_ptr<GameManager> manager;
     std::vector<std::shared_ptr<AgentWrapper>> agents;
 

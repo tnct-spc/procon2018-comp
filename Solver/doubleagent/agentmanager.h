@@ -27,7 +27,7 @@ private:
 
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> simpleMC();
 
-    const int algo_number = 0;
+    const int algo_number = 1;
 };
 
 #endif // AGENTMANAGERWRAPPER_H

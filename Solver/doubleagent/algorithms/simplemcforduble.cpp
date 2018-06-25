@@ -9,6 +9,9 @@ SimpleMCForDuble::SimpleMCForDuble(std::shared_ptr<GameManager> manager, std::ve
 {
     mt = std::mt19937(rnd());
 
+    std::make_shared<GameManager>(field.getSize().first, field.getSize().second, false);
+
+
 }
 
 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::changeTurn(std::shared_ptr<GameManager> manager_ptr){
@@ -106,8 +109,11 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
     std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> answer;
 
     std::vector<std::future<std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>,std::pair<int,int>>>> threads;
+
     for(int count = 0; count < cpu_num; ++count)
         threads.push_back(std::async([&]{
+
+            // std::lock_guard<std::mutex> lock(mtx);
 
             clock_t start = clock();
 
@@ -120,8 +126,11 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
                 //ここに書く
                 int turn_count = manager->getFinalTurn() - manager->getTurnCount();
 
+                std::cerr << std::this_thread::get_id() << std::endl;
+
                 // managerの生成,初期化
-                std::shared_ptr<GameManager> manager_ptr = std::make_shared<GameManager>(8, 8, false, 60);
+                std::shared_ptr<GameManager> manager_ptr = std::make_shared<GameManager>(8, 8, false);
+
                 manager_ptr->setField(field, manager->getTurnCount(), manager->getFinalTurn());
 
                 // 相手のアルゴリズムを決定
