@@ -168,4 +168,15 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
             answer[value.first].second += value.second.second;
         }
     }
+
+    double max_point = -100000;
+    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
+
+    for(auto value : answer){
+        // 仮に(勝数 * 勝率)で出してみる
+        double point = value.second.first * (1.0 * value.second.first / value.second.second);
+        if(max_point < point)
+            max_move = value.first;
+    }
+    return max_move;
 }
