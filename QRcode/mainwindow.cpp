@@ -85,6 +85,8 @@ int MainWindow::ScanIDCard(IplImage *src)
         {
             //ShowResult
             this->showresult(QString::fromStdString(symbol->get_data()));
+            //string
+
         }
 
     }
@@ -167,6 +169,11 @@ void MainWindow::showresult(QString code)
 void MainWindow::clearAll()
 {
     ui->lineResult->clear();
+}
+
+void MainWindow::InputData(QString code)
+{
+    read_only_data=code;
 }
 
 void MainWindow::translateToDoubleArray()

@@ -1,5 +1,6 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef QRCODE_H
+#define QRCODE_H
+
 
 #include <QMainWindow>
 #include <QTimer>
@@ -11,16 +12,16 @@
 #include <zbar.h>
 
 namespace Ui {
-class MainWindow;
+class QRCode;
 }
 
-class MainWindow : public QMainWindow
+class QRCode : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit QRCode(QWidget *parent = 0);
+    ~QRCode();
 
 private slots:
     void on_btnOk_clicked();
@@ -32,9 +33,9 @@ private slots:
     void translateToDoubleArray();
 
 private:
-    Ui::MainWindow *ui;
+    Ui::QRCode *ui;
     int ScanIDCard(IplImage *src);
     std::string read_only_data;
 };
 
-#endif // MAINWINDOW_H
+#endif // QRCODE_H
