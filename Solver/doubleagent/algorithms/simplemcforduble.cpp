@@ -9,16 +9,20 @@ SimpleMCForDuble::SimpleMCForDuble(std::shared_ptr<GameManager> manager, std::ve
 {
     mt = std::mt19937(rnd());
 
-    std::make_shared<GameManager>(field.getSize().first, field.getSize().second, false);
+    manager_vec.resize(4);
+    for(auto& ptr : manager_vec)
+        ptr = std::make_shared<GameManager>(8, 8, false);
 
 
 }
 
 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::changeTurn(std::shared_ptr<GameManager> manager_ptr){
 
+    std::cerr << "start" << std::endl;
+
     // 有効手から重みをつけて結果を返す
 
-    std::vector<std::vector<std::pair<double,std::tuple<int,int,int>>>> can_move_list;
+    std::vector<std::vector<std::pair<double,std::tuple<int,int,int>>>> can_move_list(2);
 
     procon::Field& ptr_field = manager_ptr->getField();
 
@@ -94,10 +98,11 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cha
         new_pos_2.second += std::get<2>(my_move.at(1));
 
         // コンフリクトが起きないなら終了
-        if(!( ( std::get<0>(my_move.at(0)) != 1 && old_pos_1 == new_pos_2) || (std::get<0>(my_move.at(1)) != 1 && new_pos_1 == old_pos_2) || new_pos_1 == new_pos_2))
+        if(!( ( std::get<0>(my_move.at(0)) != 1 && old_pos_1 == new_pos_2) || (std::get<0>(my_move.at(1)) != 1 && new_pos_1 == old_pos_2) || new_pos_1 == new_pos_2)){
+            std::cerr << "end" << std::endl;
             return std::make_pair(my_move.at(0), my_move.at(1));
+        }
     }
-
 
 }
 
@@ -111,7 +116,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
     std::vector<std::future<std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>,std::pair<int,int>>>> threads;
 
     for(int count = 0; count < cpu_num; ++count)
-        threads.push_back(std::async([&]{
+        threads.push_back(std::async([&](int cpu_index){
 
             // std::lock_guard<std::mutex> lock(mtx);
 
@@ -126,10 +131,10 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
                 //ここに書く
                 int turn_count = manager->getFinalTurn() - manager->getTurnCount();
 
-                std::cerr << std::this_thread::get_id() << std::endl;
+                std::cerr << std::this_thread::get_id() << " : " << cpu_index << std::endl;
 
                 // managerの生成,初期化
-                std::shared_ptr<GameManager> manager_ptr = std::make_shared<GameManager>(8, 8, false);
+                std::shared_ptr<GameManager> manager_ptr = manager_vec.at(cpu_index);
 
                 manager_ptr->setField(field, manager->getTurnCount(), manager->getFinalTurn());
 
@@ -166,8 +171,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
                     ++return_map[first_move].first;
             }
 
-            return return_map;
-        }));
+            return std::move(return_map);
+        }, count));
 
     for(auto &th : threads){
         std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>,std::pair<int,int>> return_val = th.get();

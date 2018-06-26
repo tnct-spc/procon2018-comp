@@ -42,6 +42,7 @@ private:
 
     // ここでFieldのコピーをしてしまう (プレイアウト回数)だけコピーをしてしまうのは仕方ないです
     procon::Field field;
+    std::vector<std::shared_ptr<GameManager>> manager_vec;
 };
 
 #endif // SIMPLEMCFORDUBLE_H
