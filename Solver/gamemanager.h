@@ -24,6 +24,8 @@ class GameManager : public QObject
 public:
     explicit GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show = true, const int turn_max = 60, QObject *parent = 0);
 
+    ~GameManager();
+
     void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
 
     void resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show = true, const int t_max = 60);
@@ -61,7 +63,7 @@ public slots:
 
 
 private:
-    std::shared_ptr<GameManager> share;
+    // std::shared_ptr<GameManager> share;
 
 
     std::shared_ptr<procon::Field> field;

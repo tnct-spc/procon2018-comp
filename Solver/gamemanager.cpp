@@ -11,12 +11,12 @@
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
-    share(std::shared_ptr<GameManager>(this)),
+    // share(std::shared_ptr<GameManager>(this)),
     turn_max(turn_max),
     vis_show(vis_show)
 {
 
-    field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
+   field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
@@ -28,6 +28,9 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, b
     }else{
         is_auto = true;//この場合は自動進行
     }
+}
+
+GameManager::~GameManager(){
 }
 
 void GameManager::resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show, const int t_max){
@@ -63,7 +66,7 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
 
 void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
-   // std::shared_ptr<GameManager> share(this);
+    std::shared_ptr<GameManager> share(this);
 
     if (QString::compare("DummyAlgorithm", my_algo) == 0) {
         team_1 = std::make_shared<DummyAlgorithm>(share);
@@ -80,17 +83,17 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
     }
 
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
-        team_2 = std::make_shared<DummyAlgorithm>(team_1->getManagerPtr());
+        team_2 = std::make_shared<DummyAlgorithm>(share);
     } else if (QString::compare("GeneticAlgo", opponent_algo) == 0) {
-        team_2 = std::make_shared<GeneticAlgo>(team_1->getManagerPtr());
+        team_2 = std::make_shared<GeneticAlgo>(share);
     } else if (QString::compare("MontecarloWithAlgo", opponent_algo) == 0) {
-        team_2 = std::make_shared<MontecarloWithAlgo>(team_1->getManagerPtr());
+        team_2 = std::make_shared<MontecarloWithAlgo>(share);
     } else if (QString::compare("SimpleAlgorithm", opponent_algo) == 0) {
-        team_2 = std::make_shared<SimpleAlgorithm>(team_1->getManagerPtr());
+        team_2 = std::make_shared<SimpleAlgorithm>(share);
     }else if(QString::compare("BeamSearch", opponent_algo)==0){
-        team_2 = std::make_shared<beamsearch>(team_1->getManagerPtr());
+        team_2 = std::make_shared<beamsearch>(share);
     }else if(QString::compare("TestDoubleAgentAlgo", opponent_algo) == 0){
-        team_2 = std::make_shared<AgentManager>(team_1->getManagerPtr(), 1, 0);
+        team_2 = std::make_shared<AgentManager>(share, 1, 0);
     }
 
     field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
@@ -211,6 +214,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAgent &agent_2, int algo_number, const GeneticAgent& agent_3, const GeneticAgent& agent_4){
 
     //std::cout << "simulationGenetic" << std::endl;
+    std::shared_ptr<GameManager> share(this);
 
     if(algo_number == 0){
         team_1 = std::make_shared<GeneticAlgo>(share, agent_1);
