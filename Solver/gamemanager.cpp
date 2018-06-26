@@ -31,6 +31,7 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, b
 }
 
 GameManager::~GameManager(){
+    std::cerr << "gamemanager destructor called" << std::endl;
 }
 
 void GameManager::resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show, const int t_max){
