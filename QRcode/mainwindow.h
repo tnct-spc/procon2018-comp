@@ -2,13 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMainWindow>
 #include <QTimer>
-
 #include <string>
-
-#include "opencv/cv.h"
-#include "opencv/highgui.h"
-#include <zbar.h>
+#include "qrcode.h"
 
 namespace Ui {
 class MainWindow;
@@ -21,20 +18,13 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
 private slots:
-    void on_btnOk_clicked();
-    void ProcessFrame();
-    void use_drawRectangle();
-    void showresult(QString code);
-    void clearAll();
-    void InputData(QString code);
-    void translateToDoubleArray();
+    void on_btnStart_clicked();
+    void on_btnExit_clicked();
+    void Quit();
 
 private:
     Ui::MainWindow *ui;
-    int ScanIDCard(IplImage *src);
-    std::string read_only_data;
 };
 
 #endif // MAINWINDOW_H

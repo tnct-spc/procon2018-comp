@@ -1,5 +1,5 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "qrcode.h"
+#include "ui_qrcode.h"
 
 using namespace zbar;
 using namespace cv;
@@ -7,20 +7,20 @@ using namespace cv;
 CvCapture* capture;
 QTimer *timer;
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+QRCode::QRCode(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::QRCode)
 {
     ui->setupUi(this);
 }
 
-MainWindow::~MainWindow()
+QRCode::~QRCode()
 {
     cvReleaseCapture( &capture );
     delete ui;
 }
 
-void MainWindow::on_btnOk_clicked()
+void QRCode::on_btnOk_clicked()
 {
     this->clearAll();
     //CheckVideoCamera
@@ -44,7 +44,7 @@ void MainWindow::on_btnOk_clicked()
     return ;
 }
 
-void MainWindow::ProcessFrame()
+void QRCode::ProcessFrame()
 {
     IplImage* src = cvQueryFrame(capture);
     QImage img_show = QImage((unsigned char*)(src->imageData),src->width,src->height,QImage::Format_RGB888).rgbSwapped();
@@ -59,7 +59,7 @@ void MainWindow::ProcessFrame()
     }
 }
 
-int MainWindow::ScanIDCard(IplImage *src)
+int QRCode::ScanIDCard(IplImage *src)
 {
     IplImage *img = cvCreateImage(cvSize(src->width,src->height), IPL_DEPTH_8U,1);
 
@@ -85,8 +85,8 @@ int MainWindow::ScanIDCard(IplImage *src)
         {
             //ShowResult
             this->showresult(QString::fromStdString(symbol->get_data()));
-            //string
-
+            //InputData
+            this->inputdata(QString::fromStdString(symbol->get_data()));
         }
 
     }
@@ -102,7 +102,7 @@ int MainWindow::ScanIDCard(IplImage *src)
     return n;
 }
 
-void MainWindow::use_drawRectangle()
+void QRCode::use_drawRectangle()
 {
       IplImage *src_img = 0, *dst_img;
       IplImage *src_img_gray = 0;
@@ -159,26 +159,22 @@ void MainWindow::use_drawRectangle()
 
 }
 
-void MainWindow::showresult(QString code)
+void QRCode::showresult(QString code)
 {
     if(code != "Can't Decode!!") {
         ui->lineResult->setText(code);
     }
 }
 
-void MainWindow::clearAll()
+void QRCode::inputdata(QString code){
+        read_only_data=code.toStdString();
+}
+
+std::string QRCode::getdata(){
+    return read_only_data;
+}
+
+void QRCode::clearAll()
 {
     ui->lineResult->clear();
 }
-
-void MainWindow::InputData(QString code)
-{
-    read_only_data=code;
-}
-
-void MainWindow::translateToDoubleArray()
-{
-    //vvi
-}
-
-

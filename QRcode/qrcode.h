@@ -1,12 +1,9 @@
 #ifndef QRCODE_H
 #define QRCODE_H
 
-
-#include <QMainWindow>
+#include <QWidget>
 #include <QTimer>
-
 #include <string>
-
 #include "opencv/cv.h"
 #include "opencv/highgui.h"
 #include <zbar.h>
@@ -22,6 +19,7 @@ class QRCode : public QWidget
 public:
     explicit QRCode(QWidget *parent = 0);
     ~QRCode();
+    std::string getdata();
 
 private slots:
     void on_btnOk_clicked();
@@ -29,8 +27,7 @@ private slots:
     void use_drawRectangle();
     void showresult(QString code);
     void clearAll();
-    void InputData(QString code);
-    void translateToDoubleArray();
+    void inputdata(QString code);
 
 private:
     Ui::QRCode *ui;
