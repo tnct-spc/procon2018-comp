@@ -86,7 +86,7 @@ int QRCode::ScanIDCard(IplImage *src)
             //ShowResult
             this->showresult(QString::fromStdString(symbol->get_data()));
             //InputData
-            this->inputdata(QString::fromStdString(symbol->get_data()));
+            inputdata(QString::fromStdString(symbol->get_data()));
         }
 
     }
