@@ -1,5 +1,15 @@
 #include "qrcode.h"
-#include "ui_qrcode.h"
+
+
+
+int main()
+{
+
+}
+
+
+
+/*#include "ui_qrcode.h"
 
 using namespace zbar;
 using namespace cv;
@@ -178,3 +188,4 @@ void QRCode::clearAll()
 {
     ui->lineResult->clear();
 }
+*/
