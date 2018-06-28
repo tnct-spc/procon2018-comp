@@ -1,12 +1,20 @@
 #include "qrcode.h"
+#include "ui_qrcode.h"
 
 
 
-int main()
+QRCode::QRCode(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::QRCode)
 {
-
+    ui->setupUi(this);
 }
 
+QRCode::~QRCode()
+{
+    //cvReleaseCapture( &capture );
+    delete ui;
+}
 
 
 /*#include "ui_qrcode.h"
