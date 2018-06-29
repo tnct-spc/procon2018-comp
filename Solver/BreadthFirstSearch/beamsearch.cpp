@@ -36,11 +36,9 @@ int beamsearch::Evaluation_Field(procon::Field field,int side){
 
 
 
-const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(int side){
+const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::agentAct(){
 
     int count = 0;
-
-    const procon::Field& field = manager->getField();
 
     std::vector<std::vector<std::pair<int,int>>> Agents = field.getAgents();
 

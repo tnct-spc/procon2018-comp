@@ -40,8 +40,6 @@ public:
 
     unsigned int getFinalTurn();
 
-    bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2, bool double_move = true);
-
     void setAutoMode(bool value);
 
     void changeTurn();

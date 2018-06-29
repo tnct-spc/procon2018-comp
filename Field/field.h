@@ -35,6 +35,7 @@ public:
     void setState(const unsigned int x, const unsigned int y, const unsigned int state);//タイル状況のみの変更
     void setAgent(const unsigned int turn, const unsigned int number, const unsigned int x_pos, const unsigned int y_pos);
 
+    bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2, bool double_move = true) const;
 
     void setSize(const std::pair<int, int> &grid);
     void setValue(const std::vector<std::vector<int>> &value);

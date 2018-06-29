@@ -1,7 +1,7 @@
 #include "montecarlowithalgo.h"
 
-MontecarloWithAlgo::MontecarloWithAlgo(std::shared_ptr<GameManager> manager_ptr) :
-    AlgorithmWrapper(manager_ptr),
+MontecarloWithAlgo::MontecarloWithAlgo(const procon::Field& field, int final_turn, bool side) :
+    AlgorithmWrapper(field, final_turn, side),
     mt(rnd())
 {
     cpu_num = std::thread::hardware_concurrency();
@@ -14,15 +14,13 @@ MontecarloWithAlgo::MontecarloWithAlgo(std::shared_ptr<GameManager> manager_ptr)
 
 }
 
-const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWithAlgo::agentAct(int side){
+const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWithAlgo::agentAct(int now_turn){
 
     int side_r = (side == 0 ? 1 : 0);//敵側
 
     std::vector<int> win_count;
     std::vector<int> try_count;
     int try_sum = 0;
-
-    const procon::Field& field = manager->getField();
 
     auto retRandom = [&](int st,int en){ //[st,en]
         std::uniform_int_distribution<> rand(st, en);
@@ -48,7 +46,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
 
         //mgr_target->resetManager(retRandom(8,12), retRandom(8,12), false, retRandom(60,120));
 
-        mgr_target->setField(field, manager->getTurnCount(), manager->getFinalTurn());
+        mgr_target->setField(field, now_turn, final_turn);
 
         std::pair<int,int> agent_1_pos = field.getAgent(side, 0);
         std::pair<int,int> agent_2_pos = field.getAgent(side, 1);
