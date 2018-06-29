@@ -1,6 +1,7 @@
 #ifndef ALGORITHMWRAPPER_H
 #define ALGORITHMWRAPPER_H
 
+#include "field.h"
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -10,17 +11,15 @@ class GameManager;
 class AlgorithmWrapper
 {
 public:
-    AlgorithmWrapper(const std::shared_ptr<GameManager> manager_ptr);
+    // AlgorithmWrapper(const std::shared_ptr<GameManager> manager_ptr);
+    AlgorithmWrapper(const procon::Field& field, int final_turn, bool side);
 
-    //turn,agentnumber,type,x,y
-    virtual const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> agentAct(int side)=0;
-
-    std::shared_ptr<GameManager> getManagerPtr();
-
+    virtual const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> agentAct()=0;
 
 protected:
-
-    std::shared_ptr<GameManager> manager;
+    const procon::Field& field;
+    int final_turn;
+    bool side;
 };
 
 #endif // ALGORITHMWRAPPER_H
