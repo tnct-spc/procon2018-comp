@@ -32,6 +32,38 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, b
 
 GameManager::~GameManager(){
     std::cerr << "gamemanager destructor called" << std::endl;
+
+    std::cerr << "field reset" << std::endl;
+    field.reset();
+
+    std::cerr << "visualizer reset" << std::endl;
+    visualizer.reset();
+
+    std::cerr << "team_1 reset" << std::endl;
+    team_1.reset();
+
+    std::cerr << "team_2 reset" << std::endl;
+    team_2.reset();
+
+    std::cerr << "progresdock reset" << std::endl;
+    progresdock.reset();
+
+    std::cerr << "field_vec reset" << std::endl;
+    field_vec.resize(0);
+
+    std::cerr << "reset finished" << std::endl;
+
+
+    /*
+    std::shared_ptr<procon::Field> field;
+    std::shared_ptr<Visualizer> visualizer;
+    std::vector<std::shared_ptr<procon::Field>> field_vec;
+
+    std::shared_ptr<AlgorithmWrapper> team_1;
+    std::shared_ptr<AlgorithmWrapper> team_2;
+
+    std::shared_ptr<ProgresDock> progresdock;
+    */
 }
 
 void GameManager::resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show, const int t_max){
