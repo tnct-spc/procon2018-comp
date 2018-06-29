@@ -8,6 +8,7 @@ Mejirodai::Mejirodai(QWidget *parent) :
     ui->setupUi(this);
 
     manager = std::make_shared<GameManager>(x_size, y_size);
+    manager->setSharedPtr(manager);
     visualizer = manager->getVisualizer();
     visualizer->show();
 
@@ -16,6 +17,7 @@ Mejirodai::Mejirodai(QWidget *parent) :
     connect(ui->goPrev, &QPushButton::clicked, this, &Mejirodai::goPrevState);
     connect(ui->selectMyAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->my_stackedWidget, SLOT(setCurrentIndex(int)));
     connect(ui->selectOpponentAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->opponent_stackedWidget, SLOT(setCurrentIndex(int)));
+
 
 }
 
@@ -29,6 +31,9 @@ void Mejirodai::RunManagerSimulation(){
     // 各チームのアルゴリズムの設定
     QString my = ui->selectMyAlgorithmBox->currentText();
     QString opponnent = ui->selectOpponentAlgorithmBox->currentText();
+
+
+    std::cerr << "mejirodai manager ptr : " << manager << " , " << manager.use_count() << std::endl;
 
     // AutoModeの設定
     manager->setAutoMode(ui->autoMode->isChecked());
