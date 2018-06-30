@@ -34,8 +34,6 @@ void Mejirodai::RunManagerSimulation(){
     QString opponnent = ui->selectOpponentAlgorithmBox->currentText();
 
 
-    std::cerr << "mejirodai manager ptr : " << manager << " , " << manager.use_count() << std::endl;
-
     // AutoModeの設定
     manager->setAutoMode(ui->autoMode->isChecked());
 

@@ -63,6 +63,11 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
 
 void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
+    field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
+
+    field_vec.clear();
+    field_vec.push_back(std::make_shared<procon::Field>(*field));
+
     if (QString::compare("DummyAlgorithm", my_algo) == 0) {
         team_1 = std::make_shared<DummyAlgorithm>(*field, turn_max, 0);
     } else if (QString::compare("GeneticAlgo", my_algo) == 0) {
@@ -90,11 +95,6 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
     }else if(QString::compare("TestDoubleAgentAlgo", opponent_algo) == 0){
         team_2 = std::make_shared<AgentManager>(*field, turn_max, 1, 0);
     }
-
-    field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
-
-    field_vec.clear();
-    field_vec.push_back(std::make_shared<procon::Field>(*field));
 
 
     // progressdockは一旦表示しない事にします(使う事があまりないため)
