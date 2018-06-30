@@ -1,9 +1,10 @@
 #include "agentwrapper.h"
 
-AgentWrapper::AgentWrapper(int side, int agent_num, std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent_data) :
+AgentWrapper::AgentWrapper(int side, const procon::Field& field, int final_turn, int agent_num, const GeneticAgent& agent_data) :
     side(side),
     agent(agent_num),
-    manager(manager_ptr),
+    final_turn(final_turn),
+    field(field),
     agent_data(agent_data)
 {
 
