@@ -8,9 +8,10 @@ Mejirodai::Mejirodai(QWidget *parent) :
     ui->setupUi(this);
 
     manager = std::make_shared<GameManager>(x_size, y_size);
-    manager->setSharedPtr(manager);
+    /*
     visualizer = manager->getVisualizer();
     visualizer->show();
+    */
 
     connect(ui->runButton, &QPushButton::clicked, this, &Mejirodai::RunManagerSimulation);
     connect(ui->goNext, &QPushButton::clicked, this, &Mejirodai::goNextState);

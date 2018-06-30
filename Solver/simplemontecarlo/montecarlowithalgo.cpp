@@ -60,7 +60,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
         mgr_target->agentAct(side, 0, std::make_tuple( (field.getState(agent_1_pos.first, agent_1_pos.second).first == 2 ? 2 : 1) , x_list.at(move / 9), y_list.at(move / 9)));
         mgr_target->agentAct(side, 1, std::make_tuple( (field.getState(agent_2_pos.first, agent_2_pos.second).first == 2 ? 2 : 1) , x_list.at(move % 9), y_list.at(move % 9)));
 
-        GeneticAlgo algo(manager,*side_2);
+        GeneticAlgo algo(field, final_turn, side,*side_2);
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> act = algo.agentAct(1);
         mgr_target->agentAct(side_r, 0, act.first);
         mgr_target->agentAct(side_r, 1, act.second);
@@ -105,7 +105,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
         for(int agent_num = 0; agent_num < 20; ++agent_num){
             GeneticAgent agent(7);
             agent.setData(values.at(agent_num) );
-            GeneticAlgo algo(manager, agent);
+            GeneticAlgo algo(field, final_turn, side,agent);
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> act = algo.agentAct(side);
             move_list_1.insert( std::make_pair(std::get<1>(act.first), std::get<2>(act.first) ) );
             move_list_2.insert( std::make_pair(std::get<1>(act.second), std::get<2>(act.second) ) );

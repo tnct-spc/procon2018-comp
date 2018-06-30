@@ -1,7 +1,7 @@
 #include "simplealgorithm.h"
 
-SimpleAlgorithm::SimpleAlgorithm(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent) :
-    AlgorithmWrapper(manager_ptr),
+SimpleAlgorithm::SimpleAlgorithm(const procon::Field& field, int final_turn, bool side, const GeneticAgent& agent) :
+    AlgorithmWrapper(field, final_turn, side),
     agent_data(agent),
     mt(rnd())
 {
@@ -11,7 +11,6 @@ SimpleAlgorithm::SimpleAlgorithm(std::shared_ptr<GameManager> manager_ptr, const
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleAlgorithm::agentAct(int side){
 
-    procon::Field& field = manager->getField();
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
@@ -60,15 +59,13 @@ double SimpleAlgorithm::evaluateMove(int side, std::pair<int, int> move){
     //定数の辺りの処理が完全に不必要になるようにする
 
     //例外処理
-    if(!manager->canPut(side, move.first, move.second))
+    if(!field.canPut(side, move.first, move.second))
         return -100000;
 
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
-
-    procon::Field& field = manager->getField();
 
     std::vector<int> move_vec(2); //ここの実装くそ
     move_vec.at(0) = move.first;

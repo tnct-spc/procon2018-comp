@@ -44,13 +44,9 @@ public:
 
     void changeTurn();
 
-    std::shared_ptr<Visualizer> getVisualizer();
-
     int getTurnCount();
 
     void setField(const procon::Field& pro, int now_t, int max_t);
-
-    void setSharedPtr(std::shared_ptr<GameManager> ptr);
 
 signals:
     void signalAutoMode(bool value);
@@ -62,8 +58,6 @@ public slots:
 
 
 private:
-    std::shared_ptr<GameManager> share;
-
 
     std::shared_ptr<procon::Field> field;
     std::shared_ptr<Visualizer> visualizer;

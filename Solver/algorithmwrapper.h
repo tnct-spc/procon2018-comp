@@ -11,7 +11,6 @@ class GameManager;
 class AlgorithmWrapper
 {
 public:
-    // AlgorithmWrapper(const std::shared_ptr<GameManager> manager_ptr);
     AlgorithmWrapper(const procon::Field& field, int final_turn, bool side);
 
     virtual const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> agentAct(int now_turn)=0;
