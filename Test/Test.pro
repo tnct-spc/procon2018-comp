@@ -6,12 +6,10 @@ QT += core gui widgets
 
 SOURCES += \
         main.cpp \
-    testagentparam.cpp \
-    testerasegamemanager.cpp
+    testagentparam.cpp
 
 HEADERS += \
-    testagentparam.h \
-    testerasegamemanager.h
+    testagentparam.h
 
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field

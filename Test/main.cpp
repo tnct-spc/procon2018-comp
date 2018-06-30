@@ -1,15 +1,11 @@
 #include <iostream>
 #include "testagentparam.h"
-#include "testerasegamemanager.h"
-
 
 int main()
 {
 
     std::cout << "select mode" << std::endl;
     std::cout << "0 : TestAgentParam" << std::endl;
-    std::cout << "2 : TestEraseGameManager" << std::endl;
-
 
     int test_number = -1;
 
@@ -49,11 +45,6 @@ int main()
         if(test_number == 1 || test_number == 2)
             test.runRand( (test_number == 2) );
     }
-    if(test_number == 2){
-        TestEraseGameManager erase_man;
-        erase_man.run();
-    }
-
 
 
 
