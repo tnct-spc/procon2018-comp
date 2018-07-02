@@ -26,7 +26,6 @@ private:
     Ui::Mejirodai *ui;
 
     std::shared_ptr<GameManager> manager;
-    std::shared_ptr<Visualizer> visualizer;
 
     void RunManagerSimulation();
     void goNextState();

@@ -1,10 +1,11 @@
 #include "simplemcforduble.h"
 
-SimpleMCForDuble::SimpleMCForDuble(std::shared_ptr<GameManager> manager, std::vector<std::shared_ptr<AgentWrapper>> agents, int side) :
-    manager(manager),
+SimpleMCForDuble::SimpleMCForDuble(const procon::Field& field, bool side, int now_turn, int max_turn, std::vector<std::shared_ptr<AgentWrapper>> agents) :
+    field(field),
     side(side),
     cpu_num(std::thread::hardware_concurrency()),
-    field(manager->getField()),
+    now_turn(now_turn),
+    max_turn(max_turn),
     agents(agents)
 {
     mt = std::mt19937(rnd());
@@ -86,8 +87,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cha
         for(int index = 0; index < 2; ++index)
             my_move.at(index) = (*std::lower_bound(can_move_list.at(index).begin(), can_move_list.at(index).end(), std::make_pair(dist.at(index)(mt), std::make_tuple(0, 0, 0)))).second;
 
-        std::pair<int,int> old_pos_1 = manager->getField().getAgent(side, 0);
-        std::pair<int,int> old_pos_2 = manager->getField().getAgent(side, 1);
+        std::pair<int,int> old_pos_1 = manager_ptr->getField().getAgent(side, 0);
+        std::pair<int,int> old_pos_2 = manager_ptr->getField().getAgent(side, 1);
 
         std::pair<int,int> new_pos_1 = old_pos_1;
         new_pos_1.first += std::get<1>(my_move.at(0));
@@ -129,17 +130,17 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
             while((double)(clock() - start) / CLOCKS_PER_SEC < calc_time){
 
                 //ここに書く
-                int turn_count = manager->getFinalTurn() - manager->getTurnCount();
+                int turn_count = max_turn  - now_turn;
 
                 std::cerr << std::this_thread::get_id() << " : " << cpu_index << std::endl;
 
                 // managerの生成,初期化
                 std::shared_ptr<GameManager> manager_ptr = manager_vec.at(cpu_index);
 
-                manager_ptr->setField(field, manager->getTurnCount(), manager->getFinalTurn());
+                manager_ptr->setField(field, now_turn, max_turn);
 
                 // 相手のアルゴリズムを決定
-                std::shared_ptr<AlgorithmWrapper> enemy_algo = std::make_shared<GeneticAlgo>(manager_ptr);
+                std::shared_ptr<AlgorithmWrapper> enemy_algo = std::make_shared<GeneticAlgo>(field, max_turn, !side);
 
                 // このプレイアウト時の最初の手
                 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> first_move;
@@ -159,8 +160,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
                     manager_ptr->changeTurn();
                 }
                 // 得点を計算する
-                std::pair<int,int> my_point = manager->getField().getPoints(0,false);
-                std::pair<int,int> enemy_point = manager->getField().getPoints(1,false);
+                std::pair<int,int> my_point = manager_ptr->getField().getPoints(0,false);
+                std::pair<int,int> enemy_point = manager_ptr->getField().getPoints(1,false);
 
                 // 引き分けでないなら試行回数を増やしておく
                 if(my_point.first + my_point.second != enemy_point.first + enemy_point.second)

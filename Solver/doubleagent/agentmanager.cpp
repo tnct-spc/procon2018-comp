@@ -2,20 +2,19 @@
 #include "agents/testdoubleagentalgo.h"
 #include "agents/evaluateparam.h"
 
-AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int side, int algorithm_number, const GeneticAgent* agent_data_1, const GeneticAgent* agent_data_2) :
-    AlgorithmWrapper(manager_ptr),
-    side(side)
+AgentManager::AgentManager(const procon::Field& field, int turn_max, bool side, int algorithm_number, const GeneticAgent* agent_data_1, const GeneticAgent* agent_data_2) :
+    AlgorithmWrapper(field, turn_max, side)
 {
 
     agents.resize(2);
 
     if(algorithm_number == 0){
-        agents.at(0) = std::make_shared<TestDoubleAgentAlgo>(side, 0, getManagerPtr(), 6);
-        agents.at(1) = std::make_shared<TestDoubleAgentAlgo>(side, 1, getManagerPtr(), 6);
+        agents.at(0) = std::make_shared<TestDoubleAgentAlgo>(side, field, final_turn, 0, 6);
+        agents.at(1) = std::make_shared<TestDoubleAgentAlgo>(side, field, final_turn, 1, 6);
     }
     else if(algorithm_number == 1){
-        agents.at(0) = std::make_shared<EvaluateParam>(side, 0, getManagerPtr(), 1);
-        agents.at(1) = std::make_shared<EvaluateParam>(side, 1, getManagerPtr(), 1);
+        agents.at(0) = std::make_shared<EvaluateParam>(side, field, final_turn, 0, 2);
+        agents.at(1) = std::make_shared<EvaluateParam>(side, field, final_turn, 1, 2);
     }
     if(agent_data_1 != nullptr)
         setAgentData(*agent_data_1, 0);
@@ -25,7 +24,7 @@ AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int side, i
 
 }
 
-const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::agentAct(int side){
+const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::agentAct(int now_turn){
 
     this->side = side;
 
@@ -33,7 +32,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::
         return simpleCalc();
 
     if(algo_number == 1)
-        return simpleMC();
+        return simpleMC(now_turn);
 
 }
 
@@ -49,8 +48,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleC
     std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
     double max_value = -400001;
 
-    std::pair<int,int> old_pos_1 = manager->getField().getAgent(side, 0);
-    std::pair<int,int> old_pos_2 = manager->getField().getAgent(side, 1);
+    std::pair<int,int> old_pos_1 = field.getAgent(side, 0);
+    std::pair<int,int> old_pos_2 = field.getAgent(side, 1);
 
     for(auto value_1 : move_1){
 
@@ -81,9 +80,9 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleC
 
 }
 
-std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleMC(){
+std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleMC(int now_turn){
 
-    SimpleMCForDuble mc(manager, agents, side);
+    SimpleMCForDuble mc(field, side, now_turn, final_turn, agents);
 
     return mc.calcMove();
 }

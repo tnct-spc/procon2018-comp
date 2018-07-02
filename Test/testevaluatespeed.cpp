@@ -43,7 +43,7 @@ void TestEvaluateSpeed::run(){
 
         std::shared_ptr<GameManager> manager = std::make_shared<GameManager>(field.getSize().first, field.getSize().second, false);
         manager_vec.push_back(manager);
-        algo_vec.push_back(std::make_shared<AgentManager>(manager_vec.at(count), 0, 1));
+        algo_vec.push_back(std::make_shared<AgentManager>(field, rand(120), 0));
     }
 
 

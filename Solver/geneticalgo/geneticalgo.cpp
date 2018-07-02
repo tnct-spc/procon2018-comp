@@ -1,14 +1,14 @@
 #include "geneticalgo.h"
 
-GeneticAlgo::GeneticAlgo(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent) :
-    AlgorithmWrapper(manager_ptr),
+GeneticAlgo::GeneticAlgo(const procon::Field& field, int final_turn, bool side, const GeneticAgent& agent) :
+    AlgorithmWrapper(field, final_turn, side),
     agent_data(agent)
 {
 
 
 }
 
-const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::agentAct(int side)
+const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::agentAct(int now_turn)
 {
 
     std::vector<double> status = agent_data.getData();
@@ -20,15 +20,13 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
     double nomove = status.at(5); //移動しなかった時のペナルティ(高いほどペナ大)
     double backmove = status.at(6); //もう塗られてる所に行った時のペナルティ(高いほどペナ大)
 
-    const procon::Field& field = manager->getField();
-
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
     std::vector<int> can_put_pattern;
 
     for(int count = 0; count < 81; ++count)
-        if(manager->canPut(side, count / 9, count % 9))
+        if(field.canPut(side, count / 9, count % 9))
             can_put_pattern.emplace_back(count);
 
 

@@ -21,9 +21,9 @@ class MontecarloWithAlgo : public AlgorithmWrapper
     //using AlgorithmWrapper::AlgorithmWrapper;
 
 public:
-    MontecarloWithAlgo(std::shared_ptr<GameManager> manager_ptr);
+    MontecarloWithAlgo(const procon::Field& field, int final_turn, bool side);
 
-    const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
+    const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
 
 private:
 

@@ -2,14 +2,12 @@
 #include "testagentparam.h"
 #include "testevaluatespeed.h"
 
-
 int main()
 {
 
     std::cout << "select mode" << std::endl;
     std::cout << "0 : TestAgentParam" << std::endl;
     std::cout << "1 : TestEvaluateSpeed" << std::endl;
-
 
     int test_number = -1;
 

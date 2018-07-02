@@ -26,7 +26,10 @@ public:
 
     std::vector<std::vector<bool>> getRegion(int side);
 
-    std::pair<int,int> getPoints(int side, bool update_flag = true); //sideの<踏んだマス,領域点>を返す
+    std::pair<int,int> getPoints(int side, bool flag = true);
+    std::pair<int,int> getPoints(int side, std::pair<int, std::pair<int, int>> pos, bool flag = true);     //sideの<踏んだマス,領域点>を返す,引数posには<影響を与える色<座標>>を投げて
+    std::pair<int,int> getPoints(int side, std::vector<std::pair<int, std::pair<int, int>>> pos_vec, bool flag = true);
+
     void setPoints(int side, std::pair<int,int> value);
 
     bool isPlaced(const unsigned int x, const unsigned int y);
@@ -35,6 +38,7 @@ public:
     void setState(const unsigned int x, const unsigned int y, const unsigned int state);//タイル状況のみの変更
     void setAgent(const unsigned int turn, const unsigned int number, const unsigned int x_pos, const unsigned int y_pos);
 
+    bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2, bool double_move = true) const;
 
     void setSize(const std::pair<int, int> &grid);
     void setValue(const std::vector<std::vector<int>> &value);

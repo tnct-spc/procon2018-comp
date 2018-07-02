@@ -229,6 +229,64 @@ void procon::Field::setAgent(const unsigned int turn, const unsigned int number,
 }
 
 
+bool procon::Field::canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2, bool double_move) const{
+
+    std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
+    std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
+
+    auto check_outofrange = [&](int agent){
+
+        std::pair<int,int> agent_pos = getAgent(side, agent);
+
+        int move = (agent == 0 ? move_1 : move_2);
+
+        agent_pos.first += x_list.at(move);
+        agent_pos.second += y_list.at(move);
+
+
+        return !(agent_pos.first < 0 || agent_pos.second < 0 || agent_pos.first >= getSize().first || agent_pos.second >= getSize().second);
+    };
+
+    auto check_conflict = [&]{
+
+        std::pair<int,int> agent_pos_1 = getAgent(side, 0);
+
+        if(getState(agent_pos_1.first + x_list.at(move_1), agent_pos_1.second + y_list.at(move_1) ).first != (side == 0 ? 2 : 1) ){
+
+            agent_pos_1.first += x_list.at(move_1);
+            agent_pos_1.second += y_list.at(move_1);
+        }
+
+        std::pair<int,int> agent_pos_2 = getAgent(side, 1);
+
+        if(getState(agent_pos_2.first + x_list.at(move_2), agent_pos_2.second + y_list.at(move_2) ).first != (side == 0 ? 2 : 1) ){
+
+            agent_pos_2.first += x_list.at(move_2);
+            agent_pos_2.second += y_list.at(move_2);
+        }
+
+        return (agent_pos_1 != agent_pos_2);
+    };
+
+    //クソ実装を許せ
+    if(double_move == false){
+
+        std::pair<int,int> agent_pos = getAgent(side, move_1);
+
+        agent_pos.first += x_list.at(move_2);
+        agent_pos.second += y_list.at(move_2);
+
+
+        return !(agent_pos.first < 0 || agent_pos.second < 0 || agent_pos.first >= getSize().first || agent_pos.second >= getSize().second);
+
+    }
+
+    return ( check_outofrange(0) && check_outofrange(1) && check_conflict());
+}
+
+
+
+
 void procon::Field::setSize(const std::pair<int, int> &grid){
     grid_x = grid.first; grid_y = grid.second;
 }
@@ -301,6 +359,7 @@ void procon::Field::updatePoint(){
         }
         for(int index = now_index+1; 0 <= index; index--){
             if(LookUpTable[index] == index)continue;
+
             for(int x = 0;x < grid_x;x++){
                 for(int y = 0;y < grid_y;y++){
                     if(labeling.at(x).at(y)==index){
@@ -308,13 +367,15 @@ void procon::Field::updatePoint(){
                     }
                 }
             }
+
         }
         for(int x = 0;x < grid_x;x++){
-            for(int y = 0;y < grid_y;y++){
-                if(x == 0 || x == grid_x -1 || y == 0 || y == grid_y -1){
-                    flag[labeling.at(x).at(y)] = false;
-                }
-            }
+            flag[labeling.at(x).at(0)]=false;
+            flag[labeling.at(x).at(grid_y-1)]=false;
+        }
+        for(int y = 0;y < grid_y;y++){
+            flag[labeling.at(0).at(y)]=false;
+            flag[labeling.at(grid_x-1).at(y)]=false;
         }
         for(int x = 0; x < grid_x; x++){
             for(int y = 0; y < grid_y; y++){
@@ -372,12 +433,45 @@ void procon::Field::updatePoint(){
     blue_point = std::make_pair(common_blue_point, region_blue_point);//同上
 }
 
-std::pair<int,int> procon::Field::getPoints(int side, bool update_flag){
-
-    if(update_flag)
+std::pair<int,int> procon::Field::getPoints(int side, bool flag){
+    if(flag){
         updatePoint();
-
+    }
     return (side == 0 ? red_point : blue_point);
+}
+
+std::pair<int,int> procon::Field::getPoints(int side, std::pair<int, std::pair<int,int>> pos, bool flag){
+    int dx[8]={1, 1, 1, 0, -1, -1, -1, 0};
+    int dy[8]={1, 0, -1, -1, -1, 0, 1, 1};
+    bool result = false;
+    for(int index = 0;index < 8;index++){
+        if(!(pos.second.first + dx[index] >= 0 && pos.second.first + dx[index] <= grid_x - 1 && pos.second.second + dy[index] >= 0 && pos.second.second + dy[index] <= grid_y - 1))continue;
+        if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first - 1){
+            result = true;
+        }
+    }
+    if(result && flag){
+        updatePoint();
+    }
+    return (side == 0 ? red_point : blue_point);
+}
+
+std::pair<int,int> procon::Field::getPoints(int side, std::vector<std::pair<int, std::pair<int, int> > > pos_vec, bool flag){
+    int dx[8]={1, 1, 1, 0, -1, -1, -1, 0};
+    int dy[8]={1, 0, -1, -1, -1, 0, 1, 1};
+    bool result = false;
+    for(std::pair<int, std::pair<int,int>> pos : pos_vec){
+        for(int index = 0;index < 8;index++){
+            if(!(pos.second.first + dx[index] >= 0 && pos.second.first + dx[index] <= grid_x - 1 && pos.second.second + dy[index] >= 0 && pos.second.second + dy[index] <= grid_y - 1))continue;
+            if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first - 1){
+                result = true;
+            }
+        }
+    }
+    if(result && flag){
+        updatePoint();
+    }
+    return (side == 0 ? red_point :blue_point);
 }
 
 void procon::Field::setPoints(int side, std::pair<int, int> value){

@@ -24,6 +24,7 @@ class GameManager : public QObject
 public:
     explicit GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show = true, const int turn_max = 60, QObject *parent = 0);
 
+
     void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
 
     void resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show = true, const int t_max = 60);
@@ -39,13 +40,9 @@ public:
 
     unsigned int getFinalTurn();
 
-    bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2, bool double_move = true);
-
     void setAutoMode(bool value);
 
     void changeTurn();
-
-    std::shared_ptr<Visualizer> getVisualizer();
 
     int getTurnCount();
 
@@ -61,8 +58,6 @@ public slots:
 
 
 private:
-    std::shared_ptr<GameManager> share;
-
 
     std::shared_ptr<procon::Field> field;
     std::shared_ptr<Visualizer> visualizer;

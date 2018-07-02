@@ -9,13 +9,13 @@
 class SimpleMCForDuble
 {
 public:
-    SimpleMCForDuble(std::shared_ptr<GameManager> manager, std::vector<std::shared_ptr<AgentWrapper>> agents, int side);
+    SimpleMCForDuble(const procon::Field& field, bool side, int now_turn, int max_turn, std::vector<std::shared_ptr<AgentWrapper>> agents);
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> calcMove();
 
 private:
     std::mutex mtx;
 
-    std::shared_ptr<GameManager> manager;
+    const procon::Field &field;
     std::vector<std::shared_ptr<AgentWrapper>> agents;
 
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> changeTurn(std::shared_ptr<GameManager> manager_ptr);
@@ -37,11 +37,10 @@ private:
     std::random_device rnd;
     std::mt19937 mt;
 
-    int side;
-    int cpu_num;
+    bool side;
+    int now_turn, max_turn, cpu_num;
 
     // ここでFieldのコピーをしてしまう (プレイアウト回数)だけコピーをしてしまうのは仕方ないです
-    procon::Field field;
     std::vector<std::shared_ptr<GameManager>> manager_vec;
 };
 
