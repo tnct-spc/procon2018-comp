@@ -29,7 +29,7 @@ private:
     const double value_weight = 1.0;
 
     // 計算に書ける時間(sec)
-    const double calc_time = 2.0;
+    const double calc_time = 10.0;
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};

@@ -19,8 +19,6 @@ SimpleMCForDuble::SimpleMCForDuble(const procon::Field& field, bool side, int no
 
 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::changeTurn(std::shared_ptr<GameManager> manager_ptr){
 
-    std::cerr << "start" << std::endl;
-
     // 有効手から重みをつけて結果を返す
 
     std::vector<std::vector<std::pair<double,std::tuple<int,int,int>>>> can_move_list(2);
@@ -100,7 +98,6 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cha
 
         // コンフリクトが起きないなら終了
         if(!( ( std::get<0>(my_move.at(0)) != 1 && old_pos_1 == new_pos_2) || (std::get<0>(my_move.at(1)) != 1 && new_pos_1 == old_pos_2) || new_pos_1 == new_pos_2)){
-            std::cerr << "end" << std::endl;
             return std::make_pair(my_move.at(0), my_move.at(1));
         }
     }
@@ -132,8 +129,6 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
                 //ここに書く
                 int turn_count = max_turn  - now_turn;
 
-                std::cerr << std::this_thread::get_id() << " : " << cpu_index << std::endl;
-
                 // managerの生成,初期化
                 std::shared_ptr<GameManager> manager_ptr = manager_vec.at(cpu_index);
 
@@ -160,8 +155,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
                     manager_ptr->changeTurn();
                 }
                 // 得点を計算する
-                std::pair<int,int> my_point = manager_ptr->getField().getPoints(0,false);
-                std::pair<int,int> enemy_point = manager_ptr->getField().getPoints(1,false);
+                std::pair<int,int> my_point = manager_ptr->getField().getPoints(0, false);
+                std::pair<int,int> enemy_point = manager_ptr->getField().getPoints(1, false);
 
                 // 引き分けでないなら試行回数を増やしておく
                 if(my_point.first + my_point.second != enemy_point.first + enemy_point.second)
@@ -185,13 +180,20 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
     }
 
     double max_point = -100000;
+    std::pair<int,int> max_pair = {0, 0};
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
 
     for(auto value : answer){
-        // 仮に(勝数 * 勝率)で出してみる
-        double point = value.second.first * (1.0 * value.second.first / value.second.second);
-        if(max_point < point)
+        // 仮に(試行回数 ** 1.2 * 勝率)で出してみる
+
+        double point = std::pow(value.second.second, 1.2) * (1.0 * value.second.first / value.second.second);
+
+        if(max_point < point){
+            max_point = point;
             max_move = value.first;
+            max_pair = value.second;
+        }
     }
+    std::cout << "max_point : (" << max_pair.first << " / " << max_pair.second << ") -> " << max_point << std::endl;
     return max_move;
 }
