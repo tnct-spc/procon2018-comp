@@ -33,6 +33,32 @@ double EvaluateParam::evaluateMove(int move, bool is_delete){
         return new_pos_state.second;
     };
 
+    // 次の取得タイルポイント
+
+    // 次の取得領域ポイント
+
+    // 味方のタイルポイント
+
+    // 味方の領域ポイント
+
+    // 敵のタイルポイント
+
+    // 敵の領域ポイント
+
+    // 味方エージェントとの距離
+
+    // 近い敵エージェントとの距離
+
+    // 遠い敵エージェントとの距離
+
+    // 現在のターン数 / 全体のターン数
+
+    // 空きグリッドの数
+
+    // 空きグリットの総合タイルポイント
+
+    // 空きグリットの総合領域ポイント
+
     double point_sum = 0.0;
 
     for(auto func : func_vector)
