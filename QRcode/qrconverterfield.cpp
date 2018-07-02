@@ -2,6 +2,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// vector<vector<int>> vec の二次元配列に点数
+// vector<int> A (2) , vector<int> B (2) それぞれにエージェントの初期位置
+
 int ctoi(string s,int& i) {
     int keta = 0;
     for(int j = 0;true;j++){
@@ -45,32 +48,51 @@ QrConverterField::QrConverterField()
     string s = read_only_data;
     int stage = 0;
     queue<int> HW;
-    for(int i = 0;i < s.size();i++){
-        cout << "check" << " [" << s.at(i) << "]" << endl;
-        if(s.at(i) == ':'){
-            cout << "stage up" << endl;
-            stage++;
-            continue;
-        }
-        else if(stage == 0){
-            cout << "stage1" << endl;
+    int H, W;
+    int i = 0;
+    vector<vector<int>> vec;
+    for(i = 0;stage != 2;i++){
             if(s.at(i) == '-' || s.at(i) == '0' || s.at(i) == '1' || s.at(i) == '2' || s.at(i) == '3' || s.at(i) == '4' || s.at(i) == '5' || s.at(i) == '6' || s.at(i) == '7' || s.at(i) == '8' || s.at(i) == '9'){
                 HW.push(ctoi(s,i));
+                stage++;
                 continue;
             }
-            else{
-                continue;
-            }
-        }
-        else if(stage == 1){
-            break;
-        }
-        else{
-            cout << "stage is unknown" << endl;
+    }
+    H = HW.front();
+    HW.pop();
+    W = HW.front();
+    int brock = 0;
+    vec = vector<vector<int>>(H, vector<int>(W, 0));
+    for(stage = 0;stage <= H;i++){
+        if(s.at(i) == ':'){
+            stage++;
+            brock = 0;
             continue;
         }
+        else if(s.at(i) == '-' || s.at(i) == '0' || s.at(i) == '1' || s.at(i) == '2' || s.at(i) == '3' || s.at(i) == '4' || s.at(i) == '5' || s.at(i) == '6' || s.at(i) == '7' || s.at(i) == '8' || s.at(i) == '9'){
+                vec [stage-1][brock] = ctoi(s,i);
+                brock++;
+                continue;
+            }
     }
-    cout << HW.front() << endl;
-    HW.pop();
-    cout << HW.front() << endl;
+    vector<int> A (2);
+    vector<int> B (2);
+    int b = 0;
+    for(int a = 0;a < 2;i++){
+        if(s.at(i) == ':'){
+            a++;
+            b = 0;
+            continue;
+        }
+        else if(s.at(i) == '-' || s.at(i) == '0' || s.at(i) == '1' || s.at(i) == '2' || s.at(i) == '3' || s.at(i) == '4' || s.at(i) == '5' || s.at(i) == '6' || s.at(i) == '7' || s.at(i) == '8' || s.at(i) == '9'){
+                if(a == 0){
+                    A.at(b) = ctoi(s,i);
+                    b++;
+                }
+                else if(a == 1){
+                    B.at(b) = ctoi(s,i);
+                    b++;
+                }
+            }
+    }
 }
