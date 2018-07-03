@@ -28,24 +28,59 @@ double EvaluateParam::evaluateMove(int move, bool is_delete){
 
     std::vector<std::function<double()>> func_vector(param_count);
 
+    // 次の取得タイルポイント
     func_vector.at(0) = [&]{
 
-        return new_pos_state.second;
+        return new_pos_state.first;
     };
 
-    // 次の取得タイルポイント
-
     // 次の取得領域ポイント
+    func_vector.at(1) = [&]{
+
+        return new_pos_state.first;
+    };
 
     // 味方のタイルポイント
+    func_vector.at(2) = [&]{
+
+        return now_team_point.first;
+    };
 
     // 味方の領域ポイント
+    func_vector.at(3) = [&]{
+
+        return now_team_point.second;
+    };
 
     // 敵のタイルポイント
+    func_vector.at(4) = [&]{
+
+        return now_enemy_point.first;
+    };
 
     // 敵の領域ポイント
+    func_vector.at(5) = [&]{
+
+        return now_enemy_point.second;
+    };
 
     // 味方エージェントとの距離
+    func_vector.at(4) = [&]{
+
+        std::pair<int, int> team_agent = field.getAgent(side, agent == 0 ? 1 : 0);
+
+        int x = now_pos.first - team_agent.first;
+        int y = now_pos.second - team_agent.second;
+
+        return sqrt(x * x + y * y);
+    };
+
+    auto distance = [&]
+    {
+        for (int i = 0; i < 2; i++) {
+
+        }
+    };
 
     // 近い敵エージェントとの距離
 
