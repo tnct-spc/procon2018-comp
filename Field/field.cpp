@@ -207,8 +207,8 @@ const std::vector<std::vector<std::pair<int,int>>>& procon::Field::getAgents() c
     return agents;
 }
 
-std::pair<int,int> procon::Field::getAgent(const unsigned int turn, const unsigned int number) const{
-    return agents.at(turn).at(number);
+std::pair<int,int> procon::Field::getAgent(const unsigned int side, const unsigned int number) const{
+    return agents.at(side).at(number);
 }
 
 bool procon::Field::isPlaced(const unsigned int x, const unsigned int y){
@@ -224,8 +224,8 @@ void procon::Field::setState(const unsigned int x, const unsigned int y, const u
     field_data.at(x).at(y) = state;
 }
 
-void procon::Field::setAgent(const unsigned int turn, const unsigned int number, const unsigned int x_pos, const unsigned int y_pos){
-    agents.at(turn).at(number) = std::make_pair(x_pos, y_pos);
+void procon::Field::setAgent(const unsigned int side, const unsigned int number, const unsigned int x_pos, const unsigned int y_pos){
+    agents.at(side).at(number) = std::make_pair(x_pos, y_pos);
 }
 
 
