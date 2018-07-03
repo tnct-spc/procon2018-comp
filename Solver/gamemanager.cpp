@@ -318,7 +318,7 @@ void GameManager::agentAct(const int turn, const int agent, const std::tuple<int
     }
     act_stack.at(turn).at(agent) = std::make_tuple(type, x_pos, y_pos);
 }
-void GameManager::changeTurn(){
+void GameManager::changeTurn(bool update){
 
     //[(x,y)]:(上書き時の色,(色,エージェント)) わかりづらいね
     std::map<std::pair<int,int>,std::pair<int,std::pair<int,int>>> counts;
@@ -445,7 +445,8 @@ void GameManager::changeTurn(){
     */
 
     //得点の更新処理(エージェント側でやるよりこちらの方がよい)
-    field->updatePoint();
+    if(update)
+        field->updatePoint();
 
 
 }

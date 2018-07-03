@@ -152,9 +152,10 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
                     manager_ptr->agentAct(side, 1, my_move.second);
                     manager_ptr->agentAct(!side, 0, enemy_move.first);
                     manager_ptr->agentAct(!side, 1, enemy_move.second);
-                    manager_ptr->changeTurn();
+                    manager_ptr->changeTurn(false);
                 }
                 // 得点を計算する
+                manager_ptr->getField().updatePoint();
                 std::pair<int,int> my_point = manager_ptr->getField().getPoints(0, false);
                 std::pair<int,int> enemy_point = manager_ptr->getField().getPoints(1, false);
 
