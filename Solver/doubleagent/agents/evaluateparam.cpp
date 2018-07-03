@@ -32,6 +32,12 @@ double EvaluateParam::evaluateMove(int move, bool is_delete){
     std::pair<int,int> now_team_point = copy_field.getPoints(side, false);
     std::pair<int,int> now_enemy_point = copy_field.getPoints(side, false);
 
+    // fieldのサイズ
+    std::pair<int, int> field_size = copy_field.getSize();
+
+    // fieldの各マスの状態
+    std::vector<std::vector<int>> now_field = copy_field.getField();
+
     std::vector<std::function<double()>> func_vector(param_count);
 
     // 次の取得タイルポイント
@@ -81,24 +87,92 @@ double EvaluateParam::evaluateMove(int move, bool is_delete){
         return sqrt(x * x + y * y);
     };
 
+    // 敵エージェントとの距離
     auto distance = [&]
     {
-        for (int i = 0; i < 2; i++) {
+        std::vector<double> dis;
 
+        for (int i = 0; i < 2; i++) {
+            std::pair<int, int> enemy_agent = field.getAgent(side == 0 ? 1 : 0, i);
+
+            int x = now_pos.first - enemy_agent.first;
+            int y = now_pos.second - enemy_agent.second;
+
+            dis.push_back(sqrt(x * x + y * y));
         }
+
+        return dis;
     };
 
     // 近い敵エージェントとの距離
+    func_vector.at(5) = [&]{
+
+        std::vector<double> dis = distance();
+
+        return dis.at(0) < dis.at(1) ? 0 : 1;
+    };
 
     // 遠い敵エージェントとの距離
+    func_vector.at(6) = [&]{
+
+        std::vector<double> dis = distance();
+
+        return dis.at(0) > dis.at(1) ? 0 : 1;
+    };
 
     // 現在のターン数 / 全体のターン数
+    func_vector.at(7) = [&]{
+
+        return now_turn / max_turn;
+    };
 
     // 空きグリッドの数
+    func_vector.at(8) = [&]{
+
+        double count = 0;
+
+        for (int y = 0; y < field_size.second; y++) {
+            for (int x = 0; x < field_size.first; x++) {
+                count += (now_field.at(x).at(y) == 0 ? 1 : 0);
+            }
+        }
+
+        return count;
+    };
 
     // 空きグリットの総合タイルポイント
+    func_vector.at(9) = [&]{
+
+        double count = 0;
+
+        for (int y = 0; y < field_size.second; y++) {
+            for (int x = 0; x < field_size.first; x++) {
+                if (now_field.at(x).at(y) == 0) {
+                    std::pair<int, int> state = copy_field.getState(x, y);
+                    count += state.second;
+                }
+            }
+        }
+
+        return count;
+    };
 
     // 空きグリットの総合領域ポイント
+    func_vector.at(10) = [&]{
+
+        double count = 0;
+
+        for (int y = 0; y < field_size.second; y++) {
+            for (int x = 0; x < field_size.first; x++) {
+                if (now_field.at(x).at(y) == 0) {
+                    std::pair<int, int> state = copy_field.getState(x, y);
+                    count += std::abs(state.second);
+                }
+            }
+        }
+
+        return count;
+    };
 
     double point_sum = 0.0;
 

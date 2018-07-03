@@ -15,7 +15,7 @@ public:
 
 private:
     // パラメータの数
-    const int param_count = 1;
+    const int param_count = 10;
 };
 
 #endif // EVALUATEPARAM_H
