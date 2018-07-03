@@ -1,9 +1,10 @@
 #include "agentwrapper.h"
 
-AgentWrapper::AgentWrapper(int side, int agent_num, std::shared_ptr<GameManager> manager_ptr, int param_count, const GeneticAgent& agent_data) :
+AgentWrapper::AgentWrapper(int side, const procon::Field& field, int final_turn, int agent_num, int param_count, const GeneticAgent& agent_data) :
     side(side),
     agent(agent_num),
-    manager(manager_ptr),
+    final_turn(final_turn),
+    field(field),
     agent_data(agent_data)
 {
     if(this->agent_data.size != param_count)
@@ -21,7 +22,6 @@ const std::vector<std::pair<double, std::tuple<int,int,int>>> AgentWrapper::agen
     return_val.push_back(std::make_pair(-200000, std::make_tuple(0, 0, 0)));
 
 
-    procon::Field& field = manager->getField();
     std::pair<int,int> agent_pos = field.getAgent(side, agent);
 
     auto evaluate = [&](int count, bool is_delete){

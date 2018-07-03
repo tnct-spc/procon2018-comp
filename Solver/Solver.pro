@@ -35,7 +35,8 @@ SOURCES += \
     doubleagent/agents/agentwrapper.cpp \
     doubleagent/agentmanager.cpp \
     doubleagent/agents/testdoubleagentalgo.cpp \
-    doubleagent/agents/evaluateparam.cpp
+    doubleagent/agents/evaluateparam.cpp \
+    doubleagent/algorithms/simplemcforduble.cpp
 HEADERS += \
         algorithm_global.h \ 
         testalgorithm.h \
@@ -54,7 +55,8 @@ HEADERS += \
     doubleagent/agents/agentwrapper.h \
     doubleagent/agentmanager.h \
     doubleagent/agents/testdoubleagentalgo.h \
-    doubleagent/agents/evaluateparam.h
+    doubleagent/agents/evaluateparam.h \
+    doubleagent/algorithms/simplemcforduble.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

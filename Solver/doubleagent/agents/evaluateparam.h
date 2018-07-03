@@ -8,6 +8,8 @@ class EvaluateParam : public AgentWrapper
     using AgentWrapper::AgentWrapper;
 
 public:
+    EvaluateParam(int side, const procon::Field& field, int final_turn, int agent_num, const GeneticAgent& agent_data = GeneticAgent(1, 2));
+
     const std::vector<std::pair<double, std::tuple<int,int,int>>> agentMove();
     double evaluateMove(int move, bool is_delete);
 

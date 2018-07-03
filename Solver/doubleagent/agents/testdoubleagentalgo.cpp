@@ -1,5 +1,10 @@
 #include "testdoubleagentalgo.h"
 
+TestDoubleAgentAlgo::TestDoubleAgentAlgo(int side, const procon::Field& field, int final_turn, int agent_num, const GeneticAgent &agent_data) :
+    AgentWrapper(side, field, final_turn, agent_num, 6, agent_data)
+{
+
+}
 
 double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete){
 
@@ -8,10 +13,10 @@ double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete){
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
     //ここのコストヤバいけど
-    procon::Field& field = manager->getField();
+    procon::Field copy_field = field;
 
     //枝切り
-    if(!manager->canPut(side, agent, move, false))
+    if(!field.canPut(side, agent, move, false))
         return -300000;
 
 
@@ -48,12 +53,12 @@ double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete){
     double per_point_sum = data.at(5) * 40;
 
     //移動後の位置
-    std::pair<int,int> new_pos = field.getAgent(side, agent);
+    std::pair<int,int> new_pos = copy_field.getAgent(side, agent);
     new_pos.first += x_list.at(move);
     new_pos.second += y_list.at(move);
 
     //移動先のタイル状況
-    std::pair<int,int> tile_data = field.getState(new_pos.first, new_pos.second);
+    std::pair<int,int> tile_data = copy_field.getState(new_pos.first, new_pos.second);
     int tile_value = tile_data.second;
     int tile_color = tile_data.first;
 
@@ -77,15 +82,12 @@ double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete){
             return return_value;
         }
 
-        //変わる前の状況を保存しておく
-        int before_state = field.getState(new_pos.first, new_pos.second).first;
-
         std::vector<std::pair<int,int>> before_point(2);
-        before_point.at(0)= field.getPoints(side, false);
-        before_point.at(1) = field.getPoints((side == 1 ? 0 : 1), false);
+        before_point.at(0)= copy_field.getPoints(side, false);
+        before_point.at(1) = copy_field.getPoints((side == 1 ? 0 : 1), false);
 
         //仮に移動させてしまう
-        field.setState(new_pos.first, new_pos.second, (delete_move ? 0 : side + 1) );
+        copy_field.setState(new_pos.first, new_pos.second, (delete_move ? 0 : side + 1) );
 
 
         //得点の変動値
@@ -100,21 +102,15 @@ double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete){
             return_value += pos_value * per_delete_move;
 
 
-        //fieldをコピーしてしまっているのもとても良くないので、一箇所更新された時の変化量を計算するメンバも置いて干し稲
-
-        //移動したものとして、ポイントを計算し直す
-        //ここの得点更新処理を、差分を取る事で高速に計算できると非常によい
-
-
         //ここの計算し直しが非効率的
-        field.updatePoint();
+        copy_field.updatePoint();
 
 
 
 
         std::vector<std::pair<int,int>> after_point(2);
-        after_point.at(0)= field.getPoints(side, false);
-        after_point.at(1) = field.getPoints((side == 1 ? 0 : 1), false);
+        after_point.at(0)= copy_field.getPoints(side, false);
+        after_point.at(1) = copy_field.getPoints((side == 1 ? 0 : 1), false);
 
         //領域ポイントの変化量
         int region_diff = (after_point.at(0).second - before_point.at(0).second) - (after_point.at(1).second - before_point.at(1).second);
@@ -128,12 +124,6 @@ double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete){
 
         return_value += point_diff * per_point_sum;
 
-        //変えたものを元に戻す
-        field.setState(new_pos.first, new_pos.second, before_state );
-
-        field.setPoints(0, before_point.at(0));
-        field.setPoints(1, before_point.at(1));
-      
         return return_value;
     };
 
