@@ -42,7 +42,7 @@ public:
 
     void setAutoMode(bool value);
 
-    void changeTurn();
+    void changeTurn(bool update = true);
 
     int getTurnCount();
 
