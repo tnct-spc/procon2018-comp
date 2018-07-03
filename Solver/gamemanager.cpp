@@ -154,17 +154,6 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
             changeTurn();
 
-            std::pair<int,int> red_point,blue_point;
-
-            /*
-            std::cout<<"赤の素の得点は"<<red_point.first<<"点で、領域ポイントは"<<red_point.second<<"点です"<<std::endl;
-            std::cout<<"青の素の得点は"<<blue_point.first<<"点で、領域ポイントは"<<blue_point.second<<"点です"<<std::endl;
-            */
-
-            red_point = field->getPoints(0, pruning_pos);
-            blue_point = field->getPoints(1, pruning_pos);
-
-
             field_vec.push_back(std::make_shared<procon::Field>(*field));
 
 //            progresdock->addAnswer(*(field_vec.back()));
@@ -458,7 +447,6 @@ void GameManager::changeTurn(bool update){
     */
 
     //得点の更新処理(エージェント側でやるよりこちらの方がよい)
-
     if(update)
         field->updatePoint();
 
