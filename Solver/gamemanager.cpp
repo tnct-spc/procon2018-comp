@@ -218,9 +218,13 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
 
     //std::cout << "simulationGenetic" << std::endl;
 
+    // changeTurn後の得点計算を行うか
+    bool is_update = true;
+
     if(algo_number == 0){
         team_1 = std::make_shared<GeneticAlgo>(*field, turn_max, 0, agent_1);
         team_2 = std::make_shared<GeneticAlgo>(*field, turn_max, 1, agent_2);
+        is_update = false;
     }
     if(algo_number == 2){
         team_1 = std::make_shared<SimpleAlgorithm>(*field, turn_max, 0, agent_1);
@@ -258,9 +262,11 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
         agentAct(1,0,team_2_ans.first);
         agentAct(1,1,team_2_ans.second);
 
-        changeTurn();
+        changeTurn(is_update);
 
     }
+
+    if(!is_update)field->updatePoint();
 
     std::pair<int,int> point_1_pair = field->getPoints(0, false);
     std::pair<int,int> point_2_pair = field->getPoints(1, false);

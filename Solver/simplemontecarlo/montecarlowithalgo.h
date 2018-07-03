@@ -44,7 +44,7 @@ private:
     const double ucb_val = 1.4;//定数
 
     //合計での試行回数
-    unsigned int try_time = 3 * 1e6;
+    unsigned int try_time = 3 * 1e7;
 
 
     //ここにパラメータを置く(いい結果が出たら他のアルゴも出せるようにする
