@@ -225,9 +225,13 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
 
     //std::cout << "simulationGenetic" << std::endl;
 
+    // changeTurn後の得点計算を行うか
+    bool is_update = true;
+
     if(algo_number == 0){
         team_1 = std::make_shared<GeneticAlgo>(*field, turn_max, 0, agent_1);
         team_2 = std::make_shared<GeneticAlgo>(*field, turn_max, 1, agent_2);
+        is_update = false;
     }
     if(algo_number == 2){
         team_1 = std::make_shared<SimpleAlgorithm>(*field, turn_max, 0, agent_1);
@@ -265,9 +269,11 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
         agentAct(1,0,team_2_ans.first);
         agentAct(1,1,team_2_ans.second);
 
-        changeTurn();
+        changeTurn(is_update);
 
     }
+
+    if(!is_update)field->updatePoint();
 
     std::pair<int,int> point_1_pair = field->getPoints(0, false);
     std::pair<int,int> point_2_pair = field->getPoints(1, false);
@@ -325,7 +331,7 @@ void GameManager::agentAct(const int turn, const int agent, const std::tuple<int
     }
     act_stack.at(turn).at(agent) = std::make_tuple(type, x_pos, y_pos);
 }
-void GameManager::changeTurn(){
+void GameManager::changeTurn(bool update){
 
     //[(x,y)]:(上書き時の色,(色,エージェント)) わかりづらいね
     std::map<std::pair<int,int>,std::pair<int,std::pair<int,int>>> counts;
@@ -452,7 +458,9 @@ void GameManager::changeTurn(){
     */
 
     //得点の更新処理(エージェント側でやるよりこちらの方がよい)
-   // field->updatePoint();
+
+    if(update)
+        field->updatePoint();
 
 
 }

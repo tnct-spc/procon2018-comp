@@ -65,7 +65,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
         mgr_target->agentAct(side_r, 0, act.first);
         mgr_target->agentAct(side_r, 1, act.second);
 
-        mgr_target->changeTurn();
+        mgr_target->changeTurn(false);
 
         bool win = mgr_target->simulationGenetic(*side_1, *side_2, 0);
 
@@ -168,29 +168,26 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
         win_count.at(max_index) += win;
     };
 
-    clock_t start_time = clock();
-
     int count = can_move_list.size() - 1;
-    while(++count){
 
-        //毎回の計測はちょっと遅くなるのでダメ
-        if(count % 10 == 0){
-            clock_t now_time = clock(); //時間計測
-            if(try_time < static_cast<double>(now_time - start_time) )
-                break;
-        }
+    for(unsigned int cpu_cou = 0; cpu_cou < cpu_num; ++cpu_cou){
+        threads.at(cpu_cou) = std::thread([&](unsigned int cpu){
 
-        for(unsigned int cpu_cou = 0; cpu_cou < cpu_num; ++cpu_cou){
-            threads.at(cpu_cou) = std::thread([&](unsigned int cpu){
-                std::lock_guard<std::mutex> lock(mtx);
-                simulation(cpu);
-            },cpu_cou);
-        }
+            clock_t start_time = clock();
 
-        for(unsigned int cpu_cou = 0; cpu_cou < cpu_num; ++cpu_cou)
-            threads.at(cpu_cou).join();
-
+            while(1){
+                for(int bat_count = 0; bat_count < 10; ++bat_count)
+                    simulation(cpu);
+                count += 10;
+                clock_t now_time = clock(); //時間計測
+                if(try_time < static_cast<double>(now_time - start_time) )
+                    break;
+            }
+        },cpu_cou);
     }
+
+    for(unsigned int cpu_cou = 0; cpu_cou < cpu_num; ++cpu_cou)
+        threads.at(cpu_cou).join();
 
 
     auto max_itr = std::max_element(try_count.begin(), try_count.end());
@@ -199,7 +196,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
 
     int max_move = can_move_list.at(index);
 
-    std::cout << "count : " << count * cpu_num << std::endl;
+    std::cout << "count : " << count << std::endl;
     std::cout << "move : " << max_move << std::endl;
 
     for(unsigned int index = 0; index < try_count.size(); ++index){
