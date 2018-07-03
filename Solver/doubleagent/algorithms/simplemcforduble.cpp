@@ -156,8 +156,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
                 }
                 // 得点を計算する
                 manager_ptr->getField().updatePoint();
-                std::pair<int,int> my_point = manager_ptr->getField().getPoints(0, false);
-                std::pair<int,int> enemy_point = manager_ptr->getField().getPoints(1, false);
+                std::pair<int,int> my_point = manager_ptr->getField().getPoints(side, false);
+                std::pair<int,int> enemy_point = manager_ptr->getField().getPoints(!side, false);
 
                 // 引き分けでないなら試行回数を増やしておく
                 if(my_point.first + my_point.second != enemy_point.first + enemy_point.second)
@@ -171,14 +171,17 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
             return std::move(return_map);
         }, count));
 
+    int cnt = 0;
     for(auto &th : threads){
         std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>,std::pair<int,int>> return_val = th.get();
 
         for(auto value : return_val){
             answer[value.first].first += value.second.first;
             answer[value.first].second += value.second.second;
+            cnt += value.second.second;
         }
     }
+    std::cout << "cnt : " << cnt << std::endl;
 
     double max_point = -100000;
     std::pair<int,int> max_pair = {0, 0};

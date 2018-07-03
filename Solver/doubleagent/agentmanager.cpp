@@ -5,7 +5,6 @@
 AgentManager::AgentManager(const procon::Field& field, int turn_max, bool side, int algorithm_number, const GeneticAgent* agent_data_1, const GeneticAgent* agent_data_2) :
     AlgorithmWrapper(field, turn_max, side)
 {
-
     agents.resize(2);
 
     if(algorithm_number == 0){
@@ -21,12 +20,9 @@ AgentManager::AgentManager(const procon::Field& field, int turn_max, bool side, 
     if(agent_data_2 != nullptr)
         setAgentData(*agent_data_2, 1);
 
-
 }
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::agentAct(int now_turn){
-
-    this->side = side;
 
     if(algo_number == 0)
         return simpleCalc();
