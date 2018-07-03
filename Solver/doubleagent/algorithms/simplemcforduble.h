@@ -20,6 +20,9 @@ private:
 
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> changeTurn(std::shared_ptr<GameManager> manager_ptr);
 
+    // 探索を打ち切るターン数(実際の探索ターン数はmin(end_turn, max_turn - now_turn)になる)
+    const int end_turn = 5;
+
     // 探索候補に含める最小値(これ以下は探索しない)
     const double minus_bound = -5000;
 

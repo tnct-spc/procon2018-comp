@@ -127,7 +127,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
             while((double)(clock() - start) / CLOCKS_PER_SEC < calc_time){
 
                 //ここに書く
-                int turn_count = max_turn  - now_turn;
+                int turn_count = std::min(end_turn, max_turn  - now_turn);
 
                 // managerの生成,初期化
                 std::shared_ptr<GameManager> manager_ptr = manager_vec.at(cpu_index);
