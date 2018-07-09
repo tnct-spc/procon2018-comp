@@ -383,35 +383,65 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(bool flag){
     return points;
 }
 
-std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<int, std::pair<int,int>> pos, bool flag){
+std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<std::pair<int,int>, std::pair<int,int>> pos, bool flag){
     int dx[8]={1, 1, 1, 0, -1, -1, -1, 0};
     int dy[8]={1, 0, -1, -1, -1, 0, 1, 1};
     bool result = false;
     for(int index = 0;index < 8;index++){
         if(!(pos.second.first + dx[index] >= 0 && pos.second.first + dx[index] <= grid_x - 1 && pos.second.second + dy[index] >= 0 && pos.second.second + dy[index] <= grid_y - 1))continue;
-        if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first - 1){
-            result = true;
+        if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first.first){
+            if(pos.first.second == 0){
+                result = true;
+            }
+        }else{
+            if(pos.first.second == 1){
+                result = true;
+            }
         }
     }
-    if(result && flag){
+    if(!flag && result){
+        std::vector<std::vector<std::vector<bool>>> stash_regions = regions;
+        std::vector<std::pair<int, int>> stash_points = points;
+        updatePoint();
+        regions = stash_regions;
+        std::vector<std::pair<int, int>> return_points = points;
+        points = stash_points;
+        return return_points;
+    }
+    if(flag && result){
         updatePoint();
     }
     return points;
 }
 
-std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<int, std::pair<int, int> > > pos_vec, bool flag){
-    int dx[8]={1, 1, 1, 0, -1, -1, -1, 0};
-    int dy[8]={1, 0, -1, -1, -1, 0, 1, 1};
+std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<std::pair<int,int>, std::pair<int, int> > > pos_vec, bool flag){
+    int dx[8] = {1, 1, 1, 0, -1, -1, -1, 0};
+    int dy[8] = {1, 0, -1, -1, -1, 0, 1, 1};
     bool result = false;
-    for(std::pair<int, std::pair<int,int>> pos : pos_vec){
+    for(std::pair<std::pair<int,int>, std::pair<int,int>> pos : pos_vec){
         for(int index = 0;index < 8;index++){
             if(!(pos.second.first + dx[index] >= 0 && pos.second.first + dx[index] <= grid_x - 1 && pos.second.second + dy[index] >= 0 && pos.second.second + dy[index] <= grid_y - 1))continue;
-            if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first - 1){
-                result = true;
+            if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first.first){
+                if(pos.first.second == 0){
+                    result = true;
+                }
+            }else{
+                if(pos.first.second == 1){
+                    result = true;
+                }
             }
         }
     }
-    if(result && flag){
+    if(!flag && result){
+        std::vector<std::vector<std::vector<bool>>> stash_regions = regions;
+        std::vector<std::pair<int, int>> stash_points = points;
+        updatePoint();
+        regions = stash_regions;
+        std::vector<std::pair<int, int>> return_points = points;
+        points = stash_points;
+        return return_points;
+    }
+    if(flag && result){
         updatePoint();
     }
     return points;
