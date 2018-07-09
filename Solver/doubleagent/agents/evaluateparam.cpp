@@ -109,7 +109,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn){
 
         std::vector<double> dis = distance();
 
-        return dis.at(0) < dis.at(1) ? 0 : 1;
+        return dis.at(0) < dis.at(1) ? dis.at(0) : dis.at(1);
     };
 
     // 遠い敵エージェントとの距離
@@ -117,7 +117,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn){
 
         std::vector<double> dis = distance();
 
-        return dis.at(0) > dis.at(1) ? 0 : 1;
+        return dis.at(0) > dis.at(1) ? dis.at(0) : dis.at(1);
     };
 
     // 現在のターン数 / 全体のターン数
