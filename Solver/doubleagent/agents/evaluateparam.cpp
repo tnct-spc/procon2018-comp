@@ -77,7 +77,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn){
     };
 
     // 味方エージェントとの距離
-    func_vector.at(4) = [&]{
+    func_vector.at(6) = [&]{
 
         std::pair<int, int> team_agent = field.getAgent(side, agent == 0 ? 1 : 0);
 
@@ -105,7 +105,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn){
     };
 
     // 近い敵エージェントとの距離
-    func_vector.at(5) = [&]{
+    func_vector.at(7) = [&]{
 
         std::vector<double> dis = distance();
 
@@ -113,7 +113,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn){
     };
 
     // 遠い敵エージェントとの距離
-    func_vector.at(6) = [&]{
+    func_vector.at(8) = [&]{
 
         std::vector<double> dis = distance();
 
@@ -121,13 +121,13 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn){
     };
 
     // 現在のターン数 / 全体のターン数
-    func_vector.at(7) = [&]{
+    func_vector.at(9) = [&]{
 
         return now_turn / final_turn;
     };
 
     // 空きグリッドの数
-    func_vector.at(8) = [&]{
+    func_vector.at(10) = [&]{
 
         double count = 0;
 
@@ -141,7 +141,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn){
     };
 
     // 空きグリットの総合タイルポイント
-    func_vector.at(9) = [&]{
+    func_vector.at(11) = [&]{
 
         double count = 0;
 
@@ -158,7 +158,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn){
     };
 
     // 空きグリットの総合領域ポイント
-    func_vector.at(10) = [&]{
+    func_vector.at(12) = [&]{
 
         double count = 0;
 
