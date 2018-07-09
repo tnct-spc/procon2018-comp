@@ -22,7 +22,7 @@ public:
 private:
     std::vector<std::shared_ptr<AgentWrapper>> agents;//各エージェント
 
-    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> simpleCalc();
+    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> simpleCalc(int now_turn);
 
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> simpleMC(int now_turn);
 

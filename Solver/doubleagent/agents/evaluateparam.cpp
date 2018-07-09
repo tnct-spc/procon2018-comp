@@ -6,7 +6,7 @@ EvaluateParam::EvaluateParam(int side, const procon::Field& field, int final_tur
 
 }
 
-double EvaluateParam::evaluateMove(int move, bool is_delete){
+double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn){
 
     // 莫大なコピーコストがかかってしまう…
     procon::Field copy_field = field;
@@ -123,7 +123,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete){
     // 現在のターン数 / 全体のターン数
     func_vector.at(7) = [&]{
 
-        return now_turn / max_turn;
+        return now_turn / final_turn;
     };
 
     // 空きグリッドの数

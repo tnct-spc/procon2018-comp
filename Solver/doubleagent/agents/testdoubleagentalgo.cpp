@@ -6,7 +6,7 @@ TestDoubleAgentAlgo::TestDoubleAgentAlgo(int side, const procon::Field& field, i
 
 }
 
-double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete){
+double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete, int){
 
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};

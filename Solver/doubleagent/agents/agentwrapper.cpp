@@ -12,7 +12,7 @@ AgentWrapper::AgentWrapper(int side, const procon::Field& field, int final_turn,
 
 }
 
-const std::vector<std::pair<double, std::tuple<int,int,int>>> AgentWrapper::agentMove(){
+const std::vector<std::pair<double, std::tuple<int,int,int>>> AgentWrapper::agentMove(int now_turn){
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
@@ -25,7 +25,7 @@ const std::vector<std::pair<double, std::tuple<int,int,int>>> AgentWrapper::agen
     std::pair<int,int> agent_pos = field.getAgent(side, agent);
 
     auto evaluate = [&](int count, bool is_delete){
-        double value = evaluateMove(count, is_delete);
+        double value = evaluateMove(count, is_delete, now_turn);
 
         if(value > -200000)//置けないパターンがあるのでそれを切る
             return_val.push_back(std::make_pair(value, std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));

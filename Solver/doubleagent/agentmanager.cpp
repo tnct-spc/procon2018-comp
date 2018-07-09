@@ -25,17 +25,17 @@ AgentManager::AgentManager(const procon::Field& field, int turn_max, bool side, 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::agentAct(int now_turn){
 
     if(algo_number == 0)
-        return simpleCalc();
+        return simpleCalc(now_turn);
 
     if(algo_number == 1)
         return simpleMC(now_turn);
 
 }
 
-std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleCalc(){
+std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleCalc(int now_turn){
 
-    std::vector<std::pair<double,std::tuple<int,int,int>>> move_1 = agents.at(0)->agentMove();
-    std::vector<std::pair<double,std::tuple<int,int,int>>> move_2 = agents.at(1)->agentMove();
+    std::vector<std::pair<double,std::tuple<int,int,int>>> move_1 = agents.at(0)->agentMove(now_turn);
+    std::vector<std::pair<double,std::tuple<int,int,int>>> move_2 = agents.at(1)->agentMove(now_turn);
 
     //2つのvectorは評価値が高い順にソートされているので、それらのうち「コンフリクトが起きないもの」でペアを組み、利得が最も高いものを選ぶ
     //ここの実装なんかめんどそうじゃない？辛い

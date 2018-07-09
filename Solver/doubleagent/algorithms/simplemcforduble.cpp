@@ -34,7 +34,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cha
 
         auto evaluate = [&](int count, bool is_delete){
 
-            double value = agents.at(agent)->evaluateMove(count, is_delete);
+            double value = agents.at(agent)->evaluateMove(count, is_delete, now_turn);
 
             if(value > minus_bound)//置けないパターンがあるのでそれを切る
                 can_move_list.at(agent).push_back(std::make_pair(std::pow((value - minus_bound) * value_ratio, value_weight), std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));
