@@ -10,8 +10,9 @@ procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
     field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
     value_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
 
-    region_blue = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
-    region_red = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
+    regions = std::vector<std::vector<std::vector<bool>>>(2, std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false)));
+
+    points = std::vector<std::pair<int,int>>(2, std::make_pair(0,0));
 
     for(int side = 0; side < 2; ++side)
         for(int agent = 0; agent < 2; ++agent){
@@ -32,9 +33,8 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
     value_data = input_val;
 
-    region_blue = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
-    region_red = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
-
+    regions = std::vector<std::vector<std::vector<bool>>>(2, std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false)));
+    points = std::vector<std::pair<int,int>>(2, std::make_pair(0,0));
 
     for(int side = 0; side < 2; ++side)
         for(int agent = 0; agent < 2; ++agent){
@@ -71,8 +71,9 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     field_data = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0 ));
     value_data = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0 ));
 
-    region_blue = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
-    region_red = std::vector<std::vector<bool>>(size_x, std::vector<bool>(size_y,false));
+
+    regions = std::vector<std::vector<std::vector<bool>>>(2, std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false)));
+    points = std::vector<std::pair<int,int>>(2, std::make_pair(0,0));
 
     /*
     std::uniform_int_distribution<> plus_rnd(0,max_val);
@@ -336,7 +337,7 @@ void procon::Field::updatePoint(){
         }
         */
 
-       (side == 1 ? region_red = mass: region_blue = mass);
+       regions.at(side -1) = mass;
     };
 
     calc(1);
@@ -358,10 +359,10 @@ void procon::Field::updatePoint(){
             if(field_data.at(a).at(b) == 2)
                 common_blue_point += value_data.at(a).at(b);
 
-            if(region_red.at(a).at(b))
+            if(regions.at(0).at(a).at(b))
                 region_red_point += std::abs(value_data.at(a).at(b));
 
-            if(region_blue.at(a).at(b))
+            if(regions.at(1).at(a).at(b))
                  region_blue_point += std::abs(value_data.at(a).at(b));
         }
     }
@@ -371,18 +372,18 @@ void procon::Field::updatePoint(){
     std::cout << region_blue_point << std::endl;
     */
 
-    red_point = std::make_pair(common_red_point, region_red_point);//メンバに代入
-    blue_point = std::make_pair(common_blue_point, region_blue_point);//同上
+    points.at(0) = std::make_pair(common_red_point, region_red_point);//メンバに代入
+    points.at(1) = std::make_pair(common_blue_point, region_blue_point);//同上
 }
 
-std::pair<int,int> procon::Field::getPoints(int side, bool flag){
+std::vector<std::pair<int,int>> procon::Field::getPoints(bool flag){
     if(flag){
         updatePoint();
     }
-    return (side == 0 ? red_point : blue_point);
+    return points;
 }
 
-std::pair<int,int> procon::Field::getPoints(int side, std::pair<int, std::pair<int,int>> pos, bool flag){
+std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<int, std::pair<int,int>> pos, bool flag){
     int dx[8]={1, 1, 1, 0, -1, -1, -1, 0};
     int dy[8]={1, 0, -1, -1, -1, 0, 1, 1};
     bool result = false;
@@ -395,10 +396,10 @@ std::pair<int,int> procon::Field::getPoints(int side, std::pair<int, std::pair<i
     if(result && flag){
         updatePoint();
     }
-    return (side == 0 ? red_point : blue_point);
+    return points;
 }
 
-std::pair<int,int> procon::Field::getPoints(int side, std::vector<std::pair<int, std::pair<int, int> > > pos_vec, bool flag){
+std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<int, std::pair<int, int> > > pos_vec, bool flag){
     int dx[8]={1, 1, 1, 0, -1, -1, -1, 0};
     int dy[8]={1, 0, -1, -1, -1, 0, 1, 1};
     bool result = false;
@@ -413,12 +414,12 @@ std::pair<int,int> procon::Field::getPoints(int side, std::vector<std::pair<int,
     if(result && flag){
         updatePoint();
     }
-    return (side == 0 ? red_point :blue_point);
+    return points;
 }
 
 void procon::Field::setPoints(int side, std::pair<int, int> value){
-    (side == 0 ? red_point : blue_point) = value;
+    points.at(side) = value;
 }
 std::vector<std::vector<bool>> procon::Field::getRegion(int side){
-    return ( side == 0 ? region_red : region_blue);
+    return regions.at(side);
 }

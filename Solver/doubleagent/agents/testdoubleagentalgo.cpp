@@ -113,8 +113,8 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
         int before_state = field.getState(new_pos.first, new_pos.second).first;
 
         std::vector<std::pair<int,int>> before_point(2);
-        before_point.at(0)= field.getPoints(side, false);
-        before_point.at(1) = field.getPoints((side == 1 ? 0 : 1), false);
+        before_point.at(0)= field.getPoints(false).at(side);
+        before_point.at(1) = field.getPoints(false).at(!side);
 
         //仮に移動させてしまう
         field.setState(new_pos.first, new_pos.second, (delete_move ? 0 : side + 1) );
@@ -145,8 +145,8 @@ std::pair<double,bool> TestDoubleAgentAlgo::evaluateMove(int move){
 
 
         std::vector<std::pair<int,int>> after_point(2);
-        after_point.at(0)= field.getPoints(side, false);
-        after_point.at(1) = field.getPoints((side == 1 ? 0 : 1), false);
+        after_point.at(0)= field.getPoints(false).at(side);
+        after_point.at(1) = field.getPoints(false).at(!side);
 
         //領域ポイントの変化量
         int region_diff = (after_point.at(0).second - before_point.at(0).second) - (after_point.at(1).second - before_point.at(1).second);

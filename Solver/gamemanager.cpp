@@ -163,8 +163,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
             std::cout<<"青の素の得点は"<<blue_point.first<<"点で、領域ポイントは"<<blue_point.second<<"点です"<<std::endl;
             */
 
-            red_point = field->getPoints(0, pruning_pos);
-            blue_point = field->getPoints(1, pruning_pos);
+            red_point = field->getPoints(pruning_pos).at(0);
+            blue_point = field->getPoints(pruning_pos).at(1);
 
 
             field_vec.push_back(std::make_shared<procon::Field>(*field));
@@ -271,8 +271,8 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
 
     }
 
-    std::pair<int,int> point_1_pair = field->getPoints(0, false);
-    std::pair<int,int> point_2_pair = field->getPoints(1, false);
+    std::pair<int,int> point_1_pair = field->getPoints(false).at(0);
+    std::pair<int,int> point_2_pair = field->getPoints(false).at(1);
 
     int point_1 = point_1_pair.first + point_1_pair.second;
     int point_2 = point_2_pair.first + point_2_pair.second;
