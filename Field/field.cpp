@@ -447,11 +447,11 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<std::pair<int
     bool result = false;
     for(int index = 0;index < 8;index++){
         if(!(pos.second.first + dx[index] >= 0 && pos.second.first + dx[index] <= grid_x - 1 && pos.second.second + dy[index] >= 0 && pos.second.second + dy[index] <= grid_y - 1))continue;
-        if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first.first){
+        if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first.first + 1){
             if(pos.first.second == 0){
                 result = true;
             }
-        }else{
+        }else if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) != 0){
             if(pos.first.second == 1){
                 result = true;
             }
@@ -479,11 +479,11 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<s
     for(std::pair<std::pair<int,int>, std::pair<int,int>> pos : pos_vec){
         for(int index = 0;index < 8;index++){
             if(!(pos.second.first + dx[index] >= 0 && pos.second.first + dx[index] <= grid_x - 1 && pos.second.second + dy[index] >= 0 && pos.second.second + dy[index] <= grid_y - 1))continue;
-            if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first.first){
+            if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first.first + 1){
                 if(pos.first.second == 0){
                     result = true;
                 }
-            }else{
+            }else if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) != 0){
                 if(pos.first.second == 1){
                     result = true;
                 }
