@@ -132,18 +132,19 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
             team_1_ans = team_1->agentAct(0);
             team_2_ans = team_2->agentAct(1);
 
-            std::vector<std::pair<int, std::pair<int,int>>> pruning_pos;
+            std::vector<std::pair<std::pair<int,int>, std::pair<int,int>>> pruning_pos;
 
 
             std::pair<int,int> pruning = std::make_pair(std::get<1>(team_1_ans.first) + field->getAgent(0,0).first, std::get<2>(team_1_ans.first) + field->getAgent(0,0).second);
 
-            pruning_pos.push_back(std::make_pair(field->getState(pruning.first, pruning.second).first == 0 ? 1 : field->getState(pruning.first, pruning.second).first, pruning));
+            pruning_pos.push_back(std::make_pair(std::make_pair(1, std::get<0>(team_1_ans.first) - 1), pruning));
             pruning = std::make_pair(std::get<1>(team_1_ans.second) + field->getAgent(0,1).first, std::get<2>(team_1_ans.second) + field->getAgent(0,1).second);
-            pruning_pos.push_back(std::make_pair(field->getState(pruning.first, pruning.second).first == 0 ? 1 : field->getState(pruning.first, pruning.second).first, pruning));
+            pruning_pos.push_back(std::make_pair(std::make_pair(1, std::get<0>(team_1_ans.second) - 1), pruning));
             pruning = std::make_pair(std::get<1>(team_2_ans.first) + field->getAgent(1,0).first, std::get<2>(team_2_ans.first) + field->getAgent(1,0).second);
-            pruning_pos.push_back(std::make_pair(field->getState(pruning.first, pruning.second).first == 0 ? 2 : field->getState(pruning.first, pruning.second).first, pruning));
+            pruning_pos.push_back(std::make_pair(std::make_pair(2, std::get<0>(team_2_ans.first) - 1), pruning));
             pruning = std::make_pair(std::get<1>(team_2_ans.second) + field->getAgent(1,1).first, std::get<2>(team_2_ans.second) + field->getAgent(1,1).second);
-            pruning_pos.push_back(std::make_pair(field->getState(pruning.first, pruning.second).first == 0 ? 2 : field->getState(pruning.first, pruning.second).first, pruning));
+            pruning_pos.push_back(std::make_pair(std::make_pair(2, std::get<0>(team_2_ans.second) - 1), pruning));
+
 
 
 
@@ -153,6 +154,17 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
             agentAct(1,1,team_2_ans.second);
 
             changeTurn();
+
+            std::pair<int,int> red_point,blue_point;
+
+            /*
+            std::cout<<"赤の素の得点は"<<red_point.first<<"点で、領域ポイントは"<<red_point.second<<"点です"<<std::endl;
+            std::cout<<"青の素の得点は"<<blue_point.first<<"点で、領域ポイントは"<<blue_point.second<<"点です"<<std::endl;
+            */
+
+            red_point = field->getPoints(pruning_pos).at(0);
+            blue_point = field->getPoints(pruning_pos).at(1);
+
 
             field_vec.push_back(std::make_shared<procon::Field>(*field));
 
@@ -262,10 +274,10 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
 
     }
 
+    std::pair<int,int> point_1_pair = field->getPoints(false).at(0);
+    std::pair<int,int> point_2_pair = field->getPoints(false).at(1);
     if(!is_update)field->updatePoint();
 
-    std::pair<int,int> point_1_pair = field->getPoints(0, false);
-    std::pair<int,int> point_2_pair = field->getPoints(1, false);
 
     int point_1 = point_1_pair.first + point_1_pair.second;
     int point_2 = point_2_pair.first + point_2_pair.second;

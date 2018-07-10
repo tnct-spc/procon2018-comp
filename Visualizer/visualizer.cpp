@@ -228,8 +228,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
         painter.setPen(QPen(QBrush(paint_color_0), 0.3));
 
         std::vector<std::pair<int, int>> team_points(2);
-        team_points.at(0) = field.getPoints(0, false);
-        team_points.at(1) = field.getPoints(1, false);
+        team_points.at(0) = field.getPoints(false).at(0);
+        team_points.at(1) = field.getPoints(false).at(1);
 
         std::string side_0_value;
         side_0_value += std::to_string(team_points.at(0).first);

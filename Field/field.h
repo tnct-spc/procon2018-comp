@@ -26,9 +26,9 @@ public:
 
     std::vector<std::vector<bool>> getRegion(int side);
 
-    std::pair<int,int> getPoints(int side, bool flag = true);
-    std::pair<int,int> getPoints(int side, std::pair<int, std::pair<int, int>> pos, bool flag = true);     //sideの<踏んだマス,領域点>を返す,引数posには<影響を与える色<座標>>を投げて
-    std::pair<int,int> getPoints(int side, std::vector<std::pair<int, std::pair<int, int>>> pos_vec, bool flag = true);
+    std::vector<std::pair<int,int>> getPoints(bool flag = true); //UpdatePointを呼ぶか
+    std::vector<std::pair<int,int>> getPoints(std::pair<std::pair<int,int>, std::pair<int, int>> pos, bool flag = true);     //引数にteam番号,移動or破壊(0 or 1),座標を持つ、第二引数には実際に得点を書き換えるか(書き換えるならtrue)
+    std::vector<std::pair<int,int>> getPoints(std::vector<std::pair<std::pair<int,int>, std::pair<int, int>>> pos_vec, bool flag = true);//上と大体同じ
 
     void setPoints(int side, std::pair<int,int> value);
 
@@ -60,9 +60,9 @@ private:
     int grid_x;
     int grid_y;
 
-    std::vector<std::vector<bool>> region_red,region_blue;
+    std::vector<std::vector<std::vector<bool>>> regions;
 
-    std::pair<int,int> red_point,blue_point; //それぞれのチームの<踏んだマスの得点,領域得点>を格納
+    std::vector<std::pair<int,int>> points; //それぞれのチームの<踏んだマスの得点,領域得点>を格納
 };
 }
 
