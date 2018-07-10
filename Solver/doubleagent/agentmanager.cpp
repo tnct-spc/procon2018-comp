@@ -27,8 +27,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::
     if(algo_number == 0)
         return simpleCalc(now_turn);
 
-    if(algo_number == 1)
+    else if(algo_number == 1)
         return simpleMC(now_turn);
+
+    else
+        return simpleNashAlgo(now_turn);
 
 }
 
@@ -81,6 +84,12 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleM
     SimpleMCForDuble mc(field, side, now_turn, final_turn, agents);
 
     return mc.calcMove();
+}
+
+std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleNashAlgo(int now_turn){
+    SimpleMCForDuble mc(field, side, now_turn, final_turn, agents);
+
+    return mc.calcMoveWithNash();
 }
 
 void AgentManager::setAgentData(const GeneticAgent& agent_data, int agent_number){

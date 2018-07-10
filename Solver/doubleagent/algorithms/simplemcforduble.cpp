@@ -17,7 +17,7 @@ SimpleMCForDuble::SimpleMCForDuble(const procon::Field& field, bool side, int no
 
 }
 
-std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::changeTurn(std::shared_ptr<GameManager> manager_ptr){
+std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::changeTurn(std::shared_ptr<GameManager> manager_ptr, bool is_eq){
 
     // 有効手から重みをつけて結果を返す
 
@@ -37,7 +37,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cha
             double value = agents.at(agent)->evaluateMove(count, is_delete, now_turn);
 
             if(value > minus_bound)//置けないパターンがあるのでそれを切る
-                can_move_list.at(agent).push_back(std::make_pair(std::pow((value - minus_bound) * value_ratio, value_weight), std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));
+                can_move_list.at(agent).push_back(std::make_pair((is_eq ? 1 : std::pow((value - minus_bound) * value_ratio, value_weight)), std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));
 
         };
 
@@ -64,26 +64,29 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cha
     agent_move(0);
     agent_move(1);
 
-    for(int index = 0; index < 2; ++index){
-        // 重み順にソート
-        std::sort(can_move_list.at(index).begin(), can_move_list.at(index).end(), std::greater<std::pair<double,std::tuple<int,int,int>>>());
+    if(!is_eq)
+        for(int index = 0; index < 2; ++index){
+            // 重み順にソート
+            std::sort(can_move_list.at(index).begin(), can_move_list.at(index).end(), std::greater<std::pair<double,std::tuple<int,int,int>>>());
 
-        // 重みの累積を取る
-        for(int count = 1; count < can_move_list.at(index).size(); ++count)
-            can_move_list.at(index).at(count).first += can_move_list.at(index).at(count - 1).first;
-    }
+            // 重みの累積を取る
+            for(int count = 1; count < can_move_list.at(index).size(); ++count)
+                can_move_list.at(index).at(count).first += can_move_list.at(index).at(count - 1).first;
+        }
 
     // 乱数生成器
     std::vector<std::uniform_real_distribution<>> dist(2);
     for(int index = 0; index < 2; ++index)
-        dist.at(index) = std::uniform_real_distribution<>(0, can_move_list.at(index).back().first);
+        dist.at(index) = (is_eq ? std::uniform_real_distribution<>(0, can_move_list.at(index).size())
+                                : std::uniform_real_distribution<>(0, can_move_list.at(index).back().first));
 
     while(1){
         std::vector<std::tuple<int,int,int>> my_move(2); // 行動の暫定値
 
         // 二分探索でランダムに求める
         for(int index = 0; index < 2; ++index)
-            my_move.at(index) = (*std::lower_bound(can_move_list.at(index).begin(), can_move_list.at(index).end(), std::make_pair(dist.at(index)(mt), std::make_tuple(0, 0, 0)))).second;
+            my_move.at(index) = (is_eq ? can_move_list.at(index).at(std::min(static_cast<int>(can_move_list.at(index).size() - 1), static_cast<int>(dist.at(index)(mt)))).second
+                                       : (*std::lower_bound(can_move_list.at(index).begin(), can_move_list.at(index).end(), std::make_pair(dist.at(index)(mt), std::make_tuple(0, 0, 0)))).second);
 
         std::pair<int,int> old_pos_1 = manager_ptr->getField().getAgent(side, 0);
         std::pair<int,int> old_pos_2 = manager_ptr->getField().getAgent(side, 1);
@@ -103,9 +106,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cha
     }
 
 }
-
-std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::calcMove(){
-    // ここがagentActから呼び出される
+std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> SimpleMCForDuble::playoutMove(bool is_eq){
 
     // answer[行動] = (勝数,試行回数)
     // 冗長すぎるのでtypedef使わない？そうした方がよくないですか
@@ -141,7 +142,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
                 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> first_move;
 
                 for(int count = 0; count < turn_count; ++count){
-                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> my_move = changeTurn(manager_ptr);
+                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> my_move = changeTurn(manager_ptr, is_eq);
 
                     if(!count)first_move = my_move;
 
@@ -182,6 +183,29 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
         }
     }
     std::cout << "cnt : " << cnt << std::endl;
+
+    return std::move(answer);
+
+}
+
+std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::calcMoveWithNash(){
+
+    std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> answer = playoutMove(true);
+
+    double max_point = -100000;
+    std::pair<int,int> max_pair = {0, 0};
+    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
+
+    //nash hogehoge
+
+    return max_move;
+}
+
+std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::calcMove(){
+    // ここがagentActから呼び出される
+
+    std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> answer = playoutMove(false);
+
 
     double max_point = -100000;
     std::pair<int,int> max_pair = {0, 0};
