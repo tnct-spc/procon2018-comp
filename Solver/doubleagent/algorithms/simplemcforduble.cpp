@@ -2,11 +2,11 @@
 
 SimpleMCForDuble::SimpleMCForDuble(const procon::Field& field, bool side, int now_turn, int max_turn, std::vector<std::shared_ptr<AgentWrapper>> agents) :
     field(field),
+    agents(agents),
     side(side),
     cpu_num(std::thread::hardware_concurrency()),
     now_turn(now_turn),
-    max_turn(max_turn),
-    agents(agents)
+    max_turn(max_turn)
 {
     mt = std::mt19937(rnd());
 
@@ -200,7 +200,6 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
 
     return max_move;
 }
-
 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::calcMove(){
     // ここがagentActから呼び出される
 
@@ -223,5 +222,18 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
         }
     }
     std::cout << "max_point : (" << max_pair.first << " / " << max_pair.second << ") -> " << max_point << std::endl;
+    return max_move;
+}
+
+std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::calcMoveUniform(){
+    std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> answer = playoutMove(true);
+    int max_win_count = -1;
+    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
+
+    for(auto value : answer)
+        if(max_win_count < value.second.first){
+            max_win_count = value.second.first;
+            max_move = value.first;
+        }
     return max_move;
 }

@@ -26,6 +26,8 @@ private:
 
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> simpleMC(int now_turn);
 
+    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> uniformMC(int now_turn);
+
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> simpleNashAlgo(int now_turn);
 
     const int algo_number = 2;
