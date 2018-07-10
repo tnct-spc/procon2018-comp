@@ -9,7 +9,7 @@
 class SimpleAlgorithm : public AlgorithmWrapper
 {
 public:
-    SimpleAlgorithm(std::shared_ptr<GameManager> manager_ptr, const GeneticAgent& agent = GeneticAgent(11));
+    SimpleAlgorithm(const procon::Field& field, int final_turn, bool side, const GeneticAgent& agent = GeneticAgent(11));
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
 
     double evaluateMove(int side, std::pair<int,int> move);

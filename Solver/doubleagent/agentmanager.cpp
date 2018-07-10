@@ -1,15 +1,15 @@
 #include "agentmanager.h"
 #include "agents/testdoubleagentalgo.h"
 
-AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int side, int algorithm_number, const GeneticAgent* agent_data_1, const GeneticAgent* agent_data_2) :
-    AlgorithmWrapper(manager_ptr)
+AgentManager::AgentManager(const procon::Field& field, int turn_max, bool side, int algorithm_number, const GeneticAgent* agent_data_1, const GeneticAgent* agent_data_2) :
+    AlgorithmWrapper(field, turn_max, side)
 {
 
     agents.resize(2);
 
     if(algorithm_number == 0){
-        agents.at(0) = std::make_shared<TestDoubleAgentAlgo>(side, 0, getManagerPtr());
-        agents.at(1) = std::make_shared<TestDoubleAgentAlgo>(side, 1, getManagerPtr());
+        agents.at(0) = std::make_shared<TestDoubleAgentAlgo>(side, field, turn_max, 0);
+        agents.at(1) = std::make_shared<TestDoubleAgentAlgo>(side, field, turn_max, 1);
     }
     if(agent_data_1 != nullptr)
         setAgentData(*agent_data_1, 0);
@@ -19,7 +19,7 @@ AgentManager::AgentManager(std::shared_ptr<GameManager> manager_ptr, int side, i
 
 }
 
-const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::agentAct(int side){
+const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::agentAct(int now_turn){
 
     std::vector<std::pair<double,std::tuple<int,int,int>>> move_1 = agents.at(0)->agentMove();
     std::vector<std::pair<double,std::tuple<int,int,int>>> move_2 = agents.at(1)->agentMove();
@@ -31,8 +31,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::
     std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
     double max_value = -400001;
 
-    std::pair<int,int> old_pos_1 = manager->getField().getAgent(side, 0);
-    std::pair<int,int> old_pos_2 = manager->getField().getAgent(side, 1);
+    std::pair<int,int> old_pos_1 = field.getAgent(side, 0);
+    std::pair<int,int> old_pos_2 = field.getAgent(side, 1);
 
     for(auto value_1 : move_1){
 
