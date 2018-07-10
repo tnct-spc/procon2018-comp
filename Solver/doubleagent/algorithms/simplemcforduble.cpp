@@ -228,12 +228,15 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::calcMoveUniform(){
     std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> answer = playoutMove(true);
     int max_win_count = -1;
+    std::pair<int,int> max_pair = {0, 0};
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
 
     for(auto value : answer)
         if(max_win_count < value.second.first){
             max_win_count = value.second.first;
             max_move = value.first;
+            max_pair = value.second;
         }
+    std::cout << "max_point : (" << max_pair.first << " / " << max_pair.second << ") -> " << max_win_count << std::endl;
     return max_move;
 }
