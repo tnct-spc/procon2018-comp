@@ -22,7 +22,7 @@ private:
 
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> changeTurn(std::shared_ptr<GameManager> manager_ptr, bool is_eq);
 
-    std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> playoutMove(bool is_eq);
+    std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> playoutMove(bool playout_side, bool is_eq);
 
     // 探索を打ち切るターン数(実際の探索ターン数はmin(end_turn, max_turn - now_turn)になる)
     const int end_turn = 5;
@@ -36,7 +36,7 @@ private:
     const double value_weight = 1.0;
 
     // 計算に書ける時間(sec)
-    const double calc_time = 10.0;
+    double calc_time = 10.0;
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};

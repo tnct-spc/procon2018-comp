@@ -106,7 +106,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cha
     }
 
 }
-std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> SimpleMCForDuble::playoutMove(bool is_eq){
+std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> SimpleMCForDuble::playoutMove(bool playout_side, bool is_eq){
 
     // answer[行動] = (勝数,試行回数)
     // 冗長すぎるのでtypedef使わない？そうした方がよくないですか
@@ -136,7 +136,7 @@ std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<i
                 manager_ptr->setField(field, now_turn, max_turn);
 
                 // 相手のアルゴリズムを決定
-                std::shared_ptr<AlgorithmWrapper> enemy_algo = std::make_shared<GeneticAlgo>(field, max_turn, !side);
+                std::shared_ptr<AlgorithmWrapper> enemy_algo = std::make_shared<GeneticAlgo>(field, max_turn, !playout_side);
 
                 // このプレイアウト時の最初の手
                 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> first_move;
@@ -147,18 +147,18 @@ std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<i
                     if(!count)first_move = my_move;
 
                     // 相手の動き
-                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> enemy_move = enemy_algo->agentAct(!side);
+                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> enemy_move = enemy_algo->agentAct(!playout_side);
 
-                    manager_ptr->agentAct(side, 0, my_move.first);
-                    manager_ptr->agentAct(side, 1, my_move.second);
-                    manager_ptr->agentAct(!side, 0, enemy_move.first);
-                    manager_ptr->agentAct(!side, 1, enemy_move.second);
+                    manager_ptr->agentAct(playout_side, 0, my_move.first);
+                    manager_ptr->agentAct(playout_side, 1, my_move.second);
+                    manager_ptr->agentAct(!playout_side, 0, enemy_move.first);
+                    manager_ptr->agentAct(!playout_side, 1, enemy_move.second);
                     manager_ptr->changeTurn(false);
                 }
                 // 得点を計算する
                 manager_ptr->getField().updatePoint();
-                std::pair<int,int> my_point = manager_ptr->getField().getPoints(side, false);
-                std::pair<int,int> enemy_point = manager_ptr->getField().getPoints(!side, false);
+                std::pair<int,int> my_point = manager_ptr->getField().getPoints(playout_side, false);
+                std::pair<int,int> enemy_point = manager_ptr->getField().getPoints(!playout_side, false);
 
                 // 引き分けでないなら試行回数を増やしておく
                 if(my_point.first + my_point.second != enemy_point.first + enemy_point.second)
@@ -190,7 +190,23 @@ std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<i
 
 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::calcMoveWithNash(){
 
-    std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> answer = playoutMove(true);
+    calc_time /= 2;
+
+    // {行動,利得,選択確率}の一覧
+    std::vector<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>> move_list(2);
+    std::vector<std::vector<double>> gain_list(2);
+    std::vector<std::vector<double>> per_list(2);
+
+    auto get_data = [&](bool get_side){
+        std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> answer = playoutMove(get_side, true);
+        for(auto value : answer){
+            move_list.at(get_side).push_back(value.first);
+            gain_list.at(get_side).push_back(1.0 * value.second.first / value.second.second);
+        }
+        per_list.at(get_side) = std::vector<double>(move_list.size(), 1.0 / move_list.size());
+    };
+    get_data(0);
+    get_data(1);
 
     double max_point = -100000;
     std::pair<int,int> max_pair = {0, 0};
@@ -203,7 +219,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::calcMove(){
     // ここがagentActから呼び出される
 
-    std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> answer = playoutMove(false);
+    std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> answer = playoutMove(side, false);
 
 
     double max_point = -100000;
@@ -226,7 +242,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cal
 }
 
 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::calcMoveUniform(){
-    std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> answer = playoutMove(true);
+    std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> answer = playoutMove(side, true);
     int max_win_count = -1;
     std::pair<int,int> max_pair = {0, 0};
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));

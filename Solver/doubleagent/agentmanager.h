@@ -30,7 +30,7 @@ private:
 
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> simpleNashAlgo(int now_turn);
 
-    const int algo_number = 2;
+    const int algo_number = 3;
 };
 
 #endif // AGENTMANAGERWRAPPER_H
