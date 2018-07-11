@@ -255,21 +255,41 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
     };
 
     auto update_weight = [&](bool func_side){
-        for(int index = 0; index < move_index.at(func_side).size(); ++index)
-            weight_list.at(func_side).at(index) = std::min(1.0, std::max(0.0, weight_list.at(func_side).at(index) + update_val.at(func_side).at(index)));
+        double up_sum = 0;
+        double down_sum = 0;
+
+        for(int index = 0; index < move_index.at(func_side).size(); ++index){
+            if(update_val.at(func_side).at(index) < 0)
+                down_sum += std::min(weight_list.at(func_side).at(index), -update_val.at(func_side).at(index));
+            else
+                up_sum += std::min(1.0 - weight_list.at(func_side).at(index), update_val.at(func_side).at(index));
+        }
+
+        for(int index = 0; index < move_index.at(func_side).size(); ++index){
+            if(update_val.at(func_side).at(index) < 0)
+                weight_list.at(func_side).at(index) = std::max(0.0, weight_list.at(func_side).at(index) + update_val.at(func_side).at(index));
+            else
+                weight_list.at(func_side).at(index) = std::min(1.0, weight_list.at(func_side).at(index) +  down_sum * std::min(1.0 - weight_list.at(func_side).at(index), update_val.at(func_side).at(index)) / up_sum);
+        }
+
+        return (down_sum!=0);
     };
 
+    short update_flag = 3;
     auto update = [&]{
-        calc_diff(0);
-        calc_diff(1);
 
-        update_weight(0);
-        update_weight(1);
+        if(update_flag&1)
+            calc_diff(0);
+        if(update_flag&2)
+            calc_diff(1);
 
+        update_flag&=2|(update_weight(0));
+        update_flag&=1|(update_weight(1)<<1);
+
+        return update_flag;
     };
 
-    for(int count = 0; count < update_count; ++count)
-        update();
+    for(int count = 0; count < update_count && update(); ++count);
 
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
 
