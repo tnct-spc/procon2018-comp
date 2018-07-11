@@ -18,8 +18,9 @@ private:
 
     const procon::Field &field;
     std::vector<std::shared_ptr<AgentWrapper>> agents;
+    std::vector<std::vector<std::shared_ptr<AgentWrapper>>> agent_vec;
 
-    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> changeTurn(std::shared_ptr<GameManager> manager_ptr, bool is_eq);
+    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> changeTurn(std::shared_ptr<GameManager> manager_ptr, bool is_eq, int eval_side = -1);
 
     std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>, std::pair<int,int>> playoutMove(bool is_eq);
 

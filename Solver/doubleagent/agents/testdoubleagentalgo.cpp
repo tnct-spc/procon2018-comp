@@ -6,8 +6,10 @@ TestDoubleAgentAlgo::TestDoubleAgentAlgo(int side, const procon::Field& field, i
 
 }
 
-double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete, int){
+double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete, int, int eval_side){
 
+    if(eval_side == -1)
+        eval_side = side;
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
@@ -16,7 +18,7 @@ double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete, int){
     procon::Field copy_field = field;
 
     //枝切り
-    if(!field.canPut(side, agent, move, false))
+    if(!field.canPut(eval_side, agent, move, false))
         return -300000;
 
 
@@ -53,7 +55,7 @@ double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete, int){
     double per_point_sum = data.at(5) * 40;
 
     //移動後の位置
-    std::pair<int,int> new_pos = copy_field.getAgent(side, agent);
+    std::pair<int,int> new_pos = copy_field.getAgent(eval_side, agent);
     new_pos.first += x_list.at(move);
     new_pos.second += y_list.at(move);
 
@@ -64,7 +66,7 @@ double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete, int){
 
     auto calc = [&](bool delete_move){
 
-        if(tile_color == side + 1 && delete_move == true && tile_value >= 0){
+        if(tile_color == eval_side + 1 && delete_move == true && tile_value >= 0){
             //これはどのように考えても有効な手にならない
             return -500000.0;
         }
@@ -75,7 +77,7 @@ double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete, int){
         if(move == 8)
             return_value += const_no_move;
         //自陣に移動するなら
-        if(tile_color == side + 1 && delete_move == false){
+        if(tile_color == eval_side + 1 && delete_move == false){
             return_value += const_back_move;
 
             //自陣に移動する時は評価をここで打ち切る(現時点の実装ではこうする)
@@ -83,17 +85,17 @@ double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete, int){
         }
 
         std::vector<std::pair<int,int>> before_point(2);
-        before_point.at(0)= copy_field.getPoints(side, false);
-        before_point.at(1) = copy_field.getPoints((side == 1 ? 0 : 1), false);
+        before_point.at(0)= copy_field.getPoints(eval_side, false);
+        before_point.at(1) = copy_field.getPoints((eval_side == 1 ? 0 : 1), false);
 
         //仮に移動させてしまう
-        copy_field.setState(new_pos.first, new_pos.second, (delete_move ? 0 : side + 1) );
+        copy_field.setState(new_pos.first, new_pos.second, (delete_move ? 0 : eval_side + 1) );
 
 
         //得点の変動値
         int pos_value = tile_value;
         //自分のタイルを除去する場合
-        if(delete_move && (tile_color == side + 1))pos_value *= -1;
+        if(delete_move && (tile_color == eval_side + 1))pos_value *= -1;
 
         return_value += pos_value * per_point;
 
@@ -109,8 +111,8 @@ double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete, int){
 
 
         std::vector<std::pair<int,int>> after_point(2);
-        after_point.at(0)= copy_field.getPoints(side, false);
-        after_point.at(1) = copy_field.getPoints((side == 1 ? 0 : 1), false);
+        after_point.at(0)= copy_field.getPoints(eval_side, false);
+        after_point.at(1) = copy_field.getPoints((eval_side == 1 ? 0 : 1), false);
 
         //領域ポイントの変化量
         int region_diff = (after_point.at(0).second - before_point.at(0).second) - (after_point.at(1).second - before_point.at(1).second);

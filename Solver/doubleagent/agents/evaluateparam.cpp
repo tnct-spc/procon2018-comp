@@ -6,7 +6,10 @@ EvaluateParam::EvaluateParam(int side, const procon::Field& field, int final_tur
 
 }
 
-double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn){
+double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int eval_side){
+
+    if(eval_side == -1)
+        eval_side = side;
 
     // 莫大なコピーコストがかかってしまう…
     procon::Field copy_field = field;
@@ -14,11 +17,11 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn){
     const std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     const std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
-    if(!copy_field.canPut(side, agent, move, false))
+    if(!copy_field.canPut(eval_side, agent, move, false))
         return -300000;
 
     // 移動前の位置
-    std::pair<int,int> now_pos = copy_field.getAgent(side, agent);
+    std::pair<int,int> now_pos = copy_field.getAgent(eval_side, agent);
 
     // 移動後の位置と状態
     std::pair<int,int> new_pos = now_pos;
@@ -29,8 +32,8 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn){
     std::pair<int,int> new_pos_state = copy_field.getState(new_pos.first, new_pos.second);
 
     // 移動前の(タイルポイント, 領域ポイント) 変数名がクソ
-    std::pair<int,int> now_team_point = copy_field.getPoints(side, false);
-    std::pair<int,int> now_enemy_point = copy_field.getPoints(side, false);
+    std::pair<int,int> now_team_point = copy_field.getPoints(eval_side, false);
+    std::pair<int,int> now_enemy_point = copy_field.getPoints(eval_side, false);
 
     // fieldのサイズ
     std::pair<int, int> field_size = copy_field.getSize();
@@ -79,7 +82,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn){
     // 味方エージェントとの距離
     func_vector.at(4) = [&]{
 
-        std::pair<int, int> team_agent = field.getAgent(side, agent == 0 ? 1 : 0);
+        std::pair<int, int> team_agent = field.getAgent(eval_side, agent == 0 ? 1 : 0);
 
         int x = now_pos.first - team_agent.first;
         int y = now_pos.second - team_agent.second;
@@ -93,7 +96,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn){
         std::vector<double> dis;
 
         for (int i = 0; i < 2; i++) {
-            std::pair<int, int> enemy_agent = field.getAgent(side == 0 ? 1 : 0, i);
+            std::pair<int, int> enemy_agent = field.getAgent(eval_side == 0 ? 1 : 0, i);
 
             int x = now_pos.first - enemy_agent.first;
             int y = now_pos.second - enemy_agent.second;

@@ -17,7 +17,10 @@ NashEquilibrium::NashEquilibrium(const procon::Field& field, bool side, int now_
 
 }
 
-std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::changeTurn(std::shared_ptr<GameManager> manager_ptr, bool is_eq){
+std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::changeTurn(std::shared_ptr<GameManager> manager_ptr, bool is_eq, int eval_side){
+
+    if(eval_side == -1)
+        eval_side = side;
 
     // そんなコピペコードが許されると思うなよ
 
@@ -30,7 +33,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::chan
 
     auto agent_move = [&](int agent){
 
-        std::pair<int,int> agent_pos = ptr_field.getAgent(side, agent);
+        std::pair<int,int> agent_pos = ptr_field.getAgent(eval_side, agent);
 
         auto evaluate = [&](int count, bool is_delete){
 
@@ -52,7 +55,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::chan
 
             int state = ptr_field.getState(new_pos.first, new_pos.second).first;
 
-            if(state != (side ? 1 : 2))
+            if(state != (eval_side ? 1 : 2))
                 evaluate(count, false);
             if(state && count != 8)
                 evaluate(count, true);
@@ -88,8 +91,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::chan
             my_move.at(index) = (is_eq ? can_move_list.at(index).at(std::min(static_cast<int>(can_move_list.at(index).size() - 1), static_cast<int>(dist.at(index)(mt)))).second
                                        : (*std::lower_bound(can_move_list.at(index).begin(), can_move_list.at(index).end(), std::make_pair(dist.at(index)(mt), std::make_tuple(0, 0, 0)))).second);
 
-        std::pair<int,int> old_pos_1 = manager_ptr->getField().getAgent(side, 0);
-        std::pair<int,int> old_pos_2 = manager_ptr->getField().getAgent(side, 1);
+        std::pair<int,int> old_pos_1 = manager_ptr->getField().getAgent(eval_side, 0);
+        std::pair<int,int> old_pos_2 = manager_ptr->getField().getAgent(eval_side, 1);
 
         std::pair<int,int> new_pos_1 = old_pos_1;
         new_pos_1.first += std::get<1>(my_move.at(0));
@@ -139,23 +142,10 @@ std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>
                 std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>> first_move;
 
                 for(int count = 0; count < turn_count; ++count){
-                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> my_move = changeTurn(manager_ptr, is_eq);
+                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> my_move = changeTurn(manager_ptr, is_eq, side);
 
+                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> enemy_move = changeTurn(manager_ptr, is_eq, !side);
 
-                    // 相手の動き
-
-                    // koko dame
-                    std::cout << "before0 " << agents.at(0)->side << std::endl;
-                    /*
-                    agents.at(0)->side ^= 1;
-                    agents.at(1)->side ^= 1;
-                    */
-                    std::cout << "before1 " << agents.at(0)->side << std::endl;
-                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> enemy_move = changeTurn(manager_ptr, is_eq);
-                    /*
-                    agents.at(0)->side ^= 1;
-                    agents.at(1)->side ^= 1;
-                    */
                     std::cout << "after " << agents.at(0)->side << std::endl;
 
                     if(!count)first_move = std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>({my_move, enemy_move});
