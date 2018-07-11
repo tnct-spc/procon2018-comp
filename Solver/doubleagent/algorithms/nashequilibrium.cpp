@@ -177,12 +177,14 @@ std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>
     int cnt = 0;
     for(auto &th : threads){
         std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>,std::pair<int,int>> return_val = th.get();
-
+        std::cout << "cnt th" << cnt << std::endl;
         for(auto value : return_val){
             answer[value.first].first += value.second.first;
             answer[value.first].second += value.second.second;
+            std::cout << answer[value.first].first << " , " << answer[value.first].second << " hoge "<<std::endl;
             cnt += value.second.second;
         }
+        std::cout << "end" << std::endl;
     }
     std::cout << "cnt : " << cnt << std::endl;
 
@@ -200,15 +202,18 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
     // 利得表への入力(穴開きがある可能性があり、そこをなんとかしたい)
     auto get_data = [&]{
         std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>, std::pair<int,int>> answer = playoutMove(true);
+        std::cout<< "playout end" << std::endl;
         for(auto value : answer)
             for(int index = 0; index < 2; ++index)
-                if(move_index.at(index).count(value.first.at(index))){
+                if(move_index.at(index).find(value.first.at(index)) == move_index.at(index).end()){
                     int siz = move_index.at(index).size();
-                    move_index.at(index).at(value.first.at(index)) = siz;
+                    move_index.at(index).insert(std::make_pair(value.first.at(index),siz));
                 }
+        std::cout<< "for end" << move_index.at(0).size() << std::endl;
         gain_list = std::vector<std::vector<double>>(move_index.at(0).size(), std::vector<double>(move_index.at(1).size(), 0.5));
         for(auto value : answer)
             gain_list.at(move_index.at(0)[value.first.at(0)]).at(move_index.at(1)[value.first.at(1)]) = 1.0 * value.second.first / value.second.second;
+        std::cout<< "end!!!!" << std::endl;
     };
     get_data();
 
