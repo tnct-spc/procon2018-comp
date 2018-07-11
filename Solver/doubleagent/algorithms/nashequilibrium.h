@@ -35,6 +35,8 @@ private:
     // 重みにかける累乗の値(大きいほど評価の高い値を優先的に探索する)
     const double value_weight = 1.0;
 
+    const double update_rate = 0.02;
+
     // 計算に書ける時間(sec)
     double calc_time = 10.0;
 
