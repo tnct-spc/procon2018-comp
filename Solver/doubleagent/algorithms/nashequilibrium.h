@@ -36,7 +36,7 @@ private:
     const double value_weight = 1.0;
 
     // 更新回数
-    const int update_count = 50;
+    const int update_count = 30;
     // 一回辺りの重みの変化量の総和
     const double update_rate = 0.05;
 

@@ -248,9 +248,10 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
             update_val.at(func_side).at(index) = update_rate * gain_diff.at(index) / gain_diff_sum;
 
 
+        /*
         for(int index = 0; index < move_index.at(func_side).size(); ++index)
             std::cout << gain_diff.at(index) << " ";std::cout << std::endl;
-        std::cout << weight_list.at(0).at(0) << "   :   " << average_gain << std::endl;
+        */
     };
 
     auto update_weight = [&](bool func_side){
@@ -276,7 +277,23 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
 
     for(auto move : move_index.at(0))
         if(move.second == max_index)
-            return move.first;
+            max_move = move.first;
+
+
+    for(int func_side = 0; func_side < 2; ++func_side){
+        for(int index = 0; index < weight_list.at(func_side).size(); ++index)
+            std::cout << weight_list.at(func_side).at(index) << " ";
+        std::cout << std::endl;
+    }
+
+    std::cout << "("
+            << std::get<0>(max_move.first) << ","
+            << std::get<1>(max_move.first) << ","
+            << std::get<2>(max_move.first) << ") ("
+            << std::get<0>(max_move.second) << ","
+            << std::get<1>(max_move.second) << ","
+            << std::get<2>(max_move.second) << ")"
+            << std::endl;
 
     return max_move;
 
