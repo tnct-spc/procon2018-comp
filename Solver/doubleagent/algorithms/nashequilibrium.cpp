@@ -143,13 +143,22 @@ std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>
 
 
                     // 相手の動き
-                    agents.at(0)->side ^= 1;
-                    agents.at(1)->side ^= 1;
-                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> enemy_move = changeTurn(manager_ptr, is_eq);
-                    agents.at(0)->side ^= 1;
-                    agents.at(1)->side ^= 1;
 
-                    if(!count)first_move = {my_move, enemy_move};
+                    // koko dame
+                    std::cout << "before0 " << agents.at(0)->side << std::endl;
+                    /*
+                    agents.at(0)->side ^= 1;
+                    agents.at(1)->side ^= 1;
+                    */
+                    std::cout << "before1 " << agents.at(0)->side << std::endl;
+                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> enemy_move = changeTurn(manager_ptr, is_eq);
+                    /*
+                    agents.at(0)->side ^= 1;
+                    agents.at(1)->side ^= 1;
+                    */
+                    std::cout << "after " << agents.at(0)->side << std::endl;
+
+                    if(!count)first_move = std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>({my_move, enemy_move});
 
                     manager_ptr->agentAct(side, 0, my_move.first);
                     manager_ptr->agentAct(side, 1, my_move.second);
