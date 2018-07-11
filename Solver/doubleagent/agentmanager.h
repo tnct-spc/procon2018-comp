@@ -6,6 +6,7 @@
 #include "algorithmwrapper.h"
 #include "doubleagent/agents/agentwrapper.h"
 #include "doubleagent/algorithms/simplemcforduble.h"
+#include "doubleagent/algorithms/nashequilibrium.h"
 
 class AgentManager : public AlgorithmWrapper
 {

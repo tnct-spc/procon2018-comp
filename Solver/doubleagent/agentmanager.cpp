@@ -96,9 +96,9 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::uniform
 }
 
 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleNashAlgo(int now_turn){
-    SimpleMCForDuble mc(field, side, now_turn, final_turn, agents);
+    NashEquilibrium nash(field, side, now_turn, final_turn, agents);
 
-    return mc.calcMoveWithNash();
+    return nash.calcMove();
 }
 
 void AgentManager::setAgentData(const GeneticAgent& agent_data, int agent_number){

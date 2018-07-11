@@ -14,8 +14,11 @@ public:
 
     void setAgent(const GeneticAgent& agent);
 
+    bool side;
+
 protected:
-    int side, agent, final_turn;
+
+    int agent, final_turn;
     const procon::Field& field;
 
     GeneticAgent agent_data;

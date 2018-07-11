@@ -1,6 +1,6 @@
-#include "simplemcforduble.h"
+#include "nashequilibrium.h"
 
-SimpleMCForDuble::SimpleMCForDuble(const procon::Field& field, bool side, int now_turn, int max_turn, std::vector<std::shared_ptr<AgentWrapper>> agents) :
+NashEquilibrium::NashEquilibrium(const procon::Field& field, bool side, int now_turn, int max_turn, std::vector<std::shared_ptr<AgentWrapper>> agents) :
     field(field),
     agents(agents),
     side(side),
@@ -17,9 +17,9 @@ SimpleMCForDuble::SimpleMCForDuble(const procon::Field& field, bool side, int no
 
 }
 
-std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::changeTurn(std::shared_ptr<GameManager> manager_ptr, bool is_eq){
+std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::changeTurn(std::shared_ptr<GameManager> manager_ptr, bool is_eq){
 
-    // 有効手から重みをつけて結果を返す
+    // そんなコピペコードが許されると思うなよ
 
     std::vector<std::vector<std::pair<double,std::tuple<int,int,int>>>> can_move_list(2);
 
@@ -107,13 +107,12 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cha
 
 }
 
-std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> SimpleMCForDuble::playoutMove(bool is_eq){
-
+std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>, std::pair<int,int>> NashEquilibrium::playoutMove(bool is_eq){
     // answer[行動] = (勝数,試行回数)
     // 冗長すぎるのでtypedef使わない？そうした方がよくないですか
-    std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> answer;
+    std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>, std::pair<int,int>> answer;
 
-    std::vector<std::future<std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>,std::pair<int,int>>>> threads;
+    std::vector<std::future<std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>,std::pair<int,int>>>> threads;
 
     for(int count = 0; count < cpu_num; ++count)
         threads.push_back(std::async([&](int cpu_index){
@@ -123,7 +122,7 @@ std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<i
             clock_t start = clock();
 
             // 返却する値
-            std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>,std::pair<int,int>> return_map;
+            std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>,std::pair<int,int>> return_map;
 
             // 一定時間が経つまで
             while((double)(clock() - start) / CLOCKS_PER_SEC < calc_time){
@@ -136,19 +135,21 @@ std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<i
 
                 manager_ptr->setField(field, now_turn, max_turn);
 
-                // 相手のアルゴリズムを決定
-                std::shared_ptr<AlgorithmWrapper> enemy_algo = std::make_shared<GeneticAlgo>(field, max_turn, !side);
-
                 // このプレイアウト時の最初の手
-                std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> first_move;
+                std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>> first_move;
 
                 for(int count = 0; count < turn_count; ++count){
                     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> my_move = changeTurn(manager_ptr, is_eq);
 
-                    if(!count)first_move = my_move;
 
                     // 相手の動き
-                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> enemy_move = enemy_algo->agentAct(!side);
+                    agents.at(0)->side ^= 1;
+                    agents.at(1)->side ^= 1;
+                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> enemy_move = changeTurn(manager_ptr, is_eq);
+                    agents.at(0)->side ^= 1;
+                    agents.at(1)->side ^= 1;
+
+                    if(!count)first_move = {my_move, enemy_move};
 
                     manager_ptr->agentAct(side, 0, my_move.first);
                     manager_ptr->agentAct(side, 1, my_move.second);
@@ -175,7 +176,7 @@ std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<i
 
     int cnt = 0;
     for(auto &th : threads){
-        std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>,std::pair<int,int>> return_val = th.get();
+        std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>,std::pair<int,int>> return_val = th.get();
 
         for(auto value : return_val){
             answer[value.first].first += value.second.first;
@@ -186,46 +187,37 @@ std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<i
     std::cout << "cnt : " << cnt << std::endl;
 
     return std::move(answer);
-
 }
 
-std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::calcMove(){
-    // ここがagentActから呼び出される
+std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calcMove(){
 
-    std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> answer = playoutMove(false);
+    // 動きに対応するindexの一覧
+    std::vector<std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, int>> move_index(2);
 
+    // {利得,選択確率}の一覧
+    std::vector<std::vector<double>> gain_list(2);
+
+    // 利得表への入力(穴開きがある可能性があり、そこをなんとかしたい)
+    auto get_data = [&]{
+        std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>, std::pair<int,int>> answer = playoutMove(true);
+        for(auto value : answer)
+            for(int index = 0; index < 2; ++index)
+                if(move_index.at(index).count(value.first.at(index))){
+                    int siz = move_index.at(index).size();
+                    move_index.at(index).at(value.first.at(index)) = siz;
+                }
+        gain_list = std::vector<std::vector<double>>(move_index.at(0).size(), std::vector<double>(move_index.at(1).size(), 0.5));
+        for(auto value : answer)
+            gain_list.at(move_index.at(0)[value.first.at(0)]).at(move_index.at(1)[value.first.at(1)]) = 1.0 * value.second.first / value.second.second;
+    };
+    get_data();
 
     double max_point = -100000;
     std::pair<int,int> max_pair = {0, 0};
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
 
-    for(auto value : answer){
-        // 仮に(試行回数 ** 1.2 * 勝率)で出してみる
+    //nash hogehoge
 
-        double point = std::pow(value.second.second, 1.2) * (1.0 * value.second.first / value.second.second);
-
-        if(max_point < point){
-            max_point = point;
-            max_move = value.first;
-            max_pair = value.second;
-        }
-    }
-    std::cout << "max_point : (" << max_pair.first << " / " << max_pair.second << ") -> " << max_point << std::endl;
     return max_move;
-}
 
-std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::calcMoveUniform(){
-    std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> answer = playoutMove(true);
-    int max_win_count = -1;
-    std::pair<int,int> max_pair = {0, 0};
-    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
-
-    for(auto value : answer)
-        if(max_win_count < value.second.first){
-            max_win_count = value.second.first;
-            max_move = value.first;
-            max_pair = value.second;
-        }
-    std::cout << "max_point : (" << max_pair.first << " / " << max_pair.second << ") -> " << max_win_count << std::endl;
-    return max_move;
 }

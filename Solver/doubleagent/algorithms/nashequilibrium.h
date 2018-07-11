@@ -1,17 +1,17 @@
-#ifndef SIMPLEMCFORDUBLE_H
-#define SIMPLEMCFORDUBLE_H
+#ifndef NASHEQUILIBRIUM_H
+#define NASHEQUILIBRIUM_H
 
 #include "gamemanager.h"
 #include "doubleagent/agents/agentwrapper.h"
 #include <future>
 #include <memory>
 
-class SimpleMCForDuble
+class NashEquilibrium
 {
 public:
-    SimpleMCForDuble(const procon::Field& field, bool side, int now_turn, int max_turn, std::vector<std::shared_ptr<AgentWrapper>> agents);
+    NashEquilibrium(const procon::Field& field, bool side, int now_turn, int max_turn, std::vector<std::shared_ptr<AgentWrapper>> agents);
+
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> calcMove();
-    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> calcMoveUniform();
 
 private:
     std::mutex mtx;
@@ -21,7 +21,7 @@ private:
 
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> changeTurn(std::shared_ptr<GameManager> manager_ptr, bool is_eq);
 
-    std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<int,int>> playoutMove(bool is_eq);
+    std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>, std::pair<int,int>> playoutMove(bool is_eq);
 
     // 探索を打ち切るターン数(実際の探索ターン数はmin(end_turn, max_turn - now_turn)になる)
     const int end_turn = 5;
@@ -50,4 +50,4 @@ private:
     std::vector<std::shared_ptr<GameManager>> manager_vec;
 };
 
-#endif // SIMPLEMCFORDUBLE_H
+#endif // NASHEQUILIBRIUM_H
