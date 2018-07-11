@@ -20,7 +20,7 @@ private:
     std::vector<std::shared_ptr<AgentWrapper>> agents;
     std::vector<std::vector<std::shared_ptr<AgentWrapper>>> agent_vec;
 
-    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> changeTurn(std::shared_ptr<GameManager> manager_ptr, bool is_eq, int eval_side = -1);
+    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> changeTurn(std::shared_ptr<GameManager> manager_ptr, bool is_eq, bool eval_side);
 
     std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>, std::pair<int,int>> playoutMove(bool is_eq);
 
@@ -28,7 +28,7 @@ private:
     const int end_turn = 5;
 
     // 探索候補に含める最小値(これ以下は探索しない)
-    const double minus_bound = -5000;
+    const double minus_bound = 50;
 
     // 重みにかける倍率
     const double value_ratio = 1.0;
