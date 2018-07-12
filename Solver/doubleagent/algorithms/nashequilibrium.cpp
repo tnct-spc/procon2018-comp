@@ -295,16 +295,16 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
 
     int max_index = std::distance(weight_list.at(0).begin(), std::max_element(weight_list.at(0).begin(), weight_list.at(0).end()));
 
+    std::cout << "ind : " << max_index << std::endl;
+
     for(auto move : move_index.at(0))
         if(move.second == max_index)
             max_move = move.first;
 
 
-    for(int func_side = 0; func_side < 2; ++func_side){
-        for(int index = 0; index < weight_list.at(func_side).size(); ++index)
-            std::cout << weight_list.at(func_side).at(index) << " ";
-        std::cout << std::endl;
-    }
+    for(int index = 0; index < weight_list.at(0).size(); ++index)
+        std::cout << weight_list.at(0).at(index) << " ";
+    std::cout << std::endl;
 
     std::cout << "("
             << std::get<0>(max_move.first) << ","

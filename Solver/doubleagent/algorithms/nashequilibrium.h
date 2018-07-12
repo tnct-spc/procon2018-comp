@@ -28,14 +28,14 @@ private:
     const int end_turn = 5;
 
     // 探索候補に含める最小値(これ以下は探索しない)
-    const double minus_bound = 50;
+    const double minus_bound = 0;
 
     // 重みにかける倍率
     const double value_ratio = 1.0;
     // 重みにかける累乗の値(大きいほど評価の高い値を優先的に探索する)
     const double value_weight = 1.0;
 
-    // 更新回数
+    // 更新回数の最大値
     const int update_count = 500;
     // 一回辺りの重みの変化量の総和
     const double update_rate = 0.05;
