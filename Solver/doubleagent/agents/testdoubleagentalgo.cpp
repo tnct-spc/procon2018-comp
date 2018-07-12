@@ -106,27 +106,30 @@ double TestDoubleAgentAlgo::evaluateMove(int move, bool is_delete, int, int eval
 
 
         //ここの計算し直しが非効率的
-        copy_field.updatePoint();
+        if(is_update)
+            copy_field.updatePoint();
 
 
 
+        if(is_update){
 
-        std::vector<std::pair<int,int>> after_point(2);
+            std::vector<std::pair<int,int>> after_point(2);
 
-        after_point.at(0)= copy_field.getPoints(false).at(side);
-        after_point.at(1) = copy_field.getPoints(false).at(!side);
+            after_point.at(0)= copy_field.getPoints(false).at(side);
+            after_point.at(1) = copy_field.getPoints(false).at(!side);
 
-        //領域ポイントの変化量
-        int region_diff = (after_point.at(0).second - before_point.at(0).second) - (after_point.at(1).second - before_point.at(1).second);
+            //領域ポイントの変化量
+            int region_diff = (after_point.at(0).second - before_point.at(0).second) - (after_point.at(1).second - before_point.at(1).second);
 
-        return_value += region_diff * per_region;
+            return_value += region_diff * per_region;
 
 
         //(自分の変化量 - 相手の変化量)
-        int point_diff = ((after_point.at(0).first + after_point.at(0).second) - (before_point.at(0).first + before_point.at(0).second))
-                       - ((after_point.at(1).first + after_point.at(1).second) - (before_point.at(1).first + before_point.at(1).second));
+            int point_diff = ((after_point.at(0).first + after_point.at(0).second) - (before_point.at(0).first + before_point.at(0).second))
+                   - ((after_point.at(1).first + after_point.at(1).second) - (before_point.at(1).first + before_point.at(1).second));
 
-        return_value += point_diff * per_point_sum;
+            return_value += point_diff * per_point_sum;
+        }
 
         return return_value;
     };

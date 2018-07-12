@@ -12,6 +12,8 @@ public:
 
     double evaluateMove(int move, bool is_delete, int, int eval_side = -1);
 
+    bool is_update = false;
+
 };
 
 #endif // TESTDOUBLEAGENTALGO_H
