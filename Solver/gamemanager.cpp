@@ -80,6 +80,12 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_1 = std::make_shared<beamsearch>(*field, turn_max, 0);
     }else if(QString::compare("TestDoubleAgentAlgo", my_algo) == 0){
         team_1 = std::make_shared<AgentManager>(*field, turn_max, 0, 0);
+    }else if(QString::compare("DoubleAgentWithSimpleMC", my_algo) == 0){
+        team_1 = std::make_shared<AgentManager>(*field, turn_max, 0, 0|(1<<16));
+    }else if(QString::compare("DoubleAgentWithUniformMC", my_algo) == 0){
+        team_1 = std::make_shared<AgentManager>(*field, turn_max, 0, 0|(2<<16));
+    }else if(QString::compare("DoubleAgentWithNash", my_algo) == 0){
+        team_1 = std::make_shared<AgentManager>(*field, turn_max, 0, 0|(3<<16));
     }else if(QString::compare("EvaluateParam", my_algo) == 0){
         team_1 = std::make_shared<AgentManager>(*field, turn_max, 0, 1);
     }
@@ -96,6 +102,12 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_2 = std::make_shared<beamsearch>(*field, turn_max, 1);
     }else if(QString::compare("TestDoubleAgentAlgo", opponent_algo) == 0){
         team_2 = std::make_shared<AgentManager>(*field, turn_max, 1, 0);
+    }else if(QString::compare("DoubleAgentWithSimpleMC", my_algo) == 0){
+        team_1 = std::make_shared<AgentManager>(*field, turn_max, 1, 0|(1<<16));
+    }else if(QString::compare("DoubleAgentWithUniformMC", my_algo) == 0){
+        team_1 = std::make_shared<AgentManager>(*field, turn_max, 1, 0|(2<<16));
+    }else if(QString::compare("DoubleAgentWithNash", my_algo) == 0){
+        team_1 = std::make_shared<AgentManager>(*field, turn_max, 1, 0|(3<<16));
     }else if(QString::compare("EvaluateParam", opponent_algo) == 0){
         team_2 = std::make_shared<AgentManager>(*field, turn_max, 1, 1);
     }

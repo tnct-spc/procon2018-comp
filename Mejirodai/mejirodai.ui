@@ -39,6 +39,21 @@
       </item>
       <item>
        <property name="text">
+        <string>DoubleAgentWithNash</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>DoubleAgentWithSimpleMC</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>DoubleAgentWithUniformMC</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>EvaluateParam</string>
        </property>
       </item>
@@ -80,6 +95,21 @@
       <item>
        <property name="text">
         <string>GeneticAlgo</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>DoubleAgentWithSimpleMC</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>DoubleAgentWithUniformMC</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>DoubleAgentWithNash</string>
        </property>
       </item>
       <item>

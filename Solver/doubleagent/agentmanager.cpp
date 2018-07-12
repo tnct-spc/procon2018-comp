@@ -7,6 +7,10 @@ AgentManager::AgentManager(const procon::Field& field, int turn_max, bool side, 
 {
     agents.resize(2);
 
+    algo_number = algorithm_number >> 16;
+
+    algorithm_number &= (1<<16) - 1;
+
     if(algorithm_number == 0){
         agents.at(0) = std::make_shared<TestDoubleAgentAlgo>(side, field, final_turn, 0, 6);
         agents.at(1) = std::make_shared<TestDoubleAgentAlgo>(side, field, final_turn, 1, 6);
