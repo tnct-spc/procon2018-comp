@@ -225,6 +225,10 @@ void procon::Field::setState(const unsigned int x, const unsigned int y, const u
     field_data.at(x).at(y) = state;
 }
 
+void procon::Field::resetState(const std::bitset<288> &state){
+    value_data = state;
+}
+
 void procon::Field::setAgent(const unsigned int turn, const unsigned int number, const unsigned int x_pos, const unsigned int y_pos){
     agents.at(turn).at(number) = std::make_pair(x_pos, y_pos);
 }

@@ -48,6 +48,8 @@ public:
 
     void setField(const procon::Field& pro, int now_t, int max_t);
 
+    void setField(const std::bitset<288>& inp_state, int now_t, int max_t);
+
 signals:
     void signalAutoMode(bool value);
     void setCandidateMove(const std::vector<std::vector<std::pair<int,int>>>& move);
