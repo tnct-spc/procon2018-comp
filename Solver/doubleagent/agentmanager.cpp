@@ -9,6 +9,8 @@ AgentManager::AgentManager(const procon::Field& field, int turn_max, bool side, 
 
     algo_number = algorithm_number >> 16;
 
+    std::cout << "algo : " << algo_number << std::endl;
+
     algorithm_number &= (1<<16) - 1;
 
     if(algorithm_number == 0){
