@@ -102,11 +102,11 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
         team_2 = std::make_shared<beamsearch>(*field, turn_max, 1);
     }else if(QString::compare("TestDoubleAgentAlgo", opponent_algo) == 0){
         team_2 = std::make_shared<AgentManager>(*field, turn_max, 1, 0);
-    }else if(QString::compare("DoubleAgentWithSimpleMC", my_algo) == 0){
+    }else if(QString::compare("DoubleAgentWithSimpleMC", opponent_algo) == 0){
         team_2 = std::make_shared<AgentManager>(*field, turn_max, 1, 0|(1<<16));
-    }else if(QString::compare("DoubleAgentWithUniformMC", my_algo) == 0){
+    }else if(QString::compare("DoubleAgentWithUniformMC", opponent_algo) == 0){
         team_2 = std::make_shared<AgentManager>(*field, turn_max, 1, 0|(2<<16));
-    }else if(QString::compare("DoubleAgentWithNash", my_algo) == 0){
+    }else if(QString::compare("DoubleAgentWithNash", opponent_algo) == 0){
         team_2 = std::make_shared<AgentManager>(*field, turn_max, 1, 0|(3<<16));
     }else if(QString::compare("EvaluateParam", opponent_algo) == 0){
         team_2 = std::make_shared<AgentManager>(*field, turn_max, 1, 1);
