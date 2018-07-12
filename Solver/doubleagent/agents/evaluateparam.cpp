@@ -32,8 +32,15 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
     std::pair<int,int> new_pos_state = copy_field.getState(new_pos.first, new_pos.second);
 
     // 移動前の(タイルポイント, 領域ポイント) 変数名がクソ
+    /*
     std::pair<int,int> now_team_point = copy_field.getPoints(eval_side, false);
     std::pair<int,int> now_enemy_point = copy_field.getPoints(eval_side, false);
+    */
+    std::vector<std::pair<int,int>> point = copy_field.getPoints(false);
+
+    // 移動後の取得ポイント
+    int movable = (new_pos_state.first == (side == 0 ? 1 : 0) ? 1 : 0);
+    std::vector<std::pair<int,int>> post_point = copy_field.getPoints(std::make_pair(std::make_pair(side, movable), new_pos), false);
 
     // fieldのサイズ
     std::pair<int, int> field_size = copy_field.getSize();
@@ -46,41 +53,41 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
     // 次の取得タイルポイント
     func_vector.at(0) = [&]{
 
-        return new_pos_state.first;
+        return post_point.at(side).second - point.at(side).second;
     };
 
     // 次の取得領域ポイント
     func_vector.at(1) = [&]{
 
-        return new_pos_state.first;
+        return post_point.at(side).second - point.at(side).second;
     };
 
     // 味方のタイルポイント
     func_vector.at(2) = [&]{
 
-        return now_team_point.first;
+        return point.at(side).first;
     };
 
     // 味方の領域ポイント
     func_vector.at(3) = [&]{
 
-        return now_team_point.second;
+        return point.at(side).second;
     };
 
     // 敵のタイルポイント
     func_vector.at(4) = [&]{
 
-        return now_enemy_point.first;
+        return point.at(side == 0 ? 1 : 0).first;
     };
 
     // 敵の領域ポイント
     func_vector.at(5) = [&]{
 
-        return now_enemy_point.second;
+        return point.at(side == 0 ? 1 : 0).second;
     };
 
     // 味方エージェントとの距離
-    func_vector.at(4) = [&]{
+    func_vector.at(6) = [&]{
 
         std::pair<int, int> team_agent = field.getAgent(eval_side, agent == 0 ? 1 : 0);
 
@@ -108,29 +115,29 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
     };
 
     // 近い敵エージェントとの距離
-    func_vector.at(5) = [&]{
+    func_vector.at(7) = [&]{
 
         std::vector<double> dis = distance();
 
-        return dis.at(0) < dis.at(1) ? 0 : 1;
+        return dis.at(0) < dis.at(1) ? dis.at(0) : dis.at(1);
     };
 
     // 遠い敵エージェントとの距離
-    func_vector.at(6) = [&]{
+    func_vector.at(8) = [&]{
 
         std::vector<double> dis = distance();
 
-        return dis.at(0) > dis.at(1) ? 0 : 1;
+        return dis.at(0) > dis.at(1) ? dis.at(0) : dis.at(1);
     };
 
     // 現在のターン数 / 全体のターン数
-    func_vector.at(7) = [&]{
+    func_vector.at(9) = [&]{
 
         return now_turn / final_turn;
     };
 
     // 空きグリッドの数
-    func_vector.at(8) = [&]{
+    func_vector.at(10) = [&]{
 
         double count = 0;
 
@@ -144,7 +151,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
     };
 
     // 空きグリットの総合タイルポイント
-    func_vector.at(9) = [&]{
+    func_vector.at(11) = [&]{
 
         double count = 0;
 
@@ -161,7 +168,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
     };
 
     // 空きグリットの総合領域ポイント
-    func_vector.at(10) = [&]{
+    func_vector.at(12) = [&]{
 
         double count = 0;
 

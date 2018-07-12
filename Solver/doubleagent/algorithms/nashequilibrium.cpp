@@ -153,8 +153,8 @@ std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>
                 }
                 // 得点を計算する
                 manager_ptr->getField().updatePoint();
-                std::pair<int,int> my_point = manager_ptr->getField().getPoints(side, false);
-                std::pair<int,int> enemy_point = manager_ptr->getField().getPoints(!side, false);
+                std::pair<int,int> my_point = manager_ptr->getField().getPoints(false).at(side);
+                std::pair<int,int> enemy_point = manager_ptr->getField().getPoints(false).at(!side);
 
                 // 引き分けでないなら試行回数を増やしておく
                 if(my_point.first + my_point.second != enemy_point.first + enemy_point.second)
