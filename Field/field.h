@@ -25,7 +25,7 @@ public:
    // const std::vector<std::vector<int>>& getField() const;
     const std::vector<std::vector<int>>& getValue() const;
 
-    std::bitset<144> getRegion(int side);
+    std::bitset<288> getRegion();
 
     std::vector<std::pair<int,int>> getPoints(bool flag = true); //UpdatePointを呼ぶか
     std::vector<std::pair<int,int>> getPoints(std::pair<std::pair<int,int>, std::pair<int, int>> pos, bool flag = true);     //引数にteam番号,移動or破壊(0 or 1),座標を持つ、第二引数には実際に得点を書き換えるか(書き換えるならtrue)
@@ -61,7 +61,7 @@ private:
     int grid_x;
     int grid_y;
 
-    std::vector<std::bitset<144>> regions;
+    std::bitset<288> regions;
 
     std::vector<std::pair<int,int>> points; //それぞれのチームの<踏んだマスの得点,領域得点>を格納
 };

@@ -288,18 +288,17 @@ void Visualizer::paintEvent(QPaintEvent *event){
         Red_team_color.setAlpha(100);
         Blue_team_color.setAlpha(100);
 
-        std::bitset<144> R_region = field.getRegion(0);
-        std::bitset<144> B_region = field.getRegion(1);
+        std::bitset<288> region = field.getRegion();
 
         for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
             for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
 
-                if(R_region[y_pos*12+x_pos]){
+                if(region[y_pos * 12 + x_pos]){
                 QString text = QString::fromStdString( "R" );
                 painter.setPen(QPen(Red_team_color));
                 painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.8), vertical_margin + grid_size * y_pos + ( grid_size * 0.9 ) , text);
                 }
-                if(B_region[y_pos*12+x_pos]){
+                if(region[y_pos*12 + x_pos + 144]){
                     QString text = QString::fromStdString( "B" );
                     painter.setPen(QPen(Blue_team_color));
                     painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.1), vertical_margin + grid_size * y_pos + ( grid_size * 0.9 ) , text);
