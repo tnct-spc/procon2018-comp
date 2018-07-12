@@ -10,7 +10,7 @@ procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
     field_data = std::bitset<288>(0uL);
     value_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
 
-    regions = std::vector<std::vector<std::vector<bool>>>(2, std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false)));
+    regions = std::vector<std::bitset<144>>(2, std::bitset<144>(0uL));
 
     points = std::vector<std::pair<int,int>>(2, std::make_pair(0,0));
 
@@ -36,7 +36,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     field_data = std::bitset<288>(0uL);
     value_data = input_val;
 
-    regions = std::vector<std::vector<std::vector<bool>>>(2, std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false)));
+    regions = std::vector<std::bitset<144>>(2, std::bitset<144>(0uL));
     points = std::vector<std::pair<int,int>>(2, std::make_pair(0,0));
 
     for(int side = 0; side < 2; ++side)
@@ -76,7 +76,8 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     value_data = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0 ));
 
 
-    regions = std::vector<std::vector<std::vector<bool>>>(2, std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false)));
+
+    regions = std::vector<std::bitset<144>>(2, std::bitset<144>(0uL));
     points = std::vector<std::pair<int,int>>(2, std::make_pair(0,0));
 
     /*
@@ -324,7 +325,7 @@ void procon::Field::updatePoint(){
     auto calc = [&](int side){
         int dx[] = {-1, 0};
         int dy[] = {0, -1};
-        std::vector<std::vector<bool>> mass = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false)); //最終的にメンバに渡す変数
+        std::bitset<144> mass = std::bitset<144>(0uL); //最終的にメンバに渡す変数
         std::vector<std::vector<int>> labeling = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0)); //ラベリング本体
         std::vector<bool> flag = std::vector<bool>(200, true); //その島が外側の枠と接しているか
         int LookUpTable[200]; //ルックアップテーブル(ラベリングに必要なにか)
@@ -395,7 +396,7 @@ void procon::Field::updatePoint(){
         for(int x = 0; x < grid_x; x++){
             for(int y = 0; y < grid_y; y++){
                 if(labeling.at(x).at(y) != 0 && flag[labeling.at(x).at(y)]){
-                    mass.at(x).at(y) = true;
+                    mass[(y*12+x)] = true;
                 }
             }
         }
@@ -409,7 +410,7 @@ void procon::Field::updatePoint(){
         }
         */
 
-       regions.at(side -1) = mass;
+       regions.at(side-1) = mass;
     };
 
     calc(1);
@@ -431,10 +432,10 @@ void procon::Field::updatePoint(){
             if(getState(a, b).first == 2)
                 common_blue_point += value_data.at(a).at(b);
 
-            if(regions.at(0).at(a).at(b))
+            if(regions.at(0)[b * 12 + a])
                 region_red_point += std::abs(value_data.at(a).at(b));
 
-            if(regions.at(1).at(a).at(b))
+            if(regions.at(1)[b * 12 + a])
                  region_blue_point += std::abs(value_data.at(a).at(b));
         }
     }
@@ -472,7 +473,7 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<std::pair<int
         }
     }
     if(!flag && result){
-        std::vector<std::vector<std::vector<bool>>> stash_regions = regions;
+        std::vector<std::bitset<144>> stash_regions = regions;
         std::vector<std::pair<int, int>> stash_points = points;
         updatePoint();
         regions = stash_regions;
@@ -505,7 +506,7 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<s
         }
     }
     if(!flag && result){
-        std::vector<std::vector<std::vector<bool>>> stash_regions = regions;
+        std::vector<std::bitset<144>> stash_regions = regions;
         std::vector<std::pair<int, int>> stash_points = points;
         updatePoint();
         regions = stash_regions;
@@ -522,6 +523,6 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<s
 void procon::Field::setPoints(int side, std::pair<int, int> value){
     points.at(side) = value;
 }
-std::vector<std::vector<bool>> procon::Field::getRegion(int side){
+std::bitset<144> procon::Field::getRegion(int side){
     return regions.at(side);
 }
