@@ -225,8 +225,11 @@ void procon::Field::setState(const unsigned int x, const unsigned int y, const u
     field_data.at(x).at(y) = state;
 }
 
-void procon::Field::resetState(const std::bitset<288> &state){
-    field_data = state;
+void procon::Field::resetState(const procon::Field& inp_field){
+    field_data = inp_field.field_data;
+    agents = inp_field.agents;
+    points = inp_field.points;
+    regions = inp_field.regions;
 }
 
 void procon::Field::setAgent(const unsigned int turn, const unsigned int number, const unsigned int x_pos, const unsigned int y_pos){
