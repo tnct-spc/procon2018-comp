@@ -58,7 +58,8 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
 
     now_turn = now_t;
     turn_max = max_t;
-    field = std::make_shared<procon::Field>(pro);
+
+    field->resetState(pro);
 }
 
 void GameManager::startSimulation(QString my_algo, QString opponent_algo) {

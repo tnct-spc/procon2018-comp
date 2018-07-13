@@ -46,6 +46,8 @@ public:
     void setStates(const std::vector<std::vector<int>>& values);
     void setAgents(const std::vector<std::vector<std::pair<int,int>>>& values);
 
+    void resetState(const procon::Field& inp_field);
+
     std::pair<int,int> getSize() const;
 
     void updatePoint();
