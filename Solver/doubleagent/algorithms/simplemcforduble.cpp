@@ -166,8 +166,11 @@ std::map<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>, std::pair<i
                     ++return_map[first_move].second;
 
                 // 勝ったなら勝利数を増やしておく
-                if(my_point.first + my_point.second > enemy_point.first + enemy_point.second)
-                    ++return_map[first_move].first;
+                if(use_point_diff)
+                    return_map[first_move].first += my_point.first + my_point.second - enemy_point.first - enemy_point.second;
+                else
+                    if(my_point.first + my_point.second > enemy_point.first + enemy_point.second)
+                        ++return_map[first_move].first;
             }
 
             return std::move(return_map);
