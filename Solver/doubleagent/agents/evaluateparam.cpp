@@ -46,7 +46,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
     std::pair<int, int> field_size = copy_field.getSize();
 
     // fieldの各マスの状態
-    std::vector<std::vector<int>> now_field = copy_field.getField();
+    // std::vector<std::vector<int>> now_field = copy_field.getField();
 
     std::vector<std::function<double()>> func_vector(param_count);
 
@@ -143,7 +143,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
 
         for (int y = 0; y < field_size.second; y++) {
             for (int x = 0; x < field_size.first; x++) {
-                count += (now_field.at(x).at(y) == 0 ? 1 : 0);
+                count += (copy_field.getState(x, y).first == 0 ? 1 : 0);
             }
         }
 
@@ -157,7 +157,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
 
         for (int y = 0; y < field_size.second; y++) {
             for (int x = 0; x < field_size.first; x++) {
-                if (now_field.at(x).at(y) == 0) {
+                if (copy_field.getState(x, y).first == 0) {
                     std::pair<int, int> state = copy_field.getState(x, y);
                     count += state.second;
                 }
@@ -174,7 +174,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
 
         for (int y = 0; y < field_size.second; y++) {
             for (int x = 0; x < field_size.first; x++) {
-                if (now_field.at(x).at(y) == 0) {
+                if (copy_field.getState(x, y).first == 0) {
                     std::pair<int, int> state = copy_field.getState(x, y);
                     count += std::abs(state.second);
                 }
