@@ -5,6 +5,8 @@
 
 #include "algorithmwrapper.h"
 #include "doubleagent/agents/agentwrapper.h"
+#include "doubleagent/algorithms/simplemcforduble.h"
+#include "doubleagent/algorithms/nashequilibrium.h"
 
 class AgentManager : public AlgorithmWrapper
 {
@@ -20,6 +22,16 @@ public:
 
 private:
     std::vector<std::shared_ptr<AgentWrapper>> agents;//各エージェント
+
+    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> simpleCalc(int now_turn);
+
+    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> simpleMC(int now_turn);
+
+    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> uniformMC(int now_turn);
+
+    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> simpleNashAlgo(int now_turn);
+
+    int algo_number;
 };
 
 #endif // AGENTMANAGERWRAPPER_H
