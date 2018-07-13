@@ -186,10 +186,12 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
 
     double point_sum = 0.0;
 
-    // int param_count = func_vector.size();
+    int param_count = func_vector.size();
 
-    for(auto func : func_vector)
-        point_sum += func();
+    const std::vector<double>& data = agent_data.getData();
+
+    for(int index = 0; index < param_count; ++index)
+        point_sum += data.at(index) * func_vector.at(index)();
 
     return point_sum;
 }
