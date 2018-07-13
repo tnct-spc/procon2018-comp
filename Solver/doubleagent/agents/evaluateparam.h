@@ -13,9 +13,6 @@ public:
     const std::vector<std::pair<double, std::tuple<int,int,int>>> agentMove();
     double evaluateMove(int move, bool is_delete, int now_turn, int eval_side = -1);
 
-private:
-    // パラメータの数
-    const int param_count = 13;
 };
 
 #endif // EVALUATEPARAM_H
