@@ -275,9 +275,10 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
 
     }
 
+    if(!is_update)field->updatePoint();
+
     std::pair<int,int> point_1_pair = field->getPoints(false).at(0);
     std::pair<int,int> point_2_pair = field->getPoints(false).at(1);
-    if(!is_update)field->updatePoint();
 
 
     int point_1 = point_1_pair.first + point_1_pair.second;

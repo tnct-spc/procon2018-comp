@@ -104,7 +104,7 @@ void CsvIo::exportField(procon::Field data, std::string path)
 {
     /** GetData **/
     std::pair<int, int> grid = data.getSize();
-    std::vector<std::vector<int>> fields = data.getField();
+    std::vector<std::vector<int>> fields;// = data.getField();
     std::vector<std::vector<std::pair<int, int>>> agents = data.getAgents();
     std::vector<std::vector<int>> values = data.getValue();
 
