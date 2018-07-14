@@ -5,6 +5,8 @@
 #include <string>
 #include <iostream>
 #include <queue>
+#include "field.h"
+
 class QrConverterField
 {
 public:
@@ -13,6 +15,8 @@ public:
     std::vector<int> A;
     std::vector<int> B;
     std::vector<std::vector<int>> vec;
+
+    procon::Field ConvertCsvToField(std::string CSV);
 };
 
 

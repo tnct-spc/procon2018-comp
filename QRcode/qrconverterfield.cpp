@@ -4,6 +4,7 @@
 // vector<int> A (2) , vector<int> B (2) それぞれにエージェントの初期位置
 
 int ctoi(std::string s,int& i) {
+    //この関数も消して
     int keta = 0;
     for(int j = 0;true;j++){
         if(s.at(i+j) == '-' || s.at(i+j) == '0' || s.at(i+j) == '1' || s.at(i+j) == '2' || s.at(i+j) == '3' || s.at(i+j) == '4' || s.at(i+j) == '5' || s.at(i+j) == '6' || s.at(i+j) == '7' || s.at(i+j) == '8' || s.at(i+j) == '9'){
@@ -41,6 +42,7 @@ int ctoi(std::string s,int& i) {
 
 QrConverterField::QrConverterField()
 {
+    //このコンストラクタは消して
     std::string s = read_only_data;
     int stage = 0;
     std::queue<int> HW;
@@ -88,4 +90,8 @@ QrConverterField::QrConverterField()
             }
         }
     }
+}
+QrConverterField::ConvertCsvToField(std::string CSV){
+    //ここに書いて
+
 }

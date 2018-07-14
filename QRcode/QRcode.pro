@@ -39,3 +39,6 @@ INCLUDEPATH += /usr/include/opencv
 
 
 #LIBS += -L/usr/lib64 -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lzbar
+LIBS += -L$$OUT_PWD/../Field/ -lField
+INCLUDEPATH += $$PWD/../Field
+DEPENDPATH += $$PWD/../Field
