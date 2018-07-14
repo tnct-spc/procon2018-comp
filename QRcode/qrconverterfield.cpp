@@ -46,7 +46,6 @@ QrConverterField::QrConverterField()
     std::queue<int> HW;
     int H, W;
     int i = 0;
-    std::vector<std::vector<int>> vec;
     for(i = 0;stage != 2;i++){
             if(s.at(i) == '-' || s.at(i) == '0' || s.at(i) == '1' || s.at(i) == '2' || s.at(i) == '3' || s.at(i) == '4' || s.at(i) == '5' || s.at(i) == '6' || s.at(i) == '7' || s.at(i) == '8' || s.at(i) == '9'){
                 HW.push(ctoi(s,i));
@@ -71,8 +70,6 @@ QrConverterField::QrConverterField()
                 continue;
             }
     }
-    std::vector<int> A (2);
-    std::vector<int> B (2);
     int b = 0;
     for(int a = 0;a < 2;i++){
         if(s.at(i) == ':'){
@@ -81,14 +78,14 @@ QrConverterField::QrConverterField()
             continue;
         }
         else if(s.at(i) == '-' || s.at(i) == '0' || s.at(i) == '1' || s.at(i) == '2' || s.at(i) == '3' || s.at(i) == '4' || s.at(i) == '5' || s.at(i) == '6' || s.at(i) == '7' || s.at(i) == '8' || s.at(i) == '9'){
-                if(a == 0){
-                    A.at(b) = ctoi(s,i);
-                    b++;
-                }
-                else if(a == 1){
-                    B.at(b) = ctoi(s,i);
-                    b++;
-                }
+            if(a == 0){
+                A.push_back(ctoi(s,i));
+                b++;
             }
+            else if(a == 1){
+                B.push_back(ctoi(s,i));
+                b++;
+            }
+        }
     }
 }

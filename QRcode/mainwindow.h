@@ -1,6 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
+#include "qrconverterfield.h"
 #include <QMainWindow>
 #include <QTimer>
 #include "opencv/cv.h"
@@ -19,14 +19,14 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-private slots:
+/*private slots:
     void on_btnOk_clicked();
     void ProcessFrame();
     void use_drawRectangle();
     void showresult(QString code);
     void clearAll();
     void translateToDoubleArray();
-
+*/
 private:
     Ui::MainWindow *ui;
     int ScanIDCard(IplImage *src);

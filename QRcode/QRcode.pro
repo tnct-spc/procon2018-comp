@@ -29,7 +29,7 @@ SOURCES += \
     qrconverterfield.cpp
 
 HEADERS += \
-        mainwindow.h \
+       mainwindow.h \
     qrconverterfield.h
 
 FORMS += \

@@ -16,11 +16,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    cvReleaseCapture( &capture );
+    //cvReleaseCapture( &capture );
     delete ui;
 }
 
-void MainWindow::on_btnOk_clicked()
+/*void MainWindow::on_btnOk_clicked()
 {
     this->clearAll();
     //CheckVideoCamera
@@ -172,6 +172,6 @@ void MainWindow::clearAll()
 void MainWindow::translateToDoubleArray()
 {
     //vvi
-}
+}*/
 
 
