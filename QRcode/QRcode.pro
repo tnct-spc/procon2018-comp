@@ -9,7 +9,7 @@ QT       += core gui widgets
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = QRcode
-TEMPLATE = lib
+TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -24,8 +24,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        qrcode.cpp
-
+        qrcode.cpp\
+        main.cpp
 HEADERS += \
         qrcode.h
 
