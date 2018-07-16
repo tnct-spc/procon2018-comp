@@ -209,7 +209,6 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
         weight_list.at(index).resize(move_index.at(index).size(), 1.0 / move_index.at(index).size());
 
     for(auto value : answer){
-        std::cout << "gain : " << 1.0 * value.second.first / value.second.second << std::endl;
         gain_list.at(move_index.at(0)[value.first.at(0)]).at(move_index.at(1)[value.first.at(1)]) = 1.0 * value.second.first / value.second.second;
     }
 
