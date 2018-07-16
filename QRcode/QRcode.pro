@@ -9,7 +9,7 @@ QT       += core gui widgets
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = QRcode
-TEMPLATE = lib
+TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -34,5 +34,5 @@ FORMS += \
 
 INCLUDEPATH += /usr/include/opencv
 
-
+LIBS += -L/usr/lib `pkg-config --libs opencv`
 LIBS += -L/usr/lib64 -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lzbar
