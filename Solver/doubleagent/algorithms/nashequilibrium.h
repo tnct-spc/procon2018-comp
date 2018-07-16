@@ -40,6 +40,8 @@ private:
     // 一回辺りの重みの変化量の総和
     const double update_rate = 0.05;
 
+    const bool use_point_diff = true;
+
     // 計算に書ける時間(sec)
     double calc_time = 20.0;
 

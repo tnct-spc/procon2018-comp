@@ -161,7 +161,9 @@ std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>
                     ++return_map[first_move].second;
 
                 // 勝ったなら勝利数を増やしておく
-                if(my_point.first + my_point.second > enemy_point.first + enemy_point.second)
+                if(use_point_diff)
+                    return_map[first_move].first += my_point.first + my_point.second - enemy_point.first - enemy_point.second;
+                else if(my_point.first + my_point.second > enemy_point.first + enemy_point.second)
                     ++return_map[first_move].first;
             }
 
@@ -210,6 +212,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
         std::cout << "gain : " << 1.0 * value.second.first / value.second.second << std::endl;
         gain_list.at(move_index.at(0)[value.first.at(0)]).at(move_index.at(1)[value.first.at(1)]) = 1.0 * value.second.first / value.second.second;
     }
+
+    // func_side = sideかどうかでgainの正負を変えないといけないだろ！！！！
 
 
     std::vector<std::vector<double>> update_val(2);
@@ -260,6 +264,10 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
     auto update_weight = [&](bool func_side){
         double up_sum = 0;
         double down_sum = 0;
+
+        if(func_side != side)
+            for(int index = 0; index < move_index.at(func_side).size(); ++index)
+                update_val.at(func_side).at(index) *= -1;
 
         for(int index = 0; index < move_index.at(func_side).size(); ++index){
             if(update_val.at(func_side).at(index) < 0)
