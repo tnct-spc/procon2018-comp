@@ -7,10 +7,10 @@ procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
     //初期化処理がめっちゃ分かりづらいですが、四隅にagentを配置してます
     agents = { { std::make_pair(0, 0), std::make_pair(size_x - 1, size_y - 1) }, { std::make_pair(size_x - 1, 0), std::make_pair(0, size_y - 1) } };
 
-    field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
+    field_data = std::bitset<288>(0uL);
     value_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
 
-    regions = std::vector<std::vector<std::vector<bool>>>(2, std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false)));
+    regions = std::bitset<288>(0uL);
 
     points = std::vector<std::pair<int,int>>(2, std::make_pair(0,0));
 
@@ -19,7 +19,9 @@ procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
 
             std::pair<int,int> agent_pos = getAgent(side, agent);
 
-            field_data.at(agent_pos.first).at(agent_pos.second) = side + 1;
+            std::bitset<288> w = side + 1;
+
+            field_data |= (w << (2*(12*agent_pos.second + agent_pos.first)));
         }
 }
 
@@ -30,10 +32,11 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
 
     agents = { { std::make_pair(0, 0), std::make_pair(size_x - 1, size_y - 1) }, { std::make_pair(size_x - 1, 0), std::make_pair(0, size_y - 1) } };
 
-    field_data = std::vector<std::vector<int>>(size_x, std::vector<int>(size_y,0));
+
+    field_data = std::bitset<288>(0uL);
     value_data = input_val;
 
-    regions = std::vector<std::vector<std::vector<bool>>>(2, std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false)));
+    regions = std::bitset<288>(0uL);
     points = std::vector<std::pair<int,int>>(2, std::make_pair(0,0));
 
     for(int side = 0; side < 2; ++side)
@@ -41,7 +44,9 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
 
             std::pair<int,int> agent_pos = getAgent(side, agent);
 
-            field_data.at(agent_pos.first).at(agent_pos.second) = side + 1;
+            std::bitset<288> w = side + 1;
+
+            field_data |= (w << ((2*(12*agent_pos.second+agent_pos.first))));
         }
 }
 
@@ -65,14 +70,14 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         else ++(rndor(mt)?grid_x:grid_y);
     }
 
-
     agents = { { std::make_pair(0, 0), std::make_pair(grid_x - 1, grid_y - 1) }, { std::make_pair(grid_x - 1, 0), std::make_pair(0, grid_y - 1) } };
 
-    field_data = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0 ));
+    field_data = std::bitset<288>(0uL);
     value_data = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0 ));
 
 
-    regions = std::vector<std::vector<std::vector<bool>>>(2, std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false)));
+
+    regions = std::bitset<288>(0uL);
     points = std::vector<std::pair<int,int>>(2, std::make_pair(0,0));
 
     /*
@@ -187,13 +192,13 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
 
             std::pair<int,int> agent_pos = getAgent(side, agent);
 
-            field_data.at(agent_pos.first).at(agent_pos.second) = side + 1;
+            std::bitset<288> w = side+1;
+
+            field_data |= (w << (2*(12*agent_pos.second+agent_pos.first)));
         }
 }
 
-const std::vector<std::vector<int>>& procon::Field::getField() const{
-    return field_data;
-}
+
 
 const std::vector<std::vector<int>>& procon::Field::getValue() const{
     return value_data;
@@ -212,17 +217,27 @@ std::pair<int,int> procon::Field::getAgent(const unsigned int side, const unsign
     return agents.at(side).at(number);
 }
 
-bool procon::Field::isPlaced(const unsigned int x, const unsigned int y){
-    return (field_data.at(x).at(y) != 0);
-}
 
 //pair<タイル状況,評価値>を返す
 std::pair<int,int> procon::Field::getState(const unsigned int x, const unsigned int y) const{
-    return std::make_pair(field_data.at(x).at(y), value_data.at(x).at(y));
+    std::bitset<288> w(0uL);
+    w |= field_data >> (2*(12*y+x));
+    w &= 3;
+    return std::make_pair(w.to_ulong(),value_data.at(x).at(y));
 }
 
 void procon::Field::setState(const unsigned int x, const unsigned int y, const unsigned int state){
-    field_data.at(x).at(y) = state;
+    std::bitset<288> w = 3;
+    field_data &= ~( w << (2*(12*y+x)));
+    w = state;
+    field_data |= ( w << (2*(12*y+x)));
+}
+
+void procon::Field::resetState(const procon::Field& inp_field){
+    field_data = inp_field.field_data;
+    agents = inp_field.agents;
+    points = inp_field.points;
+    regions = inp_field.regions;
 }
 
 void procon::Field::setAgent(const unsigned int side, const unsigned int number, const unsigned int x_pos, const unsigned int y_pos){
@@ -301,16 +316,24 @@ void procon::Field::setAgents(const std::vector<std::vector<std::pair<int,int>>>
 }
 
 void procon::Field::setStates(const std::vector<std::vector<int>>& values){
-    field_data = values;
+    field_data = std::bitset<288>(0uL);
+    std::bitset<288> w = std::bitset<288>(0uL);
+    for(int a = 0;a < grid_x;a++){
+        for(int b = 0;b < grid_y;b++){
+            w = values.at(a).at(b);
+            field_data |= ( w << (2*(12*b+a)));
+        }
+    }
 }
 void procon::Field::updatePoint(){
     /*ラベリングを用いています、それが何か気になったらはむへいか会長に聞いてみて
      */
     const int INF = 1e9;
+    regions = std::bitset<288>(0uL);
     auto calc = [&](int side){
         int dx[] = {-1, 0};
         int dy[] = {0, -1};
-        std::vector<std::vector<bool>> mass = std::vector<std::vector<bool>>(grid_x, std::vector<bool>(grid_y, false)); //最終的にメンバに渡す変数
+        std::bitset<288> mass = std::bitset<288>(0uL); //最終的にメンバに渡す変数
         std::vector<std::vector<int>> labeling = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0)); //ラベリング本体
         std::vector<bool> flag = std::vector<bool>(200, true); //その島が外側の枠と接しているか
         int LookUpTable[200]; //ルックアップテーブル(ラベリングに必要なにか)
@@ -320,12 +343,12 @@ void procon::Field::updatePoint(){
         int now_index = 1;
         for(int y = 0;y < grid_y;y++){
             for(int x = 0;x < grid_x;x++){
-                if(field_data.at(x).at(y)==side)continue;
+                if(getState(x, y).first==side)continue;
                 std::set<int> _set;
                 int ins_min = INF;
                 for(int index = 0;index < 2;index++){
                     if(0 <= x + dx[index] && x + dx[index] < grid_x && 0 <= y + dy[index] && y + dy[index] < grid_y){
-                        if(labeling.at(x + dx[index]).at(y + dy[index]) != 0 && field_data.at(x).at(y) != side ){
+                        if(labeling.at(x + dx[index]).at(y + dy[index]) != 0 && getState(x, y).first != side ){
                             ins_min = std::min(labeling.at(x + dx[index]).at(y + dy[index]),ins_min);
                             _set.insert(labeling.at(x + dx[index]).at(y + dy[index]));
                         }
@@ -381,7 +404,7 @@ void procon::Field::updatePoint(){
         for(int x = 0; x < grid_x; x++){
             for(int y = 0; y < grid_y; y++){
                 if(labeling.at(x).at(y) != 0 && flag[labeling.at(x).at(y)]){
-                    mass.at(x).at(y) = true;
+                    mass[(y*12+x)] = true;
                 }
             }
         }
@@ -395,7 +418,8 @@ void procon::Field::updatePoint(){
         }
         */
 
-       regions.at(side -1) = mass;
+       if(side == 1)regions |= mass;
+       if(side == 2)regions |= mass << 144;
     };
 
     calc(1);
@@ -412,15 +436,15 @@ void procon::Field::updatePoint(){
     for(int a = 0;a < grid_x; a++){
         for(int b = 0;b < grid_y; b++){
 
-            if(field_data.at(a).at(b) == 1)
+            if(getState(a, b).first == 1)
                 common_red_point += value_data.at(a).at(b);
-            if(field_data.at(a).at(b) == 2)
+            if(getState(a, b).first == 2)
                 common_blue_point += value_data.at(a).at(b);
 
-            if(regions.at(0).at(a).at(b))
+            if(regions[b*12 + a])
                 region_red_point += std::abs(value_data.at(a).at(b));
 
-            if(regions.at(1).at(a).at(b))
+            if(regions[b * 12 + a + 144])
                  region_blue_point += std::abs(value_data.at(a).at(b));
         }
     }
@@ -458,7 +482,7 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<std::pair<int
         }
     }
     if(!flag && result){
-        std::vector<std::vector<std::vector<bool>>> stash_regions = regions;
+        std::bitset<288> stash_regions = regions;
         std::vector<std::pair<int, int>> stash_points = points;
         updatePoint();
         regions = stash_regions;
@@ -491,7 +515,7 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<s
         }
     }
     if(!flag && result){
-        std::vector<std::vector<std::vector<bool>>> stash_regions = regions;
+        std::bitset<288> stash_regions = regions;
         std::vector<std::pair<int, int>> stash_points = points;
         updatePoint();
         regions = stash_regions;
@@ -508,6 +532,6 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<s
 void procon::Field::setPoints(int side, std::pair<int, int> value){
     points.at(side) = value;
 }
-std::vector<std::vector<bool>> procon::Field::getRegion(int side){
-    return regions.at(side);
+std::bitset<288> procon::Field::getRegion(){
+    return regions;
 }
