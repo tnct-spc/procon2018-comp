@@ -206,8 +206,10 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
     for(int index = 0; index < 2; ++index)
         weight_list.at(index).resize(move_index.at(index).size(), 1.0 / move_index.at(index).size());
 
-    for(auto value : answer)
+    for(auto value : answer){
+        std::cout << "gain : " << 1.0 * value.second.first / value.second.second << std::endl;
         gain_list.at(move_index.at(0)[value.first.at(0)]).at(move_index.at(1)[value.first.at(1)]) = 1.0 * value.second.first / value.second.second;
+    }
 
 
     std::vector<std::vector<double>> update_val(2);
@@ -221,13 +223,14 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
 
         for(int x_index = 0; x_index < move_index.at(func_side).size(); ++x_index){
             for(int y_index = 0; y_index < move_index.at(!func_side).size(); ++y_index)
-                gain_ave.at(x_index) += weight_list.at(func_side).at(x_index) * weight_list.at(!func_side).at(y_index) * (func_side
+                gain_ave.at(x_index) += weight_list.at(!func_side).at(y_index) * (func_side
                                         ? gain_list.at(y_index).at(x_index)
                                         : gain_list.at(x_index).at(y_index)
                                         );
 
-            gain_ave.at(x_index) /= move_index.at(!func_side).size();
+            // gain_ave.at(x_index) /= move_index.at(!func_side).size();
         }
+
 
         // 全ての行動の平均利得
         double average_gain = std::accumulate(gain_ave.begin(), gain_ave.end(), 0.0) / move_index.at(func_side).size();
@@ -283,8 +286,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
         if(update_flag&2)
             calc_diff(1);
 
-        update_flag&=2|(update_weight(0));
-        update_flag&=1|(update_weight(1)<<1);
+        update_flag&=(2|update_weight(0));
+        update_flag&=(1|(update_weight(1)<<1));
 
         return update_flag;
     };
