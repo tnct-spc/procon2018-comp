@@ -303,17 +303,17 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
 
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
 
-    int max_index = std::distance(weight_list.at(0).begin(), std::max_element(weight_list.at(0).begin(), weight_list.at(0).end()));
+    int max_index = std::distance(weight_list.at(side).begin(), std::max_element(weight_list.at(side).begin(), weight_list.at(side).end()));
 
     std::cout << "ind : " << max_index << std::endl;
 
-    for(auto move : move_index.at(0))
+    for(auto move : move_index.at(side))
         if(move.second == max_index)
             max_move = move.first;
 
 
-    for(int index = 0; index < weight_list.at(0).size(); ++index)
-        std::cout << weight_list.at(0).at(index) << " ";
+    for(int index = 0; index < weight_list.at(side).size(); ++index)
+        std::cout << weight_list.at(side).at(index) << " ";
     std::cout << std::endl;
 
     std::cout << "("
@@ -323,6 +323,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
             << std::get<0>(max_move.second) << ","
             << std::get<1>(max_move.second) << ","
             << std::get<2>(max_move.second) << ")"
+            << "   :   " << side
             << std::endl;
 
     return max_move;
