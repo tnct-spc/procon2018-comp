@@ -35,7 +35,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::chan
         auto evaluate = [&](int count, bool is_delete){
 
             // evaluateMove部分でside指定されていないから相手側で挙動がおかしくなる！！！！クソ！！！！
-            double value = agents.at(agent)->evaluateMove(count, is_delete, now_turn);
+            double value = agents.at(agent)->evaluateMove(count, is_delete, now_turn, eval_side);
 
             if(value > minus_bound)//置けないパターンがあるのでそれを切る
                 can_move_list.at(agent).push_back(std::make_pair((is_eq ? 1 : std::pow((value - minus_bound) * value_ratio, value_weight)), std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));
@@ -149,7 +149,7 @@ std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>
                     for(int side_ind = 0; side_ind < 2; ++side_ind){
 
                         manager_ptr->agentAct(side_ind, 0, moves.at(side_ind).first);
-                        manager_ptr->agentAct(side_ind, 0, moves.at(side_ind).second);
+                        manager_ptr->agentAct(side_ind, 1, moves.at(side_ind).second);
                     }
 
                     manager_ptr->changeTurn(false);
