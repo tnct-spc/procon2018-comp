@@ -34,6 +34,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::chan
 
         auto evaluate = [&](int count, bool is_delete){
 
+            // evaluateMove部分でside指定されていないから相手側で挙動がおかしくなる！！！！クソ！！！！
             double value = agents.at(agent)->evaluateMove(count, is_delete, now_turn);
 
             if(value > minus_bound)//置けないパターンがあるのでそれを切る
@@ -165,10 +166,9 @@ std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>
                     ++return_map[first_move].second;
 
                 // 勝ったなら勝利数を増やしておく
-                if(use_point_diff)
-                    return_map[first_move].first += points.at(0).first + points.at(0).second - points.at(1).first - points.at(1).second;
-                else if(points.at(0).first + points.at(0).second > points.at(1).first + points.at(1).second)
-                    ++return_map[first_move].first;
+                return_map[first_move].first += (use_point_diff
+                                 ? points.at(0).first + points.at(0).second - points.at(1).first - points.at(1).second
+                                 : points.at(0).first + points.at(0).second > points.at(1).first + points.at(1).second);
             }
 
             return std::move(return_map);
@@ -215,7 +215,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
     // side側の得点をベースにした利得になっている
 
     for(auto value : answer){
-        // std::cout << "gain : " << 1.0 * value.second.first / value.second.second << "   :   " << value.second.first << std::endl;
+        std::cout << "gain : " << 1.0 * value.second.first / value.second.second << "   :   " << value.second.first << " / " << value.second.second << std::endl;
         gain_list.at(move_index.at(0)[value.first.at(0)]).at(move_index.at(1)[value.first.at(1)]) = 1.0 * value.second.first / value.second.second;
     }
 
