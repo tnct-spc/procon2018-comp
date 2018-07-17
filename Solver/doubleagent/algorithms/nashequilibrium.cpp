@@ -139,31 +139,35 @@ std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>
                 std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>> first_move;
 
                 for(int count = 0; count < turn_count; ++count){
-                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> my_move = changeTurn(manager_ptr, is_eq, side);
+                    std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>> moves(2);
+                    moves.at(0) = changeTurn(manager_ptr, is_eq, 0);
+                    moves.at(1) = changeTurn(manager_ptr, is_eq, 1);
 
-                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> enemy_move = changeTurn(manager_ptr, is_eq, !side);
+                    if(!count)first_move = moves;
 
-                    if(!count)first_move = std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>({my_move, enemy_move});
+                    for(int side_ind = 0; side_ind < 2; ++side_ind){
 
-                    manager_ptr->agentAct(side, 0, my_move.first);
-                    manager_ptr->agentAct(side, 1, my_move.second);
-                    manager_ptr->agentAct(!side, 0, enemy_move.first);
-                    manager_ptr->agentAct(!side, 1, enemy_move.second);
+                        manager_ptr->agentAct(side_ind, 0, moves.at(side_ind).first);
+                        manager_ptr->agentAct(side_ind, 0, moves.at(side_ind).second);
+                    }
+
                     manager_ptr->changeTurn(false);
                 }
                 // 得点を計算する
                 manager_ptr->getField().updatePoint();
-                std::pair<int,int> my_point = manager_ptr->getField().getPoints(false).at(side);
-                std::pair<int,int> enemy_point = manager_ptr->getField().getPoints(false).at(!side);
+
+                std::vector<std::pair<int,int>> points(2);
+                points.at(0) = manager_ptr->getField().getPoints(false).at(0);
+                points.at(1) = manager_ptr->getField().getPoints(false).at(1);
 
                 // 引き分けでないなら試行回数を増やしておく
-                if(my_point.first + my_point.second != enemy_point.first + enemy_point.second)
+                if(points.at(0).first + points.at(0).second != points.at(1).first + points.at(1).second)
                     ++return_map[first_move].second;
 
                 // 勝ったなら勝利数を増やしておく
                 if(use_point_diff)
-                    return_map[first_move].first += my_point.first + my_point.second - enemy_point.first - enemy_point.second;
-                else if(my_point.first + my_point.second > enemy_point.first + enemy_point.second)
+                    return_map[first_move].first += points.at(0).first + points.at(0).second - points.at(1).first - points.at(1).second;
+                else if(points.at(0).first + points.at(0).second > points.at(1).first + points.at(1).second)
                     ++return_map[first_move].first;
             }
 
@@ -196,10 +200,10 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
 
     for(auto value : answer)
         for(int index = 0; index < 2; ++index)
-        if(move_index.at(index).find(value.first.at(index)) == move_index.at(index).end()){
-            int siz = move_index.at(index).size();
-            move_index.at(index).insert(std::make_pair(value.first.at(index),siz));
-        }
+            if(move_index.at(index).find(value.first.at(index)) == move_index.at(index).end()){
+                int siz = move_index.at(index).size();
+                move_index.at(index).insert(std::make_pair(value.first.at(index),siz));
+            }
 
     // {利得,選択確率}の一覧
     std::vector<std::vector<double>> gain_list(move_index.at(0).size(), std::vector<double>(move_index.at(1).size(), 0.5));
@@ -208,7 +212,10 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
     for(int index = 0; index < 2; ++index)
         weight_list.at(index).resize(move_index.at(index).size(), 1.0 / move_index.at(index).size());
 
+    // side側の得点をベースにした利得になっている
+
     for(auto value : answer){
+        // std::cout << "gain : " << 1.0 * value.second.first / value.second.second << "   :   " << value.second.first << std::endl;
         gain_list.at(move_index.at(0)[value.first.at(0)]).at(move_index.at(1)[value.first.at(1)]) = 1.0 * value.second.first / value.second.second;
     }
 
@@ -264,7 +271,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
         double up_sum = 0;
         double down_sum = 0;
 
-        if(func_side != side)
+        // 0側(赤)の得点差や勝率を利得にしているので、それを最小化したい1側(青)は更新する値を逆向きにする
+        if(func_side)
             for(int index = 0; index < move_index.at(func_side).size(); ++index)
                 update_val.at(func_side).at(index) *= -1;
 
@@ -282,7 +290,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
                 weight_list.at(func_side).at(index) = std::min(1.0, weight_list.at(func_side).at(index) +  down_sum * std::min(1.0 - weight_list.at(func_side).at(index), update_val.at(func_side).at(index)) / up_sum);
         }
 
-        return (down_sum!=0);
+        return (std::abs(down_sum) > 1e-4);
     };
 
     short update_flag = 3;
@@ -293,8 +301,10 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
         if(update_flag&2)
             calc_diff(1);
 
-        update_flag&=(2|update_weight(0));
-        update_flag&=(1|(update_weight(1)<<1));
+        if(update_flag&1)
+            update_flag&=(2|update_weight(0));
+        if(update_flag&2)
+            update_flag&=(1|(update_weight(1)<<1));
 
         return update_flag;
     };
@@ -304,8 +314,6 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
 
     int max_index = std::distance(weight_list.at(side).begin(), std::max_element(weight_list.at(side).begin(), weight_list.at(side).end()));
-
-    std::cout << "ind : " << max_index << std::endl;
 
     for(auto move : move_index.at(side))
         if(move.second == max_index)
