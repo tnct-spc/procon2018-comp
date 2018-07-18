@@ -497,8 +497,8 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<std::pair<int
 }
 
 std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<std::pair<int,int>, std::pair<int, int> > > pos_vec, bool flag){
-    int dx[9] = {1, 1, 1, 0, -1, -1, -1, 0};
-    int dy[9] = {1, 0, -1, -1, -1, 0, 1, 1};
+    int dx[8] = {1, 1, 1, 0, -1, -1, -1};
+    int dy[8] = {1, 0, -1, -1, -1, 0, 1};
     bool result = false;
     for(std::pair<std::pair<int,int>, std::pair<int,int>> pos : pos_vec){
         for(int index = 0;index < 8;index++){
