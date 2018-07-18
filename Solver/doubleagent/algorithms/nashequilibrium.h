@@ -27,8 +27,12 @@ private:
     // 探索を打ち切るターン数(実際の探索ターン数はmin(end_turn, max_turn - now_turn)になる)
     const int end_turn = 5;
 
+    const bool use_pattern_size = false;
+
     // 探索候補に含める最小値(これ以下は探索しない)
     const double minus_bound = 0;
+    // 候補のうち上位何個を残すか
+    const int pattern_size = 5;
 
     // 重みにかける倍率
     const double value_ratio = 1.0;
@@ -39,6 +43,8 @@ private:
     const int update_count = 500;
     // 一回辺りの重みの変化量の総和
     const double update_rate = 0.05;
+
+    const bool use_point_diff = true;
 
     // 計算に書ける時間(sec)
     double calc_time = 20.0;
