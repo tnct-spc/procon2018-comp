@@ -40,10 +40,16 @@ procon::Field CsvIo::importField(std::string path)
     }
     //read mode 0
     std::getline(line_stream, data, ',');
+    int now_turn = std::stoi(data);
+    std::getline(line_stream, data, ',');
+    int final_turn = std::stoi(data);
+    std::getline(line_stream, data, ',');
     int grid_x = std::stoi(data);
     std::getline(line_stream, data, ',');
     int grid_y = std::stoi(data);
     procon::Field fields(grid_x, grid_y);
+    fields.setTurnCount(now_turn);
+    fields.setFinalTurn(final_turn);
 
     while(std::getline(input, line_buffer)) {
         //read mode
@@ -53,17 +59,13 @@ procon::Field CsvIo::importField(std::string path)
         int mode = std::stoi(point_buffer);
 
         if(mode == 1) {
-            std::vector<std::vector<int>> field_data;
-            //format the vector field_data[grid_x][grid_y]
-            field_data = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0));
-            for(int i = 0; i < grid_x; ++i) {
-                for(int j = 0; j < grid_y; ++j) {
-                    std::string data;
-                    std::getline(line_stream, data, ',');
-                    field_data[i][j] = std::stoi(data);
-                }
+            std::bitset<288> field_data;
+            for(int count = 0; count < 72; ++count){
+                std::string data;
+                std::getline(line_stream, data, ',');
+                field_data |= (std::bitset<288>(std::stoi(data)) << (count * 4));
             }
-            fields.setStates(field_data);
+            fields.setField(field_data);
         }
 
         if(mode == 2) {
