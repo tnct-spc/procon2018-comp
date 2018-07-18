@@ -96,15 +96,15 @@ procon::Field CsvIo::importField(std::string path)
         }
     }
 
-    return fields;
+    return std::move(fields);
 
 }
 
-void CsvIo::exportField(procon::Field data, std::string path)
+void CsvIo::exportField(procon::Field& data, std::string path)
 {
     /** GetData **/
     std::pair<int, int> grid = data.getSize();
-    std::vector<std::vector<int>> fields;// = data.getField();
+    std::bitset<288> fields = data.getField();
     std::vector<std::vector<std::pair<int, int>>> agents = data.getAgents();
     std::vector<std::vector<int>> values = data.getValue();
 
@@ -112,31 +112,29 @@ void CsvIo::exportField(procon::Field data, std::string path)
     std::ofstream output(path);
 
     auto exportFujisan = [&]() {
-        output << FUJISAN << "," << grid.first << "," << grid.second << std::endl;
+        output << FUJISAN << "," << data.getTurnCount() << "," << data.getFinalTurn() << "," << grid.first << "," << grid.second << std::endl;
     };
 
     auto exportTakaosan = [&]() {
-        output << TAKAOSAN;
-        for(auto axis : fields) {
-            for(auto field_data : axis) output << "," << field_data;
-        }
+        output << TAKAOSAN << ",";
+        for(int count = 0; count < 96; ++count)
+            output << ((fields >> (count * 3)) & std::bitset<288>(7)).to_ulong();
         output << std::endl;
     };
 
     auto exportMitakesan = [&]() {
         output << MITAKESAN;
-        for(auto axis : agents) {
-            for(auto agent_data : axis) output << "," << agent_data.first
-                                               << "," << agent_data.second;
-        }
+        for(auto axis : agents)
+            for(auto agent_data : axis)
+                output << "," << agent_data.first << "," << agent_data.second;
         output << std::endl;
     };
 
     auto exportHakutousan = [&]() {
         output << HAKUTOUSAN;
-        for(auto axis : values) {
-            for(auto value_data : axis) output << "," << value_data;
-        }
+        for(auto axis : values)
+            for(auto value_data : axis)
+                output << "," << value_data;
         output << std::endl;
     };
 

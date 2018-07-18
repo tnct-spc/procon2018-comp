@@ -8,7 +8,7 @@ class CsvIo
 public:
     CsvIo();
     static procon::Field importField(std::string path);
-    static void exportField(procon::Field data, std::string path);
+    static void exportField(procon::Field& data, std::string path);
 
 private:
     static const int FUJISAN = 0;

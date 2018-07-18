@@ -223,6 +223,13 @@ std::pair<int,int> procon::Field::getSize() const{
     return std::make_pair(grid_x, grid_y);
 }
 
+std::bitset<288>& procon::Field::getField(){
+    return field_data;
+}
+
+void procon::Field::setField(std::bitset<288>& input){
+    field_data = input;
+}
 
 const std::vector<std::vector<std::pair<int,int>>>& procon::Field::getAgents() const{
     return agents;

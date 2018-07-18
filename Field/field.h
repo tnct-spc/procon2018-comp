@@ -55,6 +55,9 @@ public:
 
     void resetState(const procon::Field& inp_field);
 
+    std::bitset<288>& getField();
+    void setField(std::bitset<288>& input);
+
     std::pair<int,int> getSize() const;
 
     void updatePoint();
