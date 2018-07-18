@@ -114,9 +114,9 @@ void CsvIo::exportField(procon::Field& data, std::string path)
     };
 
     auto exportTakaosan = [&]() {
-        output << TAKAOSAN << ",";
-        for(int count = 0; count < 96; ++count)
-            output << ((fields >> (count * 3)) & std::bitset<288>(7)).to_ulong();
+        output << TAKAOSAN;
+        for(int count = 0; count < 72; ++count)
+            output << "," << ((fields >> (count * 4)) & std::bitset<288>(15)).to_ulong();
         output << std::endl;
     };
 
