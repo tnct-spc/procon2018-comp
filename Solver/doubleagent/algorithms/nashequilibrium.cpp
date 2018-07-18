@@ -25,10 +25,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::chan
 
     procon::Field& ptr_field = manager_ptr->getField();
 
-    /*
     for(int index = 0; index < 2; ++index)
-        can_move_list.at(index).push_back(std::make_pair(0.0, std::make_tuple(0, 0, 0)));
-    */
+        can_move_list.at(index).push_back(std::make_pair(-500000.0, std::make_tuple(0, 0, 0)));
 
     auto agent_move = [&](int agent){
 
