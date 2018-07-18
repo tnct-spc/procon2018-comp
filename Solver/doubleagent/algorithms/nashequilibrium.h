@@ -27,8 +27,12 @@ private:
     // 探索を打ち切るターン数(実際の探索ターン数はmin(end_turn, max_turn - now_turn)になる)
     const int end_turn = 5;
 
+    const bool use_pattern_size = false;
+
     // 探索候補に含める最小値(これ以下は探索しない)
     const double minus_bound = 0;
+    // 候補のうち上位何個を残すか
+    const int pattern_size = 5;
 
     // 重みにかける倍率
     const double value_ratio = 1.0;

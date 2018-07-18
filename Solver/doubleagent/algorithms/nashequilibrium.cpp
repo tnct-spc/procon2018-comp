@@ -25,8 +25,10 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::chan
 
     procon::Field& ptr_field = manager_ptr->getField();
 
+    /*
     for(int index = 0; index < 2; ++index)
         can_move_list.at(index).push_back(std::make_pair(0.0, std::make_tuple(0, 0, 0)));
+    */
 
     auto agent_move = [&](int agent){
 
@@ -37,8 +39,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::chan
             // evaluateMove部分でside指定されていないから相手側で挙動がおかしくなる！！！！クソ！！！！
             double value = agents.at(agent)->evaluateMove(count, is_delete, now_turn, eval_side);
 
-            if(value > minus_bound)//置けないパターンがあるのでそれを切る
-                can_move_list.at(agent).push_back(std::make_pair((is_eq ? 1 : std::pow((value - minus_bound) * value_ratio, value_weight)), std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));
+            if(use_pattern_size || value > minus_bound)//置けないパターンがあるのでそれを切る
+                can_move_list.at(agent).push_back(std::make_pair((is_eq ? value : std::pow((value - minus_bound) * value_ratio, value_weight)), std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));
 
         };
 
@@ -65,15 +67,17 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::chan
     agent_move(0);
     agent_move(1);
 
-    if(!is_eq)
-        for(int index = 0; index < 2; ++index){
-            // 重み順にソート
-            std::sort(can_move_list.at(index).begin(), can_move_list.at(index).end(), std::greater<std::pair<double,std::tuple<int,int,int>>>());
+    for(int index = 0; index < 2; ++index){
+        // 重み順にソート
+        std::sort(can_move_list.at(index).begin(), can_move_list.at(index).end(), std::greater<std::pair<double,std::tuple<int,int,int>>>());
 
-            // 重みの累積を取る
-            for(int count = 1; count < can_move_list.at(index).size(); ++count)
-                can_move_list.at(index).at(count).first += can_move_list.at(index).at(count - 1).first;
-        }
+        if(use_pattern_size)
+            can_move_list.at(index).resize(pattern_size);
+
+        // 重みの累積を取る
+        for(int count = 1; count < can_move_list.at(index).size(); ++count)
+        can_move_list.at(index).at(count).first += can_move_list.at(index).at(count - 1).first;
+    }
 
     // 乱数生成器
     std::vector<std::uniform_real_distribution<>> dist(2);
@@ -328,6 +332,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
     for(int index = 0; index < weight_list.at(side).size(); ++index)
         std::cout << weight_list.at(side).at(index) << " ";
     std::cout << std::endl;
+
+    std::cout << "size : " << weight_list.at(0).size() << "  ,  " << weight_list.at(1).size() << std::endl;
 
     std::cout << "("
             << std::get<0>(max_move.first) << ","
