@@ -76,10 +76,7 @@ private:
     const int max_val = 16;
     const int min_val = -16;
 
-    int turn_max;
     bool vis_show;
-
-    int now_turn = -1;
 
     //これがtrueなら自動進行
     bool is_auto = true;
