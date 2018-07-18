@@ -447,11 +447,11 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<std::pair<int
     bool result = false;
     for(int index = 0;index < 8;index++){
         if(!(pos.second.first + dx[index] >= 0 && pos.second.first + dx[index] <= grid_x - 1 && pos.second.second + dy[index] >= 0 && pos.second.second + dy[index] <= grid_y - 1))continue;
-        if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first.first + 1){
+        if(getState(pos.second.first + dx[index], pos.second.second + dy[index]).first == pos.first.first + 1){
             if(pos.first.second == 0){
                 result = true;
             }
-        }else if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) != 0){
+        }else if(getState(pos.second.first + dx[index], pos.second.second + dy[index]).first != 0){
             if(pos.first.second == 1){
                 result = true;
             }
@@ -473,17 +473,17 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<std::pair<int
 }
 
 std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<std::pair<int,int>, std::pair<int, int> > > pos_vec, bool flag){
-    int dx[8] = {1, 1, 1, 0, -1, -1, -1, 0};
-    int dy[8] = {1, 0, -1, -1, -1, 0, 1, 1};
+    int dx[9] = {1, 1, 1, 0, -1, -1, -1, 0};
+    int dy[9] = {1, 0, -1, -1, -1, 0, 1, 1};
     bool result = false;
     for(std::pair<std::pair<int,int>, std::pair<int,int>> pos : pos_vec){
         for(int index = 0;index < 8;index++){
             if(!(pos.second.first + dx[index] >= 0 && pos.second.first + dx[index] <= grid_x - 1 && pos.second.second + dy[index] >= 0 && pos.second.second + dy[index] <= grid_y - 1))continue;
-            if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first.first + 1){
+            if(getState(pos.second.first + dx[index], pos.second.second + dy[index]).first == pos.first.first + 1){
                 if(pos.first.second == 0){
                     result = true;
                 }
-            }else if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) != 0){
+            }else if(getState(pos.second.first + dx[index], pos.second.second + dy[index]).first != 0){
                 if(pos.first.second == 1){
                     result = true;
                 }
