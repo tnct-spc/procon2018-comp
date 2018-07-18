@@ -214,10 +214,15 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
 
     // side側の得点をベースにした利得になっている
 
+    std::pair<int,int> answer_sum({0, 0});
     for(auto value : answer){
-        std::cout << "gain : " << 1.0 * value.second.first / value.second.second << "   :   " << value.second.first << " / " << value.second.second << std::endl;
+        answer_sum.first += value.second.first;
+        answer_sum.second += value.second.second;
+        // std::cout << "gain : " << 1.0 * value.second.first / value.second.second << "   :   " << value.second.first << " / " << value.second.second << std::endl;
         gain_list.at(move_index.at(0)[value.first.at(0)]).at(move_index.at(1)[value.first.at(1)]) = 1.0 * value.second.first / value.second.second;
     }
+
+    std::cout << "average_gain : " << 1.0 * answer_sum.first / answer_sum.second << std::endl;
 
     // func_side = sideかどうかでgainの正負を変えないといけないだろ！！！！
 
