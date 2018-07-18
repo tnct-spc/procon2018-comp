@@ -16,11 +16,8 @@
  * ***例***
  * 0, 30, 3, 3, 1, 0, 0, 0, ... , 2, 0, 0, 0, 3, 3, 0, 3, 3, 3, 0, 0, 0, ... , 0
  */
-CsvIo::CsvIo(){
 
-}
-
-procon::Field CsvIo::importField(std::string path)
+procon::Field procon::CsvIo::importField(std::string path)
 {
     /** ImportData **/
     std::ifstream input(path);
@@ -100,7 +97,7 @@ procon::Field CsvIo::importField(std::string path)
 
 }
 
-void CsvIo::exportField(procon::Field& data, std::string path)
+void procon::CsvIo::exportField(procon::Field& data, std::string path)
 {
     /** GetData **/
     std::pair<int, int> grid = data.getSize();
