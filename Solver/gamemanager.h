@@ -1,9 +1,9 @@
 #ifndef GAMEMANAGER_H
 #define GAMEMANAGER_H
 
-#include "field.h"
 #include "visualizer.h"
 #include "csvio.h"
+#include "field.h"
 #include "progresdock.h"
 #include "geneticalgo/geneticalgo.h"
 #include "geneticalgo/geneticagent.h"

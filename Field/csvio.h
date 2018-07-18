@@ -1,6 +1,12 @@
 #ifndef CSVIO_H
 #define CSVIO_H
 
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <string>
+#include <vector>
+
 #include "field.h"
 class CsvIo
 {

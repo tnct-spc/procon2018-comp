@@ -194,6 +194,10 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
         field->setTurnCount(0);
 
+        CsvIo iio;
+        iio.exportField(*field, "../../field.csv");
+
+
         // progresdock->show();
 
     }else{
