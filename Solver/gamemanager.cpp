@@ -11,11 +11,11 @@
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
-    turn_max(turn_max),
     vis_show(vis_show)
 {
 
    field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
+   field->setFinalTurn(turn_max);
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
@@ -32,12 +32,10 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, b
 
 void GameManager::resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show, const int t_max){
 
-    turn_max = t_max;
     vis_show = v_show;
 
-    now_turn = 0;
-
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
+    field->setFinalTurn(t_max);
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
@@ -56,61 +54,78 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
 
 void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
 
-    now_turn = now_t;
-    turn_max = max_t;
-
     field->resetState(pro);
+
+    field->setTurnCount(now_t);
+    field->setFinalTurn(max_t);
 }
 
-void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
+void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod) {
 
-    field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
+    int final_turn;
 
-    field_vec.clear();
-    field_vec.push_back(std::make_shared<procon::Field>(*field));
+    if (QString::compare("GenerateField", InputMethod) == 0) {
+
+        final_turn = field->getFinalTurn();
+        field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
+        field->setFinalTurn(final_turn);
+        field_vec.clear();
+        field_vec.push_back(std::make_shared<procon::Field>(*field));
+
+     //   std::string path = QFileDialog::getOpenFileName().toStdString();
+     //   procon::CsvIo::exportField(*field,path);
+
+    } else if (QString::compare("CSVImport", InputMethod) == 0) {
+
+        std::string path = QFileDialog::getOpenFileName().toStdString();
+
+        field = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
+        final_turn = field->getFinalTurn();
+
+    }
 
     if (QString::compare("DummyAlgorithm", my_algo) == 0) {
-        team_1 = std::make_shared<DummyAlgorithm>(*field, turn_max, 0);
+        team_1 = std::make_shared<DummyAlgorithm>(*field, field->getFinalTurn(), 0);
     } else if (QString::compare("GeneticAlgo", my_algo) == 0) {
-        team_1 = std::make_shared<GeneticAlgo>(*field, turn_max, 0);
+        team_1 = std::make_shared<GeneticAlgo>(*field, field->getFinalTurn(), 0);
     } else if (QString::compare("MontecarloWithAlgo", my_algo) == 0) {
-        team_1 = std::make_shared<MontecarloWithAlgo>(*field, turn_max, 0);
+        team_1 = std::make_shared<MontecarloWithAlgo>(*field, field->getFinalTurn(), 0);
     }else if(QString::compare("SimpleAlgorithm", my_algo) == 0){
-        team_1 = std::make_shared<SimpleAlgorithm>(*field, turn_max, 0);
+        team_1 = std::make_shared<SimpleAlgorithm>(*field, field->getFinalTurn(), 0);
     }else if(QString::compare("BeamSearch", my_algo) == 0){
-        team_1 = std::make_shared<beamsearch>(*field, turn_max, 0);
+        team_1 = std::make_shared<beamsearch>(*field, field->getFinalTurn(), 0);
     }else if(QString::compare("TestDoubleAgentAlgo", my_algo) == 0){
-        team_1 = std::make_shared<AgentManager>(*field, turn_max, 0, 0);
+        team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 0);
     }else if(QString::compare("DoubleAgentWithSimpleMC", my_algo) == 0){
-        team_1 = std::make_shared<AgentManager>(*field, turn_max, 0, 0|(1<<16));
+        team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 0|(1<<16));
     }else if(QString::compare("DoubleAgentWithUniformMC", my_algo) == 0){
-        team_1 = std::make_shared<AgentManager>(*field, turn_max, 0, 0|(2<<16));
+        team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 0|(2<<16));
     }else if(QString::compare("DoubleAgentWithNash", my_algo) == 0){
-        team_1 = std::make_shared<AgentManager>(*field, turn_max, 0, 0|(3<<16));
+        team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 0|(3<<16));
     }else if(QString::compare("EvaluateParam", my_algo) == 0){
-        team_1 = std::make_shared<AgentManager>(*field, turn_max, 0, 1);
+        team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 1);
     }
 
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
-        team_2 = std::make_shared<DummyAlgorithm>(*field, turn_max, 1);
+        team_2 = std::make_shared<DummyAlgorithm>(*field, field->getFinalTurn(), 1);
     } else if (QString::compare("GeneticAlgo", opponent_algo) == 0) {
-        team_2 = std::make_shared<GeneticAlgo>(*field, turn_max, 1);
+        team_2 = std::make_shared<GeneticAlgo>(*field, field->getFinalTurn(), 1);
     } else if (QString::compare("MontecarloWithAlgo", opponent_algo) == 0) {
-        team_2 = std::make_shared<MontecarloWithAlgo>(*field, turn_max, 1);
+        team_2 = std::make_shared<MontecarloWithAlgo>(*field, field->getFinalTurn(), 1);
     } else if (QString::compare("SimpleAlgorithm", opponent_algo) == 0) {
-        team_2 = std::make_shared<SimpleAlgorithm>(*field, turn_max, 1);
+        team_2 = std::make_shared<SimpleAlgorithm>(*field, field->getFinalTurn(), 1);
     }else if(QString::compare("BeamSearch", opponent_algo)==0){
-        team_2 = std::make_shared<beamsearch>(*field, turn_max, 1);
+        team_2 = std::make_shared<beamsearch>(*field, field->getFinalTurn(), 1);
     }else if(QString::compare("TestDoubleAgentAlgo", opponent_algo) == 0){
-        team_2 = std::make_shared<AgentManager>(*field, turn_max, 1, 0);
+        team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 0);
     }else if(QString::compare("DoubleAgentWithSimpleMC", opponent_algo) == 0){
-        team_2 = std::make_shared<AgentManager>(*field, turn_max, 1, 0|(1<<16));
+        team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 0|(1<<16));
     }else if(QString::compare("DoubleAgentWithUniformMC", opponent_algo) == 0){
-        team_2 = std::make_shared<AgentManager>(*field, turn_max, 1, 0|(2<<16));
+        team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 0|(2<<16));
     }else if(QString::compare("DoubleAgentWithNash", opponent_algo) == 0){
-        team_2 = std::make_shared<AgentManager>(*field, turn_max, 1, 0|(3<<16));
+        team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 0|(3<<16));
     }else if(QString::compare("EvaluateParam", opponent_algo) == 0){
-        team_2 = std::make_shared<AgentManager>(*field, turn_max, 1, 1);
+        team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 1);
     }
 
 
@@ -123,14 +138,15 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 
     if(vis_show){
         visualizer->update();
-        visualizer->setField(*field, 1, turn_max);
+        visualizer->setField(*field, 1, field->getFinalTurn());
     }
 
 
     //うぇーいｗｗｗｗｗｗｗ
     if(is_auto){
-        now_turn = 0;
-        for(; now_turn < turn_max; ++now_turn){
+        field->setTurnCount(0);
+        setFieldCount(field_vec.size() - 1);
+        while(field->getTurnCount() < field->getFinalTurn()){
 
 
             //std::cout << "turn " << now_turn + 1 << " started" << std::endl << std::endl;
@@ -188,16 +204,18 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
 //            progresdock->addAnswer(*(field_vec.back()));
 
 
-            setFieldCount(field_vec.size() - 2);
+            setFieldCount(field_vec.size() - 1);
         }
 
-        now_turn = -1;
+        field->setTurnCount(0);
+
+        // procon::CsvIo::exportField(*field, "../../field.csv");
 
         // progresdock->show();
 
     }else{
 
-        now_turn = 0;
+        field->setTurnCount(0);
 
         nextMoveForManualMode();
 
@@ -247,24 +265,24 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
     bool is_update = true;
 
     if(algo_number == 0){
-        team_1 = std::make_shared<GeneticAlgo>(*field, turn_max, 0, agent_1);
-        team_2 = std::make_shared<GeneticAlgo>(*field, turn_max, 1, agent_2);
+        team_1 = std::make_shared<GeneticAlgo>(*field, field->getFinalTurn(), 0, agent_1);
+        team_2 = std::make_shared<GeneticAlgo>(*field, field->getFinalTurn(), 1, agent_2);
         is_update = false;
     }
     if(algo_number == 2){
-        team_1 = std::make_shared<SimpleAlgorithm>(*field, turn_max, 0, agent_1);
-        team_2 = std::make_shared<SimpleAlgorithm>(*field, turn_max, 1, agent_2);
+        team_1 = std::make_shared<SimpleAlgorithm>(*field, field->getFinalTurn(), 0, agent_1);
+        team_2 = std::make_shared<SimpleAlgorithm>(*field, field->getFinalTurn(), 1, agent_2);
     }
     if(algo_number == 3){
-        team_1 = std::make_shared<AgentManager>(*field, turn_max, 0, 0, &agent_1, &agent_2);
-        team_2 = std::make_shared<AgentManager>(*field, turn_max, 1, 0, &agent_3, &agent_4);
+        team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 0, &agent_1, &agent_2);
+        team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 0, &agent_3, &agent_4);
     }
 
 
     field->updatePoint();
 
 
-    for(; now_turn < turn_max; ++now_turn){
+    while(field->getTurnCount() < field->getFinalTurn()){
 
 
         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
@@ -316,14 +334,14 @@ void GameManager::setFieldCount(const unsigned int number){
     if(number >= field_vec.size())return ;
     now_field = number;
     if(vis_show){
-        visualizer->setField(*field_vec.at(number), number+1, turn_max);
+        visualizer->setField(*field_vec.at(number), number, field->getFinalTurn());
         visualizer->update();
         visualizer->repaint();
     }
 }
 
 unsigned int GameManager::getFinalTurn(){
-    return turn_max;
+    return field->getFinalTurn();
 }
 
 
@@ -425,6 +443,8 @@ void GameManager::changeTurn(bool update){
             field->setAgent(moves.second.second.first, moves.second.second.second, moves.first.first, moves.first.second);
     }
 
+    field->setTurnCount(field->getTurnCount() + 1);
+
     /*
     std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> dest_map;
     std::map<std::pair<int,int>,std::vector<std::pair<int,int>>> tile_map;
@@ -488,16 +508,13 @@ void GameManager::setAutoMode(bool value){
 }
 
 int GameManager::getTurnCount(){
-    return now_turn;
+    return field->getTurnCount();
 }
 
 void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>& move, std::vector<std::vector<int>> is_delete){
     //is_deleteは自軍タイル除去時にのみ使う物 基本的に使わなさそう
 
-    if(now_turn == -1)
-        return ;
-
-    std::cout << "turn : " << now_turn+1 << std::endl << std::endl;
+    std::cout << "turn : " << field->getTurnCount()+1 << std::endl << std::endl;
 
     for(int side = 0; side < 2; ++side)
         for(int agent = 0; agent < 2; ++agent){
@@ -526,13 +543,11 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
 
     setFieldCount(field_vec.size() - 1);
 
-    now_turn++;
-
     visualizer->update();
 
-    if(now_turn == turn_max){
+    if(field->getTurnCount() == field->getFinalTurn()){
 
-        now_turn = -1;
+        field->setTurnCount(0);
 
         emit signalAutoMode(false);
         // progresdock->show();

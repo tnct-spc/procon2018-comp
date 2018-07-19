@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>500</height>
+    <width>928</width>
+    <height>549</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -21,7 +21,7 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="1" rowspan="2">
+    <item row="3" column="1" rowspan="2">
      <widget class="QComboBox" name="selectMyAlgorithmBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -84,7 +84,7 @@
       </item>
      </widget>
     </item>
-    <item row="1" column="2" rowspan="2">
+    <item row="3" column="2" rowspan="2">
      <widget class="QComboBox" name="selectOpponentAlgorithmBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -144,7 +144,7 @@
       </item>
      </widget>
     </item>
-    <item row="5" column="1" alignment="Qt::AlignBottom">
+    <item row="7" column="1" alignment="Qt::AlignBottom">
      <widget class="QPushButton" name="goPrev">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -157,7 +157,7 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="2" alignment="Qt::AlignBottom">
+    <item row="7" column="2" alignment="Qt::AlignBottom">
      <widget class="QPushButton" name="goNext">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -175,7 +175,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1" alignment="Qt::AlignTop">
+    <item row="1" column="1" alignment="Qt::AlignTop">
      <widget class="QLabel" name="label">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -188,7 +188,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="0" rowspan="6">
+    <item row="1" column="0" rowspan="7">
      <widget class="QPushButton" name="runButton">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -201,13 +201,16 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="2">
+    <item row="5" column="2">
      <widget class="QStackedWidget" name="opponent_stackedWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
       </property>
       <widget class="QWidget" name="GeneticAlgo_opponent">
        <widget class="QLabel" name="label_4">
@@ -241,7 +244,7 @@
       </widget>
      </widget>
     </item>
-    <item row="0" column="2" alignment="Qt::AlignTop">
+    <item row="1" column="2" alignment="Qt::AlignTop">
      <widget class="QLabel" name="label_2">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -254,7 +257,7 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="1">
+    <item row="6" column="1">
      <widget class="QCheckBox" name="autoMode">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
@@ -267,7 +270,7 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
+    <item row="5" column="1">
      <widget class="QStackedWidget" name="my_stackedWidget">
       <property name="currentIndex">
        <number>0</number>
@@ -304,11 +307,18 @@
       </widget>
      </widget>
     </item>
-    <item row="4" column="2">
-     <widget class="QPushButton" name="exportField">
-      <property name="text">
-       <string>ExportField</string>
-      </property>
+    <item row="8" column="0">
+     <widget class="QComboBox" name="InputMethodSelect">
+      <item>
+       <property name="text">
+        <string>GenerateField</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>CSVImport</string>
+       </property>
+      </item>
      </widget>
     </item>
    </layout>
@@ -318,8 +328,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>30</height>
+     <width>928</width>
+     <height>20</height>
     </rect>
    </property>
   </widget>
