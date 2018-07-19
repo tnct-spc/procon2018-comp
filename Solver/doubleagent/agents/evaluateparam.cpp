@@ -175,6 +175,18 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
         return count;
     };
 
+    // もし進む先が相手のタイルの場合、除去したときの相手チームのタイルポイントにおける減点
+    func_vector.at(13) = [&]{
+
+        return post_point.at(side == 0 ? 1 : 0).first - point.at(side == 0 ? 1 : 0).first;
+    };
+
+    // もし進む先が相手のタイルの場合、除去したときの相手チームの領域ポイントにおける減点
+    func_vector.at(14) = [&]{
+
+        return post_point.at(side == 0 ? 1 : 0).second - point.at(side == 0 ? 1 : 0).second;
+    };
+
     double point_sum = 0.0;
 
     for(auto func : func_vector)
