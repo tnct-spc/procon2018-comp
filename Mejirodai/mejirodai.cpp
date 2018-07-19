@@ -19,7 +19,6 @@ Mejirodai::Mejirodai(QWidget *parent) :
     connect(ui->selectMyAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->my_stackedWidget, SLOT(setCurrentIndex(int)));
     connect(ui->selectOpponentAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->opponent_stackedWidget, SLOT(setCurrentIndex(int)));
 
-
 }
 
 Mejirodai::~Mejirodai()
@@ -33,12 +32,15 @@ void Mejirodai::RunManagerSimulation(){
     QString my = ui->selectMyAlgorithmBox->currentText();
     QString opponnent = ui->selectOpponentAlgorithmBox->currentText();
 
+    QString InputMethod = ui->InputMethodSelect->currentText();
+
+
 
     // AutoModeの設定
     manager->setAutoMode(ui->autoMode->isChecked());
 
 //    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
-    manager->startSimulation(my, opponnent);
+    manager->startSimulation(my, opponnent, InputMethod);
 }
 
 void Mejirodai::goNextState(){

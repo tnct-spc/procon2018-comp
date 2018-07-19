@@ -13,6 +13,9 @@
 #include <memory>
 #include <map>
 #include <functional>
+#include <string>
+#include "csvio.h"
+#include <QFileDialog>
 
 class AlgorithmWrapper;
 
@@ -34,7 +37,7 @@ public:
     void setFieldCount(const unsigned int number);
     unsigned int getFieldCount();
 
-    void startSimulation(QString my_algo, QString opponent_algo);
+    void startSimulation(QString my_algo, QString opponent_algo, QString InputMethod);
 
     int simulationGenetic(const GeneticAgent& agent_1, const GeneticAgent& agent_2, int algo_number, const GeneticAgent& agent_3 = 0, const GeneticAgent& agent_4 = 0);
 
@@ -88,6 +91,7 @@ private:
 
 
     void nextMoveForManualMode();
+
 
 };
 
