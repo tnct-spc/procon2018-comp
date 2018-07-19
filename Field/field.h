@@ -35,6 +35,11 @@ public:
 
     void setPoints(int side, std::pair<int,int> value);
 
+    int getTurnCount();
+    int getFinalTurn();
+    void setTurnCount(int turn_count);
+    void setFinalTurn(int turn_count);
+
    // bool isPlaced(const unsigned int x, const unsigned int y);
     std::pair<int,int> getState(const unsigned int x, const unsigned int y) const;//pair<タイル状況,評価値>
 
@@ -50,6 +55,9 @@ public:
 
     void resetState(const procon::Field& inp_field);
 
+    std::bitset<288>& getField();
+    void setField(std::bitset<288>& input);
+
     std::pair<int,int> getSize() const;
 
     void updatePoint();
@@ -57,6 +65,9 @@ public:
 private:
     std::bitset<288> field_data;
     std::vector<std::vector<int>> value_data;
+
+    int now_turn = 0;
+    int final_turn = 0;
 
     //players.at(turn_flag)みたいな事ができるのでvectorにしてます 変えてもいい
     //めっちゃ分かりづらいですね

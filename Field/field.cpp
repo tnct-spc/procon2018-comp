@@ -198,6 +198,21 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         }
 }
 
+int procon::Field::getTurnCount(){
+    return now_turn;
+}
+
+int procon::Field::getFinalTurn(){
+    return final_turn;
+}
+
+void procon::Field::setTurnCount(int turn_count){
+    now_turn = turn_count;
+}
+
+void procon::Field::setFinalTurn(int turn_count){
+    final_turn = turn_count;
+}
 
 
 const std::vector<std::vector<int>>& procon::Field::getValue() const{
@@ -208,6 +223,13 @@ std::pair<int,int> procon::Field::getSize() const{
     return std::make_pair(grid_x, grid_y);
 }
 
+std::bitset<288>& procon::Field::getField(){
+    return field_data;
+}
+
+void procon::Field::setField(std::bitset<288>& input){
+    field_data = input;
+}
 
 const std::vector<std::vector<std::pair<int,int>>>& procon::Field::getAgents() const{
     return agents;

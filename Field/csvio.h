@@ -1,20 +1,24 @@
 #ifndef CSVIO_H
 #define CSVIO_H
 
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <string>
+#include <vector>
+
 #include "field.h"
-class CsvIo
-{
+namespace procon{
+namespace CsvIo{
 
-public:
-    CsvIo();
-    static procon::Field importField(std::string path);
-    static void exportField(procon::Field data, std::string path);
+    procon::Field importField(std::string path);
+    void exportField(procon::Field& data, std::string path);
 
-private:
-    static const int FUJISAN = 0;
-    static const int TAKAOSAN = 1;
-    static const int MITAKESAN = 2;
-    static const int HAKUTOUSAN = 3;
-};
+    const int FUJISAN = 0;
+    const int TAKAOSAN = 1;
+    const int MITAKESAN = 2;
+    const int HAKUTOUSAN = 3;
+}
+}
 
 #endif // CSVIO_H
