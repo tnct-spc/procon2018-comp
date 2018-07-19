@@ -2,6 +2,7 @@
 #define MEJIRODAI_H
 
 #include "gamemanager.h"
+#include "csvio.h"
 #include <thread>
 #include <memory>
 #include <QMainWindow>
