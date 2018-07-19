@@ -16,9 +16,9 @@ Mejirodai::Mejirodai(QWidget *parent) :
     connect(ui->runButton, &QPushButton::clicked, this, &Mejirodai::RunManagerSimulation);
     connect(ui->goNext, &QPushButton::clicked, this, &Mejirodai::goNextState);
     connect(ui->goPrev, &QPushButton::clicked, this, &Mejirodai::goPrevState);
+    connect(ui->exportField, &QPushButton::clicked, this, &Mejirodai::exportFieldtoCSV);
     connect(ui->selectMyAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->my_stackedWidget, SLOT(setCurrentIndex(int)));
     connect(ui->selectOpponentAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->opponent_stackedWidget, SLOT(setCurrentIndex(int)));
-
 
 }
 
@@ -47,4 +47,8 @@ void Mejirodai::goNextState(){
 
 void Mejirodai::goPrevState(){
     manager->setFieldCount(manager->getFieldCount() - 1);
+}
+
+void Mejirodai::exportFieldtoCSV(){
+
 }
