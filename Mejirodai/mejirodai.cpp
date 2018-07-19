@@ -53,5 +53,5 @@ void Mejirodai::goPrevState(){
 }
 
 void Mejirodai::exportFieldtoCSV(){
-    procon::CsvIo::exportField(manager->getField(), QFileDialog::getOpenFileName().toStdString());
+    procon::CsvIo::exportField(manager->getField(), QFileDialog::getSaveFileName(this,tr("Save CSV")).toStdString());
 }
