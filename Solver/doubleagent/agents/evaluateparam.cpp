@@ -50,6 +50,18 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
 
     std::vector<std::function<double()>> func_vector(param_count);
 
+    // 敵エージェントとの距離
+    std::vector<double> dis;
+
+    for (int i = 0; i < 2; i++) {
+        std::pair<int, int> enemy_agent = field.getAgent(eval_side == 0 ? 1 : 0, i);
+
+        int x = now_pos.first - enemy_agent.first;
+        int y = now_pos.second - enemy_agent.second;
+
+        dis.push_back(sqrt(x * x + y * y));
+    }
+
     // 次の取得タイルポイント
     func_vector.at(0) = [&]{
 
@@ -97,35 +109,14 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
         return sqrt(x * x + y * y);
     };
 
-    // 敵エージェントとの距離
-    auto distance = [&]
-    {
-        std::vector<double> dis;
-
-        for (int i = 0; i < 2; i++) {
-            std::pair<int, int> enemy_agent = field.getAgent(eval_side == 0 ? 1 : 0, i);
-
-            int x = now_pos.first - enemy_agent.first;
-            int y = now_pos.second - enemy_agent.second;
-
-            dis.push_back(sqrt(x * x + y * y));
-        }
-
-        return dis;
-    };
-
     // 近い敵エージェントとの距離
     func_vector.at(7) = [&]{
-
-        std::vector<double> dis = distance();
 
         return dis.at(0) < dis.at(1) ? dis.at(0) : dis.at(1);
     };
 
     // 遠い敵エージェントとの距離
     func_vector.at(8) = [&]{
-
-        std::vector<double> dis = distance();
 
         return dis.at(0) > dis.at(1) ? dis.at(0) : dis.at(1);
     };
