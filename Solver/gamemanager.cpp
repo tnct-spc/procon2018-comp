@@ -60,14 +60,29 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
     field->setFinalTurn(max_t);
 }
 
-void GameManager::startSimulation(QString my_algo, QString opponent_algo) {
+void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod) {
 
-    int final_turn = field->getFinalTurn();
-    field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
-    field->setFinalTurn(final_turn);
+    int final_turn;
 
-    field_vec.clear();
-    field_vec.push_back(std::make_shared<procon::Field>(*field));
+    if (QString::compare("GenerateField", InputMethod) == 0) {
+
+        final_turn = field->getFinalTurn();
+        field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
+        field->setFinalTurn(final_turn);
+        field_vec.clear();
+        field_vec.push_back(std::make_shared<procon::Field>(*field));
+
+     //   std::string path = QFileDialog::getOpenFileName().toStdString();
+     //   procon::CsvIo::exportField(*field,path);
+
+    } else if (QString::compare("CSVImport", InputMethod) == 0) {
+
+        std::string path = QFileDialog::getOpenFileName().toStdString();
+
+        field = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
+        final_turn = field->getFinalTurn();
+
+    }
 
     if (QString::compare("DummyAlgorithm", my_algo) == 0) {
         team_1 = std::make_shared<DummyAlgorithm>(*field, field->getFinalTurn(), 0);
