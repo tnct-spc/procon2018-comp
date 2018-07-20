@@ -84,7 +84,7 @@ private:
 
     std::vector<std::pair<int,int>> points; //それぞれのチームの<踏んだマスの得点,領域得点>を格納
 
-    bool symmetry; //true なら縦、falseなら横
+    bool symmetry; //true なら縦対称、falseなら横対称
 };
 }
 

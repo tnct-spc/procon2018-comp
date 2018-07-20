@@ -596,7 +596,7 @@ std::bitset<288> procon::Field::getRegion(){
 
 void procon::Field::investigationSymmetry(){
 
-    bool result = true; //trueなら縦、falseなら横
+    bool result = true; //trueなら縦に対称、falseなら横対称
 
     for(int x = 0 ; x < grid_x ; x++) {
         for(int y = 0 ; y < grid_y / 2; y++) {
@@ -608,7 +608,7 @@ void procon::Field::investigationSymmetry(){
             }
         }
     }
-    std::cout<<(result ? "縦" : "横")<<std::endl;
+   // std::cout<<(result ? "縦" : "横")<<std::endl;
     symmetry = result;
 }
 
