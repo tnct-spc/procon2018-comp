@@ -26,7 +26,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::chan
     procon::Field& ptr_field = manager_ptr->getField();
 
     for(int index = 0; index < 2; ++index)
-        can_move_list.at(index).push_back(std::make_pair(0.0, std::make_tuple(0, 0, 0)));
+        can_move_list.at(index).push_back(std::make_pair(-500000.0, std::make_tuple(0, 0, 0)));
 
     auto agent_move = [&](int agent){
 
@@ -34,10 +34,11 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::chan
 
         auto evaluate = [&](int count, bool is_delete){
 
-            double value = agents.at(agent)->evaluateMove(count, is_delete, now_turn);
+            // evaluateMove部分でside指定されていないから相手側で挙動がおかしくなる！！！！クソ！！！！
+            double value = agents.at(agent)->evaluateMove(count, is_delete, now_turn, eval_side);
 
-            if(value > minus_bound)//置けないパターンがあるのでそれを切る
-                can_move_list.at(agent).push_back(std::make_pair((is_eq ? 1 : std::pow((value - minus_bound) * value_ratio, value_weight)), std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));
+            if(use_pattern_size || value > minus_bound)//置けないパターンがあるのでそれを切る
+                can_move_list.at(agent).push_back(std::make_pair((is_eq ? value : std::pow((value - minus_bound) * value_ratio, value_weight)), std::make_tuple(is_delete + 1, x_list.at(count), y_list.at(count))));
 
         };
 
@@ -64,15 +65,17 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::chan
     agent_move(0);
     agent_move(1);
 
-    if(!is_eq)
-        for(int index = 0; index < 2; ++index){
-            // 重み順にソート
-            std::sort(can_move_list.at(index).begin(), can_move_list.at(index).end(), std::greater<std::pair<double,std::tuple<int,int,int>>>());
+    for(int index = 0; index < 2; ++index){
+        // 重み順にソート
+        std::sort(can_move_list.at(index).begin(), can_move_list.at(index).end(), std::greater<std::pair<double,std::tuple<int,int,int>>>());
 
-            // 重みの累積を取る
-            for(int count = 1; count < can_move_list.at(index).size(); ++count)
-                can_move_list.at(index).at(count).first += can_move_list.at(index).at(count - 1).first;
-        }
+        if(use_pattern_size)
+            can_move_list.at(index).resize(pattern_size);
+
+        // 重みの累積を取る
+        for(int count = 1; count < can_move_list.at(index).size(); ++count)
+        can_move_list.at(index).at(count).first += can_move_list.at(index).at(count - 1).first;
+    }
 
     // 乱数生成器
     std::vector<std::uniform_real_distribution<>> dist(2);
@@ -139,30 +142,35 @@ std::map<std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>
                 std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>> first_move;
 
                 for(int count = 0; count < turn_count; ++count){
-                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> my_move = changeTurn(manager_ptr, is_eq, side);
+                    std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>> moves(2);
+                    moves.at(0) = changeTurn(manager_ptr, is_eq, 0);
+                    moves.at(1) = changeTurn(manager_ptr, is_eq, 1);
 
-                    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> enemy_move = changeTurn(manager_ptr, is_eq, !side);
+                    if(!count)first_move = moves;
 
-                    if(!count)first_move = std::vector<std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>>>({my_move, enemy_move});
+                    for(int side_ind = 0; side_ind < 2; ++side_ind){
 
-                    manager_ptr->agentAct(side, 0, my_move.first);
-                    manager_ptr->agentAct(side, 1, my_move.second);
-                    manager_ptr->agentAct(!side, 0, enemy_move.first);
-                    manager_ptr->agentAct(!side, 1, enemy_move.second);
+                        manager_ptr->agentAct(side_ind, 0, moves.at(side_ind).first);
+                        manager_ptr->agentAct(side_ind, 1, moves.at(side_ind).second);
+                    }
+
                     manager_ptr->changeTurn(false);
                 }
                 // 得点を計算する
                 manager_ptr->getField().updatePoint();
-                std::pair<int,int> my_point = manager_ptr->getField().getPoints(false).at(side);
-                std::pair<int,int> enemy_point = manager_ptr->getField().getPoints(false).at(!side);
+
+                std::vector<std::pair<int,int>> points(2);
+                points.at(0) = manager_ptr->getField().getPoints(false).at(0);
+                points.at(1) = manager_ptr->getField().getPoints(false).at(1);
 
                 // 引き分けでないなら試行回数を増やしておく
-                if(my_point.first + my_point.second != enemy_point.first + enemy_point.second)
+                if(points.at(0).first + points.at(0).second != points.at(1).first + points.at(1).second)
                     ++return_map[first_move].second;
 
                 // 勝ったなら勝利数を増やしておく
-                if(my_point.first + my_point.second > enemy_point.first + enemy_point.second)
-                    ++return_map[first_move].first;
+                return_map[first_move].first += (use_point_diff
+                                 ? points.at(0).first + points.at(0).second - points.at(1).first - points.at(1).second
+                                 : points.at(0).first + points.at(0).second > points.at(1).first + points.at(1).second);
             }
 
             return std::move(return_map);
@@ -194,10 +202,10 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
 
     for(auto value : answer)
         for(int index = 0; index < 2; ++index)
-        if(move_index.at(index).find(value.first.at(index)) == move_index.at(index).end()){
-            int siz = move_index.at(index).size();
-            move_index.at(index).insert(std::make_pair(value.first.at(index),siz));
-        }
+            if(move_index.at(index).find(value.first.at(index)) == move_index.at(index).end()){
+                int siz = move_index.at(index).size();
+                move_index.at(index).insert(std::make_pair(value.first.at(index),siz));
+            }
 
     // {利得,選択確率}の一覧
     std::vector<std::vector<double>> gain_list(move_index.at(0).size(), std::vector<double>(move_index.at(1).size(), 0.5));
@@ -206,8 +214,19 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
     for(int index = 0; index < 2; ++index)
         weight_list.at(index).resize(move_index.at(index).size(), 1.0 / move_index.at(index).size());
 
-    for(auto value : answer)
+    // side側の得点をベースにした利得になっている
+
+    std::pair<int,int> answer_sum({0, 0});
+    for(auto value : answer){
+        answer_sum.first += value.second.first;
+        answer_sum.second += value.second.second;
+        // std::cout << "gain : " << 1.0 * value.second.first / value.second.second << "   :   " << value.second.first << " / " << value.second.second << std::endl;
         gain_list.at(move_index.at(0)[value.first.at(0)]).at(move_index.at(1)[value.first.at(1)]) = 1.0 * value.second.first / value.second.second;
+    }
+
+    std::cout << "average_gain : " << 1.0 * answer_sum.first / answer_sum.second << std::endl;
+
+    // func_side = sideかどうかでgainの正負を変えないといけないだろ！！！！
 
 
     std::vector<std::vector<double>> update_val(2);
@@ -221,13 +240,14 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
 
         for(int x_index = 0; x_index < move_index.at(func_side).size(); ++x_index){
             for(int y_index = 0; y_index < move_index.at(!func_side).size(); ++y_index)
-                gain_ave.at(x_index) += weight_list.at(func_side).at(x_index) * weight_list.at(!func_side).at(y_index) * (func_side
+                gain_ave.at(x_index) += weight_list.at(!func_side).at(y_index) * (func_side
                                         ? gain_list.at(y_index).at(x_index)
                                         : gain_list.at(x_index).at(y_index)
                                         );
 
-            gain_ave.at(x_index) /= move_index.at(!func_side).size();
+            // gain_ave.at(x_index) /= move_index.at(!func_side).size();
         }
+
 
         // 全ての行動の平均利得
         double average_gain = std::accumulate(gain_ave.begin(), gain_ave.end(), 0.0) / move_index.at(func_side).size();
@@ -258,6 +278,11 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
         double up_sum = 0;
         double down_sum = 0;
 
+        // 0側(赤)の得点差や勝率を利得にしているので、それを最小化したい1側(青)は更新する値を逆向きにする
+        if(func_side)
+            for(int index = 0; index < move_index.at(func_side).size(); ++index)
+                update_val.at(func_side).at(index) *= -1;
+
         for(int index = 0; index < move_index.at(func_side).size(); ++index){
             if(update_val.at(func_side).at(index) < 0)
                 down_sum += std::min(weight_list.at(func_side).at(index), -update_val.at(func_side).at(index));
@@ -272,7 +297,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
                 weight_list.at(func_side).at(index) = std::min(1.0, weight_list.at(func_side).at(index) +  down_sum * std::min(1.0 - weight_list.at(func_side).at(index), update_val.at(func_side).at(index)) / up_sum);
         }
 
-        return (down_sum!=0);
+        return (std::abs(down_sum) > 1e-4);
     };
 
     short update_flag = 3;
@@ -283,8 +308,10 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
         if(update_flag&2)
             calc_diff(1);
 
-        update_flag&=2|(update_weight(0));
-        update_flag&=1|(update_weight(1)<<1);
+        if(update_flag&1)
+            update_flag&=(2|update_weight(0));
+        if(update_flag&2)
+            update_flag&=(1|(update_weight(1)<<1));
 
         return update_flag;
     };
@@ -293,18 +320,18 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
 
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> max_move = std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
 
-    int max_index = std::distance(weight_list.at(0).begin(), std::max_element(weight_list.at(0).begin(), weight_list.at(0).end()));
+    int max_index = std::distance(weight_list.at(side).begin(), std::max_element(weight_list.at(side).begin(), weight_list.at(side).end()));
 
-    std::cout << "ind : " << max_index << std::endl;
-
-    for(auto move : move_index.at(0))
+    for(auto move : move_index.at(side))
         if(move.second == max_index)
             max_move = move.first;
 
 
-    for(int index = 0; index < weight_list.at(0).size(); ++index)
-        std::cout << weight_list.at(0).at(index) << " ";
+    for(int index = 0; index < weight_list.at(side).size(); ++index)
+        std::cout << weight_list.at(side).at(index) << " ";
     std::cout << std::endl;
+
+    std::cout << "size : " << weight_list.at(0).size() << "  ,  " << weight_list.at(1).size() << std::endl;
 
     std::cout << "("
             << std::get<0>(max_move.first) << ","
@@ -313,6 +340,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
             << std::get<0>(max_move.second) << ","
             << std::get<1>(max_move.second) << ","
             << std::get<2>(max_move.second) << ")"
+            << "   :   " << side
             << std::endl;
 
     return max_move;

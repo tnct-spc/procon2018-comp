@@ -1,9 +1,9 @@
 #ifndef GAMEMANAGER_H
 #define GAMEMANAGER_H
 
-#include "field.h"
 #include "visualizer.h"
 #include "csvio.h"
+#include "field.h"
 #include "progresdock.h"
 #include "geneticalgo/geneticalgo.h"
 #include "geneticalgo/geneticagent.h"
@@ -13,6 +13,9 @@
 #include <memory>
 #include <map>
 #include <functional>
+#include <string>
+#include "csvio.h"
+#include <QFileDialog>
 
 class AlgorithmWrapper;
 
@@ -34,7 +37,7 @@ public:
     void setFieldCount(const unsigned int number);
     unsigned int getFieldCount();
 
-    void startSimulation(QString my_algo, QString opponent_algo);
+    void startSimulation(QString my_algo, QString opponent_algo, QString InputMethod);
 
     int simulationGenetic(const GeneticAgent& agent_1, const GeneticAgent& agent_2, int algo_number, const GeneticAgent& agent_3 = 0, const GeneticAgent& agent_4 = 0);
 
@@ -76,10 +79,7 @@ private:
     const int max_val = 16;
     const int min_val = -16;
 
-    int turn_max;
     bool vis_show;
-
-    int now_turn = -1;
 
     //これがtrueなら自動進行
     bool is_auto = true;
@@ -91,6 +91,7 @@ private:
 
 
     void nextMoveForManualMode();
+
 
 };
 

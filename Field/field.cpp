@@ -198,6 +198,21 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         }
 }
 
+int procon::Field::getTurnCount(){
+    return now_turn;
+}
+
+int procon::Field::getFinalTurn(){
+    return final_turn;
+}
+
+void procon::Field::setTurnCount(int turn_count){
+    now_turn = turn_count;
+}
+
+void procon::Field::setFinalTurn(int turn_count){
+    final_turn = turn_count;
+}
 
 
 const std::vector<std::vector<int>>& procon::Field::getValue() const{
@@ -208,6 +223,13 @@ std::pair<int,int> procon::Field::getSize() const{
     return std::make_pair(grid_x, grid_y);
 }
 
+std::bitset<288>& procon::Field::getField(){
+    return field_data;
+}
+
+void procon::Field::setField(std::bitset<288>& input){
+    field_data = input;
+}
 
 const std::vector<std::vector<std::pair<int,int>>>& procon::Field::getAgents() const{
     return agents;
@@ -325,6 +347,48 @@ void procon::Field::setStates(const std::vector<std::vector<int>>& values){
         }
     }
 }
+namespace procon {
+
+
+class UnionFind{
+private:
+    std::vector<int> par;
+    std::vector<int> rank;
+public:
+    void init(int N){
+        par.resize(N);
+        rank.resize(N);
+        for(int a = 0;a < N;a++)
+        {
+            par[a]=a;
+            rank[a]=0;
+        }
+    }
+    int root(int a)
+    {
+        return par[a] == a ? a : par[a] = root(par[a]);
+    }
+    void connect(int a,int b)
+    {
+        a = root(a);
+        b = root(b);
+        if(a==b)return;
+
+        if(rank[a] < rank[b]){
+            par[a] = b;
+        }else{
+            par[b] = a;
+            if(rank[a] == rank[b])rank[a]++;
+        }
+    }
+    bool check(int a,int b){
+        a = root(a);
+        b = root(b);
+        if(a == b)return true;
+        else return false;
+    }
+};
+}
 void procon::Field::updatePoint(){
     /*ラベリングを用いています、それが何か気になったらはむへいか会長に聞いてみて
      */
@@ -336,10 +400,8 @@ void procon::Field::updatePoint(){
         std::bitset<288> mass = std::bitset<288>(0uL); //最終的にメンバに渡す変数
         std::vector<std::vector<int>> labeling = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0)); //ラベリング本体
         std::vector<bool> flag = std::vector<bool>(200, true); //その島が外側の枠と接しているか
-        int LookUpTable[200]; //ルックアップテーブル(ラベリングに必要なにか)
-        for(int a = 0;a < 200;a++){
-            LookUpTable[a]=a;
-        }
+        procon::UnionFind LookUpTable;
+        LookUpTable.init(50);
         int now_index = 1;
         for(int y = 0;y < grid_y;y++){
             for(int x = 0;x < grid_x;x++){
@@ -349,7 +411,7 @@ void procon::Field::updatePoint(){
                 for(int index = 0;index < 2;index++){
                     if(0 <= x + dx[index] && x + dx[index] < grid_x && 0 <= y + dy[index] && y + dy[index] < grid_y){
                         if(labeling.at(x + dx[index]).at(y + dy[index]) != 0 && getState(x, y).first != side ){
-                            ins_min = std::min(labeling.at(x + dx[index]).at(y + dy[index]),ins_min);
+                            ins_min = std::min(labeling.at(x + dx[index]).at(y + dy[index]), ins_min);
                             _set.insert(labeling.at(x + dx[index]).at(y + dy[index]));
                         }
                     }
@@ -360,12 +422,13 @@ void procon::Field::updatePoint(){
                 }else{
                     labeling.at(x).at(y)=ins_min;
                     for(int s:_set){
-                        LookUpTable[s]=ins_min;
+                        LookUpTable.connect(s, ins_min);
                     }
                 }
                 //std::cout<<ins_min<<std::endl;
             }
         }
+        /*
         std::vector<int> pos_x = {1,0,-1,0};
         std::vector<int> pos_y = {0,1,0,-1};
         for(int x = 0;x < grid_x;x++){
@@ -373,7 +436,7 @@ void procon::Field::updatePoint(){
                 if(labeling.at(x).at(y)!=0){
                     for(int index = 0;index < 4;index++){
                         if(0 <= x + pos_x[index]&&x + pos_x[index] < grid_x && 0 <= y + pos_y[index] && y + pos_y[index] < grid_y){
-                            if(labeling.at(x+pos_x[index]).at(y+pos_y[index])!=0){
+                            if(labeling.at(x+pos_x[index]).at(y+pos_y[index]) != 0){
                                 LookUpTable[labeling.at(x).at(y)]=std::min(LookUpTable[labeling.at(x).at(y)],labeling.at(x+pos_x[index]).at(y+pos_y[index]));
                             }
                         }
@@ -381,18 +444,13 @@ void procon::Field::updatePoint(){
                 }
             }
         }
-        for(int index = now_index+1; 0 <= index; index--){
-            if(LookUpTable[index] == index)continue;
-
-            for(int x = 0;x < grid_x;x++){
-                for(int y = 0;y < grid_y;y++){
-                    if(labeling.at(x).at(y)==index){
-                        labeling.at(x).at(y)=LookUpTable[index];
-                    }
-                }
+        */
+        for(int x = 0;x < grid_x;x++){
+            for(int y = 0;y < grid_y;y++){
+                labeling.at(x).at(y)=LookUpTable.root(labeling.at(x).at(y));
             }
-
         }
+
         for(int x = 0;x < grid_x;x++){
             flag[labeling.at(x).at(0)]=false;
             flag[labeling.at(x).at(grid_y-1)]=false;
@@ -471,11 +529,11 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<std::pair<int
     bool result = false;
     for(int index = 0;index < 8;index++){
         if(!(pos.second.first + dx[index] >= 0 && pos.second.first + dx[index] <= grid_x - 1 && pos.second.second + dy[index] >= 0 && pos.second.second + dy[index] <= grid_y - 1))continue;
-        if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first.first + 1){
+        if(getState(pos.second.first + dx[index], pos.second.second + dy[index]).first == pos.first.first + 1){
             if(pos.first.second == 0){
                 result = true;
             }
-        }else if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) != 0){
+        }else if(getState(pos.second.first + dx[index], pos.second.second + dy[index]).first != 0){
             if(pos.first.second == 1){
                 result = true;
             }
@@ -497,17 +555,17 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<std::pair<int
 }
 
 std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<std::pair<int,int>, std::pair<int, int> > > pos_vec, bool flag){
-    int dx[8] = {1, 1, 1, 0, -1, -1, -1, 0};
-    int dy[8] = {1, 0, -1, -1, -1, 0, 1, 1};
+    int dx[8] = {1, 1, 1, 0, -1, -1, -1};
+    int dy[8] = {1, 0, -1, -1, -1, 0, 1};
     bool result = false;
     for(std::pair<std::pair<int,int>, std::pair<int,int>> pos : pos_vec){
         for(int index = 0;index < 8;index++){
             if(!(pos.second.first + dx[index] >= 0 && pos.second.first + dx[index] <= grid_x - 1 && pos.second.second + dy[index] >= 0 && pos.second.second + dy[index] <= grid_y - 1))continue;
-            if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) == pos.first.first + 1){
+            if(getState(pos.second.first + dx[index], pos.second.second + dy[index]).first == pos.first.first + 1){
                 if(pos.first.second == 0){
                     result = true;
                 }
-            }else if(value_data.at(pos.second.first + dx[index]).at(pos.second.second + dy[index]) != 0){
+            }else if(getState(pos.second.first + dx[index], pos.second.second + dy[index]).first != 0){
                 if(pos.first.second == 1){
                     result = true;
                 }
