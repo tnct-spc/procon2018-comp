@@ -347,6 +347,9 @@ void procon::Field::setStates(const std::vector<std::vector<int>>& values){
         }
     }
 }
+namespace procon {
+
+
 class UnionFind{
 private:
     std::vector<int> par;
@@ -385,6 +388,7 @@ public:
         else return false;
     }
 };
+}
 void procon::Field::updatePoint(){
     /*ラベリングを用いています、それが何か気になったらはむへいか会長に聞いてみて
      */
@@ -396,7 +400,7 @@ void procon::Field::updatePoint(){
         std::bitset<288> mass = std::bitset<288>(0uL); //最終的にメンバに渡す変数
         std::vector<std::vector<int>> labeling = std::vector<std::vector<int>>(grid_x, std::vector<int>(grid_y, 0)); //ラベリング本体
         std::vector<bool> flag = std::vector<bool>(200, true); //その島が外側の枠と接しているか
-        UnionFind LookUpTable;
+        procon::UnionFind LookUpTable;
         LookUpTable.init(50);
         int now_index = 1;
         for(int y = 0;y < grid_y;y++){
