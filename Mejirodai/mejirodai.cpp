@@ -35,8 +35,6 @@ void Mejirodai::RunManagerSimulation(){
 
     QString InputMethod = ui->InputMethodSelect->currentText();
 
-
-
     // AutoModeの設定
     manager->setAutoMode(ui->autoMode->isChecked());
 
@@ -53,5 +51,6 @@ void Mejirodai::goPrevState(){
 }
 
 void Mejirodai::exportFieldtoCSV(){
-    procon::CsvIo::exportField(manager->getField(), QFileDialog::getSaveFileName(this,tr("Save CSV")).toStdString());
+    procon::Field& exp_field = manager->getField();
+    procon::CsvIo::exportField(exp_field, QFileDialog::getSaveFileName(this,tr("Save CSV")).toStdString());
 }

@@ -62,11 +62,9 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
 
 void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod) {
 
-    int final_turn;
-
     if (QString::compare("GenerateField", InputMethod) == 0) {
 
-        final_turn = field->getFinalTurn();
+        int final_turn = field->getFinalTurn();
         field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
         field->setFinalTurn(final_turn);
         field_vec.clear();
@@ -80,7 +78,6 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         std::string path = QFileDialog::getOpenFileName().toStdString();
 
         field = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
-        final_turn = field->getFinalTurn();
 
     }
 
@@ -144,7 +141,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
     //うぇーいｗｗｗｗｗｗｗ
     if(is_auto){
-        field->setTurnCount(0);
+        // field->setTurnCount(0);
         setFieldCount(field_vec.size() - 1);
         while(field->getTurnCount() < field->getFinalTurn()){
 
@@ -207,20 +204,17 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             setFieldCount(field_vec.size() - 1);
         }
 
-        field->setTurnCount(0);
-
         // procon::CsvIo::exportField(*field, "../../field.csv");
 
         // progresdock->show();
 
     }else{
 
-        field->setTurnCount(0);
-
         nextMoveForManualMode();
 
         //visualizerにもauto解除する事を伝える
         emit signalAutoMode(false);
+
     }
 
         // 探索→候補を表示→クリック待機
@@ -324,7 +318,7 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
 }
 
 procon::Field& GameManager::getField(){
-    return *field;
+    return (*field);
 }
 
 unsigned int GameManager::getFieldCount(){
@@ -546,8 +540,6 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
     visualizer->update();
 
     if(field->getTurnCount() == field->getFinalTurn()){
-
-        field->setTurnCount(0);
 
         emit signalAutoMode(false);
         // progresdock->show();
