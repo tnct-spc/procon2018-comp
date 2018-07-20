@@ -9,16 +9,16 @@
 
 #include "field.h"
 namespace procon{
-namespace CsvIo{
+    namespace CsvIo{
 
-    procon::Field importField(std::string path);
-    void exportField(procon::Field& data, std::string path);
+        procon::Field importField(std::string path);
+        void exportField(procon::Field& data, std::string path);
 
-    const int FUJISAN = 0;
-    const int TAKAOSAN = 1;
-    const int MITAKESAN = 2;
-    const int HAKUTOUSAN = 3;
-}
+        const int FUJISAN = 0;
+        const int TAKAOSAN = 1;
+        const int MITAKESAN = 2;
+        const int HAKUTOUSAN = 3;
+    }
 }
 
 #endif // CSVIO_H

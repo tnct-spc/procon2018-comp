@@ -2,6 +2,7 @@
 #define MEJIRODAI_H
 
 #include "gamemanager.h"
+#include "csvio.h"
 #include <thread>
 #include <memory>
 #include <QMainWindow>
@@ -30,6 +31,7 @@ private:
     void RunManagerSimulation();
     void goNextState();
     void goPrevState();
+    void exportFieldtoCSV();
 
     const unsigned int x_size = 12;
     const unsigned int y_size = 8;
