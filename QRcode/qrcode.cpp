@@ -83,7 +83,6 @@ void QRCode::decodeQRcode(){
             ui->lineCode->setText(QString::fromStdString(read_only_data));
         }
         imshow("Video Stream",zframe);
-        moveWindow("Video Stream",200,200);
         waitKey(1);
         if(code != "."){
             ui->lineResult->setText("decoded");
