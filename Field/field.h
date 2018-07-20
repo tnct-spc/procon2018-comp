@@ -62,6 +62,10 @@ public:
 
     void updatePoint();
 
+    void investigationSymmetry();
+
+    std::vector<std::pair<int, int>> guessAgents(int side);  //推測する先のside
+
 private:
     std::bitset<288> field_data;
     std::vector<std::vector<int>> value_data;
@@ -79,6 +83,8 @@ private:
     std::bitset<288> regions;
 
     std::vector<std::pair<int,int>> points; //それぞれのチームの<踏んだマスの得点,領域得点>を格納
+
+    bool symmetry; //true なら縦対称、falseなら横対称
 };
 }
 

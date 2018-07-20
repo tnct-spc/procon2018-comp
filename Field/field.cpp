@@ -417,10 +417,10 @@ void procon::Field::updatePoint(){
                     }
                 }
                 if(_set.empty()){
-                    labeling.at(x).at(y)=now_index;
+                    labeling.at(x).at( y ) = now_index;
                     now_index++;
                 }else{
-                    labeling.at(x).at(y)=ins_min;
+                    labeling.at(x).at( y ) = ins_min;
                     for(int s:_set){
                         LookUpTable.connect(s, ins_min);
                     }
@@ -592,4 +592,45 @@ void procon::Field::setPoints(int side, std::pair<int, int> value){
 }
 std::bitset<288> procon::Field::getRegion(){
     return regions;
+}
+
+void procon::Field::investigationSymmetry(){
+
+    bool result = true; //trueなら縦に対称、falseなら横対称
+
+    for(int x = 0 ; x < grid_x ; x++) {
+        for(int y = 0 ; y < grid_y / 2; y++) {
+            if( getState(x, y).second != getState(x, grid_y - y - 1).second ) {
+
+                result = false;
+                break;
+
+            }
+        }
+    }
+   // std::cout<<(result ? "縦" : "横")<<std::endl;
+    symmetry = result;
+}
+
+std::vector<std::pair<int,int>> procon::Field::guessAgents(int side){
+
+    investigationSymmetry();
+
+    std::vector<std::pair<int,int>> ans_pos;
+
+    if( symmetry ) {
+
+        for(int index = 0 ; index < 2; index++ ){
+
+            ans_pos.push_back(std::make_pair( agents.at( !side ).at(index).first, grid_y - agents.at( !side ).at( index ).second - 1));
+        }
+
+    } else {
+
+        for(int index = 0 ; index < 2; index++ ){
+            ans_pos.push_back(std::make_pair( grid_x - agents.at( !side ).at(index).first - 1, agents.at( !side ).at( index ).second));
+        }
+
+    }
+    return ans_pos;
 }
