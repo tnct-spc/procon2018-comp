@@ -64,7 +64,7 @@ public:
 
     void investigationSymmetry();
 
-    void guessAgents(int side);  //推測する先のside
+    std::vector<std::pair<int, int>> guessAgents(int side);  //推測する先のside
 
 private:
     std::bitset<288> field_data;

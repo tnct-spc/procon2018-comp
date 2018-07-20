@@ -612,29 +612,25 @@ void procon::Field::investigationSymmetry(){
     symmetry = result;
 }
 
-void procon::Field::guessAgents(int side){
+std::vector<std::pair<int,int>> procon::Field::guessAgents(int side){
 
     investigationSymmetry();
 
-  //  std::cout<<"agent1 "<<agents.at( side ).at(0).first<<" "<<agents.at( side ).at(0).second<<std::endl;
-  //  std::cout<<"agent2 "<<agents.at( side ).at(1).first<<" "<<agents.at( side ).at(1).second<<std::endl;
-
+    std::vector<std::pair<int,int>> ans_pos;
 
     if( symmetry ) {
 
         for(int index = 0 ; index < 2; index++ ){
 
-            agents.at(side).at(index) = std::make_pair( agents.at( !side ).at(index).first, grid_y - agents.at( !side ).at( index ).second - 1);
+            ans_pos.push_back(std::make_pair( agents.at( !side ).at(index).first, grid_y - agents.at( !side ).at( index ).second - 1));
         }
 
     } else {
 
         for(int index = 0 ; index < 2; index++ ){
-            agents.at(side).at(index) = std::make_pair( grid_x - agents.at( !side ).at(index).first - 1, agents.at( !side ).at( index ).second);
+            ans_pos.push_back(std::make_pair( grid_x - agents.at( !side ).at(index).first - 1, agents.at( !side ).at( index ).second));
         }
 
     }
-//    std::cout<<"agent1 "<<agents.at( side ).at(0).first<<" "<<agents.at( side ).at(0).second<<std::endl;
-//    std::cout<<"agent2 "<<agents.at( side ).at(1).first<<" "<<agents.at( side ).at(1).second<<std::endl;
-//    std::cout<<std::endl;
+    return ans_pos;
 }
