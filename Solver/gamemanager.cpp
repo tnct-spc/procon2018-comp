@@ -79,6 +79,10 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
         field = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
 
+    } else if (QString::compare("QRcode", InputMethod) == 0) {
+
+        //Write here
+
     }
     //field->guessAgents(1);
 
