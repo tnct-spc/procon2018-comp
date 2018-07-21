@@ -26,7 +26,6 @@ class QRCode : public QWidget{
 public:
     explicit QRCode(QWidget *parent = 0);
     ~QRCode();
-    std::string getdata();
 
 private slots:
     void decodeQRcode();
