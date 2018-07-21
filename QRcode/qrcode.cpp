@@ -6,6 +6,7 @@ QRCode::QRCode(QWidget *parent):
     ui(new Ui::QRCode){
     ui->setupUi(this);
     ui->lineResult->setText("Push Start button.");
+    QRCode::decodeQRcode();
 }
 
 QRCode::~QRCode(){
