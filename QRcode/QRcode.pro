@@ -24,21 +24,29 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-    qrconverterfield.cpp
-
+        qrcode.cpp#\
+        #main.cpp
 HEADERS += \
-       mainwindow.h \
-    qrconverterfield.h
+        qrcode.h
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 0fe0f54... Merge remote-tracking branch 'origin/feature/embedQR' into feature/ConvertToField
+=======
+>>>>>>> parent of 0fe0f54... Merge remote-tracking branch 'origin/feature/embedQR' into feature/ConvertToField
+=======
+>>>>>>> parent of 0fe0f54... Merge remote-tracking branch 'origin/feature/embedQR' into feature/ConvertToField
 
 FORMS += \
         mainwindow.ui
 
 INCLUDEPATH += /usr/include/opencv
 
-
-#LIBS += -L/usr/lib64 -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lzbar
-LIBS += -L$$OUT_PWD/../Field/ -lField
-INCLUDEPATH += $$PWD/../Field
-DEPENDPATH += $$PWD/../Field
+LIBS += -L/usr/lib `pkg-config --libs opencv`
+LIBS += -L/usr/lib64 -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lzbar
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 0fe0f54... Merge remote-tracking branch 'origin/feature/embedQR' into feature/ConvertToField
+=======
+>>>>>>> parent of 0fe0f54... Merge remote-tracking branch 'origin/feature/embedQR' into feature/ConvertToField
+=======
+>>>>>>> parent of 0fe0f54... Merge remote-tracking branch 'origin/feature/embedQR' into feature/ConvertToField
