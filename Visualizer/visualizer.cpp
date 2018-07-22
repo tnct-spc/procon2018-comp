@@ -65,7 +65,7 @@ void Visualizer::paintEvent(QPaintEvent *event){
         for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
             for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
 
-                if(field.isPlaced(x_pos, y_pos) == true){
+                if(!(field.getState(x_pos, y_pos).first == 0)){
 
                     QColor paint_color = ( field.getState(x_pos, y_pos).first == 1
                                            ? team_color_a
@@ -228,8 +228,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
         painter.setPen(QPen(QBrush(paint_color_0), 0.3));
 
         std::vector<std::pair<int, int>> team_points(2);
-        team_points.at(0) = field.getPoints(0, false);
-        team_points.at(1) = field.getPoints(1, false);
+        team_points.at(0) = field.getPoints(false).at(0);
+        team_points.at(1) = field.getPoints(false).at(1);
 
         std::string side_0_value;
         side_0_value += std::to_string(team_points.at(0).first);
@@ -288,18 +288,17 @@ void Visualizer::paintEvent(QPaintEvent *event){
         Red_team_color.setAlpha(100);
         Blue_team_color.setAlpha(100);
 
-        std::vector<std::vector<bool>> R_region = field.getRegion(0);
-        std::vector<std::vector<bool>> B_region = field.getRegion(1);
+        std::bitset<288> region = field.getRegion();
 
         for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
             for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
 
-                if(R_region.at(x_pos).at(y_pos)){
+                if(region[y_pos * 12 + x_pos]){
                 QString text = QString::fromStdString( "R" );
                 painter.setPen(QPen(Red_team_color));
                 painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.8), vertical_margin + grid_size * y_pos + ( grid_size * 0.9 ) , text);
                 }
-                if(B_region.at(x_pos).at(y_pos)){
+                if(region[y_pos*12 + x_pos + 144]){
                     QString text = QString::fromStdString( "B" );
                     painter.setPen(QPen(Blue_team_color));
                     painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.1), vertical_margin + grid_size * y_pos + ( grid_size * 0.9 ) , text);

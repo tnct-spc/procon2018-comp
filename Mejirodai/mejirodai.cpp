@@ -8,12 +8,15 @@ Mejirodai::Mejirodai(QWidget *parent) :
     ui->setupUi(this);
 
     manager = std::make_shared<GameManager>(x_size, y_size);
+    /*
     visualizer = manager->getVisualizer();
     visualizer->show();
+    */
 
     connect(ui->runButton, &QPushButton::clicked, this, &Mejirodai::RunManagerSimulation);
     connect(ui->goNext, &QPushButton::clicked, this, &Mejirodai::goNextState);
     connect(ui->goPrev, &QPushButton::clicked, this, &Mejirodai::goPrevState);
+    connect(ui->exportField, &QPushButton::clicked, this, &Mejirodai::exportFieldtoCSV);
     connect(ui->selectMyAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->my_stackedWidget, SLOT(setCurrentIndex(int)));
     connect(ui->selectOpponentAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->opponent_stackedWidget, SLOT(setCurrentIndex(int)));
 
@@ -30,11 +33,13 @@ void Mejirodai::RunManagerSimulation(){
     QString my = ui->selectMyAlgorithmBox->currentText();
     QString opponnent = ui->selectOpponentAlgorithmBox->currentText();
 
+    QString InputMethod = ui->InputMethodSelect->currentText();
+
     // AutoModeの設定
     manager->setAutoMode(ui->autoMode->isChecked());
 
 //    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
-    manager->startSimulation(my, opponnent);
+    manager->startSimulation(my, opponnent, InputMethod);
 }
 
 void Mejirodai::goNextState(){
@@ -43,4 +48,9 @@ void Mejirodai::goNextState(){
 
 void Mejirodai::goPrevState(){
     manager->setFieldCount(manager->getFieldCount() - 1);
+}
+
+void Mejirodai::exportFieldtoCSV(){
+    procon::Field& exp_field = manager->getField();
+    procon::CsvIo::exportField(exp_field, QFileDialog::getSaveFileName(this,tr("Save CSV")).toStdString());
 }

@@ -1,9 +1,9 @@
 #ifndef GAMEMANAGER_H
 #define GAMEMANAGER_H
 
-#include "field.h"
 #include "visualizer.h"
 #include "csvio.h"
+#include "field.h"
 #include "progresdock.h"
 #include "geneticalgo/geneticalgo.h"
 #include "geneticalgo/geneticagent.h"
@@ -13,6 +13,9 @@
 #include <memory>
 #include <map>
 #include <functional>
+#include <string>
+#include "csvio.h"
+#include <QFileDialog>
 
 class AlgorithmWrapper;
 
@@ -24,6 +27,7 @@ class GameManager : public QObject
 public:
     explicit GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show = true, const int turn_max = 60, QObject *parent = 0);
 
+
     void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
 
     void resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show = true, const int t_max = 60);
@@ -33,19 +37,15 @@ public:
     void setFieldCount(const unsigned int number);
     unsigned int getFieldCount();
 
-    void startSimulation(QString my_algo, QString opponent_algo);
+    void startSimulation(QString my_algo, QString opponent_algo, QString InputMethod);
 
     int simulationGenetic(const GeneticAgent& agent_1, const GeneticAgent& agent_2, int algo_number, const GeneticAgent& agent_3 = 0, const GeneticAgent& agent_4 = 0);
 
     unsigned int getFinalTurn();
 
-    bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2, bool double_move = true);
-
     void setAutoMode(bool value);
 
-    void changeTurn();
-
-    std::shared_ptr<Visualizer> getVisualizer();
+    void changeTurn(bool update = true);
 
     int getTurnCount();
 
@@ -61,8 +61,6 @@ public slots:
 
 
 private:
-    std::shared_ptr<GameManager> share;
-
 
     std::shared_ptr<procon::Field> field;
     std::shared_ptr<Visualizer> visualizer;
@@ -81,10 +79,7 @@ private:
     const int max_val = 16;
     const int min_val = -16;
 
-    int turn_max;
     bool vis_show;
-
-    int now_turn = -1;
 
     //これがtrueなら自動進行
     bool is_auto = true;
@@ -96,6 +91,7 @@ private:
 
 
     void nextMoveForManualMode();
+
 
 };
 
