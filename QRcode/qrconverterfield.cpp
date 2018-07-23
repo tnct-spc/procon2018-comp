@@ -98,6 +98,8 @@ procon::Field QrConverterField::ConvertCsvToField(std::string csv_string){
     field.setFinalTurn(60);
     field.setTurnCount(0);
 
+    field.setStates(std::vector<std::vector<int>>(field_size.first, std::vector<int>(field_size.second, 0)));
+
     field.setValue(field_convert);
     field.setAgent(0,0,agent1_convert.at(1) - 1,agent1_convert.at(0) - 1);
     field.setAgent(0,1,agent2_convert.at(1) - 1,agent2_convert.at(0) - 1);
@@ -105,6 +107,10 @@ procon::Field QrConverterField::ConvertCsvToField(std::string csv_string){
     std::vector<std::pair<int,int>> agents = field.guessAgents(1);
     for(int index = 0; index < 2; ++index)
         field.setAgent(1, index, agents.at(index).first, agents.at(index).second);
+
+    for(int side = 0; side < 2; ++side)
+        for(int agent = 0; agent < 2; ++agent)
+            field.setState(field.getAgent(side, agent).first, field.getAgent(side, agent).second, side + 1);
 
     return std::move(field);
 }
