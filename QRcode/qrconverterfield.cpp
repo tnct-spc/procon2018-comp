@@ -94,6 +94,10 @@ procon::Field QrConverterField::ConvertCsvToField(std::string csv_string){
 
     procon::Field field(field_size.first,field_size.second);
 
+    // 仮の対応処置です 実際は終了ターンを手打ちします
+    field.setFinalTurn(60);
+    field.setTurnCount(0);
+
     field.setValue(field_convert);
     field.setAgent(0,0,agent1_convert.at(0),agent1_convert.at(1));
     field.setAgent(0,1,agent2_convert.at(0),agent2_convert.at(1));
