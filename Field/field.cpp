@@ -609,7 +609,7 @@ void procon::Field::investigationSymmetry(){
         }
     }
    // std::cout<<(result ? "縦" : "横")<<std::endl;
-    symmetry = result;
+    feature.symmetry = result;
 }
 
 std::vector<std::pair<int,int>> procon::Field::guessAgents(int side){
@@ -618,7 +618,7 @@ std::vector<std::pair<int,int>> procon::Field::guessAgents(int side){
 
     std::vector<std::pair<int,int>> ans_pos;
 
-    if( symmetry ) {
+    if( feature.symmetry ) {
 
         for(int index = 0 ; index < 2; index++ ){
 
@@ -633,4 +633,7 @@ std::vector<std::pair<int,int>> procon::Field::guessAgents(int side){
 
     }
     return ans_pos;
+}
+procon::Field::Feature::Feature(){
+
 }

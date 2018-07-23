@@ -84,7 +84,21 @@ private:
 
     std::vector<std::pair<int,int>> points; //それぞれのチームの<踏んだマスの得点,領域得点>を格納
 
-    bool symmetry; //true なら縦対称、falseなら横対称
+
+    class Feature{
+    public:
+
+        Feature();
+
+        std::string direction;          //東西南北どの方向に得点が偏っているか
+        int total_Slope;                //傾斜量
+        int AboveGroundOpening;         //地上開度
+        int UnderGroundOpening;         //地下開度
+        bool symmetry;                  //true なら縦対称、falseなら横対称
+        int RidgeValley;                //尾根谷度(正直これがあれば開度はいらない気がする)
+        int AverageAltitudeDifference;  //平均高度差
+    };
+    Feature feature;
 };
 }
 
