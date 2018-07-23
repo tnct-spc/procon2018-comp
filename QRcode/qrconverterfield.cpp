@@ -37,7 +37,7 @@ int QrConverterField::ctoi(std::string s, int &i){
     if(minus){
         count *= -1;
     }
-    i += keta;
+    i += keta-1;
     return count;
 }
 
