@@ -1,6 +1,6 @@
 #include "agentwrapper.h"
 
-AgentWrapper::AgentWrapper(int side, const procon::Field& field, int final_turn, int agent_num, int param_count, const GeneticAgent& agent_data) :
+AgentWrapper::AgentWrapper(int side, procon::Field& field, int final_turn, int agent_num, int param_count, const GeneticAgent& agent_data) :
     side(side),
     agent(agent_num),
     final_turn(final_turn),

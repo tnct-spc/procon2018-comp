@@ -6,7 +6,7 @@
 class AgentWrapper
 {
 public:
-    AgentWrapper(int side, const procon::Field& field, int final_turn, int agent_num, int param_count, const GeneticAgent& agent_data = GeneticAgent(6, 2));
+    AgentWrapper(int side, procon::Field& field, int final_turn, int agent_num, int param_count, const GeneticAgent& agent_data = GeneticAgent(6, 2));
 
     //(評価値,移動方法)のvectorを渡してもらう
     const std::vector<std::pair<double, std::tuple<int,int,int>>> agentMove(int now_turn);
@@ -19,7 +19,7 @@ public:
 protected:
 
     int agent, final_turn;
-    const procon::Field& field;
+    procon::Field& field;
 
     GeneticAgent agent_data;
 };

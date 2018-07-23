@@ -2,7 +2,7 @@
 #include "agents/testdoubleagentalgo.h"
 #include "agents/evaluateparam.h"
 
-AgentManager::AgentManager(const procon::Field& field, int turn_max, bool side, int algorithm_number, const GeneticAgent* agent_data_1, const GeneticAgent* agent_data_2) :
+AgentManager::AgentManager(procon::Field& field, int turn_max, bool side, int algorithm_number, const GeneticAgent* agent_data_1, const GeneticAgent* agent_data_2) :
     AlgorithmWrapper(field, turn_max, side)
 {
     agents.resize(2);
@@ -18,6 +18,7 @@ AgentManager::AgentManager(const procon::Field& field, int turn_max, bool side, 
         agents.at(1) = std::make_shared<TestDoubleAgentAlgo>(side, field, final_turn, 1, 6);
     }
     else if(algorithm_number == 1){
+        // ここをどうにかする！！！！
         agents.at(0) = std::make_shared<EvaluateParam>(side, field, final_turn, 0, 2);
         agents.at(1) = std::make_shared<EvaluateParam>(side, field, final_turn, 1, 2);
     }

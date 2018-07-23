@@ -1,6 +1,6 @@
 #include "evaluateparam.h"
 
-EvaluateParam::EvaluateParam(int side, const procon::Field& field, int final_turn, int agent_num, const GeneticAgent &agent_data) :
+EvaluateParam::EvaluateParam(int side, procon::Field& field, int final_turn, int agent_num, const GeneticAgent &agent_data) :
     AgentWrapper(side, field, final_turn, agent_num, 1, agent_data)
 {
 
@@ -11,17 +11,14 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
     if(eval_side == -1)
         eval_side = side;
 
-    // 莫大なコピーコストがかかってしまう…
-    procon::Field copy_field = field;
-
     const std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     const std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
-    if(!copy_field.canPut(eval_side, agent, move, false))
+    if(!field.canPut(eval_side, agent, move, false))
         return -300000;
 
     // 移動前の位置
-    std::pair<int,int> now_pos = copy_field.getAgent(eval_side, agent);
+    std::pair<int,int> now_pos = field.getAgent(eval_side, agent);
 
     // 移動後の位置と状態
     std::pair<int,int> new_pos = now_pos;
@@ -29,26 +26,18 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
     new_pos.second += y_list.at(move);
 
     // 移動先の(色,配点)
-    std::pair<int,int> new_pos_state = copy_field.getState(new_pos.first, new_pos.second);
+    std::pair<int,int> new_pos_state = field.getState(new_pos.first, new_pos.second);
 
-    // 移動前の(タイルポイント, 領域ポイント) 変数名がクソ
-    /*
-    std::pair<int,int> now_team_point = copy_field.getPoints(eval_side, false);
-    std::pair<int,int> now_enemy_point = copy_field.getPoints(eval_side, false);
-    */
-    std::vector<std::pair<int,int>> point = copy_field.getPoints(false);
+    // 現在の得点(領域点は考慮しない！)
+    std::vector<std::pair<int,int>> point = field.getPoints(false);
 
-    // 移動後の取得ポイント
-    int movable = (new_pos_state.first == (side == 0 ? 1 : 0) ? 1 : 0);
-    std::vector<std::pair<int,int>> post_point = copy_field.getPoints(std::make_pair(std::make_pair(side, movable), new_pos), false);
 
     // fieldのサイズ
-    std::pair<int, int> field_size = copy_field.getSize();
-
-    // fieldの各マスの状態
-    // std::vector<std::vector<int>> now_field = copy_field.getField();
+    std::pair<int, int> field_size = field.getSize();
 
     std::vector<std::function<double()>> func_vector;
+
+    // 各要素ごとに評価値がおよそ[-300,300]程度に収まるようにする
 
     // 敵エージェントとの距離
     std::vector<double> dis;
@@ -62,41 +51,31 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
         dis.push_back(sqrt(x * x + y * y));
     }
 
-    // 次の取得タイルポイント
-    func_vector.push_back([&]{
+    if(use_region){
 
-        return post_point.at(side).second - point.at(side).second;
-    });
+        // 移動後の取得ポイント
+        std::vector<std::pair<int,int>> post_point = field.getPoints(std::make_pair(std::make_pair(side, is_delete), new_pos), false);
+        // 自分の取得タイルポイント
+        func_vector.push_back([&]{
+            return 18.5 * (post_point.at(eval_side).second - point.at(eval_side).second);
+        });
 
-    // 次の取得領域ポイント
-    func_vector.push_back([&]{
+        // 自分の取得領域ポイント
+        func_vector.push_back([&]{
+            return 18.5 * (post_point.at(eval_side).second - point.at(eval_side).second);
+        });
 
-        return post_point.at(side).second - point.at(side).second;
-    });
 
-    // 味方のタイルポイント
-    func_vector.push_back([&]{
-
-        return point.at(side).first;
-    });
-
-    // 味方の領域ポイント
-    func_vector.push_back([&]{
-
-        return point.at(side).second;
-    });
-
-    // 敵のタイルポイント
-    func_vector.push_back([&]{
-
-        return point.at(side == 0 ? 1 : 0).first;
-    });
-
-    // 敵の領域ポイント
-    func_vector.push_back([&]{
-
-        return point.at(side == 0 ? 1 : 0).second;
-    });
+        // 相手の取得領域ポイント
+        func_vector.push_back([&]{
+            return 7.5 * (post_point.at(!eval_side).second - point.at(!eval_side).second);
+        });
+    }else{
+        // 自分の得点変化量
+        func_vector.push_back([&]{
+            return (new_pos_state.first == side + 1 ? (is_delete ? -new_pos_state.second : 0): new_pos_state.second);
+        });
+    }
 
     // 味方エージェントとの距離
     func_vector.push_back([&]{
@@ -134,7 +113,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
 
         for (int y = 0; y < field_size.second; y++) {
             for (int x = 0; x < field_size.first; x++) {
-                count += (copy_field.getState(x, y).first == 0 ? 1 : 0);
+                count += (field.getState(x, y).first == 0 ? 1 : 0);
             }
         }
 
@@ -148,8 +127,8 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
 
         for (int y = 0; y < field_size.second; y++) {
             for (int x = 0; x < field_size.first; x++) {
-                if (copy_field.getState(x, y).first == 0) {
-                    std::pair<int, int> state = copy_field.getState(x, y);
+                if (field.getState(x, y).first == 0) {
+                    std::pair<int, int> state = field.getState(x, y);
                     count += state.second;
                 }
             }
@@ -165,8 +144,8 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
 
         for (int y = 0; y < field_size.second; y++) {
             for (int x = 0; x < field_size.first; x++) {
-                if (copy_field.getState(x, y).first == 0) {
-                    std::pair<int, int> state = copy_field.getState(x, y);
+                if (field.getState(x, y).first == 0) {
+                    std::pair<int, int> state = field.getState(x, y);
                     count += std::abs(state.second);
                 }
             }

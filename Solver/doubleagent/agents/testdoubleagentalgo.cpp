@@ -1,6 +1,6 @@
 #include "testdoubleagentalgo.h"
 
-TestDoubleAgentAlgo::TestDoubleAgentAlgo(int side, const procon::Field& field, int final_turn, int agent_num, const GeneticAgent &agent_data) :
+TestDoubleAgentAlgo::TestDoubleAgentAlgo(int side, procon::Field& field, int final_turn, int agent_num, const GeneticAgent &agent_data) :
     AgentWrapper(side, field, final_turn, agent_num, 6, agent_data)
 {
 
