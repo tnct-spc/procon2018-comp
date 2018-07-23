@@ -7,11 +7,13 @@ QT += core gui widgets
 SOURCES += \
         main.cpp \
     testagentparam.cpp \
-    testevaluatespeed.cpp
+    testevaluatespeed.cpp \
+    testconvertfield.cpp
 
 HEADERS += \
     testagentparam.h \
-    testevaluatespeed.h
+    testevaluatespeed.h \
+    testconvertfield.h
 
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
@@ -24,3 +26,7 @@ DEPENDPATH += $$PWD/../Visualizer
 LIBS += -L$$OUT_PWD/../Solver/ -lSolver
 INCLUDEPATH += $$PWD/../Solver
 DEPENDPATH += $$PWD/../Solver
+
+LIBS += -L$$OUT_PWD/../QRcode/ -lQRcode
+INCLUDEPATH += $$PWD/../QRcode
+DEPENDPATH += $$PWD/../QRcode
