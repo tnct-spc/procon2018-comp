@@ -60,7 +60,7 @@ procon::Field QrConverterField::ConvertCsvToField(std::string csv_string){
     HW.pop();
     field_size.first = HW.front();
     int brock = 0;
-    field_convert = std::vector<std::vector<int>>(field_size.second, std::vector<int>(field_size.first, 0));
+    field_convert = std::vector<std::vector<int>>(field_size.first, std::vector<int>(field_size.second, 0));
     for(stage = 0;stage <= field_size.second;i++){
         if(csv_string.at(i) == ':'){
             stage++;
@@ -68,7 +68,7 @@ procon::Field QrConverterField::ConvertCsvToField(std::string csv_string){
             continue;
         }
         else if(csv_string.at(i) == '-' || csv_string.at(i) == '0' || csv_string.at(i) == '1' || csv_string.at(i) == '2' || csv_string.at(i) == '3' || csv_string.at(i) == '4' || csv_string.at(i) == '5' || csv_string.at(i) == '6' || csv_string.at(i) == '7' || csv_string.at(i) == '8' || csv_string.at(i) == '9'){
-                field_convert [stage-1][brock] = ctoi(csv_string,i);
+                field_convert [brock][stage-1] = ctoi(csv_string,i);
                 brock++;
                 continue;
             }
@@ -99,7 +99,7 @@ procon::Field QrConverterField::ConvertCsvToField(std::string csv_string){
     field.setTurnCount(0);
 
     field.setValue(field_convert);
-    field.setAgent(0,0,agent1_convert.at(0),agent1_convert.at(1));
-    field.setAgent(0,1,agent2_convert.at(0),agent2_convert.at(1));
+    field.setAgent(0,0,agent1_convert.at(0) - 1,agent1_convert.at(1) - 1);
+    field.setAgent(0,1,agent2_convert.at(0) - 1,agent2_convert.at(1) - 1);
     return std::move(field);
 }

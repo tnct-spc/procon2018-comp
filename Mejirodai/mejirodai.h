@@ -33,7 +33,7 @@ private:
     void goPrevState();
     void exportFieldtoCSV();
 
-    const unsigned int x_size = 12;
+    const unsigned int x_size = 11;
     const unsigned int y_size = 8;
 
 };
