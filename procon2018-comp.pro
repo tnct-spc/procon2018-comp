@@ -7,5 +7,5 @@ SUBDIRS += \
     Solver \
     Mejirodai \
     Simulator \
+    QRcode \
     Test \
-    QRcode

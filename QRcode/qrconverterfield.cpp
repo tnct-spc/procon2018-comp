@@ -1,5 +1,9 @@
 #include "qrconverterfield.h"
 
+QrConverterField::QrConverterField(){
+
+}
+
 int QrConverterField::ctoi(std::string s, int &i){
 
     int keta = 0;
