@@ -62,10 +62,11 @@ public:
 
     void updatePoint();
 
-    void investigationSymmetry();
 
     std::vector<std::pair<int, int>> guessAgents(int side);  //推測する先のside
 
+    void updateFeature();
+    double getFeature(int i); // 1 -> 対称(1なら縦対称,0なら横対称), 2 -> 傾斜量の平均 ,3 -> 地上開度 ,4 -> 地下開度（基本的に負の値を取る）,5 ->尾根谷度(２つの開度の平均),6 -> 平均高度差
 private:
     std::bitset<288> field_data;
     std::vector<std::vector<int>> value_data;
@@ -84,21 +85,7 @@ private:
 
     std::vector<std::pair<int,int>> points; //それぞれのチームの<踏んだマスの得点,領域得点>を格納
 
-
-    class Feature{
-    public:
-
-        Feature();
-
-        std::string direction;          //東西南北どの方向に得点が偏っているか
-        int total_Slope;                //傾斜量
-        int AboveGroundOpening;         //地上開度
-        int UnderGroundOpening;         //地下開度
-        bool symmetry;                  //true なら縦対称、falseなら横対称
-        int RidgeValley;                //尾根谷度(正直これがあれば開度はいらない気がする)
-        int AverageAltitudeDifference;  //平均高度差
-    };
-    Feature feature;
+    std::vector<double> feature;
 };
 }
 
