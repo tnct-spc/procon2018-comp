@@ -40,15 +40,15 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
     // 各要素ごとに評価値がおよそ[-300,300]程度に収まるようにする
 
     // 敵エージェントとの距離
-    std::vector<double> dis;
+    std::vector<int> dis;
 
     for (int i = 0; i < 2; i++) {
         std::pair<int, int> enemy_agent = field.getAgent(eval_side == 0 ? 1 : 0, i);
 
-        int x = now_pos.first - enemy_agent.first;
-        int y = now_pos.second - enemy_agent.second;
+        int x = std::abs((is_delete?new_pos:now_pos).first - enemy_agent.first);
+        int y = std::abs((is_delete?now_pos:new_pos).second - enemy_agent.second);
 
-        dis.push_back(sqrt(x * x + y * y));
+        dis.push_back(x + y);
     }
 
     if(use_region){
@@ -71,35 +71,42 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
             return 7.5 * (post_point.at(!eval_side).second - point.at(!eval_side).second);
         });
     }else{
-        // 自分の得点変化量
+        // 0:自分の得点変化量
         func_vector.push_back([&]{
             return (new_pos_state.first == side + 1 ? (is_delete ? -new_pos_state.second : 0): new_pos_state.second);
         });
     }
 
-    // 味方エージェントとの距離
+    // 1:味方エージェントとの距離
     func_vector.push_back([&]{
 
-        std::pair<int, int> team_agent = field.getAgent(eval_side, agent == 0 ? 1 : 0);
+        std::pair<int, int> team_agent = field.getAgent(eval_side, !agent);
 
-        int x = now_pos.first - team_agent.first;
-        int y = now_pos.second - team_agent.second;
+        int x = std::abs((is_delete?new_pos:now_pos).first - team_agent.first);
+        int y = std::abs((is_delete?now_pos:new_pos).second - team_agent.second);
 
-        return sqrt(x * x + y * y);
+        return 20.0 * (x + y);
     });
 
-    // 近い敵エージェントとの距離
+    // 2:近い敵エージェントとの距離
     func_vector.push_back([&]{
-
-        return dis.at(0) < dis.at(1) ? dis.at(0) : dis.at(1);
+        return 20.0 * std::min(dis.at(0), dis.at(1))
     });
 
-    // 遠い敵エージェントとの距離
+    // 3:遠い敵エージェントとの距離
     func_vector.push_back([&]{
-
-        return dis.at(0) > dis.at(1) ? dis.at(0) : dis.at(1);
+        return 20.0 * std::max(dis.at(0), dis.at(1))
     });
 
+    func_vector.push_back([&]{
+        return 250.0 * is_delete;
+    });
+
+    func_vector.push_back([&]{
+        return 250.0 * (!is_delete && !new_pos_state.first);
+    });
+
+    /*
     // 現在のターン数 / 全体のターン数
     func_vector.push_back([&]{
 
@@ -165,6 +172,7 @@ double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int e
 
         return post_point.at(side == 0 ? 1 : 0).second - point.at(side == 0 ? 1 : 0).second;
     };
+    */
 
     double point_sum = 0.0;
 
