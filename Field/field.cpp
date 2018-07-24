@@ -23,6 +23,8 @@ procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
 
             field_data |= (w << (2*(12*agent_pos.second + agent_pos.first)));
         }
+    feature = std::vector<double>(10);
+    updateFeature();
 }
 
 procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const std::vector<std::vector<int>>& input_val){
@@ -48,6 +50,8 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
 
             field_data |= (w << ((2*(12*agent_pos.second+agent_pos.first))));
         }
+    feature = std::vector<double>(10);
+    updateFeature();
 }
 
 //ここサイズ対応します
@@ -196,6 +200,8 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
 
             field_data |= (w << (2*(12*agent_pos.second+agent_pos.first)));
         }
+    feature = std::vector<double>(10);
+    updateFeature();
 }
 
 int procon::Field::getTurnCount(){
@@ -594,7 +600,7 @@ std::bitset<288> procon::Field::getRegion(){
     return regions;
 }
 
-void procon::Field::investigationSymmetry(){
+void procon::Field::updateFeature(){
 
     bool result = true; //trueなら縦に対称、falseなら横対称
 
@@ -608,17 +614,96 @@ void procon::Field::investigationSymmetry(){
             }
         }
     }
-   // std::cout<<(result ? "縦" : "横")<<std::endl;
-    symmetry = result;
+    double sym = result;
+
+    double x_d = 0;
+    double y_d = 0;
+    for(int x = 1;x < grid_x - 1 ;x++){
+        for(int y = 1 ;y < grid_y - 1 ;y++){
+            x_d += ((getState(x-1,y-1).second + 2 * getState(x-1,y).second+getState(x-1,y+1).second)-(getState(x+1,y-1).second+2*getState(x+1,y).second+getState(x+1,y+1).second))/5;
+            y_d += ((getState(x-1,y-1).second + 2 * getState(x,y-1).second+getState(x+1,y-1).second)-(getState(x-1,y+1).second+2*getState(x,y+1).second+getState(x+1,y-1).second))/5;
+
+        }
+    }
+    int MA = -100;
+    int MI = 100;
+    for(int x = 0;x < grid_x;x++){
+        for(int y = 0;y < grid_y;y++){
+            MA = std::max(MA,getState(x,y).second);
+            MI = std::min(MI,getState(x,y).second);
+        }
+    }
+    double UnderGroundOpening = 0;//地下開度
+    double AboveGroundOpening = 0;//地上開度っぽく
+
+    for(int x = 0 ; x < grid_x ; x++){
+        for(int y = 0 ; y < grid_y ; y++){
+            double d_max = -1e9;
+            double d_min = +1e9;
+            for(int x_ins = 0 ; x_ins < grid_x ; x_ins++){
+                for(int y_ins = 0 ; y_ins < grid_y ; y_ins++){
+                    if(x == x_ins && y == y_ins)continue;
+                    double dis = abs(x-x_ins)*abs(x-x_ins)+abs(y_ins-y)*abs(y_ins-y);
+                    dis = std::sqrt(dis);
+                    d_max = std::max(d_max, 1.00000*value_data.at(x).at(y) - value_data.at(x_ins).at(y_ins) / dis);
+                    d_min = std::min(d_min, 1.00000*value_data.at(x).at(y) - value_data.at(x_ins).at(y_ins) / dis);
+                }
+            }
+            UnderGroundOpening += d_min;
+            AboveGroundOpening += d_max;
+        }
+    }
+    AboveGroundOpening /= 1.00000*(grid_x*grid_y);
+    UnderGroundOpening /= 1.00000*(grid_x*grid_y);
+
+    std::vector<std::pair<int,int>> age1;
+
+    age1.push_back(std::make_pair(0,1));
+    age1.push_back(std::make_pair(0,-1));
+    age1.push_back(std::make_pair(1,0));
+    age1.push_back(std::make_pair(1,1));
+    age1.push_back(std::make_pair(1,-1));
+    age1.push_back(std::make_pair(-1,1));
+    age1.push_back(std::make_pair(-1,0));
+    age1.push_back(std::make_pair(-1,-1));
+
+    double  AverageAltitudeDifference = 0;  //平均高度差
+    for(int x = 0;x < grid_x;x++){
+        for(int y = 0;y < grid_y;y++){
+            int ins = 0;
+            double w = 0;
+            for(int index = 0;index < 8;index++){
+                if(x + age1.at(index).first >= 0&& x + age1.at(index).first <= grid_x-1 && age1.at(index).second+y >= 0 && age1.at(index).second + y <= grid_y-1){
+                    ins++;
+                    w += getState(x + age1.at(index).first, y + age1.at(index).second).second - getState(x,y).second;
+                }
+            }
+            w /= 1.000000 * ins;
+            AverageAltitudeDifference += w;
+        }
+    }
+    AverageAltitudeDifference /= 1.0000*(grid_x*grid_y);
+
+    feature.at(0)  = sym; // 1なら縦に,0なら横に対称
+    feature.at(1) = std::sqrt((x_d*x_d)+(y_d*y_d))/(grid_x*grid_y);//傾斜度
+    feature.at(2) = AboveGroundOpening; //地上開度(っぽいもの)
+    feature.at(3) = UnderGroundOpening; //地下開度(っぽいもの)(負の値を取る)
+    feature.at(4) = (AboveGroundOpening+UnderGroundOpening)/2; //尾根谷度
+    feature.at(5) = AverageAltitudeDifference;
+    feature.at(6) = MA; //最大値
+    feature.at(7) = MI; //最小値
+    feature.at(8) = grid_x;//xの幅
+    feature.at(9) = grid_y;//yの幅
+    // std::cout<<feature.at(0)<<" "<<feature.at(1)<<" "<<feature.at(2)<<" "<<feature.at(3)<<" "<<feature.at(4)<<" "<<feature.at(5)<<" "<<feature.at(6)<<" "<<feature.at(7)<<" "<<feature.at(8)<<" "<<feature.at(9)<<std::endl;
 }
 
 std::vector<std::pair<int,int>> procon::Field::guessAgents(int side){
 
-    investigationSymmetry();
+   // updateFeature();
 
     std::vector<std::pair<int,int>> ans_pos;
 
-    if( symmetry ) {
+    if( feature.at(0) ) {
 
         for(int index = 0 ; index < 2; index++ ){
 
@@ -634,3 +719,13 @@ std::vector<std::pair<int,int>> procon::Field::guessAgents(int side){
     }
     return ans_pos;
 }
+
+
+double procon::Field::getFeature(int i){
+    return feature.at(i-1);
+}
+const std::vector<double>& procon::Field::getFeatures(){
+    return feature;
+}
+
+
