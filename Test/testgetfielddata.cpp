@@ -5,6 +5,10 @@ TestGetFieldData::TestGetFieldData() :
 {
     mt = std::mt19937(rnd());
 
+    logger = spdlog::basic_logger_mt("TestGetFieldData", "../../output.csv");
+    logger->set_pattern("%v");
+
+
     manager_vec.resize(cpu_num);
     for(auto& ptr : manager_vec)
         ptr = std::make_shared<GameManager>(8, 8, false);
@@ -12,11 +16,12 @@ TestGetFieldData::TestGetFieldData() :
 
 void TestGetFieldData::run(){
 
-    std::vector<std::thread> threads(cpu_num);
+
     std::uniform_int_distribution<> rand_move(0, 323);
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
+
 
     auto calc_move = [&](int side, std::shared_ptr<GameManager> manager_ptr){
 
@@ -47,9 +52,11 @@ void TestGetFieldData::run(){
 
     };
 
+    std::vector<std::future<std::string>> threads;
+
     for(int cpu_index = 0; cpu_index < cpu_num; ++cpu_index)
 
-        threads.at(cpu_index) = std::thread([&](int cpu){
+        threads.emplace_back(std::async([&](int cpu){
 
             // std::lock_guard<std::mutex> lock(mtx);
 
@@ -88,10 +95,12 @@ void TestGetFieldData::run(){
                 // ここに値の格納処理をする
 
             }
-        }, cpu_index);
+
+            return std::string("diff");
+        }, cpu_index));
 
     for(auto& th : threads)
-        th.join();
+        logger->info(th.get());
 
     std::cout << "finished" << std::endl;
 
