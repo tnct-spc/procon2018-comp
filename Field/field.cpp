@@ -23,6 +23,7 @@ procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
 
             field_data |= (w << (2*(12*agent_pos.second + agent_pos.first)));
         }
+    feature = std::vector<double>(10);
     updateFeature();
     std::cout<<"HEllo"<<std::endl;
 }
@@ -50,6 +51,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
 
             field_data |= (w << ((2*(12*agent_pos.second+agent_pos.first))));
         }
+    feature = std::vector<double>(10);
     updateFeature();
     std::cout<<"HEllo"<<std::endl;
 }
@@ -200,6 +202,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
 
             field_data |= (w << (2*(12*agent_pos.second+agent_pos.first)));
         }
+    feature = std::vector<double>(10);
     updateFeature();
     std::cout<<"HEllo"<<std::endl;
 }
@@ -603,8 +606,7 @@ std::bitset<288> procon::Field::getRegion(){
 void procon::Field::updateFeature(){
 
 
-    std::cout<<"Hogehoge"<<std::endl;
-    feature.clear();
+   // std::cout<<"Hogehoge"<<std::endl;
 
     bool result = true; //trueなら縦に対称、falseなら横対称
 
@@ -620,7 +622,7 @@ void procon::Field::updateFeature(){
     }
    // std::cout<<(result ? "縦" : "横")<<std::endl;
     double sym = result;
-    feature.push_back(sym);
+    feature.at(0)  = sym;
 
     double x_d = 0;
     double y_d = 0;
@@ -631,19 +633,16 @@ void procon::Field::updateFeature(){
 
         }
     }
-    feature.push_back(std::sqrt((x_d*x_d)+(y_d*y_d))/(grid_x*grid_y));//傾斜度
+    feature.at(1) = std::sqrt((x_d*x_d)+(y_d*y_d))/(grid_x*grid_y);//傾斜度
     int MA = -100;
     int MI = 100;
-    std::pair<int,int> p_max,p_min;
     for(int x = 0;x < grid_x;x++){
         for(int y = 0;y < grid_y;y++){
             MA = std::max(MA,getState(x,y).second);
-            if(MA == getState(x,y).second)p_max = std::make_pair(x,y);
             MI = std::min(MI,getState(x,y).second);
-            if(MI == getState(x,y).second)p_min = std::make_pair(x,y);
         }
     }
-    double UnderGroundOpening = -1e9;//
+    double UnderGroundOpening = 0;//地下開度
     double AboveGroundOpening = 0;//地上開度っぽく
 
     for(int x = 0 ; x < grid_x ; x++){
@@ -666,9 +665,9 @@ void procon::Field::updateFeature(){
 
     AboveGroundOpening /= 1.00000*(grid_x*grid_y);
     UnderGroundOpening /= 1.00000*(grid_x*grid_y);
-    feature.push_back(AboveGroundOpening); //地上開度(っぽいもの)
-    feature.push_back(UnderGroundOpening); //地下開度(っぽいもの)(負の値を取る)
-    feature.push_back((AboveGroundOpening+UnderGroundOpening)/2); //尾根谷度
+    feature.at(2) = AboveGroundOpening; //地上開度(っぽいもの)
+    feature.at(3) = UnderGroundOpening; //地下開度(っぽいもの)(負の値を取る)
+    feature.at(4) = (AboveGroundOpening+UnderGroundOpening)/2; //尾根谷度
 
     std::vector<std::pair<int,int>> age1;
 
@@ -689,19 +688,19 @@ void procon::Field::updateFeature(){
             for(int index = 0;index < 8;index++){
                 if(x + age1.at(index).first >= 0&& x + age1.at(index).first <= grid_x-1 && age1.at(index).second+y >= 0 && age1.at(index).second + y <= grid_y-1){
                     ins++;
-                    w += getState(x + age1.at(index).first,y + age1.at(index).second).second;
+                    w += getState(x + age1.at(index).first, y + age1.at(index).second).second - getState(x,y).second;
                 }
             }
-            w /= 1.000000*ins;
+            w /= 1.000000 * ins;
             AverageAltitudeDifference += w;
         }
     }
-    AverageAltitudeDifference/=(grid_x*grid_y);
-    feature.push_back(AverageAltitudeDifference);
-    feature.push_back(MA); //最大値
-    feature.push_back(MI); //最小値
-    feature.push_back(grid_x);//xの幅
-    feature.push_back(grid_y);//yの幅
+    AverageAltitudeDifference /= 1.0000*(grid_x*grid_y);
+    feature.at(5) = AverageAltitudeDifference;
+    feature.at(6) = MA; //最大値
+    feature.at(7) = MI; //最小値
+    feature.at(8) = grid_x;//xの幅
+    feature.at(9) = grid_y;//yの幅
     std::cout<<feature.at(0)<<" "<<feature.at(1)<<" "<<feature.at(2)<<" "<<feature.at(3)<<" "<<feature.at(4)<<" "<<feature.at(5)<<feature.at(6)<<" "<<feature.at(7)<<" "<<feature.at(8)<<" "<<feature.at(9)<<std::endl;
 }
 
