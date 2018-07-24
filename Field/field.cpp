@@ -602,9 +602,6 @@ std::bitset<288> procon::Field::getRegion(){
 
 void procon::Field::updateFeature(){
 
-
-  //  std::cout<<"Hogehoge"<<std::endl;
-
     bool result = true; //trueなら縦に対称、falseなら横対称
 
     for(int x = 0 ; x < grid_x ; x++) {
@@ -617,9 +614,7 @@ void procon::Field::updateFeature(){
             }
         }
     }
-   // std::cout<<(result ? "縦" : "横")<<std::endl;
     double sym = result;
-    feature.at(0)  = sym;
 
     double x_d = 0;
     double y_d = 0;
@@ -630,7 +625,6 @@ void procon::Field::updateFeature(){
 
         }
     }
-    feature.at(1) = std::sqrt((x_d*x_d)+(y_d*y_d))/(grid_x*grid_y);//傾斜度
     int MA = -100;
     int MI = 100;
     for(int x = 0;x < grid_x;x++){
@@ -661,10 +655,6 @@ void procon::Field::updateFeature(){
     }
     AboveGroundOpening /= 1.00000*(grid_x*grid_y);
     UnderGroundOpening /= 1.00000*(grid_x*grid_y);
-    feature.at(2) = AboveGroundOpening; //地上開度(っぽいもの)
-    feature.at(3) = UnderGroundOpening; //地下開度(っぽいもの)(負の値を取る)
-    feature.at(4) = (AboveGroundOpening+UnderGroundOpening)/2; //尾根谷度
- //   std::cout<<"hoge"<<std::endl;
 
     std::vector<std::pair<int,int>> age1;
 
@@ -693,12 +683,18 @@ void procon::Field::updateFeature(){
         }
     }
     AverageAltitudeDifference /= 1.0000*(grid_x*grid_y);
+
+    feature.at(0)  = sym; // 1なら縦に,0なら横に対称
+    feature.at(1) = std::sqrt((x_d*x_d)+(y_d*y_d))/(grid_x*grid_y);//傾斜度
+    feature.at(2) = AboveGroundOpening; //地上開度(っぽいもの)
+    feature.at(3) = UnderGroundOpening; //地下開度(っぽいもの)(負の値を取る)
+    feature.at(4) = (AboveGroundOpening+UnderGroundOpening)/2; //尾根谷度
     feature.at(5) = AverageAltitudeDifference;
     feature.at(6) = MA; //最大値
     feature.at(7) = MI; //最小値
     feature.at(8) = grid_x;//xの幅
     feature.at(9) = grid_y;//yの幅
-    std::cout<<feature.at(0)<<" "<<feature.at(1)<<" "<<feature.at(2)<<" "<<feature.at(3)<<" "<<feature.at(4)<<" "<<feature.at(5)<<" "<<feature.at(6)<<" "<<feature.at(7)<<" "<<feature.at(8)<<" "<<feature.at(9)<<std::endl;
+    // std::cout<<feature.at(0)<<" "<<feature.at(1)<<" "<<feature.at(2)<<" "<<feature.at(3)<<" "<<feature.at(4)<<" "<<feature.at(5)<<" "<<feature.at(6)<<" "<<feature.at(7)<<" "<<feature.at(8)<<" "<<feature.at(9)<<std::endl;
 }
 
 std::vector<std::pair<int,int>> procon::Field::guessAgents(int side){
@@ -723,10 +719,12 @@ std::vector<std::pair<int,int>> procon::Field::guessAgents(int side){
     }
     return ans_pos;
 }
+
+
 double procon::Field::getFeature(int i){
     return feature.at(i-1);
 }
-std::vector<double> procon::Field::getFeature(){
+const std::vector<double>& procon::Field::getFeatures(){
     return feature;
 }
 

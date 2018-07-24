@@ -66,7 +66,12 @@ public:
     std::vector<std::pair<int, int>> guessAgents(int side);  //推測する先のside
 
     void updateFeature();
+<<<<<<< HEAD
     std::vector<double> getFeature();
+=======
+
+    const std::vector<double>& getFeatures();
+>>>>>>> 35f20fc3939936a012954257fcc65a633e20bc27
     double getFeature(int i); // 1 -> 対称(1なら縦対称,0なら横対称), 2 -> 傾斜量の平均(0~1) ,3 -> 地上開度(3 ~ 10) ,4 -> 地下開度（-10 ~ 0）,5 ->尾根谷度(２つの開度の平均)(-2 ~ +2),6 -> 平均高度差(-2~2),7 -> 最大得点(-16~16),8 -> 最低得点(-16~16),9 -> 横幅, 10 -> 縦幅
 private:
     std::bitset<288> field_data;
