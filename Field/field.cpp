@@ -728,7 +728,7 @@ std::vector<std::pair<int,int>> procon::Field::guessAgents(int side){
     return ans_pos;
 }
 double procon::Field::getFeature(int i){
-    return feature.at(i);
+    return feature.at(i-1);
 }
 
 
