@@ -62,24 +62,35 @@ void TestGetFieldData::run(){
                 int turn_count = rand_turn(mt);
                 std::shared_ptr<GameManager> manager_ptr = manager_vec.at(cpu);
 
+
                 manager_ptr->resetManager(rand_size(mt), rand_size(mt), false, turn_count);
+
+                // ここに初期Fieldによって定まるデータを入れる
+                std::vector<double> field_data;
+                // ここに途中の盤面や行動によって定まるデータを入れる
+                std::vector<std::vector<double>> move_data;
 
                 for(int count = 0; count < turn_count; ++count){
                     for(int side = 0; side < 2; ++side){
                         std::vector<std::tuple<int,int,int>> move = calc_move(side, manager_ptr);
+
                         for(int agent = 0;agent < 2; ++agent)
                             manager_ptr->agentAct(side, agent, move.at(agent));
                     }
                     manager_ptr->changeTurn();
-
                 }
+
                 std::vector<std::pair<int,int>> points = manager_ptr->getField().getPoints(false);
                 int diff = points.at(0).first + points.at(0).second - (points.at(1).first + points.at(1).second);
+
+                // ここに値の格納処理をする
 
             }
         }, cpu_index);
 
     for(auto& th : threads)
         th.join();
+
+    std::cout << "finished" << std::endl;
 
 }
