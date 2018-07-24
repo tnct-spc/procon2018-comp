@@ -24,6 +24,7 @@ procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
             field_data |= (w << (2*(12*agent_pos.second + agent_pos.first)));
         }
     updateFeature();
+    std::cout<<"HEllo"<<std::endl;
 }
 
 procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const std::vector<std::vector<int>>& input_val){
@@ -50,6 +51,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
             field_data |= (w << ((2*(12*agent_pos.second+agent_pos.first))));
         }
     updateFeature();
+    std::cout<<"HEllo"<<std::endl;
 }
 
 //ここサイズ対応します
@@ -199,6 +201,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
             field_data |= (w << (2*(12*agent_pos.second+agent_pos.first)));
         }
     updateFeature();
+    std::cout<<"HEllo"<<std::endl;
 }
 
 int procon::Field::getTurnCount(){
@@ -598,6 +601,9 @@ std::bitset<288> procon::Field::getRegion(){
 }
 
 void procon::Field::updateFeature(){
+
+
+    std::cout<<"Hogehoge"<<std::endl;
     feature.clear();
 
     bool result = true; //trueなら縦に対称、falseなら横対称
@@ -637,15 +643,27 @@ void procon::Field::updateFeature(){
             if(MI == getState(x,y).second)p_min = std::make_pair(x,y);
         }
     }
-    double UnderGroundOpening = 0;
+    double UnderGroundOpening = -1e9;//
     double AboveGroundOpening = 0;//地上開度っぽく
 
     for(int x = 0 ; x < grid_x ; x++){
         for(int y = 0 ; y < grid_y ; y++){
-            if(MA != getState(x,y).second)AboveGroundOpening += (MA-(getState(x,y).second))/(abs(p_max.first-x)+abs(p_max.second-y));
-            if(MI != getState(x,y).second)UnderGroundOpening += (MI-(getState(x,y).second))/(abs(p_min.first-x)+abs(p_min.second-y));
+            double d_max = -1e9;
+            double d_min = +1e9;
+            for(int x_ins = 0 ; x < grid_x ; x_ins++){
+                for(int y_ins = 0 ; y_ins < grid_y ; y_ins++){
+                    if(x == x_ins && y == y_ins)continue;
+                    double dis = abs(x-x_ins)*abs(x-x_ins)+abs(y_ins-y)*abs(y_ins-y);
+                    dis = std::sqrt(dis);
+                    d_max = std::max(d_max, 1.00000*value_data.at(x).at(y) - value_data.at(x_ins).at(y_ins) / dis);
+                    d_min = std::min(d_min, 1.00000*value_data.at(x).at(y) - value_data.at(x_ins).at(y_ins) / dis);
+                }
+            }
+            UnderGroundOpening += d_min;
+            AboveGroundOpening += d_max;
         }
     }
+
     AboveGroundOpening /= 1.00000*(grid_x*grid_y);
     UnderGroundOpening /= 1.00000*(grid_x*grid_y);
     feature.push_back(AboveGroundOpening); //地上開度(っぽいもの)
@@ -680,7 +698,11 @@ void procon::Field::updateFeature(){
     }
     AverageAltitudeDifference/=(grid_x*grid_y);
     feature.push_back(AverageAltitudeDifference);
-    std::cout<<feature.at(0)<<" "<<feature.at(1)<<" "<<feature.at(2)<<" "<<feature.at(3)<<" "<<feature.at(4)<<" "<<feature.at(5)<<std::endl;
+    feature.push_back(MA); //最大値
+    feature.push_back(MI); //最小値
+    feature.push_back(grid_x);//xの幅
+    feature.push_back(grid_y);//yの幅
+    std::cout<<feature.at(0)<<" "<<feature.at(1)<<" "<<feature.at(2)<<" "<<feature.at(3)<<" "<<feature.at(4)<<" "<<feature.at(5)<<feature.at(6)<<" "<<feature.at(7)<<" "<<feature.at(8)<<" "<<feature.at(9)<<std::endl;
 }
 
 std::vector<std::pair<int,int>> procon::Field::guessAgents(int side){
