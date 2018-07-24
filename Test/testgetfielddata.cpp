@@ -73,7 +73,7 @@ void TestGetFieldData::run(){
                 manager_ptr->resetManager(rand_size(mt), rand_size(mt), false, turn_count);
 
                 // ここに初期Fieldによって定まるデータを入れる
-                std::vector<double> field_data;
+                const std::vector<double>& field_data = manager_ptr->getField().getFeatures();
                 // ここに途中の盤面や行動によって定まるデータを入れる
                 // [試行回数][相手][行動や盤面の情報] の三次元配列
                 std::vector<std::vector<std::vector<double>>> move_data;
