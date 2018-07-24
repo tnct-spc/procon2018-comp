@@ -1,4 +1,8 @@
 # procon2018-comp
+## インストールすべきもの(pacmanで入る)
+
+opencv zbar hdf5 ffmpeg spdlog-git(AUR)
+
 ## Description
 
 第29回全国高等専門学校プログラミングコンテスト競技部門用のリポジトリです。
