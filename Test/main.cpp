@@ -1,6 +1,7 @@
 #include <iostream>
 #include "testagentparam.h"
 #include "testevaluatespeed.h"
+#include "testgetfielddata.h"
 
 int main()
 {
@@ -8,6 +9,7 @@ int main()
     std::cout << "select mode" << std::endl;
     std::cout << "0 : TestAgentParam" << std::endl;
     std::cout << "1 : TestEvaluateSpeed" << std::endl;
+    std::cout << "3 : TestGetFieldData" << std::endl;
 
     int test_number = -1;
 
@@ -16,7 +18,7 @@ int main()
         std::cout << "algo number : ";
         std::cin >> test_number;
 
-        if(test_number >= 0 && test_number <= 1)
+        if(test_number >= 0 && test_number <= 3)
             break;
 
         std::cout << "incorrect" << std::endl;
@@ -50,6 +52,11 @@ int main()
     else if(test_number == 1){
 
         TestEvaluateSpeed test;
+        test.run();
+    }
+    else if(test_number == 3){
+
+        TestGetFieldData test;
         test.run();
     }
 

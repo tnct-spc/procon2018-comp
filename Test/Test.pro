@@ -7,11 +7,13 @@ QT += core gui widgets
 SOURCES += \
         main.cpp \
     testagentparam.cpp \
-    testevaluatespeed.cpp
+    testevaluatespeed.cpp \
+    testgetfielddata.cpp
 
 HEADERS += \
     testagentparam.h \
-    testevaluatespeed.h
+    testevaluatespeed.h \
+    testgetfielddata.h
 
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
