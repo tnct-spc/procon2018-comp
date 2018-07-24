@@ -57,7 +57,7 @@ void TestGetFieldData::run(){
             std::uniform_int_distribution<> rand_turn(60, 120);
             std::uniform_int_distribution<> rand_size(8, 12);
 
-            while((double)clock() - start / CLOCKS_PER_SEC < calc_time){
+            while((double)(clock() - start) / CLOCKS_PER_SEC < calc_time){
 
                 int turn_count = rand_turn(mt);
                 std::shared_ptr<GameManager> manager_ptr = manager_vec.at(cpu);
@@ -82,6 +82,8 @@ void TestGetFieldData::run(){
 
                 std::vector<std::pair<int,int>> points = manager_ptr->getField().getPoints(false);
                 int diff = points.at(0).first + points.at(0).second - (points.at(1).first + points.at(1).second);
+
+                std::cout << "diff : " << diff << " , " << cpu << std::endl;
 
                 // ここに値の格納処理をする
 
