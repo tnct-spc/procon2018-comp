@@ -13,7 +13,7 @@ TestGetFieldData::TestGetFieldData() :
 void TestGetFieldData::run(){
 
     std::vector<std::thread> threads(cpu_num);
-    std::uniform_int_distribution<> rand_move(0, 324);
+    std::uniform_int_distribution<> rand_move(0, 323);
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
@@ -51,7 +51,7 @@ void TestGetFieldData::run(){
 
         threads.at(cpu_index) = std::thread([&](int cpu){
 
-            std::lock_guard<std::mutex> lock(mtx);
+            // std::lock_guard<std::mutex> lock(mtx);
 
             clock_t start = clock();
             std::uniform_int_distribution<> rand_turn(60, 120);
