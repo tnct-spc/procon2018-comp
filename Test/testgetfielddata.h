@@ -2,7 +2,7 @@
 #define TESTGETFIELDDATA_H
 
 #include <mutex>
-#include <future>
+#include <thread>
 #include <random>
 #include "gamemanager.h"
 
@@ -12,7 +12,7 @@
 class TestGetFieldData
 {
 public:
-    const double calc_time = 20.0;
+    const double calc_time = 1.0;
     int cpu_num;
     std::random_device rnd;
     std::mt19937 mt;
