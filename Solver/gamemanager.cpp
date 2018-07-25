@@ -25,11 +25,11 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, b
         connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
         connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
         connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
-        connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getGridToOperator);
+        connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
 
         ope = std::make_shared<Operator>();
         connect(ope.get(), &Operator::pushEnd, this, &GameManager::endChangeMode);
-        connect(this, &GameManager::sendGridToOperator, ope.get(), &Operator::changeGridDisplay);
+        connect(this, &GameManager::sendDataToOperator, ope.get(), &Operator::changeDataDisplay);
 
     }else{
         is_auto = true;//この場合は自動進行
@@ -602,7 +602,12 @@ void GameManager::endChangeMode()
     ope->~Operator();
 }
 
-void GameManager::getGridToOperator(const std::pair<int,int> grid)
+void GameManager::getDataToOperator(const std::pair<int,int> grid, const bool agent)
 {
-    emit sendGridToOperator(field->getState(grid.first, grid.second));
+    emit sendDataToOperator(field->getState(grid.first, grid.second), agent);
+}
+
+void GameManager::getChangeOfData(const std::pair<int, int> data, const bool agent)
+{
+
 }

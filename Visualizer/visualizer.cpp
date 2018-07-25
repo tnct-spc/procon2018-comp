@@ -393,7 +393,7 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
             update();
 
             // クリックされたGridのステータスをOperatorに表示
-            emit selectChangeGrid(clicked_grid);
+            emit selectChangeGrid(clicked_grid, selected);
 
         }
     }

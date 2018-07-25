@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <QLabel>
+#include <QStackedWidget>
 
 namespace Ui {
 class Operator;
@@ -20,16 +21,24 @@ public:
     ~Operator();
 
 signals:
-    void pushChange();
+    void pushChange(const std::pair<int, int> out_data, const bool out_bool);
     void pushEnd();
 
 public slots:
-    void changeGridDisplay(const std::pair<int, int> state);
+    void changeDataDisplay(const std::pair<int, int> inp_data, const bool inp_bool);
 
 private:
     Ui::Operator *ui;
 
+    // ボタンが押されたらsignalを送る
     void sendPushEnd();
+    void sendPushChange();
+
+    // 扱っているのがAgentならtrue
+    bool agent = false;
+
+    std::pair<int, int> data;
+
 };
 
 #endif // OPERATOR_H
