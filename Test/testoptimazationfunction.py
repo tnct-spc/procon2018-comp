@@ -56,6 +56,7 @@ def main():
     '''
 
     trainer.run()
+    chainer.serializers.save_npz('and.model',model)
 
 
 if __name__ == '__main__':
