@@ -3,6 +3,7 @@
 
 #include <QWidget>
 
+#include "qrconverterfield.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -19,16 +20,16 @@ namespace Ui{
     class QRCode;
 }
 
-class QRCode : public QWidget{
+class QRCode : public QWidget , public QrConverterField{
 
     Q_OBJECT
 
 public:
     explicit QRCode(QWidget *parent = 0);
     ~QRCode();
+    void decodeQRcode();
 
 private slots:
-    void decodeQRcode();
     void on_Start_clicked();
     void on_Exit_clicked();
     void clearAll();

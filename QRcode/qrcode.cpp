@@ -86,6 +86,7 @@ void QRCode::decodeQRcode(){
         imshow("Video Stream",zframe);
         waitKey(1);
         if(code != "."){
+            ConvertCsvToField(read_only_data);
             ui->lineResult->setText("decoded");
             std::cout<<"decoded"<<std::endl;
             destroyWindow("Video Stream");
