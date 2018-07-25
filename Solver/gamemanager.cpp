@@ -176,6 +176,11 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             pruning = std::make_pair(std::get<1>(team_2_ans.second) + field->getAgent(1,1).first, std::get<2>(team_2_ans.second) + field->getAgent(1,1).second);
             pruning_pos.push_back(std::make_pair(std::make_pair(1, std::get<0>(team_2_ans.second) - 1), pruning));
 
+       //     std::vector<std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>>> test;
+       //     test.push_back(team_1_ans);
+       //     test.push_back(team_2_ans);
+
+       //     field->calcSituationFeature(test, 0);
 
 
 
@@ -294,6 +299,8 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
 
         team_1_ans = team_1->agentAct(0);
         team_2_ans = team_2->agentAct(1);
+
+
 
         agentAct(0,0,team_1_ans.first);
         agentAct(0,1,team_1_ans.second);
