@@ -48,7 +48,7 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <widget class="QWidget" name="page">
+     <widget class="QWidget" name="grid">
       <property name="layoutDirection">
        <enum>Qt::LeftToRight</enum>
       </property>
@@ -117,7 +117,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="page_2">
+     <widget class="QWidget" name="agent">
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="1" column="4">
         <widget class="QLabel" name="yLabel">

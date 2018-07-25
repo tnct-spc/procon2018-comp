@@ -58,8 +58,7 @@ void Mejirodai::exportFieldtoCSV(){
 void Mejirodai::runOperatorWindow(){
 
     // AutoModeがOffのときのみOperatorのウィンドウが立ち上がる
-    if (ui->autoMode->isChecked()) {
-        ope = std::make_shared<Operator>();
-        ope->show();
+    if (!ui->autoMode->isChecked()) {
+        manager->startupChangeMode();
     }
 }

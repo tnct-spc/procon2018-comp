@@ -28,6 +28,10 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, b
     }else{
         is_auto = true;//この場合は自動進行
     }
+
+    ope = std::make_shared<Operator>();
+    std::cout << "NotAuto" << std::endl;
+    connect(ope.get(), &Operator::pushEnd, this, &GameManager::endChangeMode);
 }
 
 void GameManager::resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show, const int t_max){
@@ -47,6 +51,11 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
     }else{
         is_auto = true;//この場合は自動進行
     }
+
+    ope = std::make_shared<Operator>();
+    std::cout << "NotAuto" << std::endl;
+    connect(ope.get(), &Operator::pushEnd, this, &GameManager::endChangeMode);
+
 
     field->updatePoint();
 
@@ -574,4 +583,19 @@ void GameManager::nextMoveForManualMode(){
 
     emit setCandidateMove(return_vec);
 
+}
+
+void GameManager::startupChangeMode()
+{
+//    ope = std::make_shared<Operator>();
+    ope->show();
+    visualizer->setChangeMode(true);
+    visualizer->update();
+}
+
+void GameManager::endChangeMode()
+{
+    visualizer->setChangeMode(false);
+    std::cout << "OK" << std::endl;
+    ope->~Operator();
 }

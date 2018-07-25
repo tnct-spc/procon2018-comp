@@ -2,8 +2,10 @@
 #define OPERATOR_H
 
 #include "field.h"
-#include "visualizer.h"
 #include <QWidget>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QLabel>
 
 namespace Ui {
 class Operator;
@@ -17,8 +19,14 @@ public:
     explicit Operator(QWidget *parent = 0);
     ~Operator();
 
+signals:
+    void pushChange();
+    void pushEnd();
+
 private:
     Ui::Operator *ui;
+
+    void sendPushEnd();
 };
 
 #endif // OPERATOR_H

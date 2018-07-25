@@ -7,6 +7,7 @@
 #include "progresdock.h"
 #include "geneticalgo/geneticalgo.h"
 #include "geneticalgo/geneticagent.h"
+#include "operator.h"
 
 #include <thread>
 #include <vector>
@@ -51,6 +52,11 @@ public:
 
     void setField(const procon::Field& pro, int now_t, int max_t);
 
+    // ChangeModeを開始
+    void startupChangeMode();
+
+
+
 signals:
     void signalAutoMode(bool value);
     void setCandidateMove(const std::vector<std::vector<std::pair<int,int>>>& move);
@@ -58,12 +64,15 @@ signals:
 public slots:
     void changeMove(const std::vector<std::vector<std::pair<int,int>>>& move, std::vector<std::vector<int>> is_delete);
 
+    // ChangeModeを終了
+    void endChangeMode();
 
 
 private:
 
     std::shared_ptr<procon::Field> field;
     std::shared_ptr<Visualizer> visualizer;
+    std::shared_ptr<Operator> ope;
     std::vector<std::shared_ptr<procon::Field>> field_vec;
 
     std::shared_ptr<AlgorithmWrapper> team_1;

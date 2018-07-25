@@ -26,6 +26,7 @@ public:
 
     void setField(const procon::Field& inp_field, int now_turn, int max_t);
 
+    void setChangeMode(bool value);
 
 signals:
     void nextMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec, std::vector<std::vector<int>> is_delete);
@@ -64,6 +65,9 @@ private:
 
     // 移動を入力するエージェントが選択されているか
     bool selected = false;
+
+    // 手動ModeでかつChangeModeのときtrue
+    bool change_mode = false;
 
     unsigned int confirm_count = 0;
 

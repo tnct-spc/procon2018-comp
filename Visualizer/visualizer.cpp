@@ -313,7 +313,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
     drawBackGround();
     drawTiles();
 
-    if(auto_mode == false){
+    // AutoModeでなくかつChaneModeではないとき
+    if((auto_mode == false) && (change_mode == false)){
         drawAgentMove();
         drawCandidateMove();
         if (selected) drawAroundAgent();
@@ -475,4 +476,8 @@ void Visualizer::slotAutoMode(bool value){
 void Visualizer::candidateMove(const std::vector<std::vector<std::pair<int, int> > > &inp_vec){
     candidate = inp_vec;
     this->update();
+}
+
+void Visualizer::setChangeMode(bool value) {
+    change_mode = value;
 }
