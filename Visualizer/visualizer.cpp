@@ -306,6 +306,21 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     };
 
+    auto drawClickedGrid = [&] {
+
+        QColor paint_color;
+        std::pair<int, int> state = field.getState(clicked_grid_change.first, clicked_grid_change.second);
+        if (state.first == 0) paint_color = background_color;
+        else if (state.first == 1) paint_color = team_color_a;
+        else paint_color = team_color_b;
+        paint_color.setAlpha(200);
+
+        int x_pos = clicked_grid_change.first;
+        int y_pos = clicked_grid_change.second;
+
+        painter.setBrush(QBrush(paint_color));
+        painter.drawRect(horizontal_margin + grid_size * x_pos, vertical_margin + grid_size * y_pos, grid_size, grid_size);
+    };
 
 
     drawBackGround();
@@ -318,6 +333,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
         if (selected) drawAroundAgent();
     }
 
+    if (change_mode && clicked) drawClickedGrid();
+
     drawValues();
     drawAgents();
 
@@ -325,7 +342,6 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     drawTurnCount();
     drawRegion();
-
 }
 
 // メインウィンドウ内のマスをクリックしたときに行われるイベント
@@ -370,6 +386,11 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         }
 
         if (change_mode) {
+
+            clicked_grid_change = clicked_grid;
+            clicked = true;
+
+            update();
 
             // クリックされたGridのステータスをOperatorに表示
             emit selectChangeGrid(clicked_grid);

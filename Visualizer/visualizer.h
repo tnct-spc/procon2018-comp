@@ -72,6 +72,9 @@ private:
     // 手動ModeでかつChangeModeのときtrue
     bool change_mode = false;
 
+    // ChangeModeでGridがクリックされたとき
+    bool clicked = false;
+
     unsigned int confirm_count = 0;
 
     // 移動を入力するエージェントのチームとエージェント番号
@@ -88,6 +91,9 @@ private:
 
     //こっちはmanualmode用
     std::vector<std::vector<std::pair<int, int>>> candidate;
+
+    // クリックされたGrid
+    std::pair<int, int> clicked_grid_change;
 
     //margin*size分の余白を取る
     const double margin = 1.5;
