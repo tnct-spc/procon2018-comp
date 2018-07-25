@@ -3,6 +3,7 @@
 
 
 #include "field.h"
+
 #include <QPainter>
 #include <QWidget>
 #include <QPaintEvent>
@@ -30,6 +31,8 @@ public:
 
 signals:
     void nextMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec, std::vector<std::vector<int>> is_delete);
+    void selectChangeGrid(const std::pair<int, int> grid);
+
 public slots:
     void slotAutoMode(bool value);
     void candidateMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec);

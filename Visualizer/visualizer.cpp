@@ -14,8 +14,6 @@
     candidate = std::vector<std::vector<std::pair<int, int>>>(2, std::vector<std::pair<int,int>>(2, std::make_pair(-1, -1)));
 
     is_delete = std::vector<std::vector<int>>(2, std::vector<int>(2, 0));
-
-
 }
 
 Visualizer::~Visualizer()
@@ -359,7 +357,8 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         clicked_grid.second = (point.y() - vertical_margin) / grid_size;
 
         // 移動をを入力するエージェントが選ばれているか
-        if (selected) {
+        // ChangeModeのときは機能しない
+        if (!change_mode && selected) {
 
             // グリッドはエージェントの移動先に含まれているか
             checkClickGrid(clicked_grid, right_flag);
@@ -368,6 +367,13 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
 
             // クリックされたエージェントまたはマスを照合
             checkClickedAgent(clicked_grid);
+        }
+
+        if (change_mode) {
+
+            // クリックされたGridのステータスをOperatorに表示
+            emit selectChangeGrid(clicked_grid);
+
         }
     }
 
@@ -408,7 +414,6 @@ void Visualizer::checkClickedAgent(std::pair<int, int> mass)
 // エージェントの移動先を決定
 void Visualizer::checkClickGrid(std::pair<int, int> mass, bool right_flag)
 {
-
     // クリックされた場所がエージェントの移動範囲に含まれているか確認
     if (((selected_agent_grid.first - 1) > mass.first) || ((selected_agent_grid.first + 1) < mass.first)
             || ((selected_agent_grid.second - 1) > mass.second) || ((selected_agent_grid.second + 1) < mass.second)) {
@@ -480,4 +485,10 @@ void Visualizer::candidateMove(const std::vector<std::vector<std::pair<int, int>
 
 void Visualizer::setChangeMode(bool value) {
     change_mode = value;
+
+    // もろもろを初期化
+    if (change_mode) {
+        selected = false;
+        confirm_count = 0;
+    }
 }

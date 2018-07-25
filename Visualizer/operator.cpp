@@ -19,3 +19,9 @@ void Operator::sendPushEnd()
 {
     emit pushEnd();
 }
+
+void Operator::changeGridDisplay(const std::pair<int, int> state)
+{
+    ui->teamBox->setValue(state.first);
+    ui->pointBox->setValue(state.second);
+}

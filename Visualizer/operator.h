@@ -23,6 +23,9 @@ signals:
     void pushChange();
     void pushEnd();
 
+public slots:
+    void changeGridDisplay(const std::pair<int, int> state);
+
 private:
     Ui::Operator *ui;
 

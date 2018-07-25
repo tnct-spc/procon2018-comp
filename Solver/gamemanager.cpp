@@ -25,13 +25,15 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, b
         connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
         connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
         connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
+        connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getGridToOperator);
+
+        ope = std::make_shared<Operator>();
+        connect(ope.get(), &Operator::pushEnd, this, &GameManager::endChangeMode);
+        connect(this, &GameManager::sendGridToOperator, ope.get(), &Operator::changeGridDisplay);
+
     }else{
         is_auto = true;//この場合は自動進行
     }
-
-    ope = std::make_shared<Operator>();
-    std::cout << "NotAuto" << std::endl;
-    connect(ope.get(), &Operator::pushEnd, this, &GameManager::endChangeMode);
 }
 
 void GameManager::resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show, const int t_max){
@@ -598,4 +600,9 @@ void GameManager::endChangeMode()
     visualizer->setChangeMode(false);
     std::cout << "OK" << std::endl;
     ope->~Operator();
+}
+
+void GameManager::getGridToOperator(const std::pair<int,int> grid)
+{
+    emit sendGridToOperator(field->getState(grid.first, grid.second));
 }
