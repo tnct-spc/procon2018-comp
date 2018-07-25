@@ -50,6 +50,7 @@ public:
 
     void setSize(const std::pair<int, int> &grid);
     void setValue(const std::vector<std::vector<int>> &value);
+    void setGridValue(const unsigned int x, const unsigned int y, const unsigned int value);
     void setStates(const std::vector<std::vector<int>>& values);
     void setAgents(const std::vector<std::vector<std::pair<int,int>>>& values);
 

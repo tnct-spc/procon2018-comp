@@ -513,3 +513,19 @@ void Visualizer::setChangeMode(bool value) {
         confirm_count = 0;
     }
 }
+
+void Visualizer::getData(const std::pair<int, int> data, const bool agent) {
+
+    if (agent) {
+        // エージェントの場所を変更
+        if (selected) {
+            field.setAgent(selected_agent.first, selected_agent.second, data.first, data.second);
+        }
+    } else {
+        // グリッドのタイル状況と点数を変更
+        field.setState(clicked_grid_change.first, clicked_grid_change.second, data.first);
+        field.setGridValue(clicked_grid_change.first, clicked_grid_change.second, data.second);
+    }
+
+    update();
+}

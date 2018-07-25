@@ -36,6 +36,7 @@ signals:
 public slots:
     void slotAutoMode(bool value);
     void candidateMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec);
+    void getData(const std::pair<int, int> data, const bool agent);
 
 private:
     Ui::Visualizer *ui;

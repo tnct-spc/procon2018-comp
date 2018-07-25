@@ -64,6 +64,9 @@ signals:
     // GridがクリックされたらそのマスのステータスをOperatorに送る
     void sendDataToOperator(const std::pair<int,int> data, const bool agent);
 
+    // OperatorのChangeがクリックされたら、変更された値をFieldとVisualizerに反映
+    void sendDataToVisualizer(const std::pair<int,int> data, const bool agen);
+
 public slots:
     void changeMove(const std::vector<std::vector<std::pair<int,int>>>& move, std::vector<std::vector<int>> is_delete);
 
@@ -73,7 +76,7 @@ public slots:
     // ChangeModeのときクリックされたGridを受け取る
     void getDataToOperator(const std::pair<int,int> grid, const bool agent);
 
-    // OperatorからのデータをFieldに反映
+    // OperatorからのデータをVisualizerに送る
     void getChangeOfData(const std::pair<int, int> data, const bool agent);
 
 

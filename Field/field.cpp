@@ -333,6 +333,10 @@ void procon::Field::setValue(const std::vector<std::vector<int>> &value){
     value_data = value;
 }
 
+void procon::Field::setGridValue(const unsigned int x, const unsigned int y, const unsigned int value){
+    value_data.at(x).at(y) = value;
+}
+
 void procon::Field::setAgents(const std::vector<std::vector<std::pair<int,int>>>& values){
     agents = values;
 }
