@@ -3,6 +3,7 @@
 
 #include "gamemanager.h"
 #include "csvio.h"
+#include "operator.h"
 #include <thread>
 #include <memory>
 #include <QMainWindow>
@@ -27,11 +28,13 @@ private:
     Ui::Mejirodai *ui;
 
     std::shared_ptr<GameManager> manager;
+    std::shared_ptr<Operator> ope;
 
     void RunManagerSimulation();
     void goNextState();
     void goPrevState();
     void exportFieldtoCSV();
+    void runOperatorWindow();
 
     const unsigned int x_size = 12;
     const unsigned int y_size = 8;

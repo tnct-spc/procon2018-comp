@@ -19,7 +19,7 @@ Mejirodai::Mejirodai(QWidget *parent) :
     connect(ui->exportField, &QPushButton::clicked, this, &Mejirodai::exportFieldtoCSV);
     connect(ui->selectMyAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->my_stackedWidget, SLOT(setCurrentIndex(int)));
     connect(ui->selectOpponentAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->opponent_stackedWidget, SLOT(setCurrentIndex(int)));
-
+    connect(ui->changeButton, &QPushButton::clicked, this, &Mejirodai::runOperatorWindow);
 }
 
 Mejirodai::~Mejirodai()
@@ -53,4 +53,13 @@ void Mejirodai::goPrevState(){
 void Mejirodai::exportFieldtoCSV(){
     procon::Field& exp_field = manager->getField();
     procon::CsvIo::exportField(exp_field, QFileDialog::getSaveFileName(this,tr("Save CSV")).toStdString());
+}
+
+void Mejirodai::runOperatorWindow(){
+
+    // AutoModeがOffのときのみOperatorのウィンドウが立ち上がる
+    if (ui->autoMode->isChecked()) {
+        ope = std::make_shared<Operator>();
+        ope->show();
+    }
 }
