@@ -73,9 +73,6 @@ private:
     // 手動ModeでかつChangeModeのときtrue
     bool change_mode = false;
 
-    // ChangeModeでGridがクリックされたとき
-    bool clicked = false;
-
     unsigned int confirm_count = 0;
 
     // 移動を入力するエージェントのチームとエージェント番号

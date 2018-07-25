@@ -322,6 +322,25 @@ void Visualizer::paintEvent(QPaintEvent *event){
         painter.drawRect(horizontal_margin + grid_size * x_pos, vertical_margin + grid_size * y_pos, grid_size, grid_size);
     };
 
+    auto drawClickedAgent = [&]{
+
+        painter.setPen(QPen(QBrush(Qt::black),0.5));
+
+        QColor paint_color = ( selected_agent.first == 0
+                   ? team_color_a
+                   : team_color_b);
+        paint_color.setAlpha(200);
+
+        painter.setBrush(QBrush(paint_color));
+
+        int pos_x = selected_agent_grid.first;
+        int pos_y = selected_agent_grid.second;
+
+        painter.drawEllipse(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size);
+
+    };
+
+
 
     drawBackGround();
     drawTiles();
@@ -333,7 +352,11 @@ void Visualizer::paintEvent(QPaintEvent *event){
         if (selected) drawAroundAgent();
     }
 
-    if (change_mode && clicked) drawClickedGrid();
+    // クリックされたグリッド
+    if (change_mode) drawClickedGrid();
+
+    // クリックされたエージェント
+    if (change_mode && selected) drawClickedAgent();
 
     drawValues();
     drawAgents();
@@ -388,7 +411,6 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         if (change_mode) {
 
             clicked_grid_change = clicked_grid;
-            clicked = true;
 
             update();
 
@@ -517,9 +539,12 @@ void Visualizer::setChangeMode(bool value) {
 void Visualizer::getData(const std::pair<int, int> data, const bool agent) {
 
     if (agent) {
-        // エージェントの場所を変更
+        // エージェントの場所とそのタイル状況を変更
         if (selected) {
             field.setAgent(selected_agent.first, selected_agent.second, data.first, data.second);
+            field.setState(clicked_grid_change.first, clicked_grid_change.second, selected_agent.first + 1);
+
+            selected = false;
         }
     } else {
         // グリッドのタイル状況と点数を変更
