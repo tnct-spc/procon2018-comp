@@ -22,7 +22,7 @@ save_png_path = 'image'
 loss_file_path = 'loss'
 
 # field_data.size + ret_data.size - 1になる(最後尾には勝率が来るため)
-data_size = 10
+data_size = 50
 
 # テスト用データの占める割合
 test_data_per = 0.2
@@ -69,8 +69,6 @@ def read_csv():
             ret_data[-1][-1] = 1.0 if (int(ret_data[-1][-1]) > 0) else 0.0
 
     csv_file.close()
-
-    data_size = len(ret_data[0]) - 1
 
     return ret_data
 
@@ -169,13 +167,11 @@ def calc(inp1, inp2):
 
 def main():
 
-    calc(0, 0)
+    data_size = len(csv_data[0]) - 1
 
-    '''
     for count_1 in range(data_size):
         for count_2 in range(count_1 + 1):
             calc(count_1, count_2)
-    '''
 
 
 
