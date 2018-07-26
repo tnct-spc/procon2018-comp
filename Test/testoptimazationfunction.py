@@ -25,7 +25,7 @@ loss_file_path = common_path + 'loss'
 data_size = 10
 
 data_row = None
-train_batch_size = 100
+train_batch_size = 10000
 test_batch_size = 100
 
 graph_div = 100
@@ -48,9 +48,12 @@ class NetWork(chainer.Chain):
     
     # 順計算
     def __call__(self, inp):
+        return self.l2(F.relu(self.l1(inp)))
+        '''
         hidden = F.sigmoid(self.l1(inp))
-        out = self.l2(hidden)
+        out =  F.sigmoid(self.l2(hidden))
         return out
+        '''
 
 def read_csv():
     csv_file = open(csv_path, 'r')
@@ -64,7 +67,8 @@ def read_csv():
         if row[0] == '-1':
             field_data = row[1:]
         else:
-            ret_data.append(field_data + row)
+            ret_data.append(list(map(np.float32, field_data + row)))
+            ret_data[-1][-1] = np.float32(1) if ret_data[-1][-1] > 0 else np.float32(-1)
 
     csv_file.close()
 
@@ -80,12 +84,13 @@ def make_data(inp1, inp2):
 
     random.shuffle(csv_data)
 
-    inp_data = []
-    out_data = []
+    inp_data = np.empty((train_batch_size + test_batch_size,2), dtype=np.float32)
+    out_data = np.empty(train_batch_size + test_batch_size, dtype=np.int32)
 
     for index in range(train_batch_size + test_batch_size):
-        inp_data.append([csv_data[index][inp1], csv_data[index][inp2]])
-        out_data.append([csv_data[index][-1]])
+        inp_data[index][0] = csv_data[index][inp1]
+        inp_data[index][1] = csv_data[index][inp2]
+        out_data[index] = csv_data[index][-1]
     
     train_data = chainer.datasets.TupleDataset(inp_data[:train_batch_size], out_data[:train_batch_size])
     test_data = chainer.datasets.TupleDataset(inp_data[-test_batch_size:], inp_data[-test_batch_size:])
@@ -98,7 +103,8 @@ def calc(inp1, inp2):
 
     net = NetWork(2, hid_unit, 1)
 
-    model = L.Classifier(net, lossfun=F.mean_squared_error)
+    # model = L.Classifier(net, lossfun=F.mean_squared_error)
+    model = L.Classifier(net)
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
 
@@ -121,6 +127,7 @@ def calc(inp1, inp2):
     ))
 
     trainer.run()
+    """
     chainer.serializers.save_npz(save_model_path + '_' +  str(inp1) + '_' + str(inp2) + '.model', model)
 
     # ここから重みの整形とbatの出力処理まで行う
@@ -154,13 +161,18 @@ def calc(inp1, inp2):
     ax.plot_surface(inparr_2, inparr_3, outarr)
     ax.view_init(60, 40)
     plt.savefig(save_png_path + '_' + str(inp1) + '_' + str(inp2) + '.png')
+    """
 
 
 def main():
 
+    calc(0, 0)
+
+    '''
     for count_1 in range(data_size):
         for count_2 in range(count_1 + 1):
             calc(count_1, count_2)
+    '''
 
 
 
