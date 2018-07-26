@@ -58,7 +58,7 @@ def read_csv():
     field_data = []
 
     for row in data:
-        if row[0] == '0':
+        if row[0] == '-1':
             field_data = row[1:]
         else:
             ret_data.append(field_data + row)
