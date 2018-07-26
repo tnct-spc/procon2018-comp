@@ -16,9 +16,9 @@ common_path = '../Data/TestOptimazationFunction/'
 
 csv_path = common_path + 'input.csv'
 result_path = common_path + 'result'
-save_model_path = common_path + 'and'
-save_dat_path = common_path + 'and'
-save_png_path = common_path + 'image'
+save_model_path = 'and'
+save_dat_path = 'and'
+save_png_path = 'image'
 loss_file_path = 'loss'
 
 # field_data.size + ret_data.size - 1になる(最後尾には勝率が来るため)
@@ -101,6 +101,9 @@ def make_data(inp1, inp2):
 def calc(inp1, inp2):
     train,test = make_data(inp1, inp2)
 
+    data_id = '_' + str(inp1) + '_' + str(inp2)
+    data_path = result_path + data_id + '/'
+
     net = NetWork(hid_unit, 1)
 
     accfun = lambda x, t: F.sum(1 - abs(x-t))/x.size 
@@ -114,14 +117,14 @@ def calc(inp1, inp2):
 
     updater = training.StandardUpdater(train_iter, optimizer, device=-1)
 
-    trainer = training.Trainer(updater, (epoch, 'epoch'), out=result_path + '_' + str(inp1) + '_' + str(inp2))
+    trainer = training.Trainer(updater, (epoch, 'epoch'), out=data_path)
 
     trainer.extend(extensions.Evaluator(test_iter, model, device=-1))
     trainer.extend(extensions.dump_graph('main/loss'))
     trainer.extend(extensions.LogReport(trigger=(1, 'epoch')))
     trainer.extend(extensions.PlotReport(
         ['main/loss', 'validation/main/loss'], x_key='epoch',
-        file_name=loss_file_path + '_' + str(inp1) + '_' + str(inp2) + '.png'
+        file_name= loss_file_path + data_id + '.png'
     ))
     trainer.extend(extensions.PrintReport(
         ['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy'],
@@ -129,7 +132,7 @@ def calc(inp1, inp2):
 
     trainer.run()
 
-    chainer.serializers.save_npz(save_model_path + '_' +  str(inp1) + '_' + str(inp2) + '.model', model)
+    chainer.serializers.save_npz(data_path + save_model_path + data_id + '.model', model)
 
     # ここから重みの整形とbatの出力処理まで行う
     b_arr = bytearray()
@@ -144,7 +147,7 @@ def calc(inp1, inp2):
     for v in model.predictor.l2.b.data:
         b_arr += struct.pack('f', v)
 
-    open(save_dat_path + '_' + str(inp1) + '_' + str(inp2) + '.dat', 'wb').write(b_arr)
+    open(data_path + save_dat_path + data_id + '.dat', 'wb').write(b_arr)
 
     # net((n,2)のarray)で予測した値が出せるはず
     # ここにx,y各1/graph_div刻みでグラフを描画する
@@ -155,13 +158,13 @@ def calc(inp1, inp2):
 
     for i0 in range(graph_div + 1):
         for i1 in range(graph_div + 1):
-            outarr[i0, i1] = net(np.array([[inparr_0[0], inparr_1[1]]], dtype=np.float32))[0][0].data
+            outarr[i0, i1] = net(np.array([[inparr_0[i0], inparr_1[i1]]], dtype=np.float32))[0][0].data
     
     plt.figure(figsize=(5, 3.5))
     ax = plt.subplot(1, 1, 1, projection='3d')
     ax.plot_surface(inparr_2, inparr_3, outarr)
     ax.view_init(60, 40)
-    plt.savefig(save_png_path + '_' + str(inp1) + '_' + str(inp2) + '.png')
+    plt.savefig(data_path + save_png_path + data_id + '.png')
 
 
 def main():
