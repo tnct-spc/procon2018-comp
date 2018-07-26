@@ -2,6 +2,9 @@ import numpy as np
 import csv
 import random
 import struct
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 import chainer
 from chainer import links as L
 from chainer import functions as F
@@ -14,6 +17,8 @@ csv_path = common_path + 'input.csv'
 result_path = common_path + 'result'
 save_model_path = common_path + 'and'
 save_dat_path = common_path + 'and'
+save_png_path = common_path + 'image'
+loss_file_path = common_path + 'loss'
 
 # field_data.size + ret_data.size - 1になる(最後尾には勝率が来るため)
 data_size = 10
@@ -86,7 +91,9 @@ def make_data(inp1, inp2):
 def calc(inp1, inp2):
     train,test = make_data(inp1, inp2)
 
-    model = L.Classifier(NetWork(2, hid_unit, 1), lossfun=F.mean_squared_error)
+    net = NetWork(2, hid_unit, 1)
+
+    model = L.Classifier(net, lossfun=F.mean_squared_error)
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
 
@@ -100,6 +107,10 @@ def calc(inp1, inp2):
     trainer.extend(extensions.Evaluator(test_iter, model, device=-1))
     trainer.extend(extensions.dump_graph('loss'))
     trainer.extend(extensions.LogReport(trigger=(1, 'epoch')))
+    trainer.extend(extensions.PlotReport(
+        ['main/loss', 'validation/main/loss'], x_key='epoch',
+        file_name=loss_file_path + '_' + str(inp1) + '_' + str(inp2) + '.png'
+    ))
     trainer.extend(extensions.PrintReport(
         ['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy'],
     ))
@@ -121,6 +132,9 @@ def calc(inp1, inp2):
         b_arr += struct.pack('f', v)
 
     open(save_dat_path + '_' + str(inp1) + '_' + str(inp2) + '.dat', 'w').write(b_arr)
+
+    # net((n,2)のarray)で予測した値が出せるはず
+
 
 def main():
 
