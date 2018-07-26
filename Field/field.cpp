@@ -932,7 +932,7 @@ std::vector<double> procon::Field::calcSituationFeature(std::pair<std::tuple<int
     }
     ans.push_back(1.0000*white_ratio/(grid_x*grid_y));
 
-    ans.push_back(final_turn - now_turn);
+    ans.push_back((final_turn - now_turn) / 120);
 
     /*
     std::cout << "side : " << side_of << "     :    ";
