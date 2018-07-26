@@ -19,7 +19,7 @@ result_path = common_path + 'result'
 save_model_path = common_path + 'and'
 save_dat_path = common_path + 'and'
 save_png_path = common_path + 'image'
-loss_file_path = common_path + 'loss'
+loss_file_path = 'loss'
 
 # field_data.size + ret_data.size - 1になる(最後尾には勝率が来るため)
 data_size = 10
@@ -34,7 +34,7 @@ test_batch_size = 100
 graph_div = 100
 
 # 学習の試行回数(これをN^2/2回続ける)
-epoch = 100
+epoch = 10
 
 csv_data = None
 
@@ -118,7 +118,7 @@ def calc(inp1, inp2):
 
     trainer.extend(extensions.Evaluator(test_iter, model, device=-1))
     trainer.extend(extensions.dump_graph('main/loss'))
-    trainer.extend(extensions.LogReport(trigger=(epoch, 'epoch')))
+    trainer.extend(extensions.LogReport(trigger=(1, 'epoch')))
     trainer.extend(extensions.PlotReport(
         ['main/loss', 'validation/main/loss'], x_key='epoch',
         file_name=loss_file_path + '_' + str(inp1) + '_' + str(inp2) + '.png'
