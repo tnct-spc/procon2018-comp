@@ -107,7 +107,7 @@ void TestGetFieldData::run(){
                         std::string output_data;
                         for(auto mdata : data_vec.at(side))
                             output_data += std::to_string(mdata) + ",";
-                        output_data += std::to_string(diff);
+                        output_data += std::to_string(diff * (side ? -1 : 1));
 
                         logger->info(output_data);
                     }
