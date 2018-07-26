@@ -18,9 +18,14 @@ save_dat_path = common_path + 'and'
 # field_data.size + ret_data.size - 1になる(最後尾には勝率が来るため)
 data_size = 10
 
+data_row = None
 train_batch_size = 100
 test_batch_size = 100
+
+# 学習の試行回数(これをN^2/2回続ける)
 epoch = 100
+
+csv_data = None
 
 hid_unit = 5
 
@@ -59,6 +64,7 @@ def read_csv():
 
 
 csv_data = read_csv()
+data_row = len(csv_data)
 
 def make_data(inp1, inp2):
 
@@ -86,7 +92,6 @@ def calc(inp1, inp2):
 
     train_iter = chainer.iterators.SerialIterator(train, train_batch_size)
     test_iter = chainer.iterators.SerialIterator(test, test_batch_size, repeat=False, shuffle=False)
-    # test_iter = chainer.iterators.SerialIterator(test, test_batch_size)
 
     updater = training.StandardUpdater(train_iter, optimizer, device=-1)
 
@@ -125,8 +130,9 @@ def main():
     for row in csv_data:
         print(row)
 
-    for count in range(data_size ** 2):
-        calc(count // data_size, count % data_size)
+    for count_1 in range(data_size):
+        for count_2 in range(count_1 + 1):
+            calc(count_1, count_2)
 
 
 
