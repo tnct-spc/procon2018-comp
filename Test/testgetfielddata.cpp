@@ -5,7 +5,7 @@ TestGetFieldData::TestGetFieldData() :
 {
     mt = std::mt19937(rnd());
 
-    logger = spdlog::basic_logger_mt("TestGetFieldData", "../../output.csv");
+    logger = spdlog::basic_logger_mt("TestGetFieldData", "../../procon2018-comp/Data/TestOptimazationFunction/input.csv");
     logger->set_pattern("%v");
 
 
@@ -107,7 +107,7 @@ void TestGetFieldData::run(){
                         std::string output_data;
                         for(auto mdata : data_vec.at(side))
                             output_data += std::to_string(mdata) + ",";
-                        output_data += std::to_string(diff);
+                        output_data += std::to_string(diff * (side ? -1 : 1));
 
                         logger->info(output_data);
                     }
