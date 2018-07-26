@@ -728,7 +728,7 @@ const std::vector<double>& procon::Field::getFeatures(){
     return feature;
 }
 
-std::vector<double> procon::Field::calcSituationFeature(std::vector<std::pair<std::tuple<int, int, int>,std::tuple<int, int, int>>> agent_pos,int side_of){
+std::vector<double> procon::Field::calcSituationFeature(std::pair<std::tuple<int, int, int>,std::tuple<int, int, int>> agent_pos,int side_of){
     std::vector<double> ans;
     std::vector<std::pair<int,int>> before_point = getPoints();
     std::vector<std::vector<std::tuple<int,int,int>>> act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2));
@@ -736,7 +736,7 @@ std::vector<double> procon::Field::calcSituationFeature(std::vector<std::pair<st
     std::bitset<288> ins_field = field_data;
     std::vector<std::vector<std::pair<int, int>>> before_agents = agents;
 
-    auto agent_act  = [&](const int turn, const int agent, const std::tuple<int, int, int> tuple_val){
+    auto agent_Act  = [&](const int turn, const int agent, const std::tuple<int, int, int> tuple_val){
 
         int type, x_inp, y_inp;
         std::tie(type, x_inp, y_inp) = tuple_val;
@@ -760,7 +760,7 @@ std::vector<double> procon::Field::calcSituationFeature(std::vector<std::pair<st
         act_stack.at(turn).at(agent) = std::make_tuple(type, x_pos, y_pos);
     };
 
-    auto changeturn = [&](){
+    auto changeTurn = [&](){
 
         //[(x,y)]:(上書き時の色,(色,エージェント)) わかりづらいね
         std::map<std::pair<int,int>,std::pair<int,std::pair<int,int>>> counts;
@@ -835,14 +835,50 @@ std::vector<double> procon::Field::calcSituationFeature(std::vector<std::pair<st
                 setAgent(moves.second.second.first, moves.second.second.second, moves.first.first, moves.first.second);
         }
     };
-    agent_act(0, 0, agent_pos.at(0).first);
-    agent_act(0, 1, agent_pos.at(0).second);
-    agent_act(1, 0, agent_pos.at(1).first);
-    agent_act(1, 1, agent_pos.at(1).second);
-    changeturn();
+    if(side_of == 0){
+        agent_Act(0, 0, agent_pos.first);
+        agent_Act(0, 1, agent_pos.second);
+        agent_Act(1, 0, std::make_tuple(0, 0, 0 ));
+        agent_Act(1, 1, std::make_tuple(0, 0, 0 ));
+    }else{
+        agent_Act(0, 0, std::make_tuple(0, 0, 0));
+        agent_Act(0, 1, std::make_tuple(0, 0, 0));
+        agent_Act(1, 0, agent_pos.first);
+        agent_Act(1, 1, agent_pos.second);
+    }
+
+    changeTurn();
     updatePoint();
+
     std::vector<std::pair<int,int>> after_points = getPoints();
     std::vector<std::vector<std::pair<int, int>>> after_agent = agents;
+
+    std::vector<std::pair<int,int>> age1;
+
+    age1.push_back(std::make_pair(0,1));
+    age1.push_back(std::make_pair(0,-1));
+    age1.push_back(std::make_pair(1,0));
+    age1.push_back(std::make_pair(1,1));
+    age1.push_back(std::make_pair(1,-1));
+    age1.push_back(std::make_pair(-1,1));
+    age1.push_back(std::make_pair(-1,0));
+    age1.push_back(std::make_pair(-1,-1));
+
+    int neer_my_agent_my_tile_before = 0;
+    int neer_my_agent_opposite_tile_before = 0;
+    int neer_my_agent_white_tile_before = 0;
+
+    for(int agent = 0; agent < 2;agent++){
+        for(int index = 0;index < 8;index++){
+            if(agents.at(side_of).at(agent).first + age1.at(index).first >= 0 && agents.at(side_of).at(agent).first + age1.at(index).first <= grid_x-1 && agents.at(side_of).at(agent).second + age1.at(index).second >= 0 && agents.at(side_of).at(agent).second + age1.at(index).second <= grid_y-1){
+
+                if(getState(agents.at(side_of).at(agent).first + age1.at(index).first, agents.at(side_of).at(agent).second + age1.at(index).second).first -1 == side_of)neer_my_agent_my_tile_before++;
+                if(getState(agents.at(side_of).at(agent).first + age1.at(index).first, agents.at(side_of).at(agent).second + age1.at(index).second).first -1 == !side_of)neer_my_agent_opposite_tile_before++;
+                if(getState(agents.at(side_of).at(agent).first + age1.at(index).first, agents.at(side_of).at(agent).second + age1.at(index).second).first == 0)neer_my_agent_white_tile_before++;
+            }
+        }
+    }
+
     agents = before_agents;
     field_data = ins_field;
     updatePoint();
@@ -876,8 +912,28 @@ std::vector<double> procon::Field::calcSituationFeature(std::vector<std::pair<st
     double opposite_agent_center_disrance_diffrence = calc_distance(after_agent.at(!side_of).at(0), std::make_pair(grid_x/2, grid_y/2)) + calc_distance(after_agent.at(!side_of).at(1), std::make_pair(grid_x / 2, grid_y / 2));
     opposite_agent_center_disrance_diffrence -= calc_distance(before_agents.at(!side_of).at(0), std::make_pair(grid_x / 2, grid_y / 2)) + calc_distance(before_agents.at(!side_of).at(1), std::make_pair(grid_x / 2, grid_y / 2));
     ans.push_back(opposite_agent_center_disrance_diffrence);
-    //std::cout<<ans.at(0)<<" "<<ans.at(1)<<" "<<ans.at(2)<<" "<<ans.at(3)<<" "<<ans.at(4)<<" "<<ans.at(5)<<" "<<ans.at(6)<<std::endl;
-    //std::cout<<std::endl;
+
+
+
+
+    double my_neer_my_tile_ratio_diffrence = 1.0000*neer_my_agent_my_tile_before/(neer_my_agent_white_tile_before + neer_my_agent_opposite_tile_before + neer_my_agent_my_tile_before);
+    ans.push_back(my_neer_my_tile_ratio_diffrence);
+
+    double my_neer_opposite_tile_ratio_diffrence = 1.0000*neer_my_agent_opposite_tile_before/(neer_my_agent_white_tile_before + neer_my_agent_opposite_tile_before + neer_my_agent_my_tile_before);
+    ans.push_back(my_neer_opposite_tile_ratio_diffrence);
+
+    ans.push_back(1.0000*now_turn / getFinalTurn());
+
+    double white_ratio = 0;
+    for(int x = 0;x < grid_x;x++){
+        for(int y = 0;y < grid_y;y++){
+            if(getState(x,y).first == 0)white_ratio++;
+        }
+    }
+    ans.push_back(1.0000*white_ratio/(grid_x*grid_y));
+
+    std::cout<<ans.at(0)<<" "<<ans.at(1)<<" "<<ans.at(2)<<" "<<ans.at(3)<<" "<<ans.at(4)<<" "<<ans.at(5)<<" "<<ans.at(6)<<" "<<ans.at(7)<<" "<<ans.at(8)<<" "<<ans.at(9)<<" "<<ans.at(10)<<std::endl;
+    std::cout<<std::endl;
     return ans;
 }
 
