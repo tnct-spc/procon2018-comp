@@ -38,7 +38,7 @@ epoch = 10
 
 csv_data = None
 
-hid_unit = 5
+hid_unit = 50
 
 class NetWork(chainer.Chain):
 
