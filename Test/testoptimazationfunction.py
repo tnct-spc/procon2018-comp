@@ -55,7 +55,7 @@ class NetWork(chainer.Chain):
 def read_csv():
     csv_file = open(csv_path, 'r')
 
-    data = csv.reader(csv_file, delimiter='r', skipinitalshape=True)
+    data = csv.reader(csv_file, delimiter='r', skipinitialspace=True)
 
     ret_data = []
     field_data = []
@@ -82,8 +82,8 @@ def make_data(inp1, inp2):
     out_data = []
 
     for index in range(train_batch_size + test_batch_size):
-        inp_data.append(csv_data[index][inp1], csv_data[index][inp2])
-        out_data.append(csv_data[index][-1])
+        inp_data.append([csv_data[index][inp1], csv_data[index][inp2]])
+        out_data.append([csv_data[index][-1]])
     
     train_data = chainer.datasets.TupleDataset(inp_data[:train_batch_size], out_data[:train_batch_size])
     test_data = chainer.datasets.TupleDataset(inp_data[-test_batch_size:], inp_data[-test_batch_size:])
@@ -154,9 +154,6 @@ def calc(inp1, inp2):
 
 
 def main():
-
-    # 2つの入力と1つの出力を持つモデル
-    # ここにtrainとtestを宣言する
 
     for row in csv_data:
         print(row)
