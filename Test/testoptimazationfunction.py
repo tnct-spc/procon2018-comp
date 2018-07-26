@@ -5,6 +5,7 @@ import struct
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import chainer
 from chainer import links as L
 from chainer import functions as F
@@ -26,6 +27,8 @@ data_size = 10
 data_row = None
 train_batch_size = 100
 test_batch_size = 100
+
+graph_div = 100
 
 # 学習の試行回数(これをN^2/2回続ける)
 epoch = 100
@@ -102,7 +105,7 @@ def calc(inp1, inp2):
 
     updater = training.StandardUpdater(train_iter, optimizer, device=-1)
 
-    trainer = training.Trainer(updater, (epoch, 'epoch'), out=result_path)
+    trainer = training.Trainer(updater, (epoch, 'epoch'), out=result_path + '_' + str(inp1) + '_' + str(inp2))
 
     trainer.extend(extensions.Evaluator(test_iter, model, device=-1))
     trainer.extend(extensions.dump_graph('loss'))
@@ -134,6 +137,20 @@ def calc(inp1, inp2):
     open(save_dat_path + '_' + str(inp1) + '_' + str(inp2) + '.dat', 'w').write(b_arr)
 
     # net((n,2)のarray)で予測した値が出せるはず
+    # ここにx,y各1/graph_div刻みでグラフを描画する
+    inparr_0 = np.linspace(0.0, 1.0, graph_div + 1, dtype=np.float32)
+    inparr_1 = np.linspace(0.0, 1.0, graph_div + 1, dtype=np.float32)
+    outarr = np.zeros(((graph_div + 1, graph_div + 1)), dtype=np.float32)
+
+    for i0 in range(graph_div + 1):
+        for i1 in range(graph_div + 1):
+            outarr[i0, i1] = net(np.array([[inparr_0[i0], inparr_1[i1]]], dtype=np.float32))[0][0]
+    
+    plt.figure(figsize=(5, 3.5))
+    ax = plt.subplot(1, 1, 1, projection='3d')
+    ax.plot_surface(inparr_0, inparr_1, outarr)
+    ax.view_init(60, 40)
+    plt.savefig(save_png_path + '_' + str(inp1) + '_' + str(inp2) + '.png')
 
 
 def main():
