@@ -8,11 +8,12 @@ from chainer import functions as F
 from chainer import training
 from chainer.training import extensions
 
+common_path = '../Data/TestOptimazationFunction/'
 
-csv_path = './input.csv'
-result_path = 'result'
-save_model_path = 'and'
-save_dat_path = 'and'
+csv_path = common_path + 'input.csv'
+result_path = common_path + 'result'
+save_model_path = common_path + 'and'
+save_dat_path = common_path + 'and'
 
 # field_data.size + ret_data.size - 1になる(最後尾には勝率が来るため)
 data_size = 10
