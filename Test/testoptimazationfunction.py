@@ -55,7 +55,7 @@ class NetWork(chainer.Chain):
 def read_csv():
     csv_file = open(csv_path, 'r')
 
-    data = csv.reader(csv_file, delimiter='r', skipinitialspace=True)
+    data = csv.reader(csv_file, delimiter=',', skipinitialspace=True)
 
     ret_data = []
     field_data = []
@@ -67,6 +67,8 @@ def read_csv():
             ret_data.append(field_data + row)
 
     csv_file.close()
+
+    data_size = len(ret_data[0]) - 1
 
     return ret_data
 
@@ -155,9 +157,6 @@ def calc(inp1, inp2):
 
 
 def main():
-
-    for row in csv_data:
-        print(row)
 
     for count_1 in range(data_size):
         for count_2 in range(count_1 + 1):
