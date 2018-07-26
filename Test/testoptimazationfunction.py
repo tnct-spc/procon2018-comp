@@ -24,6 +24,9 @@ loss_file_path = common_path + 'loss'
 # field_data.size + ret_data.size - 1になる(最後尾には勝率が来るため)
 data_size = 10
 
+# テスト用データの占める割合
+test_data_per = 0.2
+
 data_row = None
 train_batch_size = 10000
 test_batch_size = 100
@@ -39,21 +42,16 @@ hid_unit = 5
 
 class NetWork(chainer.Chain):
 
-    def __init__(self, n_inp, n_hid, n_out):
+    def __init__(self, n_hid, n_out):
         # 継承してる
-        super(NetWork, self).__init__(
-            l1 = L.Linear(n_inp, n_hid),
-            l2 = L.Linear(n_hid, n_out)
-        )
+        super(NetWork, self).__init__()
+        with self.init_scope():
+            self.l1 = L.Linear(None, n_hid)
+            self.l2 = L.Linear(None, n_out)
     
     # 順計算
-    def __call__(self, inp):
-        return self.l2(F.relu(self.l1(inp)))
-        '''
-        hidden = F.sigmoid(self.l1(inp))
-        out =  F.sigmoid(self.l2(hidden))
-        return out
-        '''
+    def __call__(self, x):
+        return self.l2(F.relu(self.l1(x)))
 
 def read_csv():
     csv_file = open(csv_path, 'r')
@@ -67,8 +65,8 @@ def read_csv():
         if row[0] == '-1':
             field_data = row[1:]
         else:
-            ret_data.append(list(map(np.float32, field_data + row)))
-            ret_data[-1][-1] = np.float32(1) if ret_data[-1][-1] > 0 else np.float32(-1)
+            ret_data.append(list(map(float,field_data + row)))
+            ret_data[-1][-1] = 1.0 if (int(ret_data[-1][-1]) > 0) else 0.0
 
     csv_file.close()
 
@@ -84,16 +82,18 @@ def make_data(inp1, inp2):
 
     random.shuffle(csv_data)
 
-    inp_data = np.empty((train_batch_size + test_batch_size,2), dtype=np.float32)
-    out_data = np.empty(train_batch_size + test_batch_size, dtype=np.int32)
+    train_size = int((1.0 - test_data_per) * len(csv_data))
 
-    for index in range(train_batch_size + test_batch_size):
+    inp_data = np.empty((len(csv_data), 2), dtype=np.float32)
+    out_data = np.empty((len(csv_data), 1), dtype=np.float32)
+
+    for index in range(len(csv_data)):
         inp_data[index][0] = csv_data[index][inp1]
         inp_data[index][1] = csv_data[index][inp2]
-        out_data[index] = csv_data[index][-1]
+        out_data[index][0] = csv_data[index][-1]
     
-    train_data = chainer.datasets.TupleDataset(inp_data[:train_batch_size], out_data[:train_batch_size])
-    test_data = chainer.datasets.TupleDataset(inp_data[-test_batch_size:], inp_data[-test_batch_size:])
+    train_data = chainer.datasets.TupleDataset(inp_data[:train_size], out_data[:train_size])
+    test_data = chainer.datasets.TupleDataset(inp_data[train_size:], out_data[train_size:])
 
     return train_data, test_data
 
@@ -101,23 +101,24 @@ def make_data(inp1, inp2):
 def calc(inp1, inp2):
     train,test = make_data(inp1, inp2)
 
-    net = NetWork(2, hid_unit, 1)
+    net = NetWork(hid_unit, 1)
 
-    # model = L.Classifier(net, lossfun=F.mean_squared_error)
-    model = L.Classifier(net)
+    accfun = lambda x, t: F.sum(1 - abs(x-t))/x.size 
+    model = L.Classifier(net, lossfun=F.mean_squared_error, accfun=accfun)
+    # model = L.Classifier(net)
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
 
     train_iter = chainer.iterators.SerialIterator(train, train_batch_size)
-    test_iter = chainer.iterators.SerialIterator(test, test_batch_size, repeat=False, shuffle=False)
+    test_iter = chainer.iterators.SerialIterator(test, test_batch_size, repeat=False)
 
     updater = training.StandardUpdater(train_iter, optimizer, device=-1)
 
     trainer = training.Trainer(updater, (epoch, 'epoch'), out=result_path + '_' + str(inp1) + '_' + str(inp2))
 
     trainer.extend(extensions.Evaluator(test_iter, model, device=-1))
-    trainer.extend(extensions.dump_graph('loss'))
-    trainer.extend(extensions.LogReport(trigger=(1, 'epoch')))
+    trainer.extend(extensions.dump_graph('main/loss'))
+    trainer.extend(extensions.LogReport(trigger=(epoch, 'epoch')))
     trainer.extend(extensions.PlotReport(
         ['main/loss', 'validation/main/loss'], x_key='epoch',
         file_name=loss_file_path + '_' + str(inp1) + '_' + str(inp2) + '.png'
@@ -127,6 +128,7 @@ def calc(inp1, inp2):
     ))
 
     trainer.run()
+
     """
     chainer.serializers.save_npz(save_model_path + '_' +  str(inp1) + '_' + str(inp2) + '.model', model)
 
