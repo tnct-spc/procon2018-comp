@@ -47,7 +47,7 @@ void TestGetFieldData::run(){
                 }
             }
             if(flag)
-                return std::vector<std::tuple<int,int,int>>({std::make_tuple(x_list.at(moves.at(0)), y_list.at(moves.at(0)), move % 2), std::make_tuple(x_list.at(moves.at(1)), y_list.at(moves.at(1)), (int)(move % 4 > 1))});
+                return std::make_pair(std::make_tuple(x_list.at(moves.at(0)), y_list.at(moves.at(0)), move % 2), std::make_tuple(x_list.at(moves.at(1)), y_list.at(moves.at(1)), (int)(move % 4 > 1)));
         }
 
     };
@@ -79,11 +79,14 @@ void TestGetFieldData::run(){
                 std::vector<std::vector<std::vector<double>>> move_data;
 
                 for(int count = 0; count < turn_count; ++count){
+                    move_data.push_back(std::vector<std::vector<double>>(2));
                     for(int side = 0; side < 2; ++side){
-                        std::vector<std::tuple<int,int,int>> move = calc_move(side, manager_ptr);
+                        std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> move = calc_move(side, manager_ptr);
 
-                        for(int agent = 0;agent < 2; ++agent)
-                            manager_ptr->agentAct(side, agent, move.at(agent));
+                        move_data.back().at(side) = manager_ptr->getField().calcSituationFeature(move, side);
+
+                        manager_ptr->agentAct(side, 0, move.first);
+                        manager_ptr->agentAct(side, 1, move.second);
                     }
                     manager_ptr->changeTurn();
                 }
