@@ -129,7 +129,6 @@ def calc(inp1, inp2):
 
     trainer.run()
 
-    """
     chainer.serializers.save_npz(save_model_path + '_' +  str(inp1) + '_' + str(inp2) + '.model', model)
 
     # ここから重みの整形とbatの出力処理まで行う
@@ -145,7 +144,7 @@ def calc(inp1, inp2):
     for v in model.predictor.l2.b.data:
         b_arr += struct.pack('f', v)
 
-    open(save_dat_path + '_' + str(inp1) + '_' + str(inp2) + '.dat', 'w').write(b_arr)
+    open(save_dat_path + '_' + str(inp1) + '_' + str(inp2) + '.dat', 'wb').write(b_arr)
 
     # net((n,2)のarray)で予測した値が出せるはず
     # ここにx,y各1/graph_div刻みでグラフを描画する
@@ -156,14 +155,13 @@ def calc(inp1, inp2):
 
     for i0 in range(graph_div + 1):
         for i1 in range(graph_div + 1):
-            outarr[i0, i1] = net(np.array([[inparr_0[i0], inparr_1[i1]]], dtype=np.float32))[0][0]
+            outarr[i0, i1] = net(np.array([[inparr_0[0], inparr_1[1]]], dtype=np.float32))[0][0].data
     
     plt.figure(figsize=(5, 3.5))
     ax = plt.subplot(1, 1, 1, projection='3d')
     ax.plot_surface(inparr_2, inparr_3, outarr)
     ax.view_init(60, 40)
     plt.savefig(save_png_path + '_' + str(inp1) + '_' + str(inp2) + '.png')
-    """
 
 
 def main():
