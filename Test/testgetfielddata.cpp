@@ -91,13 +91,17 @@ void TestGetFieldData::run(){
                 std::vector<std::pair<int,int>> points = manager_ptr->getField().getPoints(false);
                 int diff = points.at(0).first + points.at(0).second - (points.at(1).first + points.at(1).second);
 
+
+                std::string field_string = "-1";
+                for(auto fdata : field_data)
+                    field_string += "," + std::to_string(fdata);
+                logger->info(field_string);
+
                 // ここに値の格納処理をする
                 for(auto data_vec : move_data){
                     for(int side = 0; side < 2; ++side){
 
                         std::string output_data;
-                        for(auto fdata : field_data)
-                            output_data += std::to_string(fdata) + ",";
                         for(auto mdata : data_vec.at(side))
                             output_data += std::to_string(mdata) + ",";
                         output_data += std::to_string(diff);
