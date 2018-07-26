@@ -140,6 +140,7 @@ def calc(inp1, inp2):
     # ここにx,y各1/graph_div刻みでグラフを描画する
     inparr_0 = np.linspace(0.0, 1.0, graph_div + 1, dtype=np.float32)
     inparr_1 = np.linspace(0.0, 1.0, graph_div + 1, dtype=np.float32)
+    inparr_2, inparr_3 = np.meshgrid(inparr_0, inparr_1)
     outarr = np.zeros(((graph_div + 1, graph_div + 1)), dtype=np.float32)
 
     for i0 in range(graph_div + 1):
@@ -148,7 +149,7 @@ def calc(inp1, inp2):
     
     plt.figure(figsize=(5, 3.5))
     ax = plt.subplot(1, 1, 1, projection='3d')
-    ax.plot_surface(inparr_0, inparr_1, outarr)
+    ax.plot_surface(inparr_2, inparr_3, outarr)
     ax.view_init(60, 40)
     plt.savefig(save_png_path + '_' + str(inp1) + '_' + str(inp2) + '.png')
 
