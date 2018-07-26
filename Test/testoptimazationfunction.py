@@ -1,9 +1,25 @@
 import numpy as np
+import csv
+import random
 import chainer
 from chainer import links as L
 from chainer import functions as F
 from chainer import training
 from chainer.training import extensions
+
+
+csv_path = './input.csv'
+result_path = 'result'
+save_model_path = 'and.model'
+
+# field_data.size + ret_data.size - 1になる(最後尾には勝率が来るため)
+data_size = 10
+
+train_batch_size = 100
+test_batch_size = 100
+epoch = 100
+
+hid_unit = 5
 
 class NetWork(chainer.Chain):
 
@@ -20,21 +36,48 @@ class NetWork(chainer.Chain):
         out = self.l2(hidden)
         return out
 
-def main():
+def read_csv():
+    csv_file = open(csv_path, 'r')
 
-    # 2つの入力と1つの出力を持つモデル
-    # ここにtrainとtestを宣言する
+    data = csv.reader(csv_file, delimiter='r', skipinitalshape=True)
 
-    '''
-    train = make_data(10000)
-    test = make_data(1000)
-    '''
+    ret_data = []
+    field_data = []
 
-    test_batch_size = 100
-    train_batch_size = 100
-    epoch = 100
+    for row in data:
+        if row[0] == '0':
+            field_data = row[1:]
+        else:
+            ret_data.append(field_data + row)
 
-    model = L.Classifier(NetWork(2, 3, 1), lossfun=F.mean_squared_error)
+    csv_file.close()
+
+    return ret_data
+
+
+csv_data = read_csv()
+
+def make_data(inp1, inp2):
+
+    random.shuffle(csv_data)
+
+    inp_data = []
+    out_data = []
+
+    for index in range(train_batch_size + test_batch_size):
+        inp_data.append(csv_data[index][inp1], csv_data[index][inp2])
+        out_data.append(csv_data[index][-1])
+    
+    train_data = chainer.datasets.TupleDataset(inp_data[:train_batch_size], out_data[:train_batch_size])
+    test_data = chainer.datasets.TupleDataset(inp_data[-test_batch_size:], inp_data[-test_batch_size:])
+
+    return train_data, test_data
+
+
+def calc(inp1, inp2):
+    train,test = make_data(inp1, inp2)
+
+    model = L.Classifier(NetWork(2, hid_unit, 1), lossfun=F.mean_squared_error)
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
 
@@ -44,19 +87,30 @@ def main():
 
     updater = training.StandardUpdater(train_iter, optimizer, device=-1)
 
-    trainer = training.Trainer(updater, (epoch, 'epoch'), out='result')
+    trainer = training.Trainer(updater, (epoch, 'epoch'), out=result_path)
 
     trainer.extend(extensions.Evaluator(test_iter, model, device=-1))
-    '''
     trainer.extend(extensions.dump_graph('loss'))
     trainer.extend(extensions.LogReport(trigger=(1, 'epoch')))
     trainer.extend(extensions.PrintReport(
         ['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy'],
     ))
-    '''
 
     trainer.run()
-    chainer.serializers.save_npz('and.model',model)
+    chainer.serializers.save_npz(save_model_path, model)
+
+
+def main():
+
+    # 2つの入力と1つの出力を持つモデル
+    # ここにtrainとtestを宣言する
+
+    for row in csv_data:
+        print(row)
+
+    for count in range(data_size ** 2):
+        calc(count // data_size, count % data_size)
+
 
 
 if __name__ == '__main__':
