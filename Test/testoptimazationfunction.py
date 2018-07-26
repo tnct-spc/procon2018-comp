@@ -1,6 +1,7 @@
 import numpy as np
 import csv
 import random
+import struct
 import chainer
 from chainer import links as L
 from chainer import functions as F
@@ -10,7 +11,8 @@ from chainer.training import extensions
 
 csv_path = './input.csv'
 result_path = 'result'
-save_model_path = 'and.model'
+save_model_path = 'and'
+save_dat_path = 'and'
 
 # field_data.size + ret_data.size - 1になる(最後尾には勝率が来るため)
 data_size = 10
@@ -97,8 +99,22 @@ def calc(inp1, inp2):
     ))
 
     trainer.run()
-    chainer.serializers.save_npz(save_model_path, model)
+    chainer.serializers.save_npz(save_model_path + '_' +  str(inp1) + '_' + str(inp2) + '.model', model)
 
+    # ここから重みの整形とbatの出力処理まで行う
+    b_arr = bytearray()
+
+    for v in model.predictor.l1.W.data.reshape(2 * hid_unit):
+        b_arr += struct.pack('f', v)
+    for v in model.predictor.l1.b.data:
+        b_arr += struct.pack('f', v)
+
+    for v in model.predictor.l2.W.data.reshape(hid_unit * 1):
+        b_arr += struct.pack('f', v)
+    for v in model.predictor.l2.b.data:
+        b_arr += struct.pack('f', v)
+
+    open(save_dat_path + '_' + str(inp1) + '_' + str(inp2) + '.dat', 'w').write(b_arr)
 
 def main():
 
