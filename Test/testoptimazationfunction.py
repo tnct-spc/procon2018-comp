@@ -21,27 +21,21 @@ save_model_path = 'and'
 save_png_path = 'image'
 loss_file_path = 'loss'
 
-# field_data.size + ret_data.size - 1になる(最後尾には勝率が来るため)
-data_size = 50
 
 # テスト用データの占める割合
 test_data_per = 0.2
 
-data_row = None
 train_batch_size = 10000
 test_batch_size = 100
 
-graph_div = 100
-
 # 学習の試行回数(これをN^2/2回続ける)
-epoch = 10
-
-csv_data = None
+epoch = 50
 
 hid_unit = 50
 
 class NetWork(chainer.Chain):
 
+    # 層のユニット数に
     def __init__(self, n_layers):
         # 継承してる
         super(NetWork, self).__init__()
@@ -75,10 +69,8 @@ def read_csv():
 
 
 csv_data = read_csv()
-data_row = len(csv_data)
 
-def make_data(inp1, inp2):
-
+def two_data_calc(inp1, inp2):
     random.shuffle(csv_data)
 
     train_size = int((1.0 - test_data_per) * len(csv_data))
@@ -94,20 +86,23 @@ def make_data(inp1, inp2):
     train_data = chainer.datasets.TupleDataset(inp_data[:train_size], out_data[:train_size])
     test_data = chainer.datasets.TupleDataset(inp_data[train_size:], out_data[train_size:])
 
-    return train_data, test_data
-
-
-def calc(inp1, inp2):
-    train,test = make_data(inp1, inp2)
-
     data_id = '_' + str(inp1) + '_' + str(inp2)
     data_path = result_path + data_id + '/'
 
-    net = NetWork([hid_unit, 1])
+    # 相対パスと接尾辞
+    '''
+    print(data_path)
+    print(data_id)
+    '''
+    calc_neural([hid_unit, 1], train_data, test_data, data_path, data_id)
+    
+# 隠れ層と出力層の数を配列で指定してtrainとtestのデータをTupleDataSetで作って、保存先フォルダの(相対)パスとファイル名のsuffixを指定する
+def calc_neural(layers, train, test, data_path, data_suffix):
+
+    net = NetWork(layers)
 
     accfun = lambda x, t: F.sum(1 - abs(x-t))/x.size 
     model = L.Classifier(net, lossfun=F.mean_squared_error, accfun=accfun)
-    # model = L.Classifier(net)
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
 
@@ -123,7 +118,7 @@ def calc(inp1, inp2):
     trainer.extend(extensions.LogReport(trigger=(1, 'epoch')))
     trainer.extend(extensions.PlotReport(
         ['main/loss', 'validation/main/loss'], x_key='epoch',
-        file_name= loss_file_path + data_id + '.png'
+        file_name= loss_file_path + data_suffix + '.png'
     ))
     trainer.extend(extensions.PrintReport(
         ['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy'],
@@ -131,10 +126,15 @@ def calc(inp1, inp2):
 
     trainer.run()
 
-    chainer.serializers.save_npz(data_path + save_model_path + data_id + '.model', model)
+    chainer.serializers.save_npz(data_path + save_model_path + data_suffix + '.model', model)
 
+    # ここの出力は入力が2次元な場合のみなので
+    '''
     # net((n,2)のarray)で予測した値が出せるはず
     # ここにx,y各1/graph_div刻みでグラフを描画する
+
+    graph_div = 100
+
     inparr_0 = np.linspace(0.0, 1.0, graph_div + 1, dtype=np.float32)
     inparr_1 = np.linspace(0.0, 1.0, graph_div + 1, dtype=np.float32)
     inparr_2, inparr_3 = np.meshgrid(inparr_0, inparr_1)
@@ -148,20 +148,18 @@ def calc(inp1, inp2):
     ax = plt.subplot(1, 1, 1, projection='3d')
     ax.plot_surface(inparr_2, inparr_3, outarr)
     ax.view_init(60, 40)
-    plt.savefig(data_path + save_png_path + data_id + '.png')
+    plt.savefig(data_path + save_png_path + data_suffix + '.png')
+    '''
 
 
 def main():
 
+    # field_data.size + ret_data.size - 1になる(最後尾には勝率が来るため)
     data_size = len(csv_data[0]) - 1
 
-    calc(0, 0)
-
-    """
     for count_1 in range(data_size):
         for count_2 in range(count_1 + 1):
-            calc(count_1, count_2)
-    """
+            two_data_calc(count_1, count_2)
 
 
 
