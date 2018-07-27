@@ -28,11 +28,6 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, b
         connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
         connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
 
-        ope = std::make_shared<Operator>();
-        connect(ope.get(), &Operator::pushEnd, this, &GameManager::endChangeMode);
-        connect(this, &GameManager::sendDataToOperator, ope.get(), &Operator::changeDataDisplay);
-        connect(ope.get(), &Operator::pushChange, this, &GameManager::getChangeOfData);
-
     }else{
         is_auto = true;//この場合は自動進行
     }
@@ -55,10 +50,6 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
         connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
         connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
 
-        ope = std::make_shared<Operator>();
-        connect(ope.get(), &Operator::pushEnd, this, &GameManager::endChangeMode);
-        connect(this, &GameManager::sendDataToOperator, ope.get(), &Operator::changeDataDisplay);
-        connect(ope.get(), &Operator::pushChange, this, &GameManager::getChangeOfData);
     }else{
         is_auto = true;//この場合は自動進行
     }
@@ -598,9 +589,19 @@ void GameManager::nextMoveForManualMode(){
 
 void GameManager::startupChangeMode()
 {
+    ope = std::make_shared<Operator>();
+
+    connect(ope.get(), &Operator::pushEnd, this, &GameManager::endChangeMode);
+    connect(this, &GameManager::sendDataToOperator, ope.get(), &Operator::changeDataDisplay);
+    connect(ope.get(), &Operator::pushChange, this, &GameManager::getChangeOfData);
+
+    std::cout << "OK" << std::endl;
+
     // Operatorを表示
     ope->show();
     ope->setTurns(field->getTurnCount(), field->getFinalTurn());
+
+    std::cout << "OK" << std::endl;
 
     // VisualizerをChangeModeに変更
     visualizer->setChangeMode(true);
@@ -616,7 +617,8 @@ void GameManager::endChangeMode(const std::pair<int, int> turns)
     visualizer->setChangeMode(false);
 
     // Operatorを閉じる
-    ope->~Operator();
+//    ope->~Operator();
+    ope->close();
 
     // Fieldの書き換え
     *field = visualizer->getField();
