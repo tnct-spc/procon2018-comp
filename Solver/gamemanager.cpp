@@ -595,13 +595,9 @@ void GameManager::startupChangeMode()
     connect(this, &GameManager::sendDataToOperator, ope.get(), &Operator::changeDataDisplay);
     connect(ope.get(), &Operator::pushChange, this, &GameManager::getChangeOfData);
 
-    std::cout << "OK" << std::endl;
-
     // Operatorを表示
     ope->show();
     ope->setTurns(field->getTurnCount(), field->getFinalTurn());
-
-    std::cout << "OK" << std::endl;
 
     // VisualizerをChangeModeに変更
     visualizer->setChangeMode(true);
@@ -617,7 +613,6 @@ void GameManager::endChangeMode(const std::pair<int, int> turns)
     visualizer->setChangeMode(false);
 
     // Operatorを閉じる
-//    ope->~Operator();
     ope->close();
 
     // Fieldの書き換え

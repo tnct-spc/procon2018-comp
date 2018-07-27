@@ -13,7 +13,6 @@ Operator::Operator(QWidget *parent) :
 
 Operator::~Operator()
 {
-    std::cout << "OK1" << std::endl;
     delete ui;
 }
 

@@ -576,5 +576,7 @@ procon::Field Visualizer::getField()
 void Visualizer::setTurns(const std::pair<int, int> turns)
 {
     turn = turns.first;
+    field.setTurnCount(turn);
     max_turn = turns.second;
+    field.setFinalTurn(max_turn);
 }
