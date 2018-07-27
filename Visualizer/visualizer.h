@@ -66,9 +66,6 @@ private:
 
     int grid_size;
 
-    unsigned int grid_x;
-    unsigned int grid_y;
-
     bool auto_mode = true;
 
     // 移動を入力するエージェントが選択されているか

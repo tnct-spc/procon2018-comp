@@ -182,7 +182,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             pruning = std::make_pair(std::get<1>(team_2_ans.second) + field->getAgent(1,1).first, std::get<2>(team_2_ans.second) + field->getAgent(1,1).second);
             pruning_pos.push_back(std::make_pair(std::make_pair(1, std::get<0>(team_2_ans.second) - 1), pruning));
 
-
+            std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> test;
+            test = team_1_ans;
 
 
             agentAct(0,0,team_1_ans.first);
@@ -191,16 +192,6 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             agentAct(1,1,team_2_ans.second);
 
             changeTurn(false);
-
-            std::pair<int,int> red_point,blue_point;
-
-            /*
-            std::cout<<"赤の素の得点は"<<red_point.first<<"点で、領域ポイントは"<<red_point.second<<"点です"<<std::endl;
-            std::cout<<"青の素の得点は"<<blue_point.first<<"点で、領域ポイントは"<<blue_point.second<<"点です"<<std::endl;
-            */
-
-            red_point = field->getPoints(pruning_pos).at(0);
-            blue_point = field->getPoints(pruning_pos).at(1);
 
 
             field_vec.push_back(std::make_shared<procon::Field>(*field));
@@ -301,6 +292,8 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
         team_1_ans = team_1->agentAct(0);
         team_2_ans = team_2->agentAct(1);
 
+
+
         agentAct(0,0,team_1_ans.first);
         agentAct(0,1,team_1_ans.second);
         agentAct(1,0,team_2_ans.first);
@@ -375,7 +368,6 @@ void GameManager::changeTurn(bool update){
     std::map<std::pair<int,int>,std::pair<int,std::pair<int,int>>> counts;
 
     int type, pos_x, pos_y;
-
 
 
     //移動しようとしたエージェントが失敗した時に呼ばれる

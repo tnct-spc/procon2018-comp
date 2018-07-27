@@ -7,8 +7,6 @@
     field(inp_field)
 {
     ui->setupUi(this);
-    grid_x = field.getSize().first;
-    grid_y = field.getSize().second;
 
     next_grids = std::vector<std::vector<std::pair<int, int>>>(2, std::vector<std::pair<int,int>>(2, std::make_pair(-1, -1)));
     candidate = std::vector<std::vector<std::pair<int, int>>>(2, std::vector<std::pair<int,int>>(2, std::make_pair(-1, -1)));
@@ -29,6 +27,9 @@ void Visualizer::setField(const procon::Field& inp_field, int now_turn, int max_
 
 void Visualizer::paintEvent(QPaintEvent *event){
     Q_UNUSED(event);
+
+    unsigned int grid_x = field.getSize().first;
+    unsigned int grid_y = field.getSize().second;
 
     QPainter painter(this);
 
