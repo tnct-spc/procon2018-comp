@@ -17,7 +17,6 @@ common_path = '../Data/TestOptimazationFunction/'
 csv_path = common_path + 'input.csv'
 result_path = common_path + 'result'
 save_model_path = 'and'
-save_dat_path = 'and'
 save_png_path = 'image'
 loss_file_path = 'loss'
 
@@ -131,21 +130,6 @@ def calc(inp1, inp2):
     trainer.run()
 
     chainer.serializers.save_npz(data_path + save_model_path + data_id + '.model', model)
-
-    # ここから重みの整形とbatの出力処理まで行う
-    b_arr = bytearray()
-
-    for v in model.predictor.l1.W.data.reshape(2 * hid_unit):
-        b_arr += struct.pack('f', v)
-    for v in model.predictor.l1.b.data:
-        b_arr += struct.pack('f', v)
-
-    for v in model.predictor.l2.W.data.reshape(hid_unit * 1):
-        b_arr += struct.pack('f', v)
-    for v in model.predictor.l2.b.data:
-        b_arr += struct.pack('f', v)
-
-    open(data_path + save_dat_path + data_id + '.dat', 'wb').write(b_arr)
 
     # net((n,2)のarray)で予測した値が出せるはず
     # ここにx,y各1/graph_div刻みでグラフを描画する
