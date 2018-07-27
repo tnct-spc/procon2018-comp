@@ -42,16 +42,21 @@ hid_unit = 50
 
 class NetWork(chainer.Chain):
 
-    def __init__(self, n_hid, n_out):
+    def __init__(self, n_layers):
         # 継承してる
         super(NetWork, self).__init__()
         with self.init_scope():
-            self.l1 = L.Linear(None, n_hid)
-            self.l2 = L.Linear(None, n_out)
+            self.linears = []
+            for num in n_layers:
+                self.linears.append(None, num)
     
     # 順計算
     def __call__(self, x):
-        return self.l2(F.relu(self.l1(x)))
+        lay = x
+        for ind in range(len(self.linears) - 1):
+            lay = F.relu(self.linears[ind](lay))
+        return self.linears[-1](lay)
+        # return self.l2(F.relu(self.l1(x)))
 
 def read_csv():
     csv_file = open(csv_path, 'r')
@@ -66,7 +71,7 @@ def read_csv():
             field_data = row[1:]
         else:
             ret_data.append(list(map(float,field_data + row)))
-            ret_data[-1][-1] = 1.0 if (int(ret_data[-1][-1]) > 0) else 0.0
+            # ret_data[-1][-1] = 1.0 if (int(ret_data[-1][-1]) > 0) else 0.0
 
     csv_file.close()
 
@@ -102,7 +107,7 @@ def calc(inp1, inp2):
     data_id = '_' + str(inp1) + '_' + str(inp2)
     data_path = result_path + data_id + '/'
 
-    net = NetWork(hid_unit, 1)
+    net = NetWork([hid_unit, 1])
 
     accfun = lambda x, t: F.sum(1 - abs(x-t))/x.size 
     model = L.Classifier(net, lossfun=F.mean_squared_error, accfun=accfun)
