@@ -538,6 +538,10 @@ void Visualizer::setChangeMode(bool value) {
     selected = false;
     confirm_count = 0;
 
+    if (!change_mode) {
+
+    }
+
 }
 
 void Visualizer::getData(const std::pair<int, int> data, const bool agent) {
@@ -548,8 +552,12 @@ void Visualizer::getData(const std::pair<int, int> data, const bool agent) {
             field.setAgent(selected_agent.first, selected_agent.second, data.first, data.second);
             field.setState(clicked_grid_change.first, clicked_grid_change.second, selected_agent.first + 1);
 
+//            std::pair<int, int> agent = field.getAgent(0,0);
+//            std::cout << agent.first << "," << agent.second << std::endl;
+
             selected = false;
         }
+
     } else {
 
         // グリッドのタイル状況と点数を変更
@@ -558,4 +566,15 @@ void Visualizer::getData(const std::pair<int, int> data, const bool agent) {
     }
 
     update();
+}
+
+procon::Field Visualizer::getField()
+{
+    return field;
+}
+
+void Visualizer::setTurns(const std::pair<int, int> turns)
+{
+    turn = turns.first;
+    max_turn = turns.second;
 }

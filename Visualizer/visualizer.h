@@ -27,6 +27,10 @@ public:
 
     void setField(const procon::Field& inp_field, int now_turn, int max_t);
 
+    procon::Field getField();
+
+    void setTurns(const std::pair<int, int> turns);
+
     void setChangeMode(bool value);
 
 signals:

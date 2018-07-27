@@ -569,6 +569,11 @@ void GameManager::nextMoveForManualMode(){
     visualizer->update();
     visualizer->repaint();
 
+//    std::cout << field->getTurnCount() << "," << field->getFinalTurn() << std::endl;
+
+//    std::pair<int, int> agent = field->getAgent(0,0);
+//    std::cout << agent.first << "," << agent.second << std::endl;
+
     std::vector<std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>>> candidate_move(2);
     candidate_move.at(0) = team_1->agentAct(0);
     candidate_move.at(1) = team_2->agentAct(1);
@@ -605,14 +610,19 @@ void GameManager::startupChangeMode()
 void GameManager::endChangeMode(const std::pair<int, int> turns)
 {
     // Turnをセット
-    field->setTurnCount(turns.first);
-    field->setFinalTurn(turns.second);
+    visualizer->setTurns(turns);
 
     // VisualizerのChangeModeを解除
     visualizer->setChangeMode(false);
 
     // Operatorを閉じる
     ope->~Operator();
+
+    // Fieldの書き換え
+    *field = visualizer->getField();
+
+    // ゲームを続行
+    nextMoveForManualMode();
 }
 
 void GameManager::getDataToOperator(const std::pair<int,int> grid, const bool agent)
