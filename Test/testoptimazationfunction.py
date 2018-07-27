@@ -1,5 +1,6 @@
 import numpy as np
 import csv
+import copy
 import random
 import struct
 import matplotlib
@@ -17,7 +18,6 @@ common_path = '../Data/TestOptimazationFunction/'
 csv_path = common_path + 'input.csv'
 result_path = common_path + 'result'
 save_model_path = 'and'
-save_dat_path = 'and'
 save_png_path = 'image'
 loss_file_path = 'loss'
 
@@ -46,17 +46,12 @@ class NetWork(chainer.Chain):
         # 継承してる
         super(NetWork, self).__init__()
         with self.init_scope():
-            self.linears = []
-            for num in n_layers:
-                self.linears.append(None, num)
+            self.l1 = L.Linear(None, n_layers[0])
+            self.l2 = L.Linear(None, n_layers[1])
     
     # 順計算
     def __call__(self, x):
-        lay = x
-        for ind in range(len(self.linears) - 1):
-            lay = F.relu(self.linears[ind](lay))
-        return self.linears[-1](lay)
-        # return self.l2(F.relu(self.l1(x)))
+        return self.l2(F.relu(self.l1(x)))
 
 def read_csv():
     csv_file = open(csv_path, 'r')
@@ -71,7 +66,8 @@ def read_csv():
             field_data = row[1:]
         else:
             ret_data.append(list(map(float,field_data + row)))
-            # ret_data[-1][-1] = 1.0 if (int(ret_data[-1][-1]) > 0) else 0.0
+            # 勝敗予測より得点差予測の方がよさそうなので
+            ret_data[-1][-1] = 1.0 if (int(ret_data[-1][-1]) > 0) else 0.0
 
     csv_file.close()
 
@@ -137,21 +133,6 @@ def calc(inp1, inp2):
 
     chainer.serializers.save_npz(data_path + save_model_path + data_id + '.model', model)
 
-    # ここから重みの整形とbatの出力処理まで行う
-    b_arr = bytearray()
-
-    for v in model.predictor.l1.W.data.reshape(2 * hid_unit):
-        b_arr += struct.pack('f', v)
-    for v in model.predictor.l1.b.data:
-        b_arr += struct.pack('f', v)
-
-    for v in model.predictor.l2.W.data.reshape(hid_unit * 1):
-        b_arr += struct.pack('f', v)
-    for v in model.predictor.l2.b.data:
-        b_arr += struct.pack('f', v)
-
-    open(data_path + save_dat_path + data_id + '.dat', 'wb').write(b_arr)
-
     # net((n,2)のarray)で予測した値が出せるはず
     # ここにx,y各1/graph_div刻みでグラフを描画する
     inparr_0 = np.linspace(0.0, 1.0, graph_div + 1, dtype=np.float32)
@@ -174,9 +155,13 @@ def main():
 
     data_size = len(csv_data[0]) - 1
 
+    calc(0, 0)
+
+    """
     for count_1 in range(data_size):
         for count_2 in range(count_1 + 1):
             calc(count_1, count_2)
+    """
 
 
 
