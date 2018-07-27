@@ -940,8 +940,6 @@ void procon::Field::BinaryToField(std::string Path){
     std::ofstream output(Path);
 
     output<<std::bitset<5>(grid_x);
-
-
     output<<std::bitset<5>(grid_y);
 
     for(int x = 0 ; x < grid_x ; x++){
@@ -950,12 +948,14 @@ void procon::Field::BinaryToField(std::string Path){
         }
     }
 
+    output << field_data;
     for(int side = 0 ; side < 2 ; side++){
         for(int index = 0 ; index < 2 ; index++){
             output << std::bitset<5>(agents.at(side).at(index).first);
             output << std::bitset<5>(agents.at(side).at(index).second);
         }
     }
+
     output << std::bitset<8>(getTurnCount());
     output << std::bitset<8>(getFinalTurn());
 }
