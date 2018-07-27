@@ -32,6 +32,7 @@ private:
     void goNextState();
     void goPrevState();
     void exportFieldtoCSV();
+    void exportFieldtoBinary();
 
     const unsigned int x_size = 12;
     const unsigned int y_size = 8;

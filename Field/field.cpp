@@ -937,26 +937,32 @@ std::vector<double> procon::Field::calcSituationFeature(std::pair<std::tuple<int
     return ans;
 }
 void procon::Field::BinaryToField(std::string Path){
+
     std::ofstream output(Path);
 
-    output<<std::bitset<5>(grid_x);
-    output<<std::bitset<5>(grid_y);
+    output.write(reinterpret_cast<char *>(&grid_x), sizeof(grid_x));
+    output.write(reinterpret_cast<char *>(&grid_y), sizeof(grid_y));
 
     for(int x = 0 ; x < grid_x ; x++){
         for(int y = 0 ; y < grid_y; y++){
-            output <<std::bitset<5>(getState(x,y).second);
+            unsigned int  w = getState(x,y).second + 16;
+            output.write(reinterpret_cast<char *>(w), sizeof(w));
         }
     }
 
-    output << field_data;
     for(int side = 0 ; side < 2 ; side++){
         for(int index = 0 ; index < 2 ; index++){
-            output << std::bitset<5>(agents.at(side).at(index).first);
-            output << std::bitset<5>(agents.at(side).at(index).second);
+            unsigned int hoge_x = agents.at(side).at(index).first + 16;
+            unsigned int hoge_y = agents.at(side).at(index).second + 16;
+            output.write(reinterpret_cast<char *>(&hoge_x), sizeof(hoge_x));
+            output.write(reinterpret_cast<char *>(&hoge_y), sizeof(hoge_y));
         }
     }
+    unsigned int hoge = getTurnCount();
+    output.write(reinterpret_cast<char *>(&hoge), sizeof(hoge));
+    hoge = getFinalTurn();
+    output.write(reinterpret_cast<char *>(&hoge), sizeof(hoge));
+    output.close();
 
-    output << std::bitset<8>(getTurnCount());
-    output << std::bitset<8>(getFinalTurn());
 }
 
