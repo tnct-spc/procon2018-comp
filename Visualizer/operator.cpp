@@ -16,9 +16,16 @@ Operator::~Operator()
     delete ui;
 }
 
+void Operator::setTurns(const int now_turn, const int max_turn)
+{
+    ui->nowTurnBox->setValue(now_turn);
+    ui->maxTurnBox->setValue(max_turn);
+}
+
 void Operator::sendPushEnd()
 {
-    emit pushEnd();
+    std::pair<int, int> turns = std::make_pair<int, int>(ui->nowTurnBox->value(), ui->maxTurnBox->value());
+    emit pushEnd(turns);
 }
 
 void Operator::sendPushChange()

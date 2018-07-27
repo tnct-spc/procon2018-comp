@@ -352,11 +352,13 @@ void Visualizer::paintEvent(QPaintEvent *event){
         if (selected) drawAroundAgent();
     }
 
-    // クリックされたグリッド
-    if (change_mode) drawClickedGrid();
+    if (clicked) {
+        // クリックされたグリッド
+        if (change_mode) drawClickedGrid();
 
-    // クリックされたエージェント
-    if (change_mode && selected) drawClickedAgent();
+        // クリックされたエージェント
+        if (change_mode && selected) drawClickedAgent();
+    }
 
     drawValues();
     drawAgents();
@@ -380,7 +382,7 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         // マスの範囲外をクリックしたら何もしない
         if ((point.x() < horizontal_margin) || (point.x() > window_width - horizontal_margin)
             || (point.y() < vertical_margin) || (point.y() > window_height - vertical_margin)) {
-        return;
+            return;
         }
 
         //右クリックかどうか
@@ -411,6 +413,7 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         if (change_mode) {
 
             clicked_grid_change = clicked_grid;
+            clicked = true;
 
             update();
 
@@ -527,13 +530,14 @@ void Visualizer::candidateMove(const std::vector<std::vector<std::pair<int, int>
 }
 
 void Visualizer::setChangeMode(bool value) {
+
     change_mode = value;
 
     // もろもろを初期化
-    if (change_mode) {
-        selected = false;
-        confirm_count = 0;
-    }
+    clicked = false;
+    selected = false;
+    confirm_count = 0;
+
 }
 
 void Visualizer::getData(const std::pair<int, int> data, const bool agent) {
@@ -547,6 +551,7 @@ void Visualizer::getData(const std::pair<int, int> data, const bool agent) {
             selected = false;
         }
     } else {
+
         // グリッドのタイル状況と点数を変更
         field.setState(clicked_grid_change.first, clicked_grid_change.second, data.first);
         field.setGridValue(clicked_grid_change.first, clicked_grid_change.second, data.second);

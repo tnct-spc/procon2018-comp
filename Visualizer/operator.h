@@ -20,11 +20,20 @@ public:
     explicit Operator(QWidget *parent = 0);
     ~Operator();
 
+    // Turnの値をセット
+    void setTurns(const int now_turn, const int max_turn);
+
 signals:
+
+    // 変更を送る
     void pushChange(const std::pair<int, int> out_data, const bool out_bool);
-    void pushEnd();
+
+    // Endが押されたら送る
+    void pushEnd(const std::pair<int, int> turns);
 
 public slots:
+
+    // Visualizerが押されたとき、Operatorの表示を変更
     void changeDataDisplay(const std::pair<int, int> inp_data, const bool inp_bool);
 
 private:
