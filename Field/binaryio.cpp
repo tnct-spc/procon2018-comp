@@ -9,6 +9,7 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
      * 次にそれぞれのマスの得点 (0,0)(0,1)...(0,grid_y-1)(1,0)(1,1)...(1,grid_y-1)(2,0).......(grid_x-1,grid_y-1)の順番(伝われ)(それぞれ6桁のbitで表現予定)
      * 次にそれぞれのマスの状態 (マスの順番は上に同じ)(それぞれ2桁のbitで表現)
      * 次に現在のターン数と最終ターン数(それぞれ7桁のbitで表現)
+     * 最後にagentの位置を格納 team0のagent0x座標,y座標 同様にteam0のagent1,team1のagent0,team1のagent1も
      *
      */
     std::pair<int,int> large = field.getSize();
@@ -27,31 +28,30 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
     }
     ans += std::bitset<7>(field.getTurnCount()).to_string<bit>();
     ans += std::bitset<7>(field.getFinalTurn()).to_string<bit>();
+
+    for(int turn = 0; turn < 2 ;turn++){
+        for(int index = 0; index < 2; index++){
+            ans += std::bitset<4>(field.getAgent(turn, index).first).to_string<bit>();
+            ans += std::bitset<4>(field.getAgent(turn, index).second).to_string<bit>();
+        }
+    }
+
     std::string str;
     std::ofstream ofs;
     ofs.open(Path, std::ios::binary);
 
     if (!ofs) {
-            std::cout << Path + "に書き込めません"<<std::endl;;
-            return;
-        }
-
-    for(int i = 0;i < ans.size() ; i++){
-        str.push_back(ans.at(i));
-        if(str.size() == 32){
-            std::bitset<32> ins(str);
-            unsigned int hoge = ins.to_ulong();
-            ofs.write((char * )&hoge, sizeof (unsigned int));
-            str.clear();
-        }
+        std::cout << Path + "に書き込めません"<<std::endl;
+        return;
     }
-    if(!str.empty()){
-        std::bitset<32> ins(str);
-        unsigned int hoge = ins.to_ulong();
-        ofs.write((char * )&hoge, sizeof (unsigned int));
-        str.clear();
+    for(int i = 0 ; i < ans.size() ; i++){
+        bool ins = ans.at(i) - '0';
+        ofs.write( (char * ) &ins,sizeof (bool) );
     }
+    std::cout<<std::endl;
     ofs.close();
+    std::cout<<"binary_size:"<<ans<<std::endl;
+
 }
 
 procon::Field procon::BinaryIo::importField(std::string Path){
@@ -60,14 +60,16 @@ procon::Field procon::BinaryIo::importField(std::string Path){
     if (!fin){
         std::cout << "ファイル " + Path + " が開けません"<<std::endl;
     }
-    unsigned int ins = 0;
+    bool ins = 0;
 
     std::string ans, str;
 
     while(!fin.eof()){
-        fin.read( (char * ) &ins, sizeof (unsigned int));
-        ans += std::bitset<32>(ins).to_string<bit>();
+        fin.read( (char * ) &ins, sizeof (bool));
+        ans += std::to_string(ins);
     }
+    std::cout<<std::endl;
+    std::cout<<"binary_size:"<<ans<<std::endl;
 
     std::queue<char> que;
 
@@ -127,6 +129,28 @@ procon::Field procon::BinaryIo::importField(std::string Path){
         str.push_back(que.front());
         que.pop();
     }
+
     field.setFinalTurn(std::bitset<7>(str).to_ulong());
+    str.clear();
+    for(int turn = 0 ; turn < 2 ; turn++){
+        for(int index = 0 ; index < 2 ; index++){
+            for(int i = 0; i < 4; i++){
+                str.push_back(que.front());
+                que.pop();
+            }
+            int a_x = std::bitset<4>(str).to_ulong();
+            str.clear();
+            for(int i = 0 ; i < 4 ; i++){
+                str.push_back(que.front());
+                que.pop();
+            }
+            int a_y = std::bitset<4>(str).to_ulong();
+            str.clear();
+
+            field.setAgent(turn, index, a_x, a_y);
+        }
+    }
+
+    fin.close();
     return field;
 }

@@ -79,6 +79,9 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
         field = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
 
+    }else if (QString::compare("BinaryImport", InputMethod) == 0) {
+        std::string path = QFileDialog::getOpenFileName().toStdString();
+        field = std::make_shared<procon::Field>(procon::BinaryIo::importField(path));
     }
     //field->guessAgents(1);
 
