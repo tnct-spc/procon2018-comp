@@ -3,6 +3,7 @@
 
 #include "gamemanager.h"
 #include "csvio.h"
+#include "binaryio.h"
 #include <thread>
 #include <memory>
 #include <QMainWindow>

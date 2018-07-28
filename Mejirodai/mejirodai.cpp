@@ -57,5 +57,5 @@ void Mejirodai::exportFieldtoCSV(){
 }
 void Mejirodai::exportFieldtoBinary(){
     procon::Field& exp_field = manager->getField();
-    exp_field.BinaryToField(QFileDialog::getSaveFileName(this,tr("Save CSV")).toStdString());
+    procon::BinaryIo::exportField(exp_field, QFileDialog::getSaveFileName(this,tr("Save CSV")).toStdString());
 }
