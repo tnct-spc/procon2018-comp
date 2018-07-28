@@ -936,43 +936,5 @@ std::vector<double> procon::Field::calcSituationFeature(std::pair<std::tuple<int
     std::cout<<std::endl;
     return ans;
 }
-void procon::Field::BinaryToField(std::string Path){
 
-    /* 全ての表したい数を数を適正な桁数のbitで表現して結合します。
-     * 最後に32個ずつ前から取ってint型の数字に直して、それを書き込みます。
-     *
-     * まず横幅のサイズと縦幅のサイズ(それぞれ4桁のbitで表現)
-     * 次にそれぞれのマスの得点 (0,0)(0,1)...(0,grid_y-1)(1,0)(1,1)...(1,grid_y-1)(2,0).......(grid_x-1,grid_y-1)の順番(伝われ)(それぞれ6桁のbitで表現予定)
-     * 次にそれぞれのマスの状態 (マスの順番は上に同じ)(それぞれ2桁のbitで表現)
-     * 次に現在のターン数と最終ターン数(それぞれ7桁のbitで表現)
-     *
-     */
-
-    std::ofstream output(Path);
-
-    output.write(reinterpret_cast<char *>(&grid_x), sizeof(grid_x));
-    output.write(reinterpret_cast<char *>(&grid_y), sizeof(grid_y));
-
-    for(int x = 0 ; x < grid_x ; x++){
-        for(int y = 0 ; y < grid_y; y++){
-            unsigned int  w = getState(x,y).second + 16;
-            output.write(reinterpret_cast<char *>(w), sizeof(w));
-        }
-    }
-
-    for(int side = 0 ; side < 2 ; side++){
-        for(int index = 0 ; index < 2 ; index++){
-            unsigned int hoge_x = agents.at(side).at(index).first + 16;
-            unsigned int hoge_y = agents.at(side).at(index).second + 16;
-            output.write(reinterpret_cast<char *>(&hoge_x), sizeof(hoge_x));
-            output.write(reinterpret_cast<char *>(&hoge_y), sizeof(hoge_y));
-        }
-    }
-    unsigned int hoge = getTurnCount();
-    output.write(reinterpret_cast<char *>(&hoge), sizeof(hoge));
-    hoge = getFinalTurn();
-    output.write(reinterpret_cast<char *>(&hoge), sizeof(hoge));
-    output.close();
-
-}
 
