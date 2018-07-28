@@ -9,7 +9,7 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
      * 次にそれぞれのマスの得点 (0,0)(0,1)...(0,grid_y-1)(1,0)(1,1)...(1,grid_y-1)(2,0).......(grid_x-1,grid_y-1)の順番(伝われ)(それぞれ6桁のbitで表現予定)
      * 次にそれぞれのマスの状態 (マスの順番は上に同じ)(それぞれ2桁のbitで表現)
      * 次に現在のターン数と最終ターン数(それぞれ7桁のbitで表現)
-     * 最後にagentの位置を格納 team0のagent0x座標,y座標 同様にteam0のagent1,team1のagent0,team1のagent1も
+     * 最後にagentの位置を格納 team0のagent0x座標,y座標 同様にteam0のagent1,team1のagent0,team1のagent1も(それぞれ4桁)
      *
      */
     std::pair<int,int> large = field.getSize();
