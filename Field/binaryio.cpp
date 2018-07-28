@@ -26,7 +26,7 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
         }
     }
     ans += std::bitset<7>(field.getTurnCount()).to_string<bit>();
-    ans += std::bitset<7>(field.getTurnCount()).to_string<bit>();
+    ans += std::bitset<7>(field.getFinalTurn()).to_string<bit>();
     std::string str;
     std::ofstream ofs;
     ofs.open(Path, std::ios::binary);
@@ -58,7 +58,75 @@ procon::Field procon::BinaryIo::importField(std::string Path){
     std::ifstream fin(Path, std::ios::binary);
 
     if (!fin){
-           std::cout << "ファイル " + Path + " が開けません"<<std::endl;
-       }
+        std::cout << "ファイル " + Path + " が開けません"<<std::endl;
+    }
+    unsigned int ins = 0;
 
+    std::string ans, str;
+
+    while(!fin.eof()){
+        fin.read( (char * ) &ins, sizeof (unsigned int));
+        ans += std::bitset<32>(ins).to_string<bit>();
+    }
+
+    std::queue<char> que;
+
+    for(int i = 0 ; i < ans.size() ; i++){
+        que.push(ans.at(i));
+    }
+
+    for(int i = 0;i < 4 ; i++){
+        str.push_back(que.front());
+        que.pop();
+    }
+    std::pair<int,int> grid_size;
+    grid_size.first = std::bitset<4>(str).to_ulong();
+    str.clear();
+
+    for(int i = 0 ; i < 4 ; i++){
+        str.push_back(que.front());
+        que.pop();
+    }
+
+    grid_size.second = std::bitset<4>(str).to_ulong();
+    str.clear();
+    Field field(grid_size.first, grid_size.second);
+
+    std::vector<std::vector<int>> values;
+
+    for(int x = 0 ; x < grid_size.first ; x++){
+        std::vector<int> vec;
+        for(int y = 0 ; y < grid_size.second ; y++){
+            for(int i = 0; i < 6 ; i++){
+                str.push_back(que.front());
+                que.pop();
+            }
+            vec.push_back(std::bitset<6>(str).to_ulong()-16);
+            str.clear();
+        }
+        values.push_back(vec);
+    }
+    field.setValue(values);
+    for(int x = 0 ; x < grid_size.first ; x++){
+        for(int y = 0 ; y < grid_size.second ; y++){
+            for(int i = 0 ; i < 2 ; i++){
+                str.push_back(que.front());
+                que.pop();
+            }
+            field.setState(x, y, std::bitset<2>(str).to_ulong());
+            str.clear();
+        }
+    }
+    for(int i = 0 ; i < 7 ; i++){
+        str.push_back(que.front());
+        que.pop();
+    }
+    field.setTurnCount(std::bitset<7>(str).to_ulong());
+    str.clear();
+    for(int i = 0 ; i < 7 ; i++){
+        str.push_back(que.front());
+        que.pop();
+    }
+    field.setFinalTurn(std::bitset<7>(str).to_ulong());
+    return field;
 }
