@@ -45,14 +45,14 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
         std::cout << Path + "に書き込めません"<<std::endl;
         return;
     }
-    for(int i = 0 ; i < ans.size() ; i++){
-        bool ins = ans.at(i) - '0';
-        ofs.write( (char * ) &ins,sizeof (bool) );
+    for(int i = 0; i < ans.size() ; i++){
+        str.push_back(ans.at(i));
+        if(str.size() == 4){
+            char w = std::stoi(str, nullptr, 2);
+            ofs.write((char * ) &w, sizeof (char));
+            str.clear();
+        }
     }
- //   std::cout<<std::endl;
-    ofs.close();
- //   std::cout<<"binary_size:"<<ans<<std::endl;
-
 }
 
 procon::Field procon::BinaryIo::importField(std::string Path){
@@ -61,16 +61,17 @@ procon::Field procon::BinaryIo::importField(std::string Path){
     if (!fin){
         std::cout << "ファイル " + Path + " が開けません"<<std::endl;
     }
-    bool ins = 0;
+    char ins = 0;
 
     std::string ans, str;
 
     while(!fin.eof()){
-        fin.read( (char * ) &ins, sizeof (bool));
-        ans += std::to_string(ins);
+        fin.read( (char * ) &ins, sizeof (char));
+        str += ins;
+
     }
    // std::cout<<std::endl;
-  //  std::cout<<"binary_size:"<<ans<<std::endl;
+   //  std::cout<<"binary_size:"<<ans<<std::endl;
 
     std::queue<char> que;
 
