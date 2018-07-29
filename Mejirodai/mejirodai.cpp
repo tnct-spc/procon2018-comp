@@ -19,6 +19,7 @@ Mejirodai::Mejirodai(QWidget *parent) :
     connect(ui->exportField, &QPushButton::clicked, this, &Mejirodai::exportFieldtoCSV);
     connect(ui->selectMyAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->my_stackedWidget, SLOT(setCurrentIndex(int)));
     connect(ui->selectOpponentAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->opponent_stackedWidget, SLOT(setCurrentIndex(int)));
+    connect(ui->ExportFieldBinary, &QPushButton::clicked,this , &Mejirodai::exportFieldtoBinary);
 
 }
 
@@ -53,4 +54,8 @@ void Mejirodai::goPrevState(){
 void Mejirodai::exportFieldtoCSV(){
     procon::Field& exp_field = manager->getField();
     procon::CsvIo::exportField(exp_field, QFileDialog::getSaveFileName(this,tr("Save CSV")).toStdString());
+}
+void Mejirodai::exportFieldtoBinary(){
+    procon::Field& exp_field = manager->getField();
+    procon::BinaryIo::exportField(exp_field, QFileDialog::getSaveFileName(this,tr("Save CSV")).toStdString());
 }
