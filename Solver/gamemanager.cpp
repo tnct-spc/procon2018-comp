@@ -182,9 +182,6 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> test;
             test = team_1_ans;
 
-            field->calcSituationFeature(test, 0);
-
-
 
             agentAct(0,0,team_1_ans.first);
             agentAct(0,1,team_1_ans.second);
@@ -192,16 +189,6 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             agentAct(1,1,team_2_ans.second);
 
             changeTurn(false);
-
-            std::pair<int,int> red_point,blue_point;
-
-            /*
-            std::cout<<"赤の素の得点は"<<red_point.first<<"点で、領域ポイントは"<<red_point.second<<"点です"<<std::endl;
-            std::cout<<"青の素の得点は"<<blue_point.first<<"点で、領域ポイントは"<<blue_point.second<<"点です"<<std::endl;
-            */
-
-            red_point = field->getPoints(pruning_pos).at(0);
-            blue_point = field->getPoints(pruning_pos).at(1);
 
 
             field_vec.push_back(std::make_shared<procon::Field>(*field));
@@ -378,7 +365,6 @@ void GameManager::changeTurn(bool update){
     std::map<std::pair<int,int>,std::pair<int,std::pair<int,int>>> counts;
 
     int type, pos_x, pos_y;
-
 
 
     //移動しようとしたエージェントが失敗した時に呼ばれる
