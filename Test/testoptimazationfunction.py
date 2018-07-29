@@ -16,6 +16,7 @@ from chainer.training import extensions
 common_path = '../Data/TestOptimazationFunction/'
 
 csv_path = common_path + 'input.csv'
+binary_path = common_path + 'field.dat'
 result_path = common_path + 'result'
 save_model_path = 'and'
 save_png_path = 'image'
@@ -69,6 +70,11 @@ def read_csv():
 
 
 csv_data = read_csv()
+
+def read_binary_field():
+    binary_file = open(binary_path, 'r')
+
+    data = struct.unpack_from()
 
 def two_data_calc(inp1, inp2):
     random.shuffle(csv_data)
