@@ -699,7 +699,7 @@ void procon::Field::updateFeature(){
 
 std::vector<std::pair<int,int>> procon::Field::guessAgents(int side){
 
-   // updateFeature();
+    updateFeature();
 
     std::vector<std::pair<int,int>> ans_pos;
 

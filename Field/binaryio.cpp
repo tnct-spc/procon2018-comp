@@ -47,12 +47,22 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
     }
     for(int i = 0; i < ans.size() ; i++){
         str.push_back(ans.at(i));
-        if(str.size() == 4){
+        if(str.size() == 8){
             char w = std::stoi(str, nullptr, 2);
-            ofs.write((char * ) &w, sizeof (char));
+        //    std::cout<<w<<" ";
+            ofs.write((char * ) &w, sizeof (unsigned char));
             str.clear();
         }
     }
+
+    for(int i = 0; i < str.size();i++){
+        bool w = str.at(i)-'0';
+        ofs.write((char * ) &w, sizeof (bool));
+        str.clear();
+    }
+    //std::cout<<ans<<std::endl;
+
+   // std::cout<<"binary_size:"<<ans.size()<<std::endl;
 }
 
 procon::Field procon::BinaryIo::importField(std::string Path){
@@ -61,17 +71,21 @@ procon::Field procon::BinaryIo::importField(std::string Path){
     if (!fin){
         std::cout << "ファイル " + Path + " が開けません"<<std::endl;
     }
-    char ins = 0;
+    unsigned char ins = 0;
 
     std::string ans, str;
 
     while(!fin.eof()){
-        fin.read( (char * ) &ins, sizeof (char));
-        str += ins;
-
+        fin.read( (char * ) &ins, sizeof (unsigned char));
+        ans += std::bitset<8>(ins).to_string<bit>();
+     //   std::cout<<ins<<" ";
     }
-   // std::cout<<std::endl;
-   //  std::cout<<"binary_size:"<<ans<<std::endl;
+     std::cout<<std::endl;
+     for(int i = 0; i < 8;i++){
+         ans.pop_back();
+     }
+    // std::cout<<"binary_size:"<<ans.size()<<std::endl;
+
 
     std::queue<char> que;
 
@@ -135,24 +149,25 @@ procon::Field procon::BinaryIo::importField(std::string Path){
 
     field.setFinalTurn(std::bitset<7>(str).to_ulong());
     str.clear();
-    for(int turn = 0 ; turn < 2 ; turn++){
-        for(int index = 0 ; index < 2 ; index++){
-            for(int i = 0; i < 4; i++){
-                str.push_back(que.front());
-                que.pop();
-            }
-            int a_x = std::bitset<4>(str).to_ulong();
-            str.clear();
-            for(int i = 0 ; i < 4 ; i++){
-                str.push_back(que.front());
-                que.pop();
-            }
-            int a_y = std::bitset<4>(str).to_ulong();
-            str.clear();
-
-            field.setAgent(turn, index, a_x, a_y);
+    for(int index = 0 ; index < 2 ; index++){
+       // std::cout<<que.size()<<std::endl;
+        for(int i = 0; i < 4; i++){
+            str.push_back(que.front());
+            que.pop();
         }
-    }
+        int a_x = std::bitset<4>(str).to_ulong();
+        str.clear();
+        for(int i = 0 ; i < 4 ; i++){
+            str.push_back(que.front());
+            que.pop();
+        }
+        int a_y = std::bitset<4>(str).to_ulong();
+        str.clear();
+        field.setAgent(0, index, a_x, a_y);
+        }
+    std::vector<std::pair<int,int>> w = field.guessAgents(1);
+    field.setAgent(1,0,w.at(0).first,w.at(0).second);
+    field.setAgent(1,1,w.at(1).first,w.at(1).second);
 
     fin.close();
     return field;
