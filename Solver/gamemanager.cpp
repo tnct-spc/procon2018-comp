@@ -139,7 +139,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
     if(vis_show){
         visualizer->update();
-        visualizer->setField(*field, 1, field->getFinalTurn());
+        visualizer->setField(*field, field->getTurnCount(), field->getFinalTurn());
     }
 
 

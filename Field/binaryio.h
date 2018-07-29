@@ -8,6 +8,7 @@ namespace procon {
 
     procon::Field importField(std::string path);
     void exportField(procon::Field& data, std::string path);
+    std::string exportToString(procon::Field& data);
 
     }
 }

@@ -932,8 +932,8 @@ std::vector<double> procon::Field::calcSituationFeature(std::pair<std::tuple<int
     }
     ans.push_back(1.0000*white_ratio/(grid_x*grid_y));
 
-    std::cout<<ans.at(0)<<" "<<ans.at(1)<<" "<<ans.at(2)<<" "<<ans.at(3)<<" "<<ans.at(4)<<" "<<ans.at(5)<<" "<<ans.at(6)<<" "<<ans.at(7)<<" "<<ans.at(8)<<" "<<ans.at(9)<<" "<<ans.at(10)<<std::endl;
-    std::cout<<std::endl;
+   // std::cout<<ans.at(0)<<" "<<ans.at(1)<<" "<<ans.at(2)<<" "<<ans.at(3)<<" "<<ans.at(4)<<" "<<ans.at(5)<<" "<<ans.at(6)<<" "<<ans.at(7)<<" "<<ans.at(8)<<" "<<ans.at(9)<<" "<<ans.at(10)<<std::endl;
+   // std::cout<<std::endl;
     return ans;
 }
 

@@ -27,6 +27,7 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
         }
     }
     ans += std::bitset<7>(field.getTurnCount()).to_string<bit>();
+    std::cout<<field.getTurnCount()<<std::endl;
     ans += std::bitset<7>(field.getFinalTurn()).to_string<bit>();
 
     for(int turn = 0; turn < 2 ;turn++){
@@ -48,9 +49,9 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
         bool ins = ans.at(i) - '0';
         ofs.write( (char * ) &ins,sizeof (bool) );
     }
-    std::cout<<std::endl;
+ //   std::cout<<std::endl;
     ofs.close();
-    std::cout<<"binary_size:"<<ans<<std::endl;
+ //   std::cout<<"binary_size:"<<ans<<std::endl;
 
 }
 
@@ -68,8 +69,8 @@ procon::Field procon::BinaryIo::importField(std::string Path){
         fin.read( (char * ) &ins, sizeof (bool));
         ans += std::to_string(ins);
     }
-    std::cout<<std::endl;
-    std::cout<<"binary_size:"<<ans<<std::endl;
+   // std::cout<<std::endl;
+  //  std::cout<<"binary_size:"<<ans<<std::endl;
 
     std::queue<char> que;
 
@@ -124,6 +125,7 @@ procon::Field procon::BinaryIo::importField(std::string Path){
         que.pop();
     }
     field.setTurnCount(std::bitset<7>(str).to_ulong());
+    std::cout<<std::bitset<7>(str).to_ulong()<<std::endl;
     str.clear();
     for(int i = 0 ; i < 7 ; i++){
         str.push_back(que.front());
@@ -153,4 +155,30 @@ procon::Field procon::BinaryIo::importField(std::string Path){
 
     fin.close();
     return field;
+}
+std::string procon::BinaryIo::exportToString(procon::Field& field){
+    std::pair<int,int> large = field.getSize();
+    std::string ans;
+    ans += std::bitset<4>(large.first).to_string<bit>();
+    ans += std::bitset<4>(large.second).to_string<bit>();
+    for(int x = 0;x < large.first; x++){
+        for(int y = 0;y < large.second; y++){
+            ans += std::bitset<6>(field.getState(x,y).second+16).to_string<bit>();
+        }
+    }
+    for(int x = 0; x < large.first ; x++){
+        for(int y = 0;y < large.second ; y++){
+            ans += std::bitset<2>(field.getState(x,y).first).to_string<bit>();
+        }
+    }
+    ans += std::bitset<7>(field.getTurnCount()).to_string<bit>();
+    ans += std::bitset<7>(field.getFinalTurn()).to_string<bit>();
+
+    for(int turn = 0; turn < 2 ;turn++){
+        for(int index = 0; index < 2; index++){
+            ans += std::bitset<4>(field.getAgent(turn, index).first).to_string<bit>();
+            ans += std::bitset<4>(field.getAgent(turn, index).second).to_string<bit>();
+        }
+    }
+    return ans;
 }
