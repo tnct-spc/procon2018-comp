@@ -12,3 +12,13 @@ CipherCards::~CipherCards()
 {
     delete ui;
 }
+
+void CipherCards::updata()
+{
+
+}
+
+void CipherCards::setCipher()
+{
+
+}

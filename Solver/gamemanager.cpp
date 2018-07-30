@@ -211,6 +211,9 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
     }else{
 
+        ciphercard = std::make_shared<CipherCards>();
+        ciphercard->show();
+
         nextMoveForManualMode();
 
         //visualizerにもauto解除する事を伝える
@@ -540,6 +543,8 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
     setFieldCount(field_vec.size() - 1);
 
     visualizer->update();
+
+    ciphercard->updata();
 
     if(field->getTurnCount() == field->getFinalTurn()){
 
