@@ -52,13 +52,15 @@ def unpack_field(inp_side, f, field_list):
 
 def read_binary():
 
-    file = open(const.csv_path, 'rb')
+    file = open(const.binary_path, 'rb')
 
     move_list = []
 
     side = 0
     while unpack_field(side, file, move_list):
         side ^= 1
+    
+    return move_list
 
 
 
