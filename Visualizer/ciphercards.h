@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QLabel>
+#include <QPixmap>
+#include <QDir>
 
 namespace Ui {
 class CipherCards;
@@ -20,7 +22,7 @@ public:
     void updata(std::vector<std::pair<int, int>> move);
 
     // 暗号を設定
-    void setCipher()   ;
+    void setCipher();
 
 private:
     Ui::CipherCards *ui;
@@ -43,6 +45,9 @@ private:
         {{Heart, 1}, {Heart, 2}, {Heart, 3}, {Heart, 4}, {Heart, 5}, {Heart, 6}, {Heart, 7}, {Heart, 8}, {Heart, 9}},
         {{Dia, 1}, {Dia, 2}, {Dia, 3}, {Dia, 4}, {Dia, 5}, {Dia, 6}, {Dia, 7}, {Dia, 8}, {Dia, 9}},
     };
+
+    // PathのStringを作成
+    QString makePath(Cipher card);
 };
 
 #endif // CIPHERCARDS_H
