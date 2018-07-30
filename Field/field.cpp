@@ -24,6 +24,7 @@ procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
             field_data |= (w << (2*(12*agent_pos.second + agent_pos.first)));
         }
     feature = std::vector<double>(10);
+    updatePoint();
     updateFeature();
 }
 
@@ -52,6 +53,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         }
     feature = std::vector<double>(10);
     updateFeature();
+    updatePoint();
 }
 
 //ここサイズ対応します
@@ -202,6 +204,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         }
     feature = std::vector<double>(10);
     updateFeature();
+    updatePoint();
 }
 
 int procon::Field::getTurnCount(){
