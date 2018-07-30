@@ -80,10 +80,21 @@ void TestGetFieldData::run(){
                 std::vector<std::vector<std::vector<double>>> move_data;
                 */
 
+                std::vector<std::string> data;
+
                 for(int count = 0; count < turn_count; ++count){
-                    move_data.push_back(std::vector<std::vector<double>>(2));
+                    // move_data.push_back(std::vector<std::vector<double>>(2));
                     for(int side = 0; side < 2; ++side){
                         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> move = calc_move(side, manager_ptr);
+
+                        data.emplace_back(procon::BinaryIo::exportToString(manager_ptr->getField()));
+
+                        data.back() += std::to_string((!std::get<0>(move.first)) + 10 * (std::get<0>(move.first) == 1));
+                        data.back() += std::to_string((!std::get<1>(move.first)) + 10 * (std::get<1>(move.first) == 1));
+                        data.back() += std::to_string((!std::get<2>(move.first)) + 10 * (std::get<2>(move.first) == 1));
+                        data.back() += std::to_string((!std::get<0>(move.second)) + 10 * (std::get<0>(move.second) == 1));
+                        data.back() += std::to_string((!std::get<1>(move.second)) + 10 * (std::get<1>(move.second) == 1));
+                        data.back() += std::to_string((!std::get<2>(move.second)) + 10 * (std::get<2>(move.second) == 1));
 
 
                         // move_data.back().at(side) = manager_ptr->getField().calcSituationFeature(move, side);
@@ -95,16 +106,19 @@ void TestGetFieldData::run(){
                 }
 
                 std::vector<std::pair<int,int>> points = manager_ptr->getField().getPoints(false);
-                int diff = points.at(0).first + points.at(0).second - (points.at(1).first + points.at(1).second);
+                // [0.65536)
+                unsigned diff = (points.at(0).first + points.at(0).second - (points.at(1).first + points.at(1).second)) + (1<<15);
+                for(int bit = 15; bit >= 0; --bit)
+                    data.back() += '0' + ((diff >> bit) & 1);
 
 
+                /*
                 std::string field_string = "-1";
                 for(auto fdata : field_data)
                     field_string += "," + std::to_string(fdata);
                 logger->info(field_string);
 
                 // ここに値の格納処理をする
-                /*
                 for(auto data_vec : move_data){
                     for(int side = 0; side < 2; ++side){
 
