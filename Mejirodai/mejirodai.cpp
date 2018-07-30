@@ -29,6 +29,8 @@ Mejirodai::~Mejirodai()
 
 void Mejirodai::RunManagerSimulation(){
 
+    runMode = true;
+
     // 各チームのアルゴリズムの設定
     QString my = ui->selectMyAlgorithmBox->currentText();
     QString opponnent = ui->selectOpponentAlgorithmBox->currentText();
@@ -57,8 +59,8 @@ void Mejirodai::exportFieldtoCSV(){
 
 void Mejirodai::runOperatorWindow(){
 
-    // AutoModeがOffのときのみOperatorのウィンドウが立ち上がる
-    if (!ui->autoMode->isChecked()) {
+    // Runが押され、かつAutoModeがOffのときのみOperatorのウィンドウが立ち上がる
+    if ((!ui->autoMode->isChecked()) && runMode) {
         manager->startupChangeMode();
     }
 }

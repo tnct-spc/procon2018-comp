@@ -38,6 +38,8 @@ private:
     const unsigned int x_size = 12;
     const unsigned int y_size = 8;
 
+    // Runボタンが押されたか
+    bool runMode = false;
 };
 
 #endif // MEJIRODAI_H
