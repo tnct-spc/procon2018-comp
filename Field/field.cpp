@@ -24,6 +24,7 @@ procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
             field_data |= (w << (2*(12*agent_pos.second + agent_pos.first)));
         }
     feature = std::vector<double>(10);
+    updateOnlyTilePoint();
     updateFeature();
 }
 
@@ -52,6 +53,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         }
     feature = std::vector<double>(10);
     updateFeature();
+    updateOnlyTilePoint();
 }
 
 //ここサイズ対応します
@@ -202,6 +204,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         }
     feature = std::vector<double>(10);
     updateFeature();
+    updateOnlyTilePoint();
 }
 
 int procon::Field::getTurnCount(){
@@ -339,6 +342,10 @@ void procon::Field::setValue(const std::vector<std::vector<int>> &value){
     value_data = value;
 }
 
+void procon::Field::setGridValue(const unsigned int x, const unsigned int y, const unsigned int value){
+    value_data.at(x).at(y) = value;
+}
+
 void procon::Field::setAgents(const std::vector<std::vector<std::pair<int,int>>>& values){
     agents = values;
 }
@@ -394,6 +401,22 @@ public:
         else return false;
     }
 };
+}
+void procon::Field::updateOnlyTilePoint(){
+    int point1 = 0;
+    int point2 = 0;
+    for(int x = 0;x < grid_x;x++){
+        for(int y = 0; y < grid_y;y++){
+            if(getState(x,y).first == 1){
+                point1+=getState(x,y).second;
+            }
+            if(getState(x,y).first == 2){
+                point2+=getState(x,y).second;
+            }
+        }
+    }
+    points.at(0).first = point1;
+    points.at(1).first = point2;
 }
 void procon::Field::updatePoint(){
     /*ラベリングを用いています、それが何か気になったらはむへいか会長に聞いてみて
@@ -554,6 +577,18 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<std::pair<int
         points = stash_points;
         return return_points;
     }
+    if(!flag && !result){
+        std::bitset<288> stash_regions = regions;
+        std::vector<std::pair<int, int>> stash_points = points;
+        updateOnlyTilePoint();
+        regions = stash_regions;
+        std::vector<std::pair<int, int>> return_points = points;
+        points = stash_points;
+        return return_points;
+    }
+    if(flag && !result){
+        updateOnlyTilePoint();
+    }
     if(flag && result){
         updatePoint();
     }
@@ -586,6 +621,18 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<s
         std::vector<std::pair<int, int>> return_points = points;
         points = stash_points;
         return return_points;
+    }
+    if(!flag && !result){
+        std::bitset<288> stash_regions = regions;
+        std::vector<std::pair<int, int>> stash_points = points;
+        updateOnlyTilePoint();
+        regions = stash_regions;
+        std::vector<std::pair<int, int>> return_points = points;
+        points = stash_points;
+        return return_points;
+    }
+    if(flag && !result){
+        updateOnlyTilePoint();
     }
     if(flag && result){
         updatePoint();
@@ -699,7 +746,7 @@ void procon::Field::updateFeature(){
 
 std::vector<std::pair<int,int>> procon::Field::guessAgents(int side){
 
-   // updateFeature();
+    updateFeature();
 
     std::vector<std::pair<int,int>> ans_pos;
 
@@ -942,4 +989,5 @@ std::vector<double> procon::Field::calcSituationFeature(std::pair<std::tuple<int
     */
     return ans;
 }
+
 
