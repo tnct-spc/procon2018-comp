@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QDir>
+#include <QResizeEvent>
 
 namespace Ui {
 class CipherCards;
@@ -21,10 +22,9 @@ public:
     // 移動先が決まったら更新
     void updata(std::vector<std::pair<int, int>> move);
 
-
-
 private:
     Ui::CipherCards *ui;
+    void resizeEvent(QResizeEvent *event);
 
     // カード
     enum CardType {
@@ -50,6 +50,10 @@ private:
 
     // 暗号を設定
     void setCipher(unsigned long int agent, unsigned long int pos, Cipher cip);
+
+    // Path
+    QString image1;
+    QString image2;
 };
 
 #endif // CIPHERCARDS_H
