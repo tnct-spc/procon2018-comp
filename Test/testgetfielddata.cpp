@@ -80,6 +80,7 @@ void TestGetFieldData::run(){
                 std::vector<std::vector<std::vector<double>>> move_data;
                 */
 
+                // exportbinary {(agent1),(agent2)} diff
                 std::vector<std::string> data;
 
                 for(int count = 0; count < turn_count; ++count){
@@ -106,31 +107,30 @@ void TestGetFieldData::run(){
                 }
 
                 std::vector<std::pair<int,int>> points = manager_ptr->getField().getPoints(false);
-                // [0.65536)
-                unsigned diff = (points.at(0).first + points.at(0).second - (points.at(1).first + points.at(1).second)) + (1<<15);
-                for(int bit = 15; bit >= 0; --bit)
-                    data.back() += '0' + ((diff >> bit) & 1);
+                // [0.65536) ave 32768
+                for(int index = 0; index < turn_count * 2; ++index){
 
+                    unsigned diff = ((points.at(0).first + points.at(0).second - (points.at(1).first + points.at(1).second)) * (index & 1 ? -1 : 1)) + (1<<15);
+                    for(int bit = 15; bit >= 0; --bit)
+                        data.at(index) += '0' + ((diff >> bit) & 1);
 
-                /*
-                std::string field_string = "-1";
-                for(auto fdata : field_data)
-                    field_string += "," + std::to_string(fdata);
-                logger->info(field_string);
-
-                // ここに値の格納処理をする
-                for(auto data_vec : move_data){
-                    for(int side = 0; side < 2; ++side){
-
-                        std::string output_data;
-                        for(auto mdata : data_vec.at(side))
-                            output_data += std::to_string(mdata) + ",";
-                        output_data += std::to_string(diff * (side ? -1 : 1));
-
-                        logger->info(output_data);
-                    }
                 }
-                */
+
+                for(auto str_data : data){
+                    std::string out;
+                    for(int index = 0; index < str_data.size() / 8; ++index){
+                        unsigned char val = 0;
+                        for(int num = 0; num < 8; ++num)
+                            val += (str_data[8 * index + num] - '0') << (7 - num);
+                        out += val;
+                    }
+                    unsigned char mod = 0;
+                    for(int num = 0; num < str_data.size() % 8; ++num)
+                        mod += (str_data[8 * (str_data.size() / 8) + num] - '0') << (7 - num);
+                    out += mod;
+
+                    logger->info(out);
+                }
 
             }
 
