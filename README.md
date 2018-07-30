@@ -1,7 +1,7 @@
 # procon2018-comp
 ## インストールすべきもの(pacmanで入る)
 
-opencv zbar hdf5 ffmpeg spdlog-git(AUR)
+boost opencv zbar hdf5 ffmpeg spdlog-git(AUR)
 
 ## Description
 
