@@ -2,6 +2,7 @@
 #define CIPHERCARDS_H
 
 #include <QWidget>
+#include <QLabel>
 
 namespace Ui {
 class CipherCards;
@@ -16,7 +17,7 @@ public:
     ~CipherCards();
 
     // 移動先が決まったら更新
-    void updata();
+    void updata(std::vector<std::pair<int, int>> move);
 
     // 暗号を設定
     void setCipher()   ;

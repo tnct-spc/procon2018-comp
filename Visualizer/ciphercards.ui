@@ -41,10 +41,64 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QWidget" name="agent1Widget" native="true"/>
+    <widget class="QWidget" name="agent1Widget" native="true">
+     <widget class="QLabel" name="mark1">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>80</y>
+        <width>108</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="num1">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>150</y>
+        <width>108</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QWidget" name="agent2Widget" native="true"/>
+    <widget class="QWidget" name="agent2Widget" native="true">
+     <widget class="QLabel" name="mark2">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>70</y>
+        <width>108</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="num2">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>150</y>
+        <width>108</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </widget>
    </item>
   </layout>
  </widget>
