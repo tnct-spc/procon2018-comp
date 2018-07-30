@@ -73,7 +73,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::chan
             can_move_list.at(index).resize(pattern_size);
 
         // 重みの累積を取る
-        for(int count = 1; count < can_move_list.at(index).size(); ++count)
+        for(long unsigned int count = 1; count < can_move_list.at(index).size(); ++count)
         can_move_list.at(index).at(count).first += can_move_list.at(index).at(count - 1).first;
     }
 
@@ -238,8 +238,8 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
         // 行動ごとの平均利得
         std::vector<double> gain_ave(move_index.at(func_side).size(), 0.0);
 
-        for(int x_index = 0; x_index < move_index.at(func_side).size(); ++x_index){
-            for(int y_index = 0; y_index < move_index.at(!func_side).size(); ++y_index)
+        for(long unsigned int x_index = 0; x_index < move_index.at(func_side).size(); ++x_index){
+            for(long unsigned int y_index = 0; y_index < move_index.at(!func_side).size(); ++y_index)
                 gain_ave.at(x_index) += weight_list.at(!func_side).at(y_index) * (func_side
                                         ? gain_list.at(y_index).at(x_index)
                                         : gain_list.at(x_index).at(y_index)
@@ -254,17 +254,17 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
 
         // gain_diffの値が負ならweightを下げていく
         std::vector<double> gain_diff(move_index.at(func_side).size());
-        for(int index = 0; index < move_index.at(func_side).size(); ++index)
+        for(long unsigned int index = 0; index < move_index.at(func_side).size(); ++index)
             gain_diff.at(index) = gain_ave.at(index) - average_gain;
 
         // gain_diffが変化量 これの割合によって変化させる量を決めるべき
         // 割合が0.0以下にならないようにする update_rate * (gain_diff.at(i) / sum(abs(gain_diff)))で変化量を決めてみる
 
         double gain_diff_sum = 0.0;
-        for(int index = 0; index < move_index.at(func_side).size(); ++index)
+        for(long unsigned int index = 0; index < move_index.at(func_side).size(); ++index)
             gain_diff_sum += std::abs(gain_diff.at(index));
 
-        for(int index = 0; index < move_index.at(func_side).size(); ++index)
+        for(long unsigned int index = 0; index < move_index.at(func_side).size(); ++index)
             update_val.at(func_side).at(index) = update_rate * gain_diff.at(index) / gain_diff_sum;
 
 
@@ -280,17 +280,17 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
 
         // 0側(赤)の得点差や勝率を利得にしているので、それを最小化したい1側(青)は更新する値を逆向きにする
         if(func_side)
-            for(int index = 0; index < move_index.at(func_side).size(); ++index)
+            for(long unsigned int index = 0; index < move_index.at(func_side).size(); ++index)
                 update_val.at(func_side).at(index) *= -1;
 
-        for(int index = 0; index < move_index.at(func_side).size(); ++index){
+        for(long unsigned int index = 0; index < move_index.at(func_side).size(); ++index){
             if(update_val.at(func_side).at(index) < 0)
                 down_sum += std::min(weight_list.at(func_side).at(index), -update_val.at(func_side).at(index));
             else
                 up_sum += std::min(1.0 - weight_list.at(func_side).at(index), update_val.at(func_side).at(index));
         }
 
-        for(int index = 0; index < move_index.at(func_side).size(); ++index){
+        for(long unsigned int index = 0; index < move_index.at(func_side).size(); ++index){
             if(update_val.at(func_side).at(index) < 0)
                 weight_list.at(func_side).at(index) = std::max(0.0, weight_list.at(func_side).at(index) + update_val.at(func_side).at(index));
             else
@@ -327,7 +327,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> NashEquilibrium::calc
             max_move = move.first;
 
 
-    for(int index = 0; index < weight_list.at(side).size(); ++index)
+    for(long unsigned int index = 0; index < weight_list.at(side).size(); ++index)
         std::cout << weight_list.at(side).at(index) << " ";
     std::cout << std::endl;
 

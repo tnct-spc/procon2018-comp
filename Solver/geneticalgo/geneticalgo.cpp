@@ -10,12 +10,12 @@ GeneticAlgo::GeneticAlgo(const procon::Field& field, int final_turn, bool side, 
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::agentAct(int now_turn)
 {
+    (void) now_turn; // Warning対策
 
     std::vector<double> status = agent_data.getData();
     double rand = status.at(0); //乱択度合い(高いほど乱択)
     double minus = status.at(1); //マイナスの回避度(高いほど避ける)
     double next_p = status.at(2); //次の手での得点の優先度(高いほど優先)
-    double region = status.at(3); //領域ポイントの優先度(高いほど優先)
     double removal = status.at(4); //タイル除去の優先度(高いほど優先)
     double nomove = status.at(5); //移動しなかった時のペナルティ(高いほどペナ大)
     double backmove = status.at(6); //もう塗られてる所に行った時のペナルティ(高いほどペナ大)
