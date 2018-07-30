@@ -264,7 +264,7 @@ procon::Field beamsearch::agentmove(procon::Field ins_field, std::vector<std::ve
     }
 
     for(auto elements : tile_map){
-        bool state_flag = true;
+//        bool state_flag = true; 使われていないのでコメントアウト
         if(elements.second.size() > 1)
             continue;
 
@@ -272,7 +272,7 @@ procon::Field beamsearch::agentmove(procon::Field ins_field, std::vector<std::ve
         for(int turn_flag = 0; turn_flag < 2; ++turn_flag)
             for(int agent_num = 0; agent_num < 2; ++agent_num)
                 if(field.getAgent(turn_flag, agent_num) == elements.first){
-                    state_flag = false;
+//                    state_flag = false;
                     break;
                 }
     }

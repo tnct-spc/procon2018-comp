@@ -8,6 +8,8 @@ EvaluateParam::EvaluateParam(int side, const procon::Field& field, int final_tur
 
 double EvaluateParam::evaluateMove(int move, bool is_delete, int now_turn, int eval_side){
 
+    (void) is_delete; // Warning対策
+
     if(eval_side == -1)
         eval_side = side;
 
