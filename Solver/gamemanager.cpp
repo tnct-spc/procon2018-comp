@@ -612,6 +612,7 @@ void GameManager::endChangeMode(const std::pair<int, int> turns)
 
     // Fieldの書き換え
     *field = visualizer->getField();
+    field->updatePoint();
 
     // ゲームを続行
     nextMoveForManualMode();
