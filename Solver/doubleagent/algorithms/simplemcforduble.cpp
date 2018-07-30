@@ -70,7 +70,7 @@ std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> SimpleMCForDuble::cha
             std::sort(can_move_list.at(index).begin(), can_move_list.at(index).end(), std::greater<std::pair<double,std::tuple<int,int,int>>>());
 
             // 重みの累積を取る
-            for(int count = 1; count < can_move_list.at(index).size(); ++count)
+            for(long unsigned int count = 1; count < can_move_list.at(index).size(); ++count)
                 can_move_list.at(index).at(count).first += can_move_list.at(index).at(count - 1).first;
         }
 

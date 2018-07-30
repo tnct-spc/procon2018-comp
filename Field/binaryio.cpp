@@ -44,7 +44,7 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
         std::cout << Path + "に書き込めません"<<std::endl;
         return;
     }
-    for(int i = 0; i < ans.size() ; i++){
+    for(long unsigned int i = 0; i < ans.size() ; i++){
         str.push_back(ans.at(i));
         if(str.size() == 4){
              char w = std::stoi(str, nullptr, 2);
@@ -89,7 +89,7 @@ procon::Field procon::BinaryIo::importField(std::string Path){
 
     std::queue<char> que;
 
-    for(int i = 0 ; i < ans.size() ; i++){
+    for(long unsigned int i = 0 ; i < ans.size() ; i++){
         que.push(ans.at(i));
     }
 
