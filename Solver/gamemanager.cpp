@@ -195,7 +195,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             agentAct(1,1,team_2_ans.second);
 
             changeTurn(false);
-
+            field->getPoints(pruning_pos);
 
             field_vec.push_back(std::make_shared<procon::Field>(*field));
 
@@ -612,6 +612,7 @@ void GameManager::endChangeMode(const std::pair<int, int> turns)
 
     // Fieldの書き換え
     *field = visualizer->getField();
+    field->updatePoint();
 
     // ゲームを続行
     nextMoveForManualMode();

@@ -70,6 +70,8 @@ public:
 
     void updatePoint();
 
+    void updateOnlyTilePoint();
+
 
     std::vector<std::pair<int, int>> guessAgents(int side);  //推測する先のside
 
