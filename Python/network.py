@@ -21,10 +21,12 @@ class NetWork(chainer.Chain):
         with self.init_scope():
             self.l1 = L.Linear(None, n_layers[0])
             self.l2 = L.Linear(None, n_layers[1])
+            self.l3 = L.Linear(None, n_layers[2])
+            self.l4 = L.Linear(None, n_layers[3])
     
     # ???
     def __call__(self, x):
-        return self.l2(F.relu(self.l1(x)))
+        return self.l4(F.relu(self.l3(F.relu(self.l2(F.relu(self.l1(x)))))))
 
 
 

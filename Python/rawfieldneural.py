@@ -39,7 +39,7 @@ def raw_field_neural():
     train_data = chainer.datasets.TupleDataset(inp_data[:train_size], out_data[:train_size])
     test_data = chainer.datasets.TupleDataset(inp_data[train_size:], out_data[train_size:])
 
-    network.calc_neural([800, 1], train_data, test_data, '_raw_field', const.result_path + '_raw_field/', train_size * 0.1, train_size * 0.05, 500)
+    network.calc_neural([800, 1200, 800, 1], train_data, test_data, '_raw_field', const.result_path + '_raw_field/', train_size * 0.1, train_size * 0.05, 500)
 
 
 raw_field_neural()
