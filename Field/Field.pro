@@ -24,10 +24,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         field.cpp \
-    csvio.cpp
+    csvio.cpp \
+    binaryio.cpp
 
 HEADERS += \
         field.h \
         field_global.h \
-    csvio.h
+    csvio.h \
+    binaryio.h
 

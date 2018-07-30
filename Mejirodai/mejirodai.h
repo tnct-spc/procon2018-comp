@@ -3,6 +3,7 @@
 
 #include "gamemanager.h"
 #include "csvio.h"
+#include "binaryio.h"
 
 #include <thread>
 #include <memory>
@@ -34,6 +35,7 @@ private:
     void goPrevState();
     void exportFieldtoCSV();
     void runOperatorWindow();
+    void exportFieldtoBinary();
 
     const unsigned int x_size = 12;
     const unsigned int y_size = 8;
