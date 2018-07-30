@@ -21,8 +21,7 @@ public:
     // 移動先が決まったら更新
     void updata(std::vector<std::pair<int, int>> move);
 
-    // 暗号を設定
-    void setCipher();
+
 
 private:
     Ui::CipherCards *ui;
@@ -48,6 +47,9 @@ private:
 
     // PathのStringを作成
     QString makePath(Cipher card);
+
+    // 暗号を設定
+    void setCipher(unsigned long int agent, unsigned long int pos, Cipher cip);
 };
 
 #endif // CIPHERCARDS_H

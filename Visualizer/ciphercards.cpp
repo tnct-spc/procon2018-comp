@@ -41,9 +41,9 @@ void CipherCards::updata(std::vector<std::pair<int, int>> move)
     ui->cards2Label->setPixmap(pix2.scaledToWidth(ui->cards2Label->width()));
 }
 
-void CipherCards::setCipher()
+void CipherCards::setCipher(unsigned long int agent, unsigned long int pos, Cipher cip)
 {
-
+    ciphers.at(agent).at(pos) = cip;
 }
 
 QString CipherCards::makePath(Cipher card)
