@@ -48,7 +48,7 @@ void TestGetFieldData::run(){
                 }
             }
             if(flag)
-                return std::make_pair(std::make_tuple(x_list.at(moves.at(0)), y_list.at(moves.at(0)), move % 2), std::make_tuple(x_list.at(moves.at(1)), y_list.at(moves.at(1)), (int)(move % 4 > 1)));
+                return std::make_pair(std::make_tuple((move % 2) + 1, x_list.at(moves.at(0)), y_list.at(moves.at(0))), std::make_tuple(1 + (int)(move % 4 > 1), x_list.at(moves.at(1)), y_list.at(moves.at(1))));
         }
 
     };
