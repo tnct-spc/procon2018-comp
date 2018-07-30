@@ -99,12 +99,7 @@ double SimpleAlgorithm::evaluateMove(int side, std::pair<int, int> move){
     double const_delete_move = data.at(6) * 100 - 30;//タイル除去にかかる定数
     double per_delete_move = data.at(7) * 20 - 6;//タイル除去にかかる倍率
 
-    double per_region = data.at(8) * 20 - 6;//領域ポイントにかかる倍率
-
     double per_point = data.at(9) * 100;//移動先の得点にかかる倍率
-
-    double const_random = data.at(10) * 300;//乱択の度合い
-
 
     //得点計算
     auto calc = [&](int agent){
