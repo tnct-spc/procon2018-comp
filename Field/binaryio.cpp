@@ -6,8 +6,7 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
      * それを書き込みます
      *
      * まず横幅のサイズと縦幅のサイズ(それぞれ4桁のbitで表現)
-     * 次にそれぞれのマスの得点 (0,0)(0,1)...(0,grid_y-1)(1,0)(1,1)...(1,grid_y-1)(2,0).......(grid_x-1,grid_y-1)の順番(伝われ)(それぞれ8桁のbitで表現予定)
-     * 次にそれぞれのマスの状態 (マスの順番は上に同じ)(それぞれ4桁のbitで表現)
+     * 次にそれぞれのマスの状態(2bit)と得点(6bit)(0,0)(0,1)...(0,grid_y-1)(1,0)(1,1)...(1,grid_y-1)(2,0).......(grid_x-1,grid_y-1)の順番(伝われ)
      * 次に現在のターン数と最終ターン数(それぞれ8桁のbitで表現)
      * 最後にagentの位置を格納 team0のagent0x座標,y座標 同様にteam0のagent1,team1のagent0,team1のagent1も(それぞれ4桁)
      *
@@ -18,12 +17,7 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
     ans += std::bitset<4>(large.second).to_string<bit>();
     for(int x = 0;x < large.first; x++){
         for(int y = 0;y < large.second; y++){
-            ans += std::bitset<8>(field.getState(x,y).second+16).to_string<bit>();
-        }
-    }
-    for(int x = 0; x < large.first ; x++){
-        for(int y = 0;y < large.second ; y++){
-            ans += std::bitset<4>(field.getState(x,y).first).to_string<bit>();
+            ans += std::bitset<2>(field.getState(x,y).first).to_string<bit>() + std::bitset<6>(field.getState(x,y).second+16).to_string<bit>();
         }
     }
     ans += std::bitset<8>(field.getTurnCount()).to_string<bit>();
@@ -46,7 +40,7 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
     }
     for(long unsigned int i = 0; i < ans.size() ; i++){
         str.push_back(ans.at(i));
-        if(str.size() == 4){
+        if(str.size() == 8){
              char w = std::stoi(str, nullptr, 2);
         //    std::cout<<w<<" ";
             ofs.write((char * ) &w, sizeof (char));
@@ -62,7 +56,7 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
     // std::cout<<"SIZE"<<str<<std::endl;
     //int w = std::stoi( y + str, nullptr, 2);
     //ofs.write((char * )&w, sizeof (int));
-    //std::cout<<ans<<std::endl;
+    std::cout<<ans<<std::endl;
 
    // std::cout<<"binary_size:"<<ans.size()<<std::endl;
 }
@@ -79,10 +73,10 @@ procon::Field procon::BinaryIo::importField(std::string Path){
 
     while(!fin.eof()){
         fin.read( (char * ) &ins, sizeof (char));
-        ans += std::bitset<4>(ins).to_string<bit>();
+        ans += std::bitset<8>(ins).to_string<bit>();
      //   std::cout<<ins<<" ";
     }
-   // std::cout<<ans<<std::endl;
+    std::cout<<ans<<std::endl;
    // std::cout<<std::endl;
    // std::cout<<"binary_size:"<<ans.size()<<std::endl;
 
@@ -115,25 +109,20 @@ procon::Field procon::BinaryIo::importField(std::string Path){
     for(int x = 0 ; x < grid_size.first ; x++){
         std::vector<int> vec;
         for(int y = 0 ; y < grid_size.second ; y++){
-            for(int i = 0; i < 8 ; i++){
+            for(int i = 0;i < 2;i++){
                 str.push_back(que.front());
                 que.pop();
             }
-            vec.push_back(std::bitset<8>(str).to_ulong()-16);
+            field.setState(x, y, std::bitset<2>(str).to_ulong());
+            str.clear();
+            for(int i = 0; i < 6 ; i++){
+                str.push_back(que.front());
+                que.pop();
+            }
+            vec.push_back(std::bitset<6>(str).to_ulong()-16);
             str.clear();
         }
         values.push_back(vec);
-    }
-    field.setValue(values);
-    for(int x = 0 ; x < grid_size.first ; x++){
-        for(int y = 0 ; y < grid_size.second ; y++){
-            for(int i = 0 ; i < 4; i++){
-                str.push_back(que.front());
-                que.pop();
-            }
-            field.setState(x, y, std::bitset<4>(str).to_ulong());
-            str.clear();
-        }
     }
     for(int i = 0 ; i < 8 ; i++){
         str.push_back(que.front());
@@ -177,12 +166,7 @@ std::string procon::BinaryIo::exportToString(procon::Field& field){
     ans += std::bitset<4>(large.second).to_string<bit>();
     for(int x = 0;x < large.first; x++){
         for(int y = 0;y < large.second; y++){
-            ans += std::bitset<8>(field.getState(x,y).second+16).to_string<bit>();
-        }
-    }
-    for(int x = 0; x < large.first ; x++){
-        for(int y = 0;y < large.second ; y++){
-            ans += std::bitset<4>(field.getState(x,y).first).to_string<bit>();
+            ans += std::bitset<2>(field.getState(x,y).first).to_string<bit>() + std::bitset<6>(field.getState(x,y).second+16).to_string<bit>();
         }
     }
     ans += std::bitset<8>(field.getTurnCount()).to_string<bit>();
