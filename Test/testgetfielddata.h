@@ -4,10 +4,13 @@
 #include <mutex>
 #include <thread>
 #include <random>
+#include <bitset>
 #include <streambuf>
 
 #include "gamemanager.h"
 #include "binaryio.h"
+
+#define SPDLOG_EOL ""
 
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"

@@ -1,5 +1,6 @@
 #include "testgetfielddata.h"
 
+
 TestGetFieldData::TestGetFieldData() :
     cpu_num(std::thread::hardware_concurrency())
 {
@@ -90,12 +91,16 @@ void TestGetFieldData::run(){
 
                         data.emplace_back(procon::BinaryIo::exportToString(manager_ptr->getField()));
 
-                        data.back() += std::to_string((!std::get<0>(move.first)) + 10 * (std::get<0>(move.first) == 1));
-                        data.back() += std::to_string((!std::get<1>(move.first)) + 10 * (std::get<1>(move.first) == 1));
-                        data.back() += std::to_string((!std::get<2>(move.first)) + 10 * (std::get<2>(move.first) == 1));
-                        data.back() += std::to_string((!std::get<0>(move.second)) + 10 * (std::get<0>(move.second) == 1));
-                        data.back() += std::to_string((!std::get<1>(move.second)) + 10 * (std::get<1>(move.second) == 1));
-                        data.back() += std::to_string((!std::get<2>(move.second)) + 10 * (std::get<2>(move.second) == 1));
+                        // 6*2 + 4 = 16(2bit)
+
+                        data.back() += std::bitset<2>(std::get<0>(move.first)).to_string();
+                        data.back() += std::bitset<2>(std::get<1>(move.first) + 1 ).to_string();
+                        data.back() += std::bitset<2>(std::get<2>(move.first) + 1 ).to_string();
+                        data.back() += "00";
+                        data.back() += std::bitset<2>(std::get<0>(move.second)).to_string();
+                        data.back() += std::bitset<2>(std::get<1>(move.second) + 1).to_string();
+                        data.back() += std::bitset<2>(std::get<2>(move.second) + 1).to_string();
+                        data.back() += "00";
 
 
                         // move_data.back().at(side) = manager_ptr->getField().calcSituationFeature(move, side);
@@ -124,10 +129,6 @@ void TestGetFieldData::run(){
                             val += (str_data[8 * index + num] - '0') << (7 - num);
                         out += val;
                     }
-                    unsigned char mod = 0;
-                    for(int num = 0; num < str_data.size() % 8; ++num)
-                        mod += (str_data[8 * (str_data.size() / 8) + num] - '0') << (7 - num);
-                    out += mod;
 
                     logger->info(out);
                 }
