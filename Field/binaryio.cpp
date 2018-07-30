@@ -62,7 +62,7 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
     // std::cout<<"SIZE"<<str<<std::endl;
     //int w = std::stoi( y + str, nullptr, 2);
     //ofs.write((char * )&w, sizeof (int));
-    //std::cout<<ans<<std::endl;
+    std::cout<<ans<<std::endl;
 
    // std::cout<<"binary_size:"<<ans.size()<<std::endl;
 }
@@ -82,7 +82,7 @@ procon::Field procon::BinaryIo::importField(std::string Path){
         ans += std::bitset<4>(ins).to_string<bit>();
      //   std::cout<<ins<<" ";
     }
-   // std::cout<<ans<<std::endl;
+    std::cout<<ans<<std::endl;
    // std::cout<<std::endl;
    // std::cout<<"binary_size:"<<ans.size()<<std::endl;
 
