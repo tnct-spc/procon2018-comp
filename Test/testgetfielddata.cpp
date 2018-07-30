@@ -16,6 +16,12 @@ TestGetFieldData::TestGetFieldData() :
 
 void TestGetFieldData::run(){
 
+    Py_Initialize();
+    auto main_ns = boost::python::import("__main__").attr("__dict__");
+
+    std::ifstream ifs("../../procon2018-comp/Python/test.py");
+    std::string script((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+
 
     std::uniform_int_distribution<> rand_move(0, 323);
 
@@ -52,6 +58,20 @@ void TestGetFieldData::run(){
 
     };
 
+    auto export_field = [&](procon::Field& inp_field){
+
+        boost::python::dict field_dict;
+        field_dict["size"] = inp_field.getSize().first;
+        field_dict["agents"] = inp_field.getAgents();
+        field_dict["states"] = inp_field.getField();
+        field_dict["values"] = inp_field.getValue();
+        field_dict["now_turn"] = inp_field.getTurnCount();
+        field_dict["final_turn"] = inp_field.getFinalTurn();
+
+        return field_dict;
+    };
+
+
     std::vector<std::thread> threads(cpu_num);
 
     for(int cpu_index = 0; cpu_index < cpu_num; ++cpu_index)
@@ -73,17 +93,25 @@ void TestGetFieldData::run(){
                 manager_ptr->resetManager(rand_size(mt), rand_size(mt), false, turn_count);
 
                 // ここに初期Fieldによって定まるデータを入れる
+                /*
                 const std::vector<double>& field_data = manager_ptr->getField().getFeatures();
                 // ここに途中の盤面や行動によって定まるデータを入れる
                 // [試行回数][相手][行動や盤面の情報] の三次元配列
                 std::vector<std::vector<std::vector<double>>> move_data;
+                */
+                boost::python::list dicts;
 
                 for(int count = 0; count < turn_count; ++count){
-                    move_data.push_back(std::vector<std::vector<double>>(2));
+                    // move_data.push_back(std::vector<std::vector<double>>(2));
                     for(int side = 0; side < 2; ++side){
                         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> move = calc_move(side, manager_ptr);
 
-                        move_data.back().at(side) = manager_ptr->getField().calcSituationFeature(move, side);
+                        boost::python::dict f_dict = export_field(manager_ptr->getField());
+                        f_dict["side"] = side;
+                        f_dict["move"] = move;
+                        dicts.append(std::move(f_dict));
+
+                        // move_data.back().at(side) = manager_ptr->getField().calcSituationFeature(move, side);
 
                         manager_ptr->agentAct(side, 0, move.first);
                         manager_ptr->agentAct(side, 1, move.second);
@@ -94,13 +122,22 @@ void TestGetFieldData::run(){
                 std::vector<std::pair<int,int>> points = manager_ptr->getField().getPoints(false);
                 int diff = points.at(0).first + points.at(0).second - (points.at(1).first + points.at(1).second);
 
+                for(int index = 0; index < turn_count * 2; ++index)
+                    dicts[index]["diff"] = diff * (index % 2 ? -1 : 1);
 
+                boost::python::exec(script.c_str(), main_ns);
+                auto func = main_ns["func"];
+                auto result = func(dicts);
+
+                // std::cout << "result : " << result << std::endl;
+
+                // ここに値の格納処理をする
+                /*
                 std::string field_string = "-1";
                 for(auto fdata : field_data)
                     field_string += "," + std::to_string(fdata);
                 logger->info(field_string);
 
-                // ここに値の格納処理をする
                 for(auto data_vec : move_data){
                     for(int side = 0; side < 2; ++side){
 
@@ -112,6 +149,7 @@ void TestGetFieldData::run(){
                         logger->info(output_data);
                     }
                 }
+                */
 
             }
 

@@ -4,7 +4,10 @@
 #include <mutex>
 #include <thread>
 #include <random>
+#include <streambuf>
+
 #include "gamemanager.h"
+#include "binaryio.h"
 
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
