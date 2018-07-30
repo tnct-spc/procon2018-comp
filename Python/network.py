@@ -43,11 +43,11 @@ def calc_neural(layers, train, test, data_path, data_suffix, train_batch_size, t
     train_iter = chainer.iterators.SerialIterator(train, train_batch_size)
     test_iter = chainer.iterators.SerialIterator(test, test_batch_size, repeat=False)
 
-    updater = training.StandardUpdater(train_iter, optimizer, device=-1)
+    updater = training.StandardUpdater(train_iter, optimizer)
 
     trainer = training.Trainer(updater, (epoch, 'epoch'), out=data_path)
 
-    trainer.extend(extensions.Evaluator(test_iter, model, device=-1))
+    trainer.extend(extensions.Evaluator(test_iter, model))
     trainer.extend(extensions.dump_graph('main/loss'))
     trainer.extend(extensions.LogReport(trigger=(1, 'epoch')))
     trainer.extend(extensions.PlotReport(
