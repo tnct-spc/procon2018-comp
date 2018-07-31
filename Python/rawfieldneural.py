@@ -26,7 +26,7 @@ def raw_field_neural():
         for i in range(bin_data[index]['siz'][0]):
             for j in range(bin_data[index]['siz'][1]):
                 
-                dat = bin_data['index']['state'][i][j]
+                dat = bin_data[index]['state'][i][j]
                 if bin_data[index]['side'] and dat:
                     dat = 2 if dat == 1 else 1
                 inp_data[index][i * 12 + j + 2] = dat
@@ -49,7 +49,7 @@ def raw_field_neural():
     train_data = chainer.datasets.TupleDataset(inp_data[:train_size], out_data[:train_size])
     test_data = chainer.datasets.TupleDataset(inp_data[train_size:], out_data[train_size:])
 
-    network.calc_neural([800, 1200, 800, 1], train_data, test_data, const.result_path + '_raw_field/', '_raw_field', int(min(1000, train_size * 0.1)), int(min(200, train_size * 0.05)), 100000)
+    network.calc_neural([800, 1200, 800, 1], train_data, test_data, const.result_path + '_raw_field/', '_raw_field', int(min(500, train_size * 0.1)), int(min(100, train_size * 0.05)), 100000)
 
 
 raw_field_neural()
