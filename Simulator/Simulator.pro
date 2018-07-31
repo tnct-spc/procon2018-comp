@@ -6,9 +6,9 @@ QT += core gui widgets
 
 SOURCES += \
         main.cpp \
-    genetic.cpp \
-    simulatedannealing.cpp \
-    doubleagentgenetic.cpp
+        genetic.cpp \
+        simulatedannealing.cpp \
+        doubleagentgenetic.cpp
 
 LIBS += -L/usr/lib `pkg-config --libs opencv`
 LIBS += -L/usr/lib64 -lzbar

@@ -34,7 +34,7 @@ FORMS += \
         mejirodai.ui
 
 LIBS += -L/usr/lib `pkg-config --libs opencv`
-LIBS += -L/usr/lib64 -lzbar
+LIBS += -L/usr/lib -lzbar
 
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field

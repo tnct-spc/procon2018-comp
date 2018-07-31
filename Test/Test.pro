@@ -6,14 +6,14 @@ QT += core gui widgets
 
 SOURCES += \
         main.cpp \
-    testagentparam.cpp \
-    testevaluatespeed.cpp \
-    testconvertfield.cpp
+        testagentparam.cpp \
+        testevaluatespeed.cpp \
+        testconvertfield.cpp
 
 HEADERS += \
-    testagentparam.h \
-    testevaluatespeed.h \
-    testconvertfield.h
+        testagentparam.h \
+        testevaluatespeed.h \
+        testconvertfield.h
 
 LIBS += -L/usr/lib `pkg-config --libs opencv`
 LIBS += -L/usr/lib64 -lzbar
