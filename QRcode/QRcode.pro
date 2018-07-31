@@ -1,15 +1,15 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2018-06-21T16:12:44
+# Project created by QtCreator 2018-07-31T20:43:13
 #
 #-------------------------------------------------
 
-QT       += core gui widgets
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += widgets
 
 TARGET = QRcode
 TEMPLATE = lib
+
+DEFINES += QRCODE_LIBRARY
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -22,23 +22,26 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-
 SOURCES += \
-       qrcode.cpp \
-       qrconverterfield.cpp
+        qrcode.cpp \
+        qrconverterfield.cpp
 
 HEADERS += \
-       qrcode.h \
-       qrconverterfield.h
+        qrcode.h \
+        qrcode_global.h \
+        qrconverterfield.h
 
 FORMS += \
-   qrcode.ui
-
-INCLUDEPATH += /usr/include/opencv
-
-LIBS += -L/usr/lib `pkg-config --libs opencv`
-LIBS += -L/usr/lib64 -lzbar
+    qrcode.ui
 
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
 DEPENDPATH += $$PWD/../Field
+
+LIBS += -L/usr/lib `pkg-config --libs opencv`
+LIBS += -L/usr/lib -lzbar
+
+unix {
+    target.path = /usr/lib
+    INSTALLS += target
+}
