@@ -29,6 +29,10 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
             ans += std::bitset<4>(field.getAgent(turn, index).second).to_string<bit>();
         }
     }
+    ans += std::bitset<12>(field.getPoints(false).at(0).first).to_string<bit>();
+    ans += std::bitset<12>(field.getPoints(false).at(0).second).to_string<bit>();
+    ans += std::bitset<12>(field.getPoints(false).at(1).first).to_string<bit>();
+    ans += std::bitset<12>(field.getPoints(false).at(1).second).to_string<bit>();
 
     std::string str;
     std::ofstream ofs;
@@ -56,7 +60,7 @@ void procon::BinaryIo::exportField(procon::Field& field,std::string Path){
     // std::cout<<"SIZE"<<str<<std::endl;
     //int w = std::stoi( y + str, nullptr, 2);
     //ofs.write((char * )&w, sizeof (int));
-    std::cout<<ans<<std::endl;
+    std::cout<<ans.size()<<std::endl;
 
    // std::cout<<"binary_size:"<<ans.size()<<std::endl;
 }
@@ -76,7 +80,7 @@ procon::Field procon::BinaryIo::importField(std::string Path){
         ans += std::bitset<8>(ins).to_string<bit>();
      //   std::cout<<ins<<" ";
     }
-    std::cout<<ans<<std::endl;
+    std::cout<<ans.size()<<std::endl;
    // std::cout<<std::endl;
    // std::cout<<"binary_size:"<<ans.size()<<std::endl;
 
@@ -155,7 +159,33 @@ procon::Field procon::BinaryIo::importField(std::string Path){
         field.setAgent(turn, index, a_x, a_y);
         }
     }
+    for(int i = 0; i < 12;i++){
+        str.push_back(que.front());
+        que.pop();
+    }
+    int hoge = std::bitset<12>(str).to_ulong();
+    str.clear();
+    for(int i = 0;i < 12;i++){
+        str.push_back(que.front());
+        que.pop();
+    }
+    int huge = std::bitset<12>(str).to_ulong();
+    str.clear();
+    field.setPoints(0, std::make_pair(hoge,huge));
 
+    for(int i = 0; i < 12;i++){
+        str.push_back(que.front());
+        que.pop();
+    }
+    hoge = std::bitset<12>(str).to_ulong();
+    str.clear();
+    for(int i = 0;i < 12;i++){
+        str.push_back(que.front());
+        que.pop();
+    }
+    huge = std::bitset<12>(str).to_ulong();
+    str.clear();
+    field.setPoints(1, std::make_pair(hoge,huge));
     fin.close();
     return field;
 }
