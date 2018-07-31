@@ -1,12 +1,12 @@
 #ifndef GAMEMANAGER_H
 #define GAMEMANAGER_H
-
 #include "visualizer.h"
 #include "csvio.h"
 #include "field.h"
 #include "progresdock.h"
 #include "geneticalgo/geneticalgo.h"
 #include "geneticalgo/geneticagent.h"
+#include "qrcode.h"
 
 #include <thread>
 #include <vector>
@@ -14,7 +14,6 @@
 #include <map>
 #include <functional>
 #include <string>
-#include "csvio.h"
 #include <QFileDialog>
 
 class AlgorithmWrapper;
@@ -94,5 +93,7 @@ private:
 
 
 };
-
 #endif // GAMEMANAGER_H
+
+
+

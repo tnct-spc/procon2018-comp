@@ -3,9 +3,9 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     Field \
+    QRcode \
     Visualizer \
     Solver \
     Mejirodai \
     Simulator \
-    QRcode \
     Test \

@@ -8,7 +8,6 @@
 #include "BreadthFirstSearch/beamsearch.h"
 #include "geneticalgo/simplealgorithm.h"
 #include "doubleagent/agentmanager.h"
-
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
     vis_show(vis_show)
@@ -80,7 +79,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         field = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
 
     } else if (QString::compare("QRcode", InputMethod) == 0) {
-
+        QRCode qr;
+        qr.decodeQRcode();
         //Write here
 
     }
