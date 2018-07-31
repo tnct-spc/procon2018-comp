@@ -25,11 +25,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         field.cpp \
     csvio.cpp \
-    binaryio.cpp
+    binaryio.cpp \
+    convertdictfield.cpp
 
 HEADERS += \
         field.h \
         field_global.h \
     csvio.h \
-    binaryio.h
+    binaryio.h \
+    convertdictfield.h
 
+LIBS += -lboost_python3
+LIBS += -lpython3.6m
+
+INCLUDEPATH += /usr/include/python3.6m

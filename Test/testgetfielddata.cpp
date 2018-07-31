@@ -119,7 +119,6 @@ void TestGetFieldData::run(){
 
                     logger->info(out);
                 }
-
             }
 
         }, cpu_index);
