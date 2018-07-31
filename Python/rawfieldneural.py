@@ -16,7 +16,7 @@ def raw_field_neural():
 
     train_size = int((1.0 - const.test_data_per) * len(bin_data))
 
-    # sizeで2 pointで12*12=144 stateで12*12=144 turnで2 agentで2*2*2=8 sum:300
+    # sizeで2 pointで12*12=144 stateで12*12=144 turnで2 agentで2*2*2=8 point2*2=4 sum:304
 
     for index in range(len(bin_data)):
 
@@ -45,7 +45,7 @@ def raw_field_neural():
     train_data = chainer.datasets.TupleDataset(inp_data[:train_size], out_data[:train_size])
     test_data = chainer.datasets.TupleDataset(inp_data[train_size:], out_data[train_size:])
 
-    network.calc_neural([800, 1200, 800, 1], train_data, test_data, const.result_path + '_raw_field/', '_raw_field', int(min(1000, train_size * 0.1)), int(min(200, train_size * 0.05)), 100)
+    network.calc_neural([800, 1200, 800, 1], train_data, test_data, const.result_path + '_raw_field/', '_raw_field', int(min(1000, train_size * 0.1)), int(min(200, train_size * 0.05)), 100000)
 
 
 raw_field_neural()
