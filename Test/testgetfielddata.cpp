@@ -65,7 +65,8 @@ void TestGetFieldData::run(){
             std::uniform_int_distribution<> rand_turn(60, 120);
             std::uniform_int_distribution<> rand_size(8, 12);
 
-            while((double)(clock() - start) / CLOCKS_PER_SEC < calc_time){
+            // while((double)(clock() - start) / CLOCKS_PER_SEC < calc_time){
+			while(1){
 
                 int turn_count = rand_turn(mt);
                 std::shared_ptr<GameManager> manager_ptr = manager_vec.at(cpu);
