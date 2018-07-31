@@ -50,7 +50,7 @@ def unpack_field(inp_side, f, field_list):
     
     field_list.append(field)
 
-    return psutil.virtual_memory().percent < 70.0
+    return psutil.virtual_memory().percent < 85.0
 
 def read_binary():
 
