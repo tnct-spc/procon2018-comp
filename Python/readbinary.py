@@ -58,9 +58,11 @@ def read_binary():
 
     move_list = []
 
-    side = 0
-    while unpack_field(side, file, move_list):
-        side ^= 1
+    count = 0
+    while unpack_field(count & 1, file, move_list):
+        count += 1
+
+    print('binary_read finished count: {}'.format(count))
     
     return move_list
 
