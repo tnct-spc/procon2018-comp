@@ -70,6 +70,9 @@ void TestGetFieldData::run(){
                 int turn_count = rand_turn(mt);
                 std::shared_ptr<GameManager> manager_ptr = manager_vec.at(cpu);
 
+                std::uniform_int_distribution<> rand_t(0, turn_count - 1);
+
+                std::vector<int> turns({rand_t(mt), rand_t(mt)});
 
                 manager_ptr->resetManager(rand_size(mt), rand_size(mt), false, turn_count);
 
@@ -79,18 +82,21 @@ void TestGetFieldData::run(){
                     for(int side = 0; side < 2; ++side){
                         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> move = calc_move(side, manager_ptr);
 
-                        data.emplace_back(procon::BinaryIo::exportToString(manager_ptr->getField()));
+                        if(turns.at(side) == count){
 
-                        // 6*2 + 4 = 16(2bit)
+                            data.emplace_back(procon::BinaryIo::exportToString(manager_ptr->getField()));
 
-                        data.back() += std::bitset<2>(std::get<0>(move.first)).to_string();
-                        data.back() += std::bitset<2>(std::get<1>(move.first) + 1 ).to_string();
-                        data.back() += std::bitset<2>(std::get<2>(move.first) + 1 ).to_string();
-                        data.back() += "00";
-                        data.back() += std::bitset<2>(std::get<0>(move.second)).to_string();
-                        data.back() += std::bitset<2>(std::get<1>(move.second) + 1).to_string();
-                        data.back() += std::bitset<2>(std::get<2>(move.second) + 1).to_string();
-                        data.back() += "00";
+                            // 6*2 + 4 = 16(2bit)
+
+                            data.back() += std::bitset<2>(std::get<0>(move.first)).to_string();
+                            data.back() += std::bitset<2>(std::get<1>(move.first) + 1 ).to_string();
+                            data.back() += std::bitset<2>(std::get<2>(move.first) + 1 ).to_string();
+                            data.back() += "00";
+                            data.back() += std::bitset<2>(std::get<0>(move.second)).to_string();
+                            data.back() += std::bitset<2>(std::get<1>(move.second) + 1).to_string();
+                            data.back() += std::bitset<2>(std::get<2>(move.second) + 1).to_string();
+                            data.back() += "00";
+                        }
 
                         manager_ptr->agentAct(side, 0, move.first);
                         manager_ptr->agentAct(side, 1, move.second);
@@ -100,7 +106,7 @@ void TestGetFieldData::run(){
 
                 std::vector<std::pair<int,int>> points = manager_ptr->getField().getPoints(false);
                 // [0.65536) ave 32768
-                for(int index = 0; index < turn_count * 2; ++index){
+                for(int index = 0; index < 2; ++index){
 
                     unsigned diff = ((points.at(0).first + points.at(0).second - (points.at(1).first + points.at(1).second)) * (index & 1 ? -1 : 1)) + (1<<15);
                     for(int bit = 15; bit >= 0; --bit)
