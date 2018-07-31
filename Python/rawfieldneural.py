@@ -36,7 +36,7 @@ def raw_field_neural():
                 for k in range(2):
                     inp_data[index][292 + i * 4 + j * 2 + k] = bin_data[index]['agent'][i][j][k]
 
-        out_data[index][0] = bin_data['diff']
+        out_data[index][0] = bin_data[index]['diff']
 
     train_data = chainer.datasets.TupleDataset(inp_data[:train_size], out_data[:train_size])
     test_data = chainer.datasets.TupleDataset(inp_data[train_size:], out_data[train_size:])
