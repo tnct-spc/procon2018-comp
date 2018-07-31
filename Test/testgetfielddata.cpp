@@ -73,19 +73,9 @@ void TestGetFieldData::run(){
 
                 manager_ptr->resetManager(rand_size(mt), rand_size(mt), false, turn_count);
 
-                // ここに初期Fieldによって定まるデータを入れる
-                /*
-                const std::vector<double>& field_data = manager_ptr->getField().getFeatures();
-                // ここに途中の盤面や行動によって定まるデータを入れる
-                // [試行回数][相手][行動や盤面の情報] の三次元配列
-                std::vector<std::vector<std::vector<double>>> move_data;
-                */
-
-                // exportbinary {(agent1),(agent2)} diff
                 std::vector<std::string> data;
 
                 for(int count = 0; count < turn_count; ++count){
-                    // move_data.push_back(std::vector<std::vector<double>>(2));
                     for(int side = 0; side < 2; ++side){
                         std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> move = calc_move(side, manager_ptr);
 
@@ -101,9 +91,6 @@ void TestGetFieldData::run(){
                         data.back() += std::bitset<2>(std::get<1>(move.second) + 1).to_string();
                         data.back() += std::bitset<2>(std::get<2>(move.second) + 1).to_string();
                         data.back() += "00";
-
-
-                        // move_data.back().at(side) = manager_ptr->getField().calcSituationFeature(move, side);
 
                         manager_ptr->agentAct(side, 0, move.first);
                         manager_ptr->agentAct(side, 1, move.second);
