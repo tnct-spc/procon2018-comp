@@ -11,7 +11,7 @@ bin_data = readbinary.read_binary()
 def raw_field_neural():
     random.shuffle(bin_data)
 
-    inp_data = np.zeros((len(bin_data), 300), dtype=np.float32)
+    inp_data = np.zeros((len(bin_data), 304), dtype=np.float32)
     out_data = np.empty((len(bin_data), 1), dtype=np.float32)
 
     train_size = int((1.0 - const.test_data_per) * len(bin_data))
@@ -35,6 +35,10 @@ def raw_field_neural():
             for j in range(2):
                 for k in range(2):
                     inp_data[index][292 + i * 4 + j * 2 + k] = bin_data[index]['agent'][i][j][k]
+
+        for i in range(2):
+            for j in range(2):
+                inp_data[index][300 + i * 2 + j] = bin_data[index]['point'][i][j]
 
         out_data[index][0] = bin_data[index]['diff']
 

@@ -47,6 +47,17 @@ def unpack_field(inp_side, f, field_list):
     field['diff'] = int.from_bytes(f.read(2), 'big') - (1 << 15)
 
     field['side'] = inp_side
+
+
+    field['point'] = [[0 for i in range(2)] for j in range(2)]
+
+
+    for side in range(2):
+        point = int.from_bytes(f.read(3), 'big')
+
+        for index in range(2):
+            field['point'][side][index] = (point >> (12 * index)) & ((1 << 12) - 1)
+
     
     field_list.append(field)
 

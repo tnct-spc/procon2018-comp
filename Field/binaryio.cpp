@@ -208,5 +208,13 @@ std::string procon::BinaryIo::exportToString(procon::Field& field){
             ans += std::bitset<4>(field.getAgent(turn, index).second).to_string<bit>();
         }
     }
+
+    const std::vector<std::pair<int,int>>& points = field.getPoints(false);
+    for(int side = 0; side < 2; ++side){
+        ans += std::bitset<12>(points.at(side).first).to_string<bit>();
+        ans += std::bitset<12>(points.at(side).second).to_string<bit>();
+    }
+
+
     return ans;
 }
