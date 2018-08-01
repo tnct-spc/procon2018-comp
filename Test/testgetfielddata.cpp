@@ -6,7 +6,7 @@ TestGetFieldData::TestGetFieldData() :
 {
     mt = std::mt19937(rnd());
 
-    logger = spdlog::basic_logger_mt("TestGetFieldData", "../../procon2018-comp/Data/TestOptimazationFunction/input.csv");
+    logger = spdlog::basic_logger_mt("TestGetFieldData", "../../procon2018-comp/Data/TestOptimazationFunction/field.dat");
     logger->set_pattern("%v");
 
 
@@ -59,14 +59,14 @@ void TestGetFieldData::run(){
 
         threads.at(cpu_index) = std::thread([&](int cpu){
 
-            std::lock_guard<std::mutex> lock(mtx);
+            // std::lock_guard<std::mutex> lock(mtx);
 
-            clock_t start = clock();
+            // clock_t start = clock();
             std::uniform_int_distribution<> rand_turn(60, 120);
             std::uniform_int_distribution<> rand_size(8, 12);
 
             // while((double)(clock() - start) / CLOCKS_PER_SEC < calc_time){
-			while(1){
+            for(int cou = 0; cou < calc_count; ++cou){
 
                 int turn_count = rand_turn(mt);
                 std::shared_ptr<GameManager> manager_ptr = manager_vec.at(cpu);

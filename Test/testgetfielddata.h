@@ -33,6 +33,8 @@ public:
 
     std::vector<std::shared_ptr<GameManager>> manager_vec;
 
+    int calc_count = 100000;
+
     TestGetFieldData();
     void run();
 };
