@@ -51,6 +51,8 @@ private:
     // 暗号を設定
     void setCipher(unsigned long int agent, unsigned long int pos, Cipher cip);
 
+    Cipher changeIntToCipher(int card);
+
     // Path
     QString image1;
     QString image2;

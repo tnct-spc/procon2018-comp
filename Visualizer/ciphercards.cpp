@@ -58,6 +58,15 @@ void CipherCards::setCipher(unsigned long int agent, unsigned long int pos, Ciph
     ciphers.at(agent).at(pos) = cip;
 }
 
+CipherCards::Cipher CipherCards::changeIntToCipher(int card)
+{
+    Cipher cip;
+    cip.mark = static_cast<CardType>(card % 4);
+    cip.num = (card - cip.mark * 13) % 13;
+
+    return cip;
+}
+
 QString CipherCards::makePath(Cipher card)
 {
     QString image_name = "./../../procon2018-comp/Visualizer/cards/";
