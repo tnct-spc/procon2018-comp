@@ -61,7 +61,7 @@ void CipherCards::setCipher(unsigned long int agent, unsigned long int pos, Ciph
 CipherCards::Cipher CipherCards::changeIntToCipher(int card)
 {
     Cipher cip;
-    cip.mark = static_cast<CardType>(card % 4);
+    cip.mark = static_cast<CardType>(card / 13);
     cip.num = (card - cip.mark * 13) % 13;
 
     return cip;
@@ -84,6 +84,9 @@ QString CipherCards::makePath(Cipher card)
             break;
         case Spade:
             image_name += "s";
+            break;
+        case Joker:
+            image_name += "x";
             break;
     }
 

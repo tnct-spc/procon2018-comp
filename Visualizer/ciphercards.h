@@ -32,6 +32,7 @@ private:
         Dia,
         Club,
         Spade,
+        Joker,
     };
 
     // 暗号
