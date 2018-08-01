@@ -109,12 +109,11 @@ for i in range(n_playout):
     while not f.done:
 
         action = [0 for i in range(2)]
-        arr = np.copy(f.fi)
         for sid in range(2):
             if sid:
-                rev(arr)
+                rev(f.fi)
             # rewardは必ず0になる気がするけど…
-            agents[sid].act_and_train(arr, reward)
+            agents[sid].act_and_train(f.fi, reward)
 
         # ここでターンの終了処理
         f.move(action)
@@ -122,11 +121,10 @@ for i in range(n_playout):
     win = f.winner()
     result[win + 1] += 1
 
-    arr = np.copy(f.fi)
     for sid in range(2):
         if sid:
-            rev(arr)
-        agents[sid].stop_episode_and_train(arr, win * (-1 if sid else 1), True)
+            rev(f.fi)
+        agents[sid].stop_episode_and_train(f.fi, win * (-1 if sid else 1), True)
 
     if not ((i + 1) % debug_time):
         print('episode:{}, rnd:{}, miss:{}, draw:{}, win:{}, statistics:{}, epsilon:{}'.format(i, ra.random_count, result[0], result[1], result[2], agent_p1.get_statistics(), agent_p2.explorer.epsilon))
