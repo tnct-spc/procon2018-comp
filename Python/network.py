@@ -24,7 +24,7 @@ class NetWork(chainer.Chain):
     
     # ???
     def __call__(self, x):
-        return self.l2(F.dropout(F.relu(self.l1(x))), train=train)
+        return self.l2(F.dropout(F.relu(self.l1(x))))
 
 
 
