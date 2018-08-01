@@ -7,5 +7,4 @@ SUBDIRS += \
     Solver \
     Mejirodai \
     Simulator \
-    Test \
-    precompile
+    Test
