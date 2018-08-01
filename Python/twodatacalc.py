@@ -36,4 +36,4 @@ def func_two_data():
 
     for count_1 in range(data_size):
         for count_2 in range(count_1 + 1):
-            two_data_calc(count_1, count_2, csv_data, 50)
+            two_data_calc(count_1, count_2, csv_data, const.epoch)
