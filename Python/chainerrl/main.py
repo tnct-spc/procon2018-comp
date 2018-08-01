@@ -27,16 +27,19 @@ save_time = 10000
 # fi:numpy[304] done
 class Field():
     def reset(self):
+        self.fi = hoge.reset()
         # fieldのランダム生成 c++に投げる
         pass
 
     def move(self, act):
+        self.fi = hoge.move(act)
+        # 終わったかどうか
+        self.done = (self.fi[290] == self.fi[291])
         # canPutを実行 falseなら強制lose それ以外ならmove
         # act[2] 両方[0,324)
-        pass
     
     def winner(self):
-        return 1
+        return hoge.winner()
         # 勝者を返す
 
 class RandAct:
@@ -46,7 +49,7 @@ class RandAct:
     
     def random_action_func(self):
         # C++を呼んで、有効手を1つ返す
-        pass
+        return hoge.random()
 
 class QFunction(chainer.Chain):
 
@@ -89,12 +92,14 @@ for i in range(n_playout):
     f.reset()
     agents = [agent_p1, agent_p2]
 
+    reward = 0
+
     while not f.done:
 
         action = [0 for i in range(2)]
         for sid in range(2):
             # rewardは必ず0になる気がするけど…
-            agents[sid].act_and_train(f.fi, 0)
+            agents[sid].act_and_train(f.fi, reward)
 
         # ここでターンの終了処理
         f.move(action)
