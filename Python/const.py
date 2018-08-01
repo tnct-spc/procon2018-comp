@@ -16,4 +16,7 @@ load_model_name = 'and'
 # テスト用データの占める割合
 test_data_per = 0.2
 
+max_train = 500
+max_test = 300
+
 epoch = 100
