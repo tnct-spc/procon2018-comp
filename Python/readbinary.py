@@ -70,7 +70,7 @@ def read_binary():
     move_list = []
 
     count = 0
-    while unpack_field(count & 1, file, move_list) and count < 1000000:
+    while unpack_field(count & 1, file, move_list) and count < 100000:
         count += 1
 
     print('binary_read finished count: {}'.format(count))
