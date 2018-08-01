@@ -26,10 +26,7 @@ def raw_field_neural():
         for i in range(bin_data[index]['siz'][0]):
             for j in range(bin_data[index]['siz'][1]):
                 
-                dat = bin_data[index]['state'][i][j]
-                if bin_data[index]['side'] and dat:
-                    dat = 2 if dat == 1 else 1
-                inp_data[index][i * 12 + j + 2] = dat
+                inp_data[index][i * 12 + j + 2] = bin_data[index]['state'][i][j]
                 inp_data[index][i * 12 + j + 146] = bin_data[index]['value'][i][j]
 
         inp_data[index][290] = bin_data[index]['now_turn']
@@ -38,11 +35,11 @@ def raw_field_neural():
         for i in range(2):
             for j in range(2):
                 for k in range(2):
-                    inp_data[index][292 + (bin_data[index]['side'] ^ i) * 4 + j * 2 + k] = bin_data[index]['agent'][i][j][k]
+                    inp_data[index][292 + i * 4 + j * 2 + k] = bin_data[index]['agent'][i][j][k]
 
         for i in range(2):
             for j in range(2):
-                inp_data[index][300 + (bin_data[index]['side'] ^ i) * 2 + j] = bin_data[index]['point'][i][j]
+                inp_data[index][300 + i * 2 + j] = bin_data[index]['point'][i][j]
 
         out_data[index][0] = bin_data[index]['diff']
 
