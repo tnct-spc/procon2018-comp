@@ -66,6 +66,18 @@ class QFunction(chainer.Chain):
         h = F.relu(self.l2(h))
         return chainerrl.action_value.DiscreteActionValue(self.l3(h))
 
+def rev(arr):
+    for i in range(144):
+        if arr[i * 12 + 2]:
+            arr[i * 12 + 2] = 2 if arr[i * 12 + 1] == 1 else 1
+
+    for i in range(4):
+        arr[292 + i], arr[296 + i] = arr[296 + i], arr[292 + i]
+
+    for i in range(2):
+        arr[300 + i], arr[302 + i] = arr[302 + i], arr[300 + i]
+
+
 f = Field()
 ra = RandAct(f)
 
@@ -97,9 +109,12 @@ for i in range(n_playout):
     while not f.done:
 
         action = [0 for i in range(2)]
+        arr = np.copy(f.fi)
         for sid in range(2):
+            if sid:
+                rev(arr)
             # rewardは必ず0になる気がするけど…
-            agents[sid].act_and_train(f.fi, reward)
+            agents[sid].act_and_train(arr, reward)
 
         # ここでターンの終了処理
         f.move(action)
@@ -107,8 +122,11 @@ for i in range(n_playout):
     win = f.winner()
     result[win + 1] += 1
 
+    arr = np.copy(f.fi)
     for sid in range(2):
-        agents[sid].stop_episode_and_train(f.fi, win * (-1 if sid else 1), True)
+        if sid:
+            rev(arr)
+        agents[sid].stop_episode_and_train(arr, win * (-1 if sid else 1), True)
 
     if not ((i + 1) % debug_time):
         print('episode:{}, rnd:{}, miss:{}, draw:{}, win:{}, statistics:{}, epsilon:{}'.format(i, ra.random_count, result[0], result[1], result[2], agent_p1.get_statistics(), agent_p2.explorer.epsilon))
