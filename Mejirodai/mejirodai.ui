@@ -21,7 +21,202 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="3" column="1" rowspan="2">
+    <item row="5" column="2">
+     <widget class="QStackedWidget" name="opponent_stackedWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="GeneticAlgo_opponent">
+       <widget class="QLabel" name="label_4">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>GeneticAlgo</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="DummyAlgorithm_opponent">
+       <widget class="QLabel" name="label_10">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>DummyAlgorithm</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+    <item row="12" column="1" alignment="Qt::AlignBottom">
+     <widget class="QPushButton" name="goPrev">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Prev</string>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="2" alignment="Qt::AlignBottom">
+     <widget class="QPushButton" name="goNext">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <kerning>true</kerning>
+       </font>
+      </property>
+      <property name="text">
+       <string>Next</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="label">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>My Algorithm</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QLabel" name="label_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Opponent's Algorithm</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QStackedWidget" name="my_stackedWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="GeneticAlgo_my">
+       <widget class="QLabel" name="label_3">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>GeneticAlgo</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="DummyAlgorithm_my">
+       <widget class="QLabel" name="label_9">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>DummyAlgorithm</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+    <item row="10" column="1">
+     <widget class="QCheckBox" name="autoMode">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>AutoMode</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="0" rowspan="4">
+     <widget class="QPushButton" name="changeButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Change</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" rowspan="4">
+     <widget class="QPushButton" name="runButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Run</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QComboBox" name="InputMethodSelect">
+      <item>
+       <property name="text">
+        <string>GenerateField</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>CSVImport</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>BinaryImport</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="1" column="1">
      <widget class="QComboBox" name="selectMyAlgorithmBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -84,7 +279,7 @@
       </item>
      </widget>
     </item>
-    <item row="3" column="2" rowspan="2">
+    <item row="1" column="2">
      <widget class="QComboBox" name="selectOpponentAlgorithmBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -144,184 +339,21 @@
       </item>
      </widget>
     </item>
-    <item row="1" column="1" alignment="Qt::AlignTop">
-     <widget class="QLabel" name="label">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
+    <item row="0" column="0">
+     <widget class="QLabel" name="modeLabel">
       <property name="text">
-       <string>My Algorithm</string>
+       <string>Run Mode</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="0" rowspan="7">
-     <widget class="QPushButton" name="runButton">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
+    <item row="11" column="1">
+     <widget class="QPushButton" name="ExportFieldBinary">
       <property name="text">
-       <string>Run</string>
+       <string>ExportBinaryField</string>
       </property>
      </widget>
     </item>
-    <item row="5" column="2">
-     <widget class="QStackedWidget" name="opponent_stackedWidget">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="GeneticAlgo_opponent">
-       <widget class="QLabel" name="label_4">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>100</y>
-          <width>251</width>
-          <height>81</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>GeneticAlgo</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="DummyAlgorithm_opponent">
-       <widget class="QLabel" name="label_10">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>100</y>
-          <width>251</width>
-          <height>81</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>DummyAlgorithm</string>
-        </property>
-       </widget>
-      </widget>
-     </widget>
-    </item>
-    <item row="1" column="2" alignment="Qt::AlignTop">
-     <widget class="QLabel" name="label_2">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Opponent's Algorithm</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="1">
-     <widget class="QCheckBox" name="autoMode">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>AutoMode</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="1">
-     <widget class="QStackedWidget" name="my_stackedWidget">
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="GeneticAlgo_my">
-       <widget class="QLabel" name="label_3">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>100</y>
-          <width>251</width>
-          <height>81</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>GeneticAlgo</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="DummyAlgorithm_my">
-       <widget class="QLabel" name="label_9">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>100</y>
-          <width>251</width>
-          <height>81</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>DummyAlgorithm</string>
-        </property>
-       </widget>
-      </widget>
-     </widget>
-    </item>
-    <item row="8" column="0">
-     <widget class="QComboBox" name="InputMethodSelect">
-      <item>
-       <property name="text">
-        <string>GenerateField</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>CSVImport</string>
-       </property>
-      </item>
-     </widget>
-    </item>
-    <item row="8" column="1">
-     <widget class="QPushButton" name="goPrev">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Prev</string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="2">
-     <widget class="QPushButton" name="goNext">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <kerning>true</kerning>
-       </font>
-      </property>
-      <property name="text">
-       <string>Next</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="2">
+    <item row="11" column="2">
      <widget class="QPushButton" name="exportField">
       <property name="text">
        <string>ExportField</string>

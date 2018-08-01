@@ -12,8 +12,6 @@
     candidate = std::vector<std::vector<std::pair<int, int>>>(2, std::vector<std::pair<int,int>>(2, std::make_pair(-1, -1)));
 
     is_delete = std::vector<std::vector<int>>(2, std::vector<int>(2, 0));
-
-
 }
 
 Visualizer::~Visualizer()
@@ -309,15 +307,58 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     };
 
+    auto drawClickedGrid = [&] {
+
+        QColor paint_color;
+        std::pair<int, int> state = field.getState(clicked_grid_change.first, clicked_grid_change.second);
+        if (state.first == 0) paint_color = background_color;
+        else if (state.first == 1) paint_color = team_color_a;
+        else paint_color = team_color_b;
+        paint_color.setAlpha(200);
+
+        int x_pos = clicked_grid_change.first;
+        int y_pos = clicked_grid_change.second;
+
+        painter.setBrush(QBrush(paint_color));
+        painter.drawRect(horizontal_margin + grid_size * x_pos, vertical_margin + grid_size * y_pos, grid_size, grid_size);
+    };
+
+    auto drawClickedAgent = [&]{
+
+        painter.setPen(QPen(QBrush(Qt::black),0.5));
+
+        QColor paint_color = ( selected_agent.first == 0
+                   ? team_color_a
+                   : team_color_b);
+        paint_color.setAlpha(200);
+
+        painter.setBrush(QBrush(paint_color));
+
+        int pos_x = selected_agent_grid.first;
+        int pos_y = selected_agent_grid.second;
+
+        painter.drawEllipse(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size);
+
+    };
+
 
 
     drawBackGround();
     drawTiles();
 
-    if(auto_mode == false){
+    // AutoModeでなくかつChaneModeではないとき
+    if((auto_mode == false) && (change_mode == false)){
         drawAgentMove();
         drawCandidateMove();
         if (selected) drawAroundAgent();
+    }
+
+    if (clicked) {
+        // クリックされたグリッド
+        if (change_mode) drawClickedGrid();
+
+        // クリックされたエージェント
+        if (change_mode && selected) drawClickedAgent();
     }
 
     drawValues();
@@ -327,7 +368,6 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     drawTurnCount();
     drawRegion();
-
 }
 
 // メインウィンドウ内のマスをクリックしたときに行われるイベント
@@ -343,7 +383,7 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         // マスの範囲外をクリックしたら何もしない
         if ((point.x() < horizontal_margin) || (point.x() > window_width - horizontal_margin)
             || (point.y() < vertical_margin) || (point.y() > window_height - vertical_margin)) {
-        return;
+            return;
         }
 
         //右クリックかどうか
@@ -359,7 +399,8 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         clicked_grid.second = (point.y() - vertical_margin) / grid_size;
 
         // 移動をを入力するエージェントが選ばれているか
-        if (selected) {
+        // ChangeModeのときは機能しない
+        if (!change_mode && selected) {
 
             // グリッドはエージェントの移動先に含まれているか
             checkClickGrid(clicked_grid, right_flag);
@@ -368,6 +409,18 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
 
             // クリックされたエージェントまたはマスを照合
             checkClickedAgent(clicked_grid);
+        }
+
+        if (change_mode) {
+
+            clicked_grid_change = clicked_grid;
+            clicked = true;
+
+            update();
+
+            // クリックされたGridのステータスをOperatorに表示
+            emit selectChangeGrid(clicked_grid, selected);
+
         }
     }
 
@@ -408,7 +461,6 @@ void Visualizer::checkClickedAgent(std::pair<int, int> mass)
 // エージェントの移動先を決定
 void Visualizer::checkClickGrid(std::pair<int, int> mass, bool right_flag)
 {
-
     // クリックされた場所がエージェントの移動範囲に含まれているか確認
     if (((selected_agent_grid.first - 1) > mass.first) || ((selected_agent_grid.first + 1) < mass.first)
             || ((selected_agent_grid.second - 1) > mass.second) || ((selected_agent_grid.second + 1) < mass.second)) {
@@ -476,4 +528,56 @@ void Visualizer::slotAutoMode(bool value){
 void Visualizer::candidateMove(const std::vector<std::vector<std::pair<int, int> > > &inp_vec){
     candidate = inp_vec;
     this->update();
+}
+
+void Visualizer::setChangeMode(bool value) {
+
+    change_mode = value;
+
+    // もろもろを初期化
+    clicked = false;
+    selected = false;
+    confirm_count = 0;
+
+    if (!change_mode) {
+
+    }
+
+}
+
+void Visualizer::getData(const std::pair<int, int> data, const bool agent) {
+
+    if (agent) {
+        // エージェントの場所とそのタイル状況を変更
+        if (selected) {
+            field.setAgent(selected_agent.first, selected_agent.second, data.first, data.second);
+            field.setState(clicked_grid_change.first, clicked_grid_change.second, selected_agent.first + 1);
+
+//            std::pair<int, int> agent = field.getAgent(0,0);
+//            std::cout << agent.first << "," << agent.second << std::endl;
+
+            selected = false;
+        }
+
+    } else {
+
+        // グリッドのタイル状況と点数を変更
+        field.setState(clicked_grid_change.first, clicked_grid_change.second, data.first);
+        field.setGridValue(clicked_grid_change.first, clicked_grid_change.second, data.second);
+    }
+
+    update();
+}
+
+procon::Field Visualizer::getField()
+{
+    return field;
+}
+
+void Visualizer::setTurns(const std::pair<int, int> turns)
+{
+    turn = turns.first;
+    field.setTurnCount(turn);
+    max_turn = turns.second;
+    field.setFinalTurn(max_turn);
 }

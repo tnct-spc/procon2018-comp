@@ -3,6 +3,7 @@
 
 
 #include "field.h"
+
 #include <QPainter>
 #include <QWidget>
 #include <QPaintEvent>
@@ -26,12 +27,20 @@ public:
 
     void setField(const procon::Field& inp_field, int now_turn, int max_t);
 
+    procon::Field getField();
+
+    void setTurns(const std::pair<int, int> turns);
+
+    void setChangeMode(bool value);
 
 signals:
     void nextMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec, std::vector<std::vector<int>> is_delete);
+    void selectChangeGrid(const std::pair<int, int> grid, const bool agent);
+
 public slots:
     void slotAutoMode(bool value);
     void candidateMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec);
+    void getData(const std::pair<int, int> data, const bool agent);
 
 private:
     Ui::Visualizer *ui;
@@ -62,6 +71,11 @@ private:
     // 移動を入力するエージェントが選択されているか
     bool selected = false;
 
+    // 手動ModeでかつChangeModeのときtrue
+    bool change_mode = false;
+
+    bool clicked = false;
+
     unsigned int confirm_count = 0;
 
     // 移動を入力するエージェントのチームとエージェント番号
@@ -78,6 +92,9 @@ private:
 
     //こっちはmanualmode用
     std::vector<std::vector<std::pair<int, int>>> candidate;
+
+    // クリックされたGrid
+    std::pair<int, int> clicked_grid_change;
 
     //margin*size分の余白を取る
     const double margin = 1.5;

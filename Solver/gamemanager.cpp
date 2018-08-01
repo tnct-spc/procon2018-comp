@@ -25,6 +25,9 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, b
         connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
         connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
         connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
+        connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
+        connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
+
     }else{
         is_auto = true;//この場合は自動進行
     }
@@ -44,6 +47,9 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
         connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
         connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
         connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
+        connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
+        connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
+
     }else{
         is_auto = true;//この場合は自動進行
     }
@@ -79,6 +85,9 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
         field = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
 
+    }else if (QString::compare("BinaryImport", InputMethod) == 0) {
+        std::string path = QFileDialog::getOpenFileName().toStdString();
+        field = std::make_shared<procon::Field>(procon::BinaryIo::importField(path));
     }
     //field->guessAgents(1);
 
@@ -136,7 +145,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
     if(vis_show){
         visualizer->update();
-        visualizer->setField(*field, 1, field->getFinalTurn());
+        visualizer->setField(*field, field->getTurnCount(), field->getFinalTurn());
     }
 
 
@@ -186,7 +195,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             agentAct(1,1,team_2_ans.second);
 
             changeTurn(false);
-
+            field->getPoints(pruning_pos);
 
             field_vec.push_back(std::make_shared<procon::Field>(*field));
 
@@ -546,6 +555,11 @@ void GameManager::nextMoveForManualMode(){
     visualizer->update();
     visualizer->repaint();
 
+//    std::cout << field->getTurnCount() << "," << field->getFinalTurn() << std::endl;
+
+//    std::pair<int, int> agent = field->getAgent(0,0);
+//    std::cout << agent.first << "," << agent.second << std::endl;
+
     std::vector<std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>>> candidate_move(2);
     candidate_move.at(0) = team_1->agentAct(0);
     candidate_move.at(1) = team_2->agentAct(1);
@@ -566,4 +580,62 @@ void GameManager::nextMoveForManualMode(){
 
     emit setCandidateMove(return_vec);
 
+}
+
+void GameManager::startupChangeMode()
+{
+    ope = std::make_shared<Operator>();
+
+    connect(ope.get(), &Operator::pushEnd, this, &GameManager::endChangeMode);
+    connect(this, &GameManager::sendDataToOperator, ope.get(), &Operator::changeDataDisplay);
+    connect(ope.get(), &Operator::pushChange, this, &GameManager::getChangeOfData);
+
+    // Operatorを表示
+    ope->show();
+    ope->setTurns(field->getTurnCount(), field->getFinalTurn());
+
+    // VisualizerをChangeModeに変更
+    visualizer->setChangeMode(true);
+    visualizer->update();
+}
+
+void GameManager::endChangeMode(const std::pair<int, int> turns)
+{
+    // Turnをセット
+    visualizer->setTurns(turns);
+
+    // VisualizerのChangeModeを解除
+    visualizer->setChangeMode(false);
+
+    // Operatorを閉じる
+    ope->close();
+
+    // Fieldの書き換え
+    *field = visualizer->getField();
+    field->updatePoint();
+
+    // ゲームを続行
+    nextMoveForManualMode();
+}
+
+void GameManager::getDataToOperator(const std::pair<int,int> grid, const bool agent)
+{
+    std::pair<int, int> data;
+
+    // 変更するのがエージェントならグリッドの座標をそのまま送る
+    if (agent) {
+        data.first = grid.first;
+        data.second = grid.second;
+    } else {
+
+        // グリッドならそのグリッドのステータスを送る
+        data = field->getState(grid.first, grid.second);
+    }
+
+    emit sendDataToOperator(data, agent);
+}
+
+void GameManager::getChangeOfData(const std::pair<int, int> data, const bool agent)
+{
+    emit sendDataToVisualizer(data, agent);
 }
