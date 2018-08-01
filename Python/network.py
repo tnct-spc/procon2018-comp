@@ -40,6 +40,9 @@ def calc_neural(layers, train, test, data_path, data_suffix, train_batch_size, t
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
 
+    if const.use_weight_data:
+        chainer.serializers.load_npz(const.saved_path + const.load_model_name + data_suffix + '.npz', model)
+
     train_iter = chainer.iterators.SerialIterator(train, train_batch_size)
     test_iter = chainer.iterators.SerialIterator(test, test_batch_size, repeat=False)
 
@@ -60,4 +63,4 @@ def calc_neural(layers, train, test, data_path, data_suffix, train_batch_size, t
 
     trainer.run()
 
-    chainer.serializers.save_npz(data_path + const.save_model_name + data_suffix + '.model', model)
+    chainer.serializers.save_npz(data_path + const.save_model_name + data_suffix + '.npz', model)

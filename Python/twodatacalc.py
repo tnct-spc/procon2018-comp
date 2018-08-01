@@ -26,7 +26,7 @@ def two_data_calc(inp1, inp2, csv_data, hid_unit):
     data_id = '_' + str(inp1) + '_' + str(inp2)
     data_path = const.result_path + data_id + '/'
 
-    network.calc_neural([hid_unit, 1], train_data, test_data, data_path, data_id, 10000, 100, const.epoch)
+    network.calc_neural([hid_unit, 1], train_data, test_data, data_path, data_id, 10000, 100, 50)
 
 def func_two_data():
 
