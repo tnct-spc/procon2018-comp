@@ -991,3 +991,7 @@ std::vector<double> procon::Field::calcSituationFeature(std::pair<std::tuple<int
 }
 
 
+int procon::Field::whichWin(){
+    updatePoint();
+    return points.at(0).first+points.at(0).second > points.at(1).first + points.at(1).second ? 0 : 1;
+}
