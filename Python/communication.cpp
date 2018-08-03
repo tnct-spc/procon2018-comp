@@ -59,23 +59,44 @@ boost::python::list procon::Communication::random(int side){
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
-    std::vector<std::pair<int,int>> vec;
-    for(int a = 0;a < 8;a++){
-        for(int b = 0;b < 8;b++){
+    std::vector<std::pair<std::pair<int,int>, std::pair<int,int>>> vec;
+    for(int a = 0 ; a < 9 ; a++){
+        for(int b = 0 ; b < 9 ; b++){
             if(field.canPut(side, a, b, true)){
-                vec.push_back(std::make_pair(a,b));
+                int w1 = field.getState(field.getAgent(side,1).first + x_list[a],field.getAgent(side,1).second + y_list[a]).first;
+                int w2 = field.getState(field.getAgent(side,1).first + x_list[b],field.getAgent(side,1).second + y_list[b]).first;
+
+                if((w1 == side || w1 == 0)&&(w2 == side || w2 == 0)){
+                    vec.push_back(std::make_pair(std::make_pair(1,1), std::make_pair(a,b)));
+                }
+
+                if(w1 != side&&w1 != 0 && w2 != 0&&w2 != side){
+                    vec.push_back(std::make_pair(std::make_pair(1,1), std::make_pair(a,b)));
+                }
+
+                if((w1 == side || w1 == 0)&& w2 != 0&&w2 != side){
+                    vec.push_back(std::make_pair(std::make_pair(1,2), std::make_pair(a,b)));
+                }
+
+                if(w1 != side && w1 != 0 && (w2 == side || w2 == 0)){
+                    vec.push_back(std::make_pair(std::make_pair(2,1), std::make_pair(a,b)));
+                }
             }
+
+
         }
     }
 
     std::random_device rnd;     // 非決定的な乱数生成器でシード生成機を生成
     std::mt19937 mt(rnd()); //
 
-    std::uniform_int_distribution<> rand_move(0, vec.size());
+    std::uniform_int_distribution<> rand_move(0, vec.size()-1);
     int s = rand_move(mt);
     std::vector<int> hoge;
-    hoge.push_back(vec.at(s).first);
-    hoge.push_back(vec.at(s).second);
+    hoge.push_back(vec.at(s).first.first);
+    hoge.push_back(vec.at(s).first.second);
+    hoge.push_back(vec.at(s).second.first);
+    hoge.push_back(vec.at(s).second.second);
     typename std::vector<int>::const_iterator it;
 
     boost::python::list py_list;
