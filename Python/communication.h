@@ -37,10 +37,12 @@ public:
     void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
     void changeTrun();
     int  winner();
+    bool isEnable(int side, boost::python::list act); //sideと[移動or破壊(1or2),pos,破壊or移動(1or2),pos];
 
 private:
 
     procon::Field field;
+
 
     const unsigned int grid_x = 12;
     const unsigned int grid_y = 8;

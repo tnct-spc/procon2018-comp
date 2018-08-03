@@ -66,19 +66,19 @@ boost::python::list procon::Communication::random(int side){
                 int w1 = field.getState(field.getAgent(side,1).first + x_list[a],field.getAgent(side,1).second + y_list[a]).first;
                 int w2 = field.getState(field.getAgent(side,1).first + x_list[b],field.getAgent(side,1).second + y_list[b]).first;
 
-                if((w1 == side || w1 == 0)&&(w2 == side || w2 == 0)){
+                if((w1 == side +1 || w1 == 0)&&(w2 == side + 1|| w2 == 0)){
                     vec.push_back(std::make_pair(std::make_pair(1,1), std::make_pair(a,b)));
                 }
 
-                if(w1 != side&&w1 != 0 && w2 != 0&&w2 != side){
+                if(w1 != side + 1&&w1 != 0 && w2 != 0&&w2 != side+1){
                     vec.push_back(std::make_pair(std::make_pair(1,1), std::make_pair(a,b)));
                 }
 
-                if((w1 == side || w1 == 0)&& w2 != 0&&w2 != side){
+                if((w1 == side +1 || w1 == 0)&& w2 != 0&&w2 != side + 1){
                     vec.push_back(std::make_pair(std::make_pair(1,2), std::make_pair(a,b)));
                 }
 
-                if(w1 != side && w1 != 0 && (w2 == side || w2 == 0)){
+                if(w1 != side+1 && w1 != 0 && (w2 == side+1 || w2 == 0)){
                     vec.push_back(std::make_pair(std::make_pair(2,1), std::make_pair(a,b)));
                 }
             }
@@ -287,6 +287,39 @@ int procon::Communication::winner(){
     return s == 0 ? -1 : 1;
 }
 
+bool procon::Communication::isEnable(int side, boost::python::list act){
+
+    std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
+    std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
+
+
+    std::vector<int> Act = py_list_to_std_vector(act);
+    bool result1 = false;
+    bool result2 = false;
+
+    if(field.canPut(side, Act.at(1), Act.at(3), true)){
+        int a = Act.at(1);
+        int b = Act.at(3);
+        int w1 = field.getState(field.getAgent(side,1).first + x_list[a],field.getAgent(side,1).second + y_list[a]).first;
+        int w2 = field.getState(field.getAgent(side,1).first + x_list[b],field.getAgent(side,1).second + y_list[b]).first;
+
+        if(Act.at(0) == 1 && (w1 == side + 1 || w1 == 0)){
+            result1 = true;
+        }
+        if(Act.at(0) == 2 && w1 != 0){
+            result1 = true;
+        }
+        if(Act.at(2) == 1 && (w2 == side + 1 || w2 == 0)){
+            result2 = true;
+        }
+        if(Act.at(2) == 2 && w2 != 0){
+            result2 = true;
+        }
+
+    }
+    return result1 && result2;
+}
+
 BOOST_PYTHON_MODULE(communication)
 {
     using namespace boost::python;
@@ -294,6 +327,7 @@ BOOST_PYTHON_MODULE(communication)
     class_<procon::Communication>("Communication")
         .add_property("reset", &procon::Communication::reset)
         .add_property("move", &procon::Communication::move)
-        .add_property("random", &procon::Communication::winner);
-        ;
+        .add_property("random", &procon::Communication::winner)
+        .add_property("isEnable", &procon::Communication::isEnable);
+
 }
