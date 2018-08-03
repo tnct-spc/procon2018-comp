@@ -286,3 +286,14 @@ int procon::Communication::winner(){
     int s = field.whichWin();
     return s == 0 ? -1 : 1;
 }
+
+BOOST_PYTHON_MODULE(communication)
+{
+    using namespace boost::python;
+
+    class_<procon::Communication>("Communication")
+        .add_property("reset", &procon::Communication::reset)
+        .add_property("move", &procon::Communication::move)
+        .add_property("random", &procon::Communication::winner);
+        ;
+}
