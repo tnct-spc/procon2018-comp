@@ -1,7 +1,6 @@
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 
-#include "gamemanager.h"
 #include "field.h"
 #include "boost/python.hpp"
 #include "boost/python/numpy.hpp"
