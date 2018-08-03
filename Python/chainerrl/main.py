@@ -16,8 +16,8 @@ import chainerrl
 # siz:2 st_va:12*12*2=288 tu:2 ag:2*2*2=8 po:2*2=4 sum:304
 field_val = 304
 # 行動のパターン数
-# 9^2 * 2^2 で 324 全ての行動に重みを取って最大値を取る(?)
-n_move = 324
+# 9*2=18 全ての行動に重みを取って最大値を取る(?)
+n_move = 18
 
 n_playout = 20000
 debug_time = 100
@@ -32,7 +32,22 @@ class Field():
         pass
 
     def move(self, act):
-        self.fi = hoge.move(act)
+        # act = [[[points], [points]][[points], [points]]]
+        moves = []
+        for sid in act:
+            sidmoves = []
+            for i1 in range(18):
+                for i2 in range(18):
+                    # 加算だったり乗算だったり
+                    sidmoves.append(i1, i2, act[sid][0][i1] * act[sid][1][i2])
+            sorted(sidmoves, key=lambda inp: inp[2])
+            sidmoves.reverse()
+            for ac in sidmoves:
+                if hoge.canput(ac):
+                    moves.append(ac)
+                    break
+
+        self.fi = hoge.move(moves)
         # 終わったかどうか
         self.done = (self.fi[290] == self.fi[291])
         # canPutを実行 falseなら強制lose それ以外ならmove
@@ -66,7 +81,7 @@ class QFunction(chainer.Chain):
         h = F.relu(self.l2(h))
         return chainerrl.action_value.DiscreteActionValue(self.l3(h))
 
-def rev(arr):
+def revside(arr):
     for i in range(144):
         if arr[i * 12 + 2]:
             arr[i * 12 + 2] = 2 if arr[i * 12 + 1] == 1 else 1
@@ -77,6 +92,10 @@ def rev(arr):
     for i in range(2):
         arr[300 + i], arr[302 + i] = arr[302 + i], arr[300 + i]
 
+def revage(arr):
+    for i in range(2):
+        arr[292 + i], arr[294 + i] = arr[294 + i], arr[292 + i]
+        arr[296 + i], arr[298 + i] = arr[298 + i], arr[296 + i]
 
 f = Field()
 ra = RandAct(f)
@@ -97,23 +116,29 @@ replay_buffer = chainerrl.replay_buffer.ReplayBuffer(capacity= 10 ** 6)
 
 agent_p1 = chainerrl.agents.DoubleDQN(q_func, optimizer, replay_buffer, gamma, explorer, replay_start_size=500)
 agent_p2 = chainerrl.agents.DoubleDQN(q_func, optimizer, replay_buffer, gamma, explorer, replay_start_size=500)
+agent_p3 = chainerrl.agents.DoubleDQN(q_func, optimizer, replay_buffer, gamma, explorer, replay_start_size=500)
+agent_p4 = chainerrl.agents.DoubleDQN(q_func, optimizer, replay_buffer, gamma, explorer, replay_start_size=500)
 
 result = [0 for i in range(3)]
 
 for i in range(n_playout):
     f.reset()
-    agents = [agent_p1, agent_p2]
+    agents = [[agent_p1, agent_p2], [agent_p3, agent_p4]]
 
     reward = 0
 
     while not f.done:
 
-        action = [0 for i in range(2)]
+        action = []
         for sid in range(2):
-            if sid:
-                rev(f.fi)
+            act = []
             # rewardは必ず0になる気がするけど…
-            agents[sid].act_and_train(f.fi, reward)
+            for ag in range(2):
+                act.append(agents[sid][ag].act_and_train(f.fi, reward))
+                revage(f.fi)
+
+            action.append(act)
+            revside(f.fi)
 
         # ここでターンの終了処理
         f.move(action)
@@ -122,9 +147,10 @@ for i in range(n_playout):
     result[win + 1] += 1
 
     for sid in range(2):
-        if sid:
-            rev(f.fi)
-        agents[sid].stop_episode_and_train(f.fi, win * (-1 if sid else 1), True)
+        for ag in range(2):
+            agents[sid].stop_episode_and_train(f.fi, win * (-1 if sid else 1), True)
+            revage(f.fi)
+        revside(f.fi)
 
     if not ((i + 1) % debug_time):
         print('episode:{}, rnd:{}, miss:{}, draw:{}, win:{}, statistics:{}, epsilon:{}'.format(i, ra.random_count, result[0], result[1], result[2], agent_p1.get_statistics(), agent_p2.explorer.epsilon))
