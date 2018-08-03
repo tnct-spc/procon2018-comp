@@ -4,6 +4,8 @@
 #include "field.h"
 #include "boost/python.hpp"
 #include "boost/python/numpy.hpp"
+#include "gamemanager.h"
+#include "visualizer.h"
 
 #include <thread>
 #include <memory>
@@ -41,8 +43,8 @@ public:
 
 private:
 
-    procon::Field field;
 
+    std::shared_ptr<GameManager> manager;
 
     const unsigned int grid_x = 12;
     const unsigned int grid_y = 8;
