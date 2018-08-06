@@ -4,20 +4,21 @@ namespace np = boost::python::numpy;
 
 
 procon::Communication::Communication() :
-    field(grid_x, grid_y)
+    field(12, 8)
 {
-    Py_Initialize();
+	Py_Initialize();
+	np::initialize();
 
 }
 
 np::ndarray procon::Communication::reset(){
-    field = procon::Field(grid_x, grid_y);
+    field = procon::Field(12, 8);
     return exportField(field);
 }
 
 
 
-np::ndarray procon::Communication::exportField(procon::Field field){
+np::ndarray procon::Communication::exportField(procon::Field& field){
     std::vector<int> field_arr(308,0);
     field_arr.at(0)=field.getSize().first;
     field_arr.at(1)=field.getSize().second;
@@ -50,7 +51,7 @@ np::ndarray procon::Communication::exportField(procon::Field field){
         index+=2;
     }
     Py_intptr_t shape[1] = {308};
-    np::ndarray result = np::zeros(308, shape, np::dtype::get_builtin<int>());
+    np::ndarray result = np::zeros(1, shape, np::dtype::get_builtin<int>());
     std::copy(field_arr.begin(), field_arr.end(), reinterpret_cast<double*>(result.get_data()));
     return result;
 }

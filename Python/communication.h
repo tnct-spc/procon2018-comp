@@ -27,7 +27,7 @@ public:
 
     Communication();
     boost::python::numpy::ndarray reset();
-    boost::python::numpy::ndarray exportField(procon::Field field);
+    boost::python::numpy::ndarray exportField(procon::Field& field);
     boost::python::list random(int side);
     boost::python::numpy::ndarray move(boost::python::list act);
 
@@ -41,9 +41,6 @@ public:
 private:
 
     procon::Field field;
-
-    const unsigned int grid_x = 12;
-    const unsigned int grid_y = 8;
 
     std::vector<std::vector<std::tuple<int,int,int>>> act_stack; //ここは絶対座標での入力なので注意！
 

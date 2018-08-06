@@ -36,8 +36,12 @@ save_time = 10000
 
 # fi:numpy[304] done
 class Field():
+    def __init__(self):
+        self.com = communication.Communication()
+        self.fi = self.com.reset()
+
     def reset(self):
-        self.fi = hoge.reset()
+        self.fi = self.com.reset()
         # fieldのランダム生成 c++に投げる
         pass
 
@@ -53,18 +57,18 @@ class Field():
             sorted(sidmoves, key=lambda inp: inp[2])
             sidmoves.reverse()
             for ac in sidmoves:
-                if hoge.canput(ac):
+                if self.com.canput(ac):
                     moves.append(ac)
                     break
 
-        self.fi = hoge.move(moves)
+        self.fi = self.com.move(moves)
         # 終わったかどうか
         self.done = (self.fi[290] == self.fi[291])
         # canPutを実行 falseなら強制lose それ以外ならmove
         # act[2] 両方[0,324)
     
     def winner(self):
-        return hoge.winner()
+        return self.com.winner()
         # 勝者を返す
 
 class RandAct:
@@ -74,7 +78,7 @@ class RandAct:
     
     def random_action_func(self):
         # C++を呼んで、有効手を1つ返す
-        return hoge.random()
+        return self.com.random()
 
 class QFunction(chainer.Chain):
 
