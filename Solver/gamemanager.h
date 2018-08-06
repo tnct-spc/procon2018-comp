@@ -7,13 +7,10 @@
 #include "progresdock.h"
 #include "geneticalgo/geneticalgo.h"
 #include "geneticalgo/geneticagent.h"
-<<<<<<< HEAD
 #include "qrcode.h"
 #include "qrconverterfield.h"
-=======
 #include "operator.h"
 
->>>>>>> develop
 #include <thread>
 #include "csvio.h"
 #include <vector>

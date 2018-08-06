@@ -32,17 +32,6 @@ DEPENDPATH += $$PWD/../precompile
 
 SOURCES += \
         visualizer.cpp \
-<<<<<<< HEAD
-        progresdock.cpp
-
-HEADERS += \
-        visualizer.h \
-        progresdock.h
-
-FORMS += \
-        visualizer.ui \
-        progresdock.ui
-=======
     progresdock.cpp \
     operator.cpp
 
@@ -55,7 +44,6 @@ FORMS += \
         visualizer.ui \
     progresdock.ui \
     operator.ui
->>>>>>> develop
 
 unix {
     target.path = /usr/lib

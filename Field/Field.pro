@@ -32,20 +32,12 @@ DEPENDPATH += $$PWD/../precompile
 
 SOURCES += \
         field.cpp \
-<<<<<<< HEAD
-        csvio.cpp
-=======
-    csvio.cpp \
-    binaryio.cpp
->>>>>>> develop
+        csvio.cpp \
+        binaryio.cpp
 
 HEADERS += \
         field.h \
         field_global.h \
-<<<<<<< HEAD
-        csvio.h
-=======
-    csvio.h \
-    binaryio.h
->>>>>>> develop
+        csvio.h \
+        binaryio.h
 

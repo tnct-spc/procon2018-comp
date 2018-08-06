@@ -211,11 +211,12 @@
       </item>
       <item>
        <property name="text">
-<<<<<<< HEAD
         <string>QRcode</string>
-=======
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>BinaryImport</string>
->>>>>>> develop
        </property>
       </item>
      </widget>
