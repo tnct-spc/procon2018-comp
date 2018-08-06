@@ -2,8 +2,8 @@
 #define COMMUNICATION_H
 
 #include "field.h"
-#include "boost/python.hpp"
-#include "boost/python/numpy.hpp"
+#include <boost/python.hpp>
+#include <boost/python/numpy.hpp>
 
 #include <thread>
 #include <memory>

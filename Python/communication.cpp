@@ -6,6 +6,7 @@ namespace np = boost::python::numpy;
 procon::Communication::Communication() :
     field(grid_x, grid_y)
 {
+    Py_Initialize();
 
 }
 

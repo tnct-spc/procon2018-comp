@@ -1,5 +1,15 @@
 import numpy as np
 
+"""
+import os
+import sys
+sys.path.append(os.pardir)
+"""
+
+import communication
+
+# g++ -DPIC -shared -fPIC -o basic.so communication.cpp -lboost_python -lpython3.6m -I/usr/include/python3.6m -L../Field -I../Field
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
