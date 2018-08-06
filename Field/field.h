@@ -72,6 +72,8 @@ public:
 
     void updateOnlyTilePoint();
 
+    int whichWin();
+
 
     std::vector<std::pair<int, int>> guessAgents(int side);  //推測する先のside
 

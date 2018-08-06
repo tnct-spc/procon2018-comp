@@ -1155,7 +1155,7 @@ std::vector<double> procon::Field::calcSituationFeature(std::pair<std::tuple<int
     }
     ans.push_back(1.0000*white_ratio/(grid_x*grid_y));
 
-    ans.push_back((final_turn - now_turn) / 120);
+    ans.push_back(1.0 * (final_turn - now_turn) / 120);
 
     /*
     std::cout << "side : " << side_of << "     :    ";
@@ -1167,3 +1167,7 @@ std::vector<double> procon::Field::calcSituationFeature(std::pair<std::tuple<int
 }
 
 
+int procon::Field::whichWin(){
+    updatePoint();
+    return points.at(0).first+points.at(0).second > points.at(1).first + points.at(1).second ? 0 : 1;
+}

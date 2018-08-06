@@ -15,11 +15,13 @@ DEPENDPATH += $$PWD/../precompile
 SOURCES += \
         main.cpp \
     testagentparam.cpp \
-    testevaluatespeed.cpp
+    testevaluatespeed.cpp \
+    testgetfielddata.cpp
 
 HEADERS += \
     testagentparam.h \
-    testevaluatespeed.h
+    testevaluatespeed.h \
+    testgetfielddata.h
 
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
@@ -32,3 +34,8 @@ DEPENDPATH += $$PWD/../Visualizer
 LIBS += -L$$OUT_PWD/../Solver/ -lSolver
 INCLUDEPATH += $$PWD/../Solver
 DEPENDPATH += $$PWD/../Solver
+
+LIBS += -lboost_python3
+LIBS += -lpython3.6m
+
+INCLUDEPATH += /usr/include/python3.6m
