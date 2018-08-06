@@ -199,13 +199,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
 }
 
 int procon::Field::translateMoveToInt(int side, std::tuple<int, int, int> move){
-    bool destroy;
-    if(std::get<0>(move) = 2){
-        destroy = true;
-    }
-    else{
-        destroy = false;
-    }
+    bool destroy = (std::get<0>(move) == 2);
     std::pair<int,int> to;
     to.first = std::get<1>(move);
     to.second = std::get<2>(move);
