@@ -33,6 +33,7 @@ n_playout = 20000
 debug_time = 100
 save_time = 10000
 
+gsid = False
 
 # fi:numpy[304] done
 class Field():
@@ -57,7 +58,7 @@ class Field():
             sorted(sidmoves, key=lambda inp: inp[2])
             sidmoves.reverse()
             for ac in sidmoves:
-                if self.com.canput(ac):
+                if self.com.canput(sid, ac):
                     moves.append(ac)
                     break
 
@@ -78,7 +79,7 @@ class RandAct:
     
     def random_action_func(self):
         # C++を呼んで、有効手を1つ返す
-        return self.com.random()
+        return self.com.random(gsid)
 
 class QFunction(chainer.Chain):
 
@@ -147,6 +148,7 @@ for i in range(n_playout):
         for sid in range(2):
             act = []
             # rewardは必ず0になる気がするけど…
+            gsid = sid
             for ag in range(2):
                 act.append(agents[sid][ag].act_and_train(f.fi, reward))
                 revage(f.fi)
