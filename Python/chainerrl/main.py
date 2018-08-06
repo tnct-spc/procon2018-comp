@@ -40,6 +40,7 @@ class Field():
     def __init__(self):
         self.com = communication.Communication()
         self.fi = np.array(self.com.resetField())
+        self.done = False
 
     def reset(self):
         self.fi = np.array(self.com.resetField())
@@ -159,6 +160,7 @@ for i in range(n_playout):
 
             action.append(act)
             revside(f.fi)
+            print("hoge")
 
         # ここでターンの終了処理
         f.move(action)

@@ -18,31 +18,41 @@ p::list procon::Communication::resetField(){
 
 p::list procon::Communication::exportField(procon::Field field){
     std::vector<int> field_arr(304,0);
+    int index = 0;
     field_arr.at(0)=field.getSize().first;
+    index++;
     field_arr.at(1)=field.getSize().second;
-    int index = 1;
+    index++;
+    int ins = index;
     for(int x = 0 ; x < field.getSize().first;x++){
         for(int y = 0; y < field.getSize().second ; y++){
             field_arr.at(index+y*12+x) = field.getState(x,y).second;
+            ins++;
         }
     }
-    index+=144;
+    index = ins;
     for(int x = 0 ; x < field.getSize().first;x++){
         for(int y = 0; y < field.getSize().second ; y++){
             field_arr.at(index+y*12+x) = field.getState(x,y).first;
+            ins++;
         }
     }
-    index += 144;
+    index = ins;
     field_arr.at(index + 1) = field.getTurnCount();
+    ins++;
     field_arr.at(index + 2) = field.getFinalTurn();
-    index += 2;
+    ins++;
+    index = ins;
     for(int side = 0;side < 2;side++){
         for(int hoge = 0; hoge < 2;hoge++){
             field_arr.at(index + 1) = field.getAgent(side,hoge).first;
+            ins++;
             field_arr.at(index + 2) = field.getAgent(side,hoge).second;
-            index+=2;
+            ins++;
+            index = ins;
         }
     }
+    index = ins;
     field_arr.at(index+1)=field.getPoints().at(0).first;
     field_arr.at(index+2)=field.getPoints(false).at(0).second;
     field_arr.at(index+3)=field.getPoints(false).at(1).first;
@@ -318,8 +328,8 @@ BOOST_PYTHON_MODULE(communication)
     using namespace boost::python;
 
     class_<procon::Communication>("Communication")
-        .add_property("resetField", &procon::Communication::resetField)
-        .add_property("move", &procon::Communication::move)
-        .add_property("random", &procon::Communication::winner)
-        .add_property("isEnable", &procon::Communication::isEnable);
+        .def("resetField", &procon::Communication::resetField)
+        .def("move", &procon::Communication::move)
+        .def("random", &procon::Communication::winner)
+        .def("isEnable", &procon::Communication::isEnable);
 }
