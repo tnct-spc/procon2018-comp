@@ -153,10 +153,13 @@ void procon::Communication::agentAct(const int turn, const int agent, const std:
 p::list procon::Communication::move(boost::python::list act){
     std::vector<int> Act = py_list_to_std_vector(act);
 
-    agentAct(0,0,std::make_tuple(Act.at(0),Act.at(1),Act.at(2)));
-    agentAct(0,1,std::make_tuple(Act.at(3),Act.at(4),Act.at(5)));
-    agentAct(1,0,std::make_tuple(Act.at(6),Act.at(7),Act.at(8)));
-    agentAct(1,1,std::make_tuple(Act.at(9),Act.at(10),Act.at(11)));
+    std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
+    std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
+
+    agentAct(0,0,std::make_tuple(Act.at(0) / 9,x_list[Act.at(0) % 9],y_list[Act.at(0) % 9]));
+    agentAct(0,1,std::make_tuple(Act.at(1) / 9,x_list[Act.at(1) % 9],y_list[Act.at(1) % 9]));
+    agentAct(1,0,std::make_tuple(Act.at(2) / 9,x_list[Act.at(2) % 9],y_list[Act.at(2) % 9]));
+    agentAct(1,1,std::make_tuple(Act.at(3) / 9,x_list[Act.at(3) % 9],y_list[Act.at(3) % 9]));
 
     changeTrun();
 
