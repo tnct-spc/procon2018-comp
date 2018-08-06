@@ -75,7 +75,8 @@ std::string QRCode::decodeQRcode(){
             //std::cout<<symbol->get_type_name()<<" \""<<symbol->get_data()<<'"'<<std::endl;
             //on_Exit_clicked();
             destroyWindow("Video Stream");
-            return symbol->get_data();
+            return code;
+            break;
             ui->lineType->setText(QString::fromStdString(symbol->get_type_name()));
 
             int n = symbol->get_location_size();
