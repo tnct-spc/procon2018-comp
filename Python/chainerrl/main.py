@@ -39,10 +39,10 @@ gsid = False
 class Field():
     def __init__(self):
         self.com = communication.Communication()
-        self.fi = self.com.reset()
+        self.fi = np.array(self.com.resetField())
 
     def reset(self):
-        self.fi = self.com.reset()
+        self.fi = np.array(self.com.resetField())
         # fieldのランダム生成 c++に投げる
         pass
 
@@ -62,12 +62,12 @@ class Field():
                     moves.append(ac)
                     break
 
-        self.fi = self.com.move(moves)
+        self.fi = np.array(self.com.move(moves))
         # 終わったかどうか
         self.done = (self.fi[290] == self.fi[291])
         # canPutを実行 falseなら強制lose それ以外ならmove
         # act[2] 両方[0,324)
-    
+
     def winner(self):
         return self.com.winner()
         # 勝者を返す
@@ -76,7 +76,7 @@ class RandAct:
     def __init__(self, f):
         self.f = f #field
         self.random_count = 0
-    
+
     def random_action_func(self):
         # C++を呼んで、有効手を1つ返す
         return self.com.random(gsid)
@@ -112,14 +112,18 @@ def revage(arr):
         arr[292 + i], arr[294 + i] = arr[294 + i], arr[292 + i]
         arr[296 + i], arr[298 + i] = arr[298 + i], arr[296 + i]
 
+
 f = Field()
+
 ra = RandAct(f)
 
 # ここ適当にやる
 q_func = QFunction([50, 50])
 
+
 optimizer = chainer.optimizers.Adam()
 optimizer.setup(q_func)
+
 
 # 割引率らしい
 gamma = 0.95
@@ -158,7 +162,7 @@ for i in range(n_playout):
 
         # ここでターンの終了処理
         f.move(action)
-    
+
     win = f.winner()
     result[win + 1] += 1
 

@@ -2,15 +2,13 @@
 #define COMMUNICATION_H
 
 #include "field.h"
-
 #include "boost/python.hpp"
 #include "boost/python/numpy.hpp"
-#include "gamemanager.h"
-#include "visualizer.h"
 
 #include <thread>
 #include <memory>
 #include <tuple>
+#include <iostream>
 
 /*関数名は適当でいいので、
 boost::numpy:ndarray reset()
@@ -29,28 +27,28 @@ class Communication
 public:
 
     Communication();
-    boost::python::numpy::ndarray reset();
-    boost::python::numpy::ndarray exportField(procon::Field& field);
+    boost::python::list resetField();
+    boost::python::list exportField(procon::Field field);
     boost::python::list random(int side);
-    boost::python::numpy::ndarray move(boost::python::list act);
+    boost::python::list move(boost::python::list act);
 
     std::vector<int> py_list_to_std_vector( const boost::python::object& iterable );
-    boost::python::list std_vector_to_py_list(std::vector<int> vector);
 
     void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
     void changeTrun();
     int  winner();
     bool isEnable(int side, boost::python::list act); //sideと[移動or破壊(1or2),pos,破壊or移動(1or2),pos];
 
+
 private:
 
+    procon::Field field;
 
-    std::shared_ptr<GameManager> manager;
+
+    static const unsigned int grid_x = 12;
+    static const unsigned int grid_y = 8;
 
     std::vector<std::vector<std::tuple<int,int,int>>> act_stack; //ここは絶対座標での入力なので注意！
-
-    const int grid_x = 12;
-    const int grid_y = 8;
 
 };
 }
