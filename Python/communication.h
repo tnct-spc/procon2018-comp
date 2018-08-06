@@ -2,8 +2,11 @@
 #define COMMUNICATION_H
 
 #include "field.h"
-#include <boost/python.hpp>
-#include <boost/python/numpy.hpp>
+
+#include "boost/python.hpp"
+#include "boost/python/numpy.hpp"
+#include "gamemanager.h"
+#include "visualizer.h"
 
 #include <thread>
 #include <memory>
@@ -37,12 +40,17 @@ public:
     void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
     void changeTrun();
     int  winner();
+    bool isEnable(int side, boost::python::list act); //sideと[移動or破壊(1or2),pos,破壊or移動(1or2),pos];
 
 private:
 
-    procon::Field field;
+
+    std::shared_ptr<GameManager> manager;
 
     std::vector<std::vector<std::tuple<int,int,int>>> act_stack; //ここは絶対座標での入力なので注意！
+
+    const int grid_x = 12;
+    const int grid_y = 8;
 
 };
 }
