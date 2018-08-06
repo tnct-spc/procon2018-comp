@@ -72,7 +72,10 @@ std::string QRCode::decodeQRcode(){
 
             code = symbol->get_data();
             type = symbol->get_type_name();
-            std::cout<<symbol->get_type_name()<<" \""<<symbol->get_data()<<'"'<<std::endl;
+            //std::cout<<symbol->get_type_name()<<" \""<<symbol->get_data()<<'"'<<std::endl;
+            //on_Exit_clicked();
+            destroyWindow("Video Stream");
+            return symbol->get_data();
             ui->lineType->setText(QString::fromStdString(symbol->get_type_name()));
 
             int n = symbol->get_location_size();
@@ -81,19 +84,19 @@ std::string QRCode::decodeQRcode(){
             Point2f pts[4];
             r.points(pts);
             for(int i=0;i<4;i++)line(zframe,pts[i],pts[(i+1)%4],Scalar(255,0,0),3);
-            std::cout<<"Angle:"<<r.angle<<std::endl;
+            //std::cout<<"Angle:"<<r.angle<<std::endl;
             read_only_data = code;
             ui->lineCode->setText(QString::fromStdString(read_only_data));
         }
         imshow("Video Stream",zframe);
         waitKey(1);
-        if(code != "."){
+        /*if(code != "."){
             ConvertCsvToField(read_only_data);
             ui->lineResult->setText("decoded");
             std::cout<<"decoded"<<std::endl;
             destroyWindow("Video Stream");
             break;
-        }
+        }*/
     }
     return code;
 }

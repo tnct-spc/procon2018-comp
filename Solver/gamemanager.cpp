@@ -75,12 +75,15 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     } else if (QString::compare("CSVImport", InputMethod) == 0) {
 
         std::string path = QFileDialog::getOpenFileName().toStdString();
-
         field = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
 
     } else if (QString::compare("QRcode", InputMethod) == 0) {
         QRCode qr;
+        QrConverterField qrc;
         std::string f = qr.decodeQRcode();
+        std::cout << f << std::endl;
+        procon::Field hoge = qrc.ConvertCsvToField(f);
+        field = std::make_shared<procon::Field>(hoge);
     }
     //field->guessAgents(1);
 

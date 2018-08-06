@@ -7,8 +7,9 @@
 #include "geneticalgo/geneticalgo.h"
 #include "geneticalgo/geneticagent.h"
 #include "qrcode.h"
-
+#include "qrconverterfield.h"
 #include <thread>
+#include "csvio.h"
 #include <vector>
 #include <memory>
 #include <map>
