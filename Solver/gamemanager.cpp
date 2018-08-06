@@ -87,9 +87,10 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         QRCode qr;
         QrConverterField qrc;
         std::string f = qr.decodeQRcode();
-        std::cout << f << std::endl;
         procon::Field hoge = qrc.ConvertCsvToField(f);
         field = std::make_shared<procon::Field>(hoge);
+        field_vec.clear();
+        field_vec.push_back(std::make_shared<procon::Field>(*field));
     }else if (QString::compare("BinaryImport", InputMethod) == 0) {
         std::string path = QFileDialog::getOpenFileName().toStdString();
         field = std::make_shared<procon::Field>(procon::BinaryIo::importField(path));
