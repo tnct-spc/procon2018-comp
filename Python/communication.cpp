@@ -6,6 +6,7 @@ namespace np = boost::python::numpy;
 procon::Communication::Communication()
 {
     manager = std::make_shared<GameManager>(grid_x, grid_y,false);
+
 }
 
 np::ndarray procon::Communication::reset(){
@@ -15,7 +16,7 @@ np::ndarray procon::Communication::reset(){
 
 
 
-np::ndarray procon::Communication::exportField(procon::Field field){
+np::ndarray procon::Communication::exportField(procon::Field& field){
     std::vector<int> field_arr(308,0);
     field_arr.at(0)=field.getSize().first;
     field_arr.at(1)=field.getSize().second;
@@ -48,7 +49,7 @@ np::ndarray procon::Communication::exportField(procon::Field field){
         index+=2;
     }
     Py_intptr_t shape[1] = {308};
-    np::ndarray result = np::zeros(308, shape, np::dtype::get_builtin<int>());
+    np::ndarray result = np::zeros(1, shape, np::dtype::get_builtin<int>());
     std::copy(field_arr.begin(), field_arr.end(), reinterpret_cast<double*>(result.get_data()));
     return result;
 }
