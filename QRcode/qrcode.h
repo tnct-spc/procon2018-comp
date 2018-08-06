@@ -27,8 +27,7 @@ class QRCode : public QWidget , public QrConverterField{
 public:
     explicit QRCode(QWidget *parent = 0);
     ~QRCode();
-    void decodeQRcode();
-
+    std::string decodeQRcode();
 private slots:
     void on_Start_clicked();
     void on_Exit_clicked();

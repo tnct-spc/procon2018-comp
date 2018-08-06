@@ -13,12 +13,14 @@ QRCode::~QRCode(){
     delete ui;
 }
 
+
+
 void QRCode::on_Start_clicked(){
     this->clearAll();
     QRCode::decodeQRcode();
 }
 
-void QRCode::decodeQRcode(){
+std::string QRCode::decodeQRcode(){
     VideoCapture cap(0);
     if(!cap.isOpened()){
         std::cout<<"Can not connect to cammera."<<std::endl;
@@ -58,8 +60,8 @@ void QRCode::decodeQRcode(){
         Mat gray;
         cvtColor(zframe,gray,CV_BGR2GRAY);
 
-        int zwidth = zframe.cols;
-        int zheight = zframe.cols;
+        unsigned int zwidth = zframe.cols;
+        unsigned int zheight = zframe.cols;
         uchar *raw = (uchar *)gray.data;
 
         Image image(zwidth,zheight,"Y800",raw,zwidth*zheight);
@@ -93,6 +95,7 @@ void QRCode::decodeQRcode(){
             break;
         }
     }
+    return code;
 }
 
 void  QRCode::on_Exit_clicked(){

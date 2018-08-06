@@ -80,9 +80,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
     } else if (QString::compare("QRcode", InputMethod) == 0) {
         QRCode qr;
-        qr.decodeQRcode();
-        //Write here
-
+        std::string f = qr.decodeQRcode();
     }
     //field->guessAgents(1);
 
