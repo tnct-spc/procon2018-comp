@@ -58,7 +58,7 @@ class Field():
             sorted(sidmoves, key=lambda inp: inp[2])
             sidmoves.reverse()
             for ac in sidmoves:
-                if self.com.canput(sid, ac):
+                if self.com.isEnable(sid, [ac[0] // 9 + 1, ac[0] % 9, ac[1] // 9 + 1, ac[1] % 9]):
                     moves.append(ac)
                     break
 
