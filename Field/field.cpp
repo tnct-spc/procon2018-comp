@@ -198,6 +198,30 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     updateOnlyTilePoint();
 }
 
+int procon::Field::translateMoveToInt(int side, std::tuple<int, int, int> move){
+    bool destroy;
+    if(std::get<0>(move) = 2){
+        destroy = true;
+    }
+    else{
+        destroy = false;
+    }
+    std::pair<int,int> to;
+    to.first = std::get<1>(move);
+    to.second = std::get<2>(move);
+    int relative_move = (to.first*-1+1)+(to.second+1)*3;
+    if(side == 0){
+        relative_move = ((relative_move % 3)*-1+2)*3+relative_move/3;
+    }
+    else{
+        relative_move = (relative_move % 3)*3+(relative_move/3*-1+2);
+    }
+    if(destroy){
+        relative_move += 9;
+    }
+    return relative_move;
+}
+
 std::vector<std::vector<int>> procon::Field::createField(int x_size, int y_size){
 
     std::vector<std::vector<int>> out_vector(static_cast<unsigned int>(x_size), std::vector<int>(static_cast<unsigned int>(y_size)));
