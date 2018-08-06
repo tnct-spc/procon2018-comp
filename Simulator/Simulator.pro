@@ -4,6 +4,14 @@ CONFIG -= app_bundle
 
 QT += core gui widgets
 
+CONFIG += precompile_header
+PRECOMPILED_HEADER = $$PWD/../precompile/precompile.h
+precompile_header:!isEmpty(PRECOMPILED_HEADER) {
+    DEFINES += USING_PCH
+}
+INCLUDEPATH += $$PWD/../precompile
+DEPENDPATH += $$PWD/../precompile
+
 SOURCES += \
         main.cpp \
         genetic.cpp \

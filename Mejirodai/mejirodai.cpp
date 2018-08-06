@@ -19,7 +19,8 @@ Mejirodai::Mejirodai(QWidget *parent) :
     connect(ui->exportField, &QPushButton::clicked, this, &Mejirodai::exportFieldtoCSV);
     connect(ui->selectMyAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->my_stackedWidget, SLOT(setCurrentIndex(int)));
     connect(ui->selectOpponentAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->opponent_stackedWidget, SLOT(setCurrentIndex(int)));
-
+    connect(ui->changeButton, &QPushButton::clicked, this, &Mejirodai::runOperatorWindow);
+    connect(ui->ExportFieldBinary, &QPushButton::clicked,this , &Mejirodai::exportFieldtoBinary);
 }
 
 Mejirodai::~Mejirodai()
@@ -28,6 +29,8 @@ Mejirodai::~Mejirodai()
 }
 
 void Mejirodai::RunManagerSimulation(){
+
+    runMode = true;
 
     // 各チームのアルゴリズムの設定
     QString my = ui->selectMyAlgorithmBox->currentText();
@@ -53,4 +56,17 @@ void Mejirodai::goPrevState(){
 void Mejirodai::exportFieldtoCSV(){
     procon::Field& exp_field = manager->getField();
     procon::CsvIo::exportField(exp_field, QFileDialog::getSaveFileName(this,tr("Save CSV")).toStdString());
+}
+
+void Mejirodai::runOperatorWindow(){
+
+    // Runが押され、かつAutoModeがOffのときのみOperatorのウィンドウが立ち上がる
+    if ((!ui->autoMode->isChecked()) && runMode) {
+        manager->startupChangeMode();
+    }
+}
+
+void Mejirodai::exportFieldtoBinary(){
+    procon::Field& exp_field = manager->getField();
+    procon::BinaryIo::exportField(exp_field, QFileDialog::getSaveFileName(this,tr("Save CSV")).toStdString());
 }

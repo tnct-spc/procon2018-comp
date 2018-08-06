@@ -3,11 +3,17 @@
 #include "visualizer.h"
 #include "csvio.h"
 #include "field.h"
+#include "binaryio.h"
 #include "progresdock.h"
 #include "geneticalgo/geneticalgo.h"
 #include "geneticalgo/geneticagent.h"
+<<<<<<< HEAD
 #include "qrcode.h"
 #include "qrconverterfield.h"
+=======
+#include "operator.h"
+
+>>>>>>> develop
 #include <thread>
 #include "csvio.h"
 #include <vector>
@@ -51,19 +57,39 @@ public:
 
     void setField(const procon::Field& pro, int now_t, int max_t);
 
+    // ChangeModeを開始
+    void startupChangeMode();
+
+
+
 signals:
     void signalAutoMode(bool value);
     void setCandidateMove(const std::vector<std::vector<std::pair<int,int>>>& move);
 
+    // GridがクリックされたらそのマスのステータスをOperatorに送る
+    void sendDataToOperator(const std::pair<int,int> data, const bool agent);
+
+    // OperatorのChangeがクリックされたら、変更された値をFieldとVisualizerに反映
+    void sendDataToVisualizer(const std::pair<int,int> data, const bool agen);
+
 public slots:
     void changeMove(const std::vector<std::vector<std::pair<int,int>>>& move, std::vector<std::vector<int>> is_delete);
 
+    // ChangeModeを終了
+    void endChangeMode(const std::pair<int, int> turns);
+
+    // ChangeModeのときクリックされたGridを受け取る
+    void getDataToOperator(const std::pair<int,int> grid, const bool agent);
+
+    // OperatorからのデータをVisualizerに送る
+    void getChangeOfData(const std::pair<int, int> data, const bool agent);
 
 
 private:
 
     std::shared_ptr<procon::Field> field;
     std::shared_ptr<Visualizer> visualizer;
+    std::shared_ptr<Operator> ope;
     std::vector<std::shared_ptr<procon::Field>> field_vec;
 
     std::shared_ptr<AlgorithmWrapper> team_1;

@@ -24,6 +24,9 @@ GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, b
         connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
         connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
         connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
+        connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
+        connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
+
     }else{
         is_auto = true;//この場合は自動進行
     }
@@ -43,6 +46,9 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
         connect(visualizer.get(), &Visualizer::nextMove, this, &GameManager::changeMove);
         connect(this, &GameManager::signalAutoMode, visualizer.get(), &Visualizer::slotAutoMode);
         connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
+        connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
+        connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
+
     }else{
         is_auto = true;//この場合は自動進行
     }
@@ -77,6 +83,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         std::string path = QFileDialog::getOpenFileName().toStdString();
         field = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
 
+<<<<<<< HEAD
     } else if (QString::compare("QRcode", InputMethod) == 0) {
         QRCode qr;
         QrConverterField qrc;
@@ -84,6 +91,11 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         std::cout << f << std::endl;
         procon::Field hoge = qrc.ConvertCsvToField(f);
         field = std::make_shared<procon::Field>(hoge);
+=======
+    }else if (QString::compare("BinaryImport", InputMethod) == 0) {
+        std::string path = QFileDialog::getOpenFileName().toStdString();
+        field = std::make_shared<procon::Field>(procon::BinaryIo::importField(path));
+>>>>>>> develop
     }
     //field->guessAgents(1);
 
@@ -141,7 +153,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
     if(vis_show){
         visualizer->update();
-        visualizer->setField(*field, 1, field->getFinalTurn());
+        visualizer->setField(*field, field->getTurnCount(), field->getFinalTurn());
     }
 
 
@@ -181,7 +193,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             pruning = std::make_pair(std::get<1>(team_2_ans.second) + field->getAgent(1,1).first, std::get<2>(team_2_ans.second) + field->getAgent(1,1).second);
             pruning_pos.push_back(std::make_pair(std::make_pair(1, std::get<0>(team_2_ans.second) - 1), pruning));
 
-
+            std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> test;
+            test = team_1_ans;
 
 
             agentAct(0,0,team_1_ans.first);
@@ -190,17 +203,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             agentAct(1,1,team_2_ans.second);
 
             changeTurn(false);
-
-            std::pair<int,int> red_point,blue_point;
-
-            /*
-            std::cout<<"赤の素の得点は"<<red_point.first<<"点で、領域ポイントは"<<red_point.second<<"点です"<<std::endl;
-            std::cout<<"青の素の得点は"<<blue_point.first<<"点で、領域ポイントは"<<blue_point.second<<"点です"<<std::endl;
-            */
-
-            red_point = field->getPoints(pruning_pos).at(0);
-            blue_point = field->getPoints(pruning_pos).at(1);
-
+            field->getPoints(pruning_pos);
 
             field_vec.push_back(std::make_shared<procon::Field>(*field));
 
@@ -300,6 +303,8 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
         team_1_ans = team_1->agentAct(0);
         team_2_ans = team_2->agentAct(1);
 
+
+
         agentAct(0,0,team_1_ans.first);
         agentAct(0,1,team_1_ans.second);
         agentAct(1,0,team_2_ans.first);
@@ -374,7 +379,6 @@ void GameManager::changeTurn(bool update){
     std::map<std::pair<int,int>,std::pair<int,std::pair<int,int>>> counts;
 
     int type, pos_x, pos_y;
-
 
 
     //移動しようとしたエージェントが失敗した時に呼ばれる
@@ -559,6 +563,11 @@ void GameManager::nextMoveForManualMode(){
     visualizer->update();
     visualizer->repaint();
 
+//    std::cout << field->getTurnCount() << "," << field->getFinalTurn() << std::endl;
+
+//    std::pair<int, int> agent = field->getAgent(0,0);
+//    std::cout << agent.first << "," << agent.second << std::endl;
+
     std::vector<std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>>> candidate_move(2);
     candidate_move.at(0) = team_1->agentAct(0);
     candidate_move.at(1) = team_2->agentAct(1);
@@ -579,4 +588,62 @@ void GameManager::nextMoveForManualMode(){
 
     emit setCandidateMove(return_vec);
 
+}
+
+void GameManager::startupChangeMode()
+{
+    ope = std::make_shared<Operator>();
+
+    connect(ope.get(), &Operator::pushEnd, this, &GameManager::endChangeMode);
+    connect(this, &GameManager::sendDataToOperator, ope.get(), &Operator::changeDataDisplay);
+    connect(ope.get(), &Operator::pushChange, this, &GameManager::getChangeOfData);
+
+    // Operatorを表示
+    ope->show();
+    ope->setTurns(field->getTurnCount(), field->getFinalTurn());
+
+    // VisualizerをChangeModeに変更
+    visualizer->setChangeMode(true);
+    visualizer->update();
+}
+
+void GameManager::endChangeMode(const std::pair<int, int> turns)
+{
+    // Turnをセット
+    visualizer->setTurns(turns);
+
+    // VisualizerのChangeModeを解除
+    visualizer->setChangeMode(false);
+
+    // Operatorを閉じる
+    ope->close();
+
+    // Fieldの書き換え
+    *field = visualizer->getField();
+    field->updatePoint();
+
+    // ゲームを続行
+    nextMoveForManualMode();
+}
+
+void GameManager::getDataToOperator(const std::pair<int,int> grid, const bool agent)
+{
+    std::pair<int, int> data;
+
+    // 変更するのがエージェントならグリッドの座標をそのまま送る
+    if (agent) {
+        data.first = grid.first;
+        data.second = grid.second;
+    } else {
+
+        // グリッドならそのグリッドのステータスを送る
+        data = field->getState(grid.first, grid.second);
+    }
+
+    emit sendDataToOperator(data, agent);
+}
+
+void GameManager::getChangeOfData(const std::pair<int, int> data, const bool agent)
+{
+    emit sendDataToVisualizer(data, agent);
 }
