@@ -44,6 +44,7 @@ class Field():
 
     def reset(self):
         self.fi = np.array(self.com.resetField(), dtype=np.float32)
+        self.done = False
         # fieldのランダム生成 c++に投げる
         pass
 
@@ -57,7 +58,6 @@ class Field():
             for x in lis:
                 moves.append(int(x))
 
-        print('moves : {}'.format(moves))
         self.fi = np.array(self.com.move(moves), dtype=np.float32)
         # 終わったかどうか
         self.done = (self.fi[290] == self.fi[291])
@@ -165,6 +165,7 @@ for i in range(n_playout):
     win = f.winner()
     result[win + 1] += 1
 
+    print('win : {}'.format(win))
     for sid in range(2):
         # print(agents[sid].last_state)
         if agents[sid].last_state is not None:
