@@ -24,7 +24,7 @@ field_val = 304
 # 9*2=18 全ての行動に重みを取って最大値を取る(?)
 n_move = 324
 
-do_playout = (sys.argv[1] if len(sys.argv) > 1 else True)
+do_playout = bool(sys.argv[1] if len(sys.argv) > 1 else 1)
 
 load_model = False
 save_model = False
@@ -35,6 +35,10 @@ n_playout = 20000
 debug_time = 20
 save_time = 250
 # save_time = 10000
+
+def transform(val):
+    return [(val // (81 * 2)) * 9 + (val % 81) // 9, ((val % (81 * 2)) // 81) * 9 + val % 9]
+
 
 gsid = False
 
@@ -57,7 +61,7 @@ class Field():
         for sid in range(2):
             ac = act[sid]
             # [0,324)を[0,18),[0,18)にしている
-            lis = [(ac // (81 * 2)) * 9 + (ac // 9) % 9, ((ac // 81) % 2) * 9 + ac % 9]
+            lis = transform(ac)
             for x in lis:
                 moves.append(int(x))
 
@@ -155,6 +159,11 @@ def playout():
                 gsid = sid
 
                 act_res = agents[sid].act_and_train(f.fi.copy(), reward)
+                if sid == 0:
+                    buttle(f.fi.copy())
+                    ret = transform(act_res)
+                    print('train : {}'.format(ret))
+                    print()
                 action.append(act_res)
 
                 revside(f.fi)
@@ -181,11 +190,15 @@ def playout():
 
     print('finished')
 
-def buttle():
-    pass
+# python::list[304]が渡される
+def buttle(lis):
+    ac =  agent_p1.act(lis)
+    # ac =  agent_p1.act_and_train(lis, 0)
+    print(ac)
+    ret = transform(ac)
+    print('act : {}'.format(ret))
+    return ret
 
+# これいる？いらないよね
 if do_playout == True:
     playout()
-else:
-    # ここ使ってないけど 糞
-    buttle()
