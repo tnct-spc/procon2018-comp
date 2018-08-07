@@ -55,7 +55,7 @@ class Field():
             # [0,324)を[0,18),[0,18)にしている
             lis = [(ac // (81 * 2)) * 9 + (ac // 9) % 9, ((ac // 81) % 2) * 9 + ac % 9]
             for x in lis:
-                moves.append(x)
+                moves.append(int(x))
 
         print('moves : {}'.format(moves))
         self.fi = np.array(self.com.move(moves), dtype=np.float32)
