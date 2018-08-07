@@ -77,8 +77,8 @@ boost::python::list procon::Communication::random(int side){
     for(int a = 0 ; a < 9 ; a++){
         for(int b = 0 ; b < 9 ; b++){
             if(field.canPut(side, a, b, true)){
-                int w1 = field.getState(field.getAgent(side,1).first + x_list[a],field.getAgent(side,1).second + y_list[a]).first;
-                int w2 = field.getState(field.getAgent(side,1).first + x_list[b],field.getAgent(side,1).second + y_list[b]).first;
+                int w1 = field.getState(field.getAgent(side,0).first + x_list[a], field.getAgent(side,0).second + y_list[a]).first;
+                int w2 = field.getState(field.getAgent(side,1).first + x_list[b], field.getAgent(side,1).second + y_list[b]).first;
 
                 if((w1 == side +1 || w1 == 0)&&(w2 == side + 1|| w2 == 0)){
                     vec.push_back(std::make_pair(std::make_pair(1,1), std::make_pair(a,b)));
@@ -156,17 +156,17 @@ p::list procon::Communication::move(boost::python::list act){
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
-    agentAct(0,0,std::make_tuple(Act.at(0) / 9,x_list[Act.at(0) % 9],y_list[Act.at(0) % 9]));
-    agentAct(0,1,std::make_tuple(Act.at(1) / 9,x_list[Act.at(1) % 9],y_list[Act.at(1) % 9]));
-    agentAct(1,0,std::make_tuple(Act.at(2) / 9,x_list[Act.at(2) % 9],y_list[Act.at(2) % 9]));
-    agentAct(1,1,std::make_tuple(Act.at(3) / 9,x_list[Act.at(3) % 9],y_list[Act.at(3) % 9]));
+    agentAct(0,0,std::make_tuple(Act.at(0) / 9 + 1,x_list[Act.at(0) % 9],y_list[Act.at(0) % 9]));
+    agentAct(0,1,std::make_tuple(Act.at(1) / 9 + 1,x_list[Act.at(1) % 9],y_list[Act.at(1) % 9]));
+    agentAct(1,0,std::make_tuple(Act.at(2) / 9 + 1,x_list[Act.at(2) % 9],y_list[Act.at(2) % 9]));
+    agentAct(1,1,std::make_tuple(Act.at(3) / 9 + 1,x_list[Act.at(3) % 9],y_list[Act.at(3) % 9]));
 
-    changeTrun();
+    changeTurn();
 
     return exportField(field);
 
 }
-void procon::Communication::changeTrun(){
+void procon::Communication::changeTurn(){
 
     //[(x,y)]:(上書き時の色,(色,エージェント)) わかりづらいね
     std::map<std::pair<int,int>,std::pair<int,std::pair<int,int>>> counts;
@@ -333,6 +333,7 @@ BOOST_PYTHON_MODULE(communication)
     class_<procon::Communication>("Communication")
         .def("resetField", &procon::Communication::resetField)
         .def("move", &procon::Communication::move)
-        .def("random", &procon::Communication::winner)
+        .def("random", &procon::Communication::random)
+        .def("winner", &procon::Communication::winner)
         .def("isEnable", &procon::Communication::isEnable);
 }

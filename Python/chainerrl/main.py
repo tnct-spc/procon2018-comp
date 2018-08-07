@@ -39,23 +39,24 @@ gsid = False
 class Field():
     def __init__(self):
         self.com = communication.Communication()
-        self.fi = np.array(self.com.resetField())
+        self.fi = np.array(self.com.resetField(), dtype=np.float32)
         self.done = False
 
     def reset(self):
-        self.fi = np.array(self.com.resetField())
+        self.fi = np.array(self.com.resetField(), dtype=np.float32)
         # fieldのランダム生成 c++に投げる
         pass
 
     def move(self, act):
-        # act = [[[points], [points]][[points], [points]]]
+        # act = [, [[points], [points]], [[points], [points]], ]
         moves = []
-        for sid in act:
+        for sid in range(2):
             sidmoves = []
-            for i1 in range(18):
-                for i2 in range(18):
+            for i1 in range(n_move):
+                for i2 in range(n_move):
                     # 加算だったり乗算だったり
-                    sidmoves.append(i1, i2, act[sid][0][i1] * act[sid][1][i2])
+                    print(act)
+                    sidmoves.append( [i1, i2, act[sid][0][i1] * act[sid][1][i2]] )
             sorted(sidmoves, key=lambda inp: inp[2])
             sidmoves.reverse()
             for ac in sidmoves:
@@ -63,7 +64,7 @@ class Field():
                     moves.append(ac)
                     break
 
-        self.fi = np.array(self.com.move(moves))
+        self.fi = np.array(self.com.move(moves), dtype=np.float32)
         # 終わったかどうか
         self.done = (self.fi[290] == self.fi[291])
         # canPutを実行 falseなら強制lose それ以外ならmove
@@ -76,11 +77,12 @@ class Field():
 class RandAct:
     def __init__(self, f):
         self.f = f #field
+        self.com = communication.Communication()
         self.random_count = 0
 
     def random_action_func(self):
-        # C++を呼んで、有効手を1つ返す
-        return self.com.random(gsid)
+        # C++を呼んで、有効手を1つ返す)
+        return self.com.random(int(gsid))
 
 class QFunction(chainer.Chain):
 
@@ -95,12 +97,14 @@ class QFunction(chainer.Chain):
         # 9種類の動きとis_deleteがあるので10種類 分類問題
         h = F.relu(self.l1(x))
         h = F.relu(self.l2(h))
-        return chainerrl.action_value.DiscreteActionValue(self.l3(h))
+        h = self.l3(h)
+        h = chainerrl.action_value.DiscreteActionValue(h)
+        return h
 
 def revside(arr):
     for i in range(144):
-        if arr[i * 12 + 2]:
-            arr[i * 12 + 2] = 2 if arr[i * 12 + 1] == 1 else 1
+        if arr[i + 2]:
+            arr[i + 2] = 2 if arr[i + 2] == 1 else 1
 
     for i in range(4):
         arr[292 + i], arr[296 + i] = arr[296 + i], arr[292 + i]
@@ -156,11 +160,11 @@ for i in range(n_playout):
             gsid = sid
             for ag in range(2):
                 act.append(agents[sid][ag].act_and_train(f.fi, reward))
+                print(act[-1])
                 revage(f.fi)
 
             action.append(act)
             revside(f.fi)
-            print("hoge")
 
         # ここでターンの終了処理
         f.move(action)
