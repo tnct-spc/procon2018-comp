@@ -108,12 +108,6 @@ def revside(arr):
     for i in range(2):
         arr[300 + i], arr[302 + i] = arr[302 + i], arr[300 + i]
 
-def revage(arr):
-    for i in range(2):
-        arr[292 + i], arr[294 + i] = arr[294 + i], arr[292 + i]
-        arr[296 + i], arr[298 + i] = arr[298 + i], arr[296 + i]
-
-
 f = Field()
 
 ra = RandAct(f)
@@ -168,7 +162,6 @@ for i in range(n_playout):
     # print(f.fi)
     # print('win : {}'.format(win))
     for sid in range(2):
-        # print(agents[sid].last_state)
         if agents[sid].last_state is not None:
             agents[sid].stop_episode_and_train(f.fi, win * (-1 if sid else 1), True)
         revside(f.fi)
