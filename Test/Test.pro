@@ -36,6 +36,6 @@ INCLUDEPATH += $$PWD/../Solver
 DEPENDPATH += $$PWD/../Solver
 
 LIBS += -lboost_python3
-LIBS += -lpython3.6m
+LIBS += -lpython3.7m
 
-INCLUDEPATH += /usr/include/python3.6m
+INCLUDEPATH += /usr/include/python3.7m
