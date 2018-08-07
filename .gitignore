@@ -46,6 +46,7 @@ Data/TestAgentParam/learning_data_fix
 Data/TestAgentParam/learning_data_rand
 Data/TestAgentParam/learning_data_rand_double
 Data/TestOptimazationFunction/*
+Data/chainerrl/*
 
 Python/__pycache__/*
 Python/const.py
