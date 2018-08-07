@@ -55,15 +55,16 @@ class Field():
             for i1 in range(n_move):
                 for i2 in range(n_move):
                     # 加算だったり乗算だったり
-                    print(act)
                     sidmoves.append( [i1, i2, act[sid][0][i1] * act[sid][1][i2]] )
             sorted(sidmoves, key=lambda inp: inp[2])
             sidmoves.reverse()
             for ac in sidmoves:
                 if self.com.isEnable(sid, [ac[0] // 9 + 1, ac[0] % 9, ac[1] // 9 + 1, ac[1] % 9]):
-                    moves.append(ac)
+                    moves.append(ac[0])
+                    moves.append(ac[1])
                     break
 
+        print('moves : {}'.format(moves))
         self.fi = np.array(self.com.move(moves), dtype=np.float32)
         # 終わったかどうか
         self.done = (self.fi[290] == self.fi[291])
@@ -82,6 +83,7 @@ class RandAct:
 
     def random_action_func(self):
         # C++を呼んで、有効手を1つ返す)
+        return [0 for i in range(18)]
         return self.com.random(int(gsid))
 
 class QFunction(chainer.Chain):
@@ -151,7 +153,8 @@ for i in range(n_playout):
 
     reward = 0
 
-    while not f.done:
+    # while not f.done:
+    for i in range(60):
 
         action = []
         for sid in range(2):
@@ -159,8 +162,8 @@ for i in range(n_playout):
             # rewardは必ず0になる気がするけど…
             gsid = sid
             for ag in range(2):
-                act.append(agents[sid][ag].act_and_train(f.fi, reward))
-                print(act[-1])
+                act_res = agents[sid][ag].act_and_train(f.fi.copy(), reward)
+                act.append(act_res)
                 revage(f.fi)
 
             action.append(act)
@@ -174,7 +177,7 @@ for i in range(n_playout):
 
     for sid in range(2):
         for ag in range(2):
-            agents[sid].stop_episode_and_train(f.fi, win * (-1 if sid else 1), True)
+            agents[sid][ag].stop_episode_and_train(f.fi, win * (-1 if sid else 1), True)
             revage(f.fi)
         revside(f.fi)
 
