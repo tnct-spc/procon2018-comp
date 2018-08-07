@@ -187,4 +187,5 @@ def buttle():
 if do_playout == True:
     playout()
 else:
+    # ここ使ってないけど 糞
     buttle()
