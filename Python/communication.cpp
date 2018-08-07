@@ -10,7 +10,6 @@ procon::Communication::Communication() :
 	act_stack[0].resize(2); 
 	act_stack[1].resize(2); 
 
-
 }
 
 p::list procon::Communication::resetField(){
@@ -20,7 +19,7 @@ p::list procon::Communication::resetField(){
     std::uniform_int_distribution<> rand_siz(8, 12);
     std::uniform_int_distribution<> rand_turn(60, 120);
 
-    field = procon::Field(rand_siz(mt), rand_siz(mt));
+    field = procon::Field(rand_siz(mt), rand_siz(mt), 16, -16);
 	field.setFinalTurn(rand_turn(mt));
     return exportField(field);
 }
@@ -37,7 +36,7 @@ p::list procon::Communication::exportField(procon::Field field){
     int ins = index;
     for(int x = 0 ; x < field.getSize().first;x++){
         for(int y = 0; y < field.getSize().second ; y++){
-            field_arr.at(index+y*12+x) = field.getState(x,y).second;
+            field_arr.at(index+y*12+x) = field.getState(x,y).first;
             ins++;
         }
     }
@@ -45,7 +44,7 @@ p::list procon::Communication::exportField(procon::Field field){
     index = ins;
     for(int x = 0 ; x < field.getSize().first;x++){
         for(int y = 0; y < field.getSize().second ; y++){
-            field_arr.at(index+y*12+x) = field.getState(x,y).first;
+            field_arr.at(index+y*12+x) = field.getState(x,y).second;
             ins++;
         }
     }
