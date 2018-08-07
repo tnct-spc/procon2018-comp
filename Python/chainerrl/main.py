@@ -1,10 +1,5 @@
 import numpy as np
-
-"""
-import os
 import sys
-sys.path.append(os.pardir)
-"""
 
 import communication
 
@@ -29,9 +24,21 @@ field_val = 304
 # 9*2=18 全ての行動に重みを取って最大値を取る(?)
 n_move = 324
 
+do_playout = bool(sys.argv[1] if len(sys.argv) > 1 else 1)
+
+load_model = False
+save_model = False
+load_path = '../../Data/chainerrl/result_' + str(750)
+save_path = '../../Data/chainerrl/result_'
+
 n_playout = 20000
-debug_time = 100
-save_time = 10000
+debug_time = 20
+save_time = 250
+# save_time = 10000
+
+def transform(val):
+    return [(val // (81 * 2)) * 9 + (val % 81) // 9, ((val % (81 * 2)) // 81) * 9 + val % 9]
+
 
 gsid = False
 
@@ -54,7 +61,7 @@ class Field():
         for sid in range(2):
             ac = act[sid]
             # [0,324)を[0,18),[0,18)にしている
-            lis = [(ac // (81 * 2)) * 9 + (ac // 9) % 9, ((ac // 81) % 2) * 9 + ac % 9]
+            lis = transform(ac)
             for x in lis:
                 moves.append(int(x))
 
@@ -124,53 +131,74 @@ optimizer.setup(q_func)
 gamma = 0.95
 
 # chainerrl.explorers.ConstantEpsilonGreedy でもよい linearは線形って事で
-# explorer = chainerrl.explorers.LinearDecayEpsilonGreedy(start_epsilon=1.0, end_epsilon=0.3, decay_steps=50000, random_action_func=ra.random_action_func)
-explorer = chainerrl.explorers.LinearDecayEpsilonGreedy(start_epsilon=0.5, end_epsilon=0.3, decay_steps=50000, random_action_func=ra.random_action_func)
+explorer = chainerrl.explorers.LinearDecayEpsilonGreedy(start_epsilon=1.0, end_epsilon=0.3, decay_steps=50000, random_action_func=ra.random_action_func)
 
 replay_buffer = chainerrl.replay_buffer.ReplayBuffer(capacity= 10 ** 6)
 
 agent_p1 = chainerrl.agents.DoubleDQN(q_func, optimizer, replay_buffer, gamma, explorer, replay_start_size=500)
 agent_p2 = chainerrl.agents.DoubleDQN(q_func, optimizer, replay_buffer, gamma, explorer, replay_start_size=500)
 
-result = [0 for i in range(3)]
+if load_model:
+    agent_p1.load(load_path)
 
-for i in range(n_playout):
-    f.reset()
-    agents = [agent_p1, agent_p2]
+def playout():
+    result = [0 for i in range(3)]
 
-    reward = 0
+    for i in range(n_playout):
+        f.reset()
+        agents = [agent_p1, agent_p2]
 
-    while not f.done:
+        reward = 0
 
-        action = []
+        while not f.done:
+
+            action = []
+            for sid in range(2):
+                act = []
+                # rewardは必ず0になる気がするけど…
+                gsid = sid
+
+                act_res = agents[sid].act_and_train(f.fi.copy(), reward)
+                if sid == 0:
+                    buttle(f.fi.copy())
+                    ret = transform(act_res)
+                    print('train : {}'.format(ret))
+                    print()
+                action.append(act_res)
+
+                revside(f.fi)
+
+            # ここでターンの終了処理
+            f.move(action)
+
+        win = f.winner()
+        result[win == 1] += 1
+
+        # print(f.fi)
+        # print('win : {}'.format(win))
         for sid in range(2):
-            act = []
-            # rewardは必ず0になる気がするけど…
-            gsid = sid
-
-            act_res = agents[sid].act_and_train(f.fi.copy(), reward)
-            action.append(act_res)
-
+            if agents[sid].last_state is not None:
+                agents[sid].stop_episode_and_train(f.fi, win * (-1 if sid else 1), True)
             revside(f.fi)
 
-        # ここでターンの終了処理
-        f.move(action)
+        if not ((i + 1) % debug_time):
+            print('episode:{}, rnd:{}, miss:{}win:{}, statistics:{}, epsilon:{}'.format(i + 1, ra.random_count, result[0], result[1], agent_p1.get_statistics(), agent_p2.explorer.epsilon))
+            result = [0 for i in range(3)]
+            ra.random_count = 0
+        if save_model and not ((i + 1) % save_time):
+            agent_p1.save(save_path + str(i + 1))
 
-    win = f.winner()
-    result[win + 1] += 1
+    print('finished')
 
-    # print(f.fi)
-    # print('win : {}'.format(win))
-    for sid in range(2):
-        if agents[sid].last_state is not None:
-            agents[sid].stop_episode_and_train(f.fi, win * (-1 if sid else 1), True)
-        revside(f.fi)
+# python::list[304]が渡される
+def buttle(lis):
+    ac =  agent_p1.act(lis)
+    # ac =  agent_p1.act_and_train(lis, 0)
+    print(ac)
+    ret = transform(ac)
+    print('act : {}'.format(ret))
+    return ret
 
-    if not ((i + 1) % debug_time):
-        print('episode:{}, rnd:{}, miss:{}, draw:{}, win:{}, statistics:{}, epsilon:{}'.format(i, ra.random_count, result[0], result[1], result[2], agent_p1.get_statistics(), agent_p2.explorer.epsilon))
-        result = [0 for i in range(3)]
-        ra.random_count = 0
-    if not ((i + 1) % save_time):
-        agent_p1.save('result_' + str(i))
-
-print('finished')
+# これいる？いらないよね
+if do_playout == True:
+    playout()
