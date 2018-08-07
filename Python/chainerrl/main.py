@@ -165,8 +165,8 @@ for i in range(n_playout):
     win = f.winner()
     result[win + 1] += 1
 
-    print(f.fi)
-    print('win : {}'.format(win))
+    # print(f.fi)
+    # print('win : {}'.format(win))
     for sid in range(2):
         # print(agents[sid].last_state)
         if agents[sid].last_state is not None:

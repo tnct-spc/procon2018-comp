@@ -296,6 +296,8 @@ void procon::Communication::changeTurn(){
 }
 
 int procon::Communication::winner(){
+	std::vector<std::pair<int, int>> points = field.getPoints(false);
+	std::cout << "(" << points.at(0).first + points.at(0).second << " , " << points.at(1).first + points.at(1).second << ")" << std::endl;
     int s = field.whichWin();
     return s == 0 ? -1 : 1;
 }
