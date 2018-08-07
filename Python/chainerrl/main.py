@@ -50,6 +50,7 @@ class Field():
     def move(self, act):
         # act = [, [[points], [points]], [[points], [points]], ]
         moves = []
+        print(act)
         for sid in range(2):
             sidmoves = []
             for i1 in range(n_move):
@@ -83,7 +84,9 @@ class RandAct:
 
     def random_action_func(self):
         # C++を呼んで、有効手を1つ返す)
-        return [0 for i in range(18)]
+        lis = [0 for i in range(18)]
+        return lis
+        
         return self.com.random(int(gsid))
 
 class QFunction(chainer.Chain):
@@ -136,7 +139,8 @@ optimizer.setup(q_func)
 gamma = 0.95
 
 # chainerrl.explorers.ConstantEpsilonGreedy でもよい linearは線形って事で
-explorer = chainerrl.explorers.LinearDecayEpsilonGreedy(start_epsilon=1.0, end_epsilon=0.3, decay_steps=50000, random_action_func=ra.random_action_func)
+# explorer = chainerrl.explorers.LinearDecayEpsilonGreedy(start_epsilon=1.0, end_epsilon=0.3, decay_steps=50000, random_action_func=ra.random_action_func)
+explorer = chainerrl.explorers.LinearDecayEpsilonGreedy(start_epsilon=0.5, end_epsilon=0.3, decay_steps=50000, random_action_func=ra.random_action_func)
 
 replay_buffer = chainerrl.replay_buffer.ReplayBuffer(capacity= 10 ** 6)
 
@@ -153,8 +157,7 @@ for i in range(n_playout):
 
     reward = 0
 
-    # while not f.done:
-    for i in range(60):
+    while not f.done:
 
         action = []
         for sid in range(2):
@@ -177,7 +180,9 @@ for i in range(n_playout):
 
     for sid in range(2):
         for ag in range(2):
-            agents[sid][ag].stop_episode_and_train(f.fi, win * (-1 if sid else 1), True)
+            # print(agents[sid][ag].last_state)
+            if agents[sid][ag].last_state is not None:
+                agents[sid][ag].stop_episode_and_train(f.fi, win * (-1 if sid else 1), True)
             revage(f.fi)
         revside(f.fi)
 

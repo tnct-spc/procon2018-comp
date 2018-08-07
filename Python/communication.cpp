@@ -6,11 +6,22 @@ namespace p = boost::python;
 procon::Communication::Communication() :
     field(grid_x, grid_y)
 {
+	act_stack.resize(2);
+	act_stack[0].resize(2); 
+	act_stack[1].resize(2); 
+
 
 }
 
 p::list procon::Communication::resetField(){
-    field = procon::Field(grid_x, grid_y);
+    std::random_device rnd;     // 非決定的な乱数生成器でシード生成機を生成
+    std::mt19937 mt(rnd()); //
+
+    std::uniform_int_distribution<> rand_siz(8, 12);
+    std::uniform_int_distribution<> rand_turn(60, 120);
+
+    field = procon::Field(rand_siz(mt), rand_siz(mt));
+	field.setFinalTurn(rand_turn(mt));
     return exportField(field);
 }
 
@@ -30,6 +41,7 @@ p::list procon::Communication::exportField(procon::Field field){
             ins++;
         }
     }
+	ins = 146;
     index = ins;
     for(int x = 0 ; x < field.getSize().first;x++){
         for(int y = 0; y < field.getSize().second ; y++){
@@ -37,26 +49,24 @@ p::list procon::Communication::exportField(procon::Field field){
             ins++;
         }
     }
+	ins = 290;
     index = ins;
-    field_arr.at(index + 1) = field.getTurnCount();
+    field_arr.at(ins) = field.getTurnCount();
     ins++;
-    field_arr.at(index + 2) = field.getFinalTurn();
+    field_arr.at(ins) = field.getFinalTurn();
     ins++;
-    index = ins;
     for(int side = 0;side < 2;side++){
         for(int hoge = 0; hoge < 2;hoge++){
-            field_arr.at(index + 1) = field.getAgent(side,hoge).first;
-            ins++;
-            field_arr.at(index + 2) = field.getAgent(side,hoge).second;
-            ins++;
-            index = ins;
+            field_arr.at(ins) = field.getAgent(side,hoge).first;
+            field_arr.at(ins + 1) = field.getAgent(side,hoge).second;
+			++ins;
         }
     }
     index = ins;
-    field_arr.at(index+1)=field.getPoints().at(0).first;
-    field_arr.at(index+2)=field.getPoints(false).at(0).second;
-    field_arr.at(index+3)=field.getPoints(false).at(1).first;
-    field_arr.at(index+4)=field.getPoints(false).at(1).second;
+    field_arr.at(index)=field.getPoints().at(0).first;
+    field_arr.at(index+1)=field.getPoints(false).at(0).second;
+    field_arr.at(index+2)=field.getPoints(false).at(1).first;
+    field_arr.at(index+3)=field.getPoints(false).at(1).second;
 
     typename std::vector<int>::const_iterator it;
 
@@ -150,7 +160,7 @@ void procon::Communication::agentAct(const int turn, const int agent, const std:
     }
     act_stack.at(turn).at(agent) = std::make_tuple(type, x_pos, y_pos);
 }
-p::list procon::Communication::move(boost::python::list act){
+boost::python::list procon::Communication::move(boost::python::list act){
     std::vector<int> Act = py_list_to_std_vector(act);
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
