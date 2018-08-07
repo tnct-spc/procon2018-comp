@@ -45,7 +45,8 @@ SOURCES += \
     doubleagent/agents/testdoubleagentalgo.cpp \
     doubleagent/agents/evaluateparam.cpp \
     doubleagent/algorithms/simplemcforduble.cpp \
-    doubleagent/algorithms/nashequilibrium.cpp
+    doubleagent/algorithms/nashequilibrium.cpp \
+    catchPythonsAnswer/catchpythonsanswer.cpp
 HEADERS += \
         algorithm_global.h \ 
         testalgorithm.h \
@@ -66,7 +67,8 @@ HEADERS += \
     doubleagent/agents/testdoubleagentalgo.h \
     doubleagent/agents/evaluateparam.h \
     doubleagent/algorithms/simplemcforduble.h \
-    doubleagent/algorithms/nashequilibrium.h
+    doubleagent/algorithms/nashequilibrium.h \
+    catchPythonsAnswer/catchpythonsanswer.h
 unix {
     target.path = /usr/lib
     INSTALLS += target
@@ -76,6 +78,15 @@ LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
 DEPENDPATH += $$PWD/../Field
 
+LIBS += -L$$OUT_PWD/../Python/ -lPython
+INCLUDEPATH += $$PWD/../Python
+DEPENDPATH += $$PWD/../Python
+
 LIBS += -L$$OUT_PWD/../Visualizer/ -lVisualizer
 INCLUDEPATH += $$PWD/../Visualizer
 DEPENDPATH += $$PWD/../Visualizer
+
+LIBS += -lboost_python3
+LIBS += -lpython3.7m
+
+INCLUDEPATH += /usr/include/python3.7m
