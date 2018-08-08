@@ -3,7 +3,6 @@
 #include "field.h"
 #include "gamemanager.h"
 #include "algorithmwrapper.h"
-#include "communication.h"
 #include "visualizer.h"
 #include <queue>
 #include <algorithm>
@@ -25,6 +24,8 @@ class catchPythonsAnswer : public AlgorithmWrapper
     using AlgorithmWrapper::AlgorithmWrapper;
 public:
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int);
+    std::vector<int> py_list_to_std_vector( const boost::python::object& iterable );
+    boost::python::list exportField(procon::Field field);
 
     const std::string Path = "";
 };
