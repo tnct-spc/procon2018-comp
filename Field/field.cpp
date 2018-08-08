@@ -57,14 +57,15 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
 }
 
 //ここサイズ対応します
-procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const int max_val, const int min_val){
+procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const int max_val, const int min_val) :
+    max_val(max_val),
+    min_val(min_val)
+{
+
     std::random_device rnd;
     std::mt19937 mt (rnd());
 
     std::uniform_int_distribution<> rndor(0,1);//[0,1]
-    std::uniform_int_distribution<> rndminus(0,9);
-    std::lognormal_distribution<> dist(3.0,0.25);
-    std::chi_squared_distribution<> dist2(3.0);
 
     grid_x = size_x;
     grid_y = size_y;
@@ -86,33 +87,20 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     regions = std::bitset<288>(0uL);
     points = std::vector<std::pair<int,int>>(2, std::make_pair(0,0));
 
-    /*
-    std::uniform_int_distribution<> plus_rnd(0,max_val);
-    std::uniform_int_distribution<> minus_rnd(min_val,-1);
-    //std::uniform_real_distribution<> double_rnd(0.0,1.0);
-    */
-    std::uniform_int_distribution<> plus_rnd(0,max_val / 3);
-
-
-
-    //ここは「x軸かつy軸方向に垂直」で解釈します←するなよ！！！！！運営を許すな
-
-    std::uniform_int_distribution<> rndtri(0,4);
-
     //面倒なのでコピペでクソコードを書きます 運営を許すな
 
+    std::uniform_int_distribution<> rndtri(0,4);
     int val = rndtri(mt);
 
+    std::vector<std::vector<int>> create_data;
 
     if(!val){
-        for(int x = 0; x < grid_x / 2 + 1; ++x){
-            for(int y = 0; y < grid_y / 2 + 1; ++y){
+        create_data = createField(grid_x / 2 + 1, grid_y / 2 + 1);
 
-                int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
-                value = std::max(min_val, value);
+        for(unsigned int x = 0; x < grid_x / 2 + 1; ++x){
+            for(unsigned int y = 0; y < grid_y / 2 + 1; ++y){
 
-                value = (rndminus(mt) ? std::abs(value) : -1 * std::abs(value) );
-
+                int value = create_data.at(x).at(y);
 
                 value_data.at(x).at(y) = value;
                 value_data.at(grid_x - x - 1).at(grid_y - y - 1) = value;
@@ -131,12 +119,14 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         agents.at(1).at(0) = std::make_pair(agent_x, grid_y - agent_y - 1);
         agents.at(1).at(1) = std::make_pair(grid_x - agent_x - 1, agent_y);
 
-    }else if(val==1||val==2){
-        for(int x = 0; x < grid_x; ++x){
-            for(int y = 0; y < grid_y / 2 + 1; ++y){
+    }else if(val < 3){
 
-                int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
-                value = std::max(min_val, value);
+        create_data = createField(grid_x, grid_y / 2 + 1);
+
+        for(unsigned int x = 0; x < grid_x; ++x){
+            for(unsigned int y = 0; y < grid_y / 2 + 1; ++y){
+
+                int value = create_data.at(x).at(y);
 
                 value_data.at(x).at(y) = value;
                 value_data.at(x).at(grid_y - y - 1) = value;
@@ -161,11 +151,12 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         agents.at(1).at(1) = std::make_pair(agent_x, agent_y);
 
     }else{
-        for(int x = 0; x < grid_x / 2 + 1; ++x){
-            for(int y = 0; y < grid_y; ++y){
+        create_data = createField(grid_x / 2 + 1, grid_y);
 
-                int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
-                value = std::max(min_val, value);
+        for(unsigned int x = 0; x < grid_x / 2 + 1; ++x){
+            for(unsigned int y = 0; y < grid_y; ++y){
+
+                int value = create_data.at(x).at(y);
 
                 value_data.at(x).at(y) = value;
                 value_data.at(grid_x - x - 1).at(y) = value;
@@ -205,6 +196,191 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     feature = std::vector<double>(10);
     updateFeature();
     updateOnlyTilePoint();
+}
+
+int procon::Field::translateMoveToInt(int side, std::tuple<int, int, int> move){
+    bool destroy = (std::get<0>(move) == 2);
+    std::pair<int,int> to;
+    to.first = std::get<1>(move);
+    to.second = std::get<2>(move);
+    int relative_move = (to.first*-1+1)+(to.second+1)*3;
+    if(side == 0){
+        relative_move = ((relative_move % 3)*-1+2)*3+relative_move/3;
+    }
+    else{
+        relative_move = (relative_move % 3)*3+(relative_move/3*-1+2);
+    }
+    if(destroy){
+        relative_move += 9;
+    }
+    return relative_move;
+}
+
+std::vector<std::vector<int>> procon::Field::createField(int x_size, int y_size){
+
+    std::vector<std::vector<int>> out_vector(static_cast<unsigned int>(x_size), std::vector<int>(static_cast<unsigned int>(y_size)));
+
+    std::random_device rnd;
+    std::mt19937 mt (rnd());
+
+    std::uniform_int_distribution<> rndminus(0,9);
+    //std::lognormal_distribution<> dist(3.0,0.25);
+    std::uniform_int_distribution<> plus_rnd(0,max_val / 3);
+
+    if(field_type == 0){//通常
+        std::lognormal_distribution<> dist(3.0,0.25);
+        for(int x_index = 0; x_index < x_size; ++x_index)
+            for(int y_index = 0; y_index < y_size; ++y_index){
+
+                int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
+                value = std::max(min_val, value);
+
+                out_vector.at(x_index).at(y_index) = (rndminus(mt) ? std::abs(value) : -1 * std::abs(value) );
+            }
+
+    }
+    
+    if(field_type == 1){//通常より大きい数が出やすい
+        std::lognormal_distribution<> dist(3.0,1);
+        for(int x_index = 0; x_index < x_size; ++x_index)
+            for(int y_index = 0; y_index < y_size; ++y_index){
+
+                int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
+                value = std::max(min_val, value);
+
+                out_vector.at(x_index).at(y_index) = (rndminus(mt) ? std::abs(value) : -1 * std::abs(value) );
+            }
+        
+    }
+
+    if(field_type == 2){//通常より小さい数が出やすい
+        std::lognormal_distribution<> dist(3.0,0.125);
+        for(int x_index = 0; x_index < x_size; ++x_index)
+            for(int y_index = 0; y_index < y_size; ++y_index){
+
+                int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
+                value = std::max(min_val, value);
+
+                out_vector.at(x_index).at(y_index) = (rndminus(mt) ? std::abs(value) : -1 * std::abs(value) );
+            }
+
+    }
+
+    if(field_type == 3){//2桁の数が出やすい
+        std::normal_distribution<> dist(10,3);
+        for(int x_index = 0; x_index < x_size; ++x_index)
+            for(int y_index = 0; y_index < y_size; ++y_index){
+
+                int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
+                value = std::max(min_val, value);
+
+                out_vector.at(x_index).at(y_index) = (rndminus(mt) ? std::abs(value) : -1 * std::abs(value) );
+            }
+
+    }
+
+    if(field_type == 4){//8に近い数が出やすい
+        std::chi_squared_distribution<> dist(8);
+        for(int x_index = 0; x_index < x_size; ++x_index)
+            for(int y_index = 0; y_index < y_size; ++y_index){
+
+                int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
+                value = std::max(min_val, value);
+
+                out_vector.at(x_index).at(y_index) = (rndminus(mt) ? std::abs(value) : -1 * std::abs(value) );
+            }
+
+    }
+
+    if(field_type == 5){//すべての数が同じ確率で出る
+        std::uniform_int_distribution<> dist(0,16);
+        for(int x_index = 0; x_index < x_size; ++x_index)
+            for(int y_index = 0; y_index < y_size; ++y_index){
+
+                int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
+                value = std::max(min_val, value);
+
+                out_vector.at(x_index).at(y_index) = (rndminus(mt) ? std::abs(value) : -1 * std::abs(value) );
+            }
+
+    }
+    
+    if(field_type == 6){//大きすぎる数が出にくい
+        std::normal_distribution<> dist(10,3);
+        for(int x_index = 0; x_index < x_size; ++x_index)
+            for(int y_index = 0; y_index < y_size; ++y_index){
+
+                int value = std::min(static_cast<int>(dist(mt)) - 16, max_val - plus_rnd(mt));
+                value = std::max(min_val, value);
+
+                out_vector.at(x_index).at(y_index) = (rndminus(mt) ? std::abs(value) : -1 * std::abs(value) );
+            }
+
+    }
+
+    if(field_type == 7){//真ん中に大きい数
+        std::lognormal_distribution<> dist1(3.0,0.1);
+        std::lognormal_distribution<> dist2(3.0,0.25);
+        std::lognormal_distribution<> dist3(3.0,0.75);
+        std::lognormal_distribution<> dist4(3.0,1.5);
+        std::lognormal_distribution<> dist5(0.0,100);
+        for(int x_index = 0; x_index < x_size; ++x_index)
+            for(int y_index = 0; y_index < y_size; ++y_index){
+                int value;
+                if(abs(x_index-x_size/2) + abs(y_index-y_size/2) > 6){
+                value = std::min(static_cast<int>(dist1(mt)) - 16, max_val - plus_rnd(mt));
+                }
+                else if(abs(x_index-x_size/2) + abs(y_index-y_size/2) > 4){
+                value = std::min(static_cast<int>(dist2(mt)) - 16, max_val - plus_rnd(mt));
+                }
+                else if(abs(x_index-x_size/2) + abs(y_index-y_size/2) > 3){
+                value = std::min(static_cast<int>(dist3(mt)) - 16, max_val - plus_rnd(mt));
+                }
+                else if(abs(x_index-x_size/2) + abs(y_index-y_size/2) > 2){
+                value = std::min(static_cast<int>(dist4(mt)) - 16, max_val - plus_rnd(mt));
+                }
+                else{
+                value = std::min(static_cast<int>(dist5(mt)) - 16, max_val - plus_rnd(mt));
+                }
+                value = std::max(min_val, value);
+                out_vector.at(x_index).at(y_index) = (rndminus(mt) ? std::abs(value) : -1 * std::abs(value) );
+
+            }
+
+    }
+
+    if(field_type == 8){//真ん中に小さい数
+        std::lognormal_distribution<> dist5(3.0,0.1);
+        std::lognormal_distribution<> dist4(3.0,0.25);
+        std::lognormal_distribution<> dist3(3.0,0.75);
+        std::lognormal_distribution<> dist2(3.0,1.5);
+        std::lognormal_distribution<> dist1(0.0,100);
+        for(int x_index = 0; x_index < x_size; ++x_index)
+            for(int y_index = 0; y_index < y_size; ++y_index){
+                int value;
+                if(abs(x_index-x_size/2) + abs(y_index-y_size/2) > 6){
+                value = std::min(static_cast<int>(dist1(mt)) - 16, max_val - plus_rnd(mt));
+                }
+                else if(abs(x_index-x_size/2) + abs(y_index-y_size/2) > 4){
+                value = std::min(static_cast<int>(dist2(mt)) - 16, max_val - plus_rnd(mt));
+                }
+                else if(abs(x_index-x_size/2) + abs(y_index-y_size/2) > 3){
+                value = std::min(static_cast<int>(dist3(mt)) - 16, max_val - plus_rnd(mt));
+                }
+                else if(abs(x_index-x_size/2) + abs(y_index-y_size/2) > 2){
+                value = std::min(static_cast<int>(dist4(mt)) - 16, max_val - plus_rnd(mt));
+                }
+                else{
+                value = std::min(static_cast<int>(dist5(mt)) - 16, max_val - plus_rnd(mt));
+                }
+                value = std::max(min_val, value);
+                out_vector.at(x_index).at(y_index) = (rndminus(mt) ? std::abs(value) : -1 * std::abs(value) );
+
+            }
+
+    }
+
+    return out_vector;
 }
 
 int procon::Field::getTurnCount(){
