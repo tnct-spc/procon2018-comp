@@ -94,9 +94,9 @@ QString CipherCards::makePath(Cipher card)
     QString number;
     if (card.num < 10) {
         image_name += "0";
-        image_name += number.setNum(card.num);
+        image_name += number.setNum(card.num+1);
     } else {
-        image_name += number.setNum(card.num);
+        image_name += number.setNum(card.num+1);
     }
 
     image_name += ".gif";
