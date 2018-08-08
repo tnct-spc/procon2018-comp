@@ -199,6 +199,7 @@ def buttle(lis):
     print('act : {}'.format(ret))
     return ret
 
+
 # これいる？いらないよね
 if do_playout == True:
     playout()
