@@ -27,7 +27,7 @@ public:
     std::vector<int> py_list_to_std_vector( const boost::python::object& iterable );
     boost::python::list exportField(procon::Field field);
 
-    const std::string Path = "../../procon2018-comp/Python/chainerrl/test.py";
+    const std::string Path = "../../procon2018-comp/Python/chainerrl/main.py";
 };
 
 #endif // CATCHPYTHONSANSWER_H

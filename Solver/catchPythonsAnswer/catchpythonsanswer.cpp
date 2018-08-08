@@ -21,13 +21,13 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> catchPythonsAn
                                std::istreambuf_iterator<char>());
            boost::python::exec(script.c_str(), main_ns);
 
-           //boost::python::object func = main_ns["Act"];
-           boost::python::object calc = main_ns["calc"];
-           boost::python::object s = calc(1);
+           boost::python::object func = main_ns["Act"];
+           //boost::python::object calc = main_ns["calc"];
+           //boost::python::object s = calc(1);
 
-           std::cout <<  boost::python::extract<double>(s) << std::endl;
+           //std::cout <<  boost::python::extract<double>(s) << std::endl;
 
-           //result = func(side, exportField(field));
+           result = func(side, exportField(field));
        }
 
     catch (boost::python::error_already_set) {
