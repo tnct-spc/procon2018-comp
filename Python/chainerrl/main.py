@@ -4,6 +4,8 @@ import random
 
 do_playout = False # bool(sys.argv[1] if len(sys.argv) > 1 else 1)
 
+sys.path.append("../../procon2018-comp/Python/chainerrl")
+
 import communication
 
 # g++ -DPIC -shared -fPIC -o basic.so communication.cpp -lboost_python -lpython3.6m -I/usr/include/python3.6m -L../Field -I../Field
@@ -199,7 +201,6 @@ def buttle(lis):
     print('act : {}'.format(ret))
     return ret
 
-print('hoge')
 def Act(side, lis):
     print('Act')
     return [random.randrange(0, 18) for i in range(2)]
