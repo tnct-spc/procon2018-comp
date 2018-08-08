@@ -394,7 +394,7 @@ int procon::Field::getFinalTurn(){
 void procon::Field::setTurnCount(int turn_count){
     if(turn_count > final_turn){
         std::cerr<<"ERROR : 終了ターンを超えたturnを設定しようとしています"<<std::endl;
-        about();
+        std::abort();
     }
     now_turn = turn_count;
 }
@@ -433,7 +433,7 @@ std::pair<int,int> procon::Field::getAgent(const unsigned int side, const unsign
 std::pair<int,int> procon::Field::getState(const unsigned int x, const unsigned int y) const{
     if(!(0 <= x && x <= grid_x - 1 && 0 <= y && y <= grid_y - 1)){
         std::cerr<<"ERROR : getStateにて盤面外を指定しています!!"<<std::endl;
-        about();
+        std::about();
     }
     std::bitset<288> w(0uL);
     w |= field_data >> (2*(12*y+x));
@@ -444,7 +444,7 @@ std::pair<int,int> procon::Field::getState(const unsigned int x, const unsigned 
 void procon::Field::setState(const unsigned int x, const unsigned int y, const unsigned int state){
     if(!(0 <= x && x <= grid_x - 1 && 0 <= y && y <= grid_y - 1)){
         std::cerr<<"ERROR :  setStateにて盤面外を指定しています!!"<<std::endl;
-        about();
+        std::about();
     }
     std::bitset<288> w = 3;
     field_data &= ~( w << (2*(12*y+x)));
