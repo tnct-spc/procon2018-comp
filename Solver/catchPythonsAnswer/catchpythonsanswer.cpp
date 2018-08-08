@@ -16,19 +16,23 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> catchPythonsAn
     auto main_ns = boost::python::import("__main__").attr("__dict__");
 
     try {
+           std::cout << "funccalled"<<std::endl;
            std::ifstream ifs(Path);  //ここPath
            std::string script((std::istreambuf_iterator<char>(ifs)),
                                std::istreambuf_iterator<char>());
+           std::cout << "funccalled"<<std::endl;
            boost::python::exec(script.c_str(), main_ns);
+           std::cout << "funccalled"<<std::endl;
 
            boost::python::object func = main_ns["Act"];
-           //boost::python::object calc = main_ns["calc"];
-           //boost::python::object s = calc(1);
+           // boost::python::object calc = main_ns["calc"];
+           // boost::python::object s = calc(1);
 
-           //std::cout <<  boost::python::extract<double>(s) << std::endl;
-
-           result = func(side, exportField(field));
-       }
+           // std::cout <<  boost::python::extract<double>(s) << std::endl;
+           std::cout << "func"<<std::endl;
+            result = func(side, exportField(field));
+           std::cout << "funcend"<<std::endl;
+    }
 
     catch (boost::python::error_already_set) {
         std::cout<<"ERROR"<<std::endl;

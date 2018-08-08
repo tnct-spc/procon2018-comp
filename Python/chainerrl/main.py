@@ -1,5 +1,8 @@
 import numpy as np
 import sys
+import random
+
+do_playout = False # bool(sys.argv[1] if len(sys.argv) > 1 else 1)
 
 import communication
 
@@ -24,8 +27,6 @@ field_val = 304
 # 9*2=18 全ての行動に重みを取って最大値を取る(?)
 n_move = 324
 
-do_playout = bool(sys.argv[1] if len(sys.argv) > 1 else 1)
-
 load_model = False
 save_model = False
 load_path = '../../Data/chainerrl/result_' + str(750)
@@ -38,7 +39,6 @@ save_time = 250
 
 def transform(val):
     return [(val // (81 * 2)) * 9 + (val % 81) // 9, ((val % (81 * 2)) // 81) * 9 + val % 9]
-
 
 gsid = False
 
@@ -199,7 +199,11 @@ def buttle(lis):
     print('act : {}'.format(ret))
     return ret
 
+print('hoge')
+def Act(side, lis):
+    print('Act')
+    return [random.randrange(0, 18) for i in range(2)]
 
 # これいる？いらないよね
-if do_playout == True:
+if __name__ == '__main__' and do_playout == True:
     playout()
