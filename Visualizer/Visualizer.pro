@@ -26,17 +26,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         visualizer.cpp \
     progresdock.cpp \
-    operator.cpp
+    operator.cpp \
+    ciphercards.cpp
 
 HEADERS += \
         visualizer.h \
     progresdock.h \
-    operator.h
+    operator.h \
+    ciphercards.h
 
 FORMS += \
         visualizer.ui \
     progresdock.ui \
-    operator.ui
+    operator.ui \
+    ciphercards.ui
 
 unix {
     target.path = /usr/lib

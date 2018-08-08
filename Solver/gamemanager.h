@@ -9,6 +9,7 @@
 #include "geneticalgo/geneticalgo.h"
 #include "geneticalgo/geneticagent.h"
 #include "operator.h"
+#include "ciphercards.h"
 
 #include <thread>
 #include <vector>
@@ -86,6 +87,7 @@ private:
     std::shared_ptr<procon::Field> field;
     std::shared_ptr<Visualizer> visualizer;
     std::shared_ptr<Operator> ope;
+    std::shared_ptr<CipherCards> ciphercard;
     std::vector<std::shared_ptr<procon::Field>> field_vec;
 
     std::shared_ptr<AlgorithmWrapper> team_1;

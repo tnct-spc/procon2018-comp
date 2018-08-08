@@ -211,6 +211,9 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
     }else{
 
+        ciphercard = std::make_shared<CipherCards>();
+        ciphercard->show();
+
         nextMoveForManualMode();
 
         //visualizerにもauto解除する事を伝える
@@ -512,6 +515,8 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
 
     std::cout << "turn : " << field->getTurnCount()+1 << std::endl << std::endl;
 
+    std::vector<std::pair<int, int>> move_cipher;
+
     for(int side = 0; side < 2; ++side)
         for(int agent = 0; agent < 2; ++agent){
 
@@ -523,6 +528,8 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
 
             new_pos.first -= origin_pos.first;
             new_pos.second -= origin_pos.second;
+
+            if (side == 0) move_cipher.push_back(new_pos);
 
             //is_deleteなら強制的に削除
             agentAct(side, agent,  std::make_tuple( ( is_delete.at(side).at(agent) || (field->getState(pos.first, pos.second).first == (side == 0 ? 2 : 1)) ? 2 : 1 ), new_pos.first, new_pos.second ) );
@@ -540,6 +547,8 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
     setFieldCount(field_vec.size() - 1);
 
     visualizer->update();
+
+    ciphercard->updata(move_cipher);
 
     if(field->getTurnCount() == field->getFinalTurn()){
 
