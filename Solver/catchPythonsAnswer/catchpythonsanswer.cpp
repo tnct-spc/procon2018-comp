@@ -27,6 +27,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> catchPythonsAn
 
            // std::cout <<  boost::python::extract<double>(s) << std::endl;
             result = func(side, exportField(field));
+            std::vector<int> ins = py_list_to_std_vector(result);
     }
 
     catch (boost::python::error_already_set) {

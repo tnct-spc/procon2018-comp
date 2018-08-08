@@ -4,7 +4,9 @@ import random
 
 do_playout = False # bool(sys.argv[1] if len(sys.argv) > 1 else 1)
 
-sys.path.append("../../procon2018-comp/Python/chainerrl")
+abs_path = "../../procon2018-comp/Python/chainerrl/"
+
+sys.path.append(abs_path)
 
 import communication
 
@@ -31,8 +33,8 @@ n_move = 324
 
 load_model = False
 save_model = False
-load_path = '../../Data/chainerrl/result_' + str(750)
-save_path = '../../Data/chainerrl/result_'
+load_path = abs_path + '../../Data/chainerrl/result_' + str(750)
+save_path = abs_path + '../../Data/chainerrl/result_'
 
 n_playout = 20000
 debug_time = 20
@@ -194,16 +196,21 @@ def playout():
 
 # python::list[304]が渡される
 def buttle(lis):
-    ac =  agent_p1.act(lis)
+    ndarr = np.array(lis, dtype=np.float32)
+    ac =  agent_p1.act(ndarr)
     # ac =  agent_p1.act_and_train(lis, 0)
-    print(ac)
     ret = transform(ac)
     print('act : {}'.format(ret))
     return ret
 
 def Act(side, lis):
-    print('Act')
-    return [random.randrange(0, 18) for i in range(2)]
+
+    if side == 1:
+        revside(lis)
+    val = buttle(lis)
+
+    val = list(map(lambda x: x.item(), val))
+    return val
 
 # これいる？いらないよね
 if __name__ == '__main__' and do_playout == True:
