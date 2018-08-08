@@ -4,8 +4,10 @@ TEMPLATE = subdirs
 SUBDIRS += \
     Field \
     Visualizer \
+    Python \
     Solver \
     Mejirodai \
     Simulator \
-    Test \
-    Python
+    Test
+
+
