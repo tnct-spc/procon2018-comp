@@ -12,8 +12,12 @@
 #include <string>
 #include <fstream>
 #include <streambuf>
-#include <boost/python.hpp>
 #include <string>
+
+#pragma push_macro("slots")
+#undef slots
+#include <boost/python.hpp>
+#pragma pop_macro("slots")
 
 
 class catchPythonsAnswer : public AlgorithmWrapper
