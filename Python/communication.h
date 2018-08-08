@@ -2,8 +2,12 @@
 #define COMMUNICATION_H
 
 #include "field.h"
+#pragma push_macro("slots")
+#undef slots
 #include "boost/python.hpp"
 #include "boost/python/numpy.hpp"
+#pragma pop_macro("slots")
+
 
 #include <thread>
 #include <memory>
