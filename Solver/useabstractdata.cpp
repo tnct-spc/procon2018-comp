@@ -28,7 +28,7 @@ std::vector<std::vector<int>> UseAbstractData::getAbstractBasedAgent(bool side, 
             +  0.5 * std::min(std::abs(agent_pos.at(0) - pos.at(0)), std::abs(agent_pos.at(1) - pos.at(1)));
     };
     */
-    std::vector<std::vector<int>> return_values(4);
+    std::vector<std::vector<int>> return_values(4, std::vector<int>(9, 0));
 
     return_values.at(0).at(0) = (agent_pos.at(0) + 1) * (agent_pos.at(1) + 1);
     return_values.at(0).at(1) = (agent_pos.at(0) + 1) * (field.getSize().second - agent_pos.at(1));
