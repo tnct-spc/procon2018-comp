@@ -10,7 +10,7 @@ public:
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
 
 private:
-    std::vector<std::vector<double>> getAbstractBasedAgent(bool side, bool agent);
+    std::vector<std::vector<int>> getAbstractBasedAgent(bool side, bool agent);
 };
 
 #endif // USEABSTRACTDATA_H
