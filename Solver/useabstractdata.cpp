@@ -38,10 +38,14 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 
         std::vector<int> move = {x_list.at(move_int), y_list.at(move_int)};
         std::vector<int> values(9, 0);
+        int cnt = 0;
+
         for(int count = 0; count < 4; ++count)
-            if((!move_int && count == 3) || ((count * 2 <= move_int) && (count * 2 + 2 >= move_int)))
+            if((!move_int && count == 3) || ((count * 2 <= move_int) && (count * 2 + 2 >= move_int))){
                 for(int index = 0; index < 9; ++index)
                     values.at(index) += abst_values.at(agent).at(count).at(index);
+                ++cnt;
+            }
 
 
         std::vector<int> pos = {field.getAgent(side, agent).first, field.getAgent(side, agent).second};
@@ -57,7 +61,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
                 return -(1e9 + 7);
         }
 
-        double value = calc(values);
+        double value = calc(values) / cnt;
         return value;
     };
 
