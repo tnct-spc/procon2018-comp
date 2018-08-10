@@ -2,6 +2,16 @@
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractData::agentAct(int now_turn){
 
+    for(int agent = 0; agent < 2; ++agent){
+        std::vector<std::vector<int>> values = getAbstractBasedAgent(0, agent);
+        for(auto vec : values){
+            for(auto val : vec)
+                std::cout << val << " ";
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+    }
+
     return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
 }
 
