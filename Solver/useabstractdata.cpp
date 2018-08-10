@@ -17,10 +17,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 
 // 4方向(右上右下…)の{マスの数,各色タイルの{数,得点の総和},エージェントの存在(0,1)}
 // {マス数,数0,数1,数2,総和0,総和1,総和2,存在0,存在1} size:9
-std::vector<std::vector<int>> UseAbstractData::getAbstractBasedAgent(bool side, bool agent){
+// 12
+// 34 みたいにする
+std::vector<std::vector<int>> UseAbstractData::getAbstractBasedAgent(bool eval_side, bool agent){
 
-    std::vector<int> agent_pos = {field.getAgent(side, agent).first, field.getAgent(side, agent).second};
-    std::vector<int> search_pos(2, 0);
+    std::vector<int> agent_pos = {field.getAgent(eval_side, agent).first, field.getAgent(eval_side, agent).second};
 
     /*
     auto calc_distance = [&](std::vector<int> pos){
@@ -31,32 +32,37 @@ std::vector<std::vector<int>> UseAbstractData::getAbstractBasedAgent(bool side, 
     std::vector<std::vector<int>> return_values(4, std::vector<int>(9, 0));
 
     return_values.at(0).at(0) = (agent_pos.at(0) + 1) * (agent_pos.at(1) + 1);
-    return_values.at(0).at(1) = (agent_pos.at(0) + 1) * (field.getSize().second - agent_pos.at(1));
-    return_values.at(0).at(2) = (field.getSize().first - agent_pos.at(0)) * (agent_pos.at(1) + 1);
-    return_values.at(0).at(3) = (field.getSize().first - agent_pos.at(0)) * (field.getSize().second - agent_pos.at(1));
+    return_values.at(1).at(0) = (field.getSize().first - agent_pos.at(0)) * (agent_pos.at(1) + 1);
+    return_values.at(2).at(0) = (agent_pos.at(0) + 1) * (field.getSize().second - agent_pos.at(1));
+    return_values.at(3).at(0) = (field.getSize().first - agent_pos.at(0)) * (field.getSize().second - agent_pos.at(1));
 
     //位置と追加したい要素のインデックス、値を指定する
     auto add_value = [&](std::vector<int> pos, int index, int value){
 
-        if(pos.at(0) >= agent_pos.at(0) && pos.at(1) >= agent_pos.at(1))
+        if(pos.at(0) <= agent_pos.at(0) && pos.at(1) <= agent_pos.at(1))
             return_values.at(0).at(index) += value;
         if(pos.at(0) >= agent_pos.at(0) && pos.at(1) <= agent_pos.at(1))
             return_values.at(1).at(index) += value;
         if(pos.at(0) <= agent_pos.at(0) && pos.at(1) >= agent_pos.at(1))
             return_values.at(2).at(index) += value;
-        if(pos.at(0) <= agent_pos.at(0) && pos.at(1) <= agent_pos.at(1))
+        if(pos.at(0) >= agent_pos.at(0) && pos.at(1) >= agent_pos.at(1))
             return_values.at(3).at(index) += value;
     };
 
+    std::vector<int> search_pos(2, 0);
+
     for(;search_pos.at(0) < field.getSize().first; ++search_pos.at(0))
-        for(;search_pos.at(1) < field.getSize().second; ++search_pos.at(1)){
+        for(search_pos.at(1) = 0;search_pos.at(1) < field.getSize().second; ++search_pos.at(1)){
             std::pair<int, int> state = field.getState(search_pos.at(0), search_pos.at(1));
             add_value(search_pos, 1 + state.first, 1);
             add_value(search_pos, 4 + state.first, state.second);
         }
 
    for(int count = 0; count < 4; ++count)
-       add_value(std::vector<int>({field.getAgent(count >> 1, count & 1).first, field.getAgent(count >> 1, count & 1).second}), 7 + (count >> 1), 1);
+       if(!((eval_side << 1) + agent == count))
+           add_value(std::vector<int>({field.getAgent(count >> 1, count & 1).first, field.getAgent(count >> 1, count & 1).second}), 7 + (count >> 1), 1);
 
+   std::cout <<"ag : " << agent_pos.at(0) << " , " << agent_pos.at(1) << std::endl;
+   std::cout <<"sz : " << field.getSize().first << " , " << field.getSize().second << std::endl;
     return return_values;
 }
