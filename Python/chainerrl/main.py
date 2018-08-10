@@ -2,15 +2,15 @@ import numpy as np
 import sys
 import random
 
-do_playout = False # bool(sys.argv[1] if len(sys.argv) > 1 else 1)
+# Trueならcompile_and_run.shから実行された物と解釈
+# FalseならC++側から
+do_playout = False
 
-abs_path = "../../procon2018-comp/Python/chainerrl/"
+abs_path = "" if do_playout else "../../procon2018-comp/Python/chainerrl/"
 
 sys.path.append(abs_path)
 
 import communication
-
-# g++ -DPIC -shared -fPIC -o basic.so communication.cpp -lboost_python -lpython3.6m -I/usr/include/python3.6m -L../Field -I../Field
 
 import matplotlib
 matplotlib.use('Agg')
@@ -31,20 +31,18 @@ field_val = 304
 # 9*2=18 全ての行動に重みを取って最大値を取る(?)
 n_move = 324
 
-load_model = False
+load_model = True
 save_model = False
 load_path = abs_path + '../../Data/chainerrl/result_' + str(750)
 save_path = abs_path + '../../Data/chainerrl/result_'
 
-n_playout = 20000
-debug_time = 20
+n_playout = 1000
+debug_time = 1
 save_time = 250
-# save_time = 10000
 
 def transform(val):
     return [(val // (81 * 2)) * 9 + (val % 81) // 9, ((val % (81 * 2)) // 81) * 9 + val % 9]
 
-gsid = False
 
 # fi:numpy[304] done
 class Field():
@@ -84,11 +82,13 @@ class RandAct:
         self.f = f #field
         self.com = communication.Communication()
         self.random_count = 0
+        self.gsid = False
 
     def random_action_func(self):
         # C++を呼んで、有効手を1つ返す)
-        lis = self.com.random(int(gsid))
-        val = 81 * 2 * (lis[0] == 2) + lis[1] * 9 + 81 * (lis[2] == 2) + lis[3]
+        lis = self.com.random(int(self.gsid))
+        val = 81 * 2 * (lis[0] == 2) + lis[2] * 9 + 81 * (lis[1] == 2) + lis[3]
+        self.random_count += 1
         return val
 
 class QFunction(chainer.Chain):
@@ -98,13 +98,16 @@ class QFunction(chainer.Chain):
         with self.init_scope():
             self.l1 = L.Linear(None, n_layers[0])
             self.l2 = L.Linear(None, n_layers[1])
-            self.l3 = L.Linear(None, n_move)
+            self.l3 = L.Linear(None, n_layers[2])
+            self.l4 = L.Linear(None, n_layers[3])
+            self.l5 = L.Linear(None, n_move)
 
     def __call__(self, x):
-        # 9種類の動きとis_deleteがあるので10種類 分類問題
         h = F.relu(self.l1(x))
         h = F.relu(self.l2(h))
-        h = self.l3(h)
+        h = F.relu(self.l3(h))
+        h = F.relu(self.l4(h))
+        h = self.l5(h)
         h = chainerrl.action_value.DiscreteActionValue(h)
         return h
 
@@ -124,7 +127,7 @@ f = Field()
 ra = RandAct(f)
 
 # ここ適当にやる
-q_func = QFunction([50, 50])
+q_func = QFunction([800, 800, 800, 800])
 
 
 optimizer = chainer.optimizers.Adam()
@@ -135,7 +138,8 @@ optimizer.setup(q_func)
 gamma = 0.95
 
 # chainerrl.explorers.ConstantEpsilonGreedy でもよい linearは線形って事で
-explorer = chainerrl.explorers.LinearDecayEpsilonGreedy(start_epsilon=1.0, end_epsilon=0.3, decay_steps=50000, random_action_func=ra.random_action_func)
+explorer = chainerrl.explorers.LinearDecayEpsilonGreedy(start_epsilon=1.0, end_epsilon=0.3, decay_steps=n_playout * 90, random_action_func=ra.random_action_func)
+# explorer = chainerrl.explorers.ConstantEpsilonGreedy(5e-2, ra.random_action_func)
 
 replay_buffer = chainerrl.replay_buffer.ReplayBuffer(capacity= 10 ** 6)
 
@@ -160,14 +164,12 @@ def playout():
             for sid in range(2):
                 act = []
                 # rewardは必ず0になる気がするけど…
-                gsid = sid
+                ra.gsid = bool(sid)
 
                 act_res = agents[sid].act_and_train(f.fi.copy(), reward)
-                if sid == 0:
-                    buttle(f.fi.copy())
-                    ret = transform(act_res)
-                    print('train : {}'.format(ret))
-                    print()
+                # print('act : {}'.format(transform(act_res)))
+                # print('act : {} : {}'.format(transform(act_res),transform(act_res2)))
+
                 action.append(act_res)
 
                 revside(f.fi)
@@ -181,12 +183,11 @@ def playout():
         # print(f.fi)
         # print('win : {}'.format(win))
         for sid in range(2):
-            if agents[sid].last_state is not None:
-                agents[sid].stop_episode_and_train(f.fi, win * (-1 if sid else 1), True)
+            agents[sid].stop_episode_and_train(f.fi, win * (-1 if sid else 1), True)
             revside(f.fi)
 
         if not ((i + 1) % debug_time):
-            print('episode:{}, rnd:{}, miss:{}win:{}, statistics:{}, epsilon:{}'.format(i + 1, ra.random_count, result[0], result[1], agent_p1.get_statistics(), agent_p2.explorer.epsilon))
+            print('episode:{}, rnd:{}, miss:{}, win:{}, statistics:{}, epsilon:{}'.format(i + 1, ra.random_count, result[0], result[1], agent_p1.get_statistics(), agent_p2.explorer.epsilon))
             result = [0 for i in range(3)]
             ra.random_count = 0
         if save_model and not ((i + 1) % save_time):
@@ -200,7 +201,7 @@ def buttle(lis):
     ac =  agent_p1.act(ndarr)
     # ac =  agent_p1.act_and_train(lis, 0)
     ret = transform(ac)
-    print('act : {}'.format(ret))
+    # print('act : {}'.format(ret))
     return ret
 
 def Act(side, lis):
@@ -210,6 +211,7 @@ def Act(side, lis):
     val = buttle(lis)
 
     val = list(map(lambda x: x.item(), val))
+    print('act : {}'.format(val))
     return val
 
 # これいる？いらないよね
