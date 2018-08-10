@@ -2,15 +2,65 @@
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractData::agentAct(int now_turn){
 
-    for(int agent = 0; agent < 2; ++agent){
-        std::vector<std::vector<int>> values = getAbstractBasedAgent(0, agent);
-        for(auto vec : values){
-            for(auto val : vec)
-                std::cout << val << " ";
-            std::cout << std::endl;
+    std::vector<std::vector<std::vector<int>>> abst_values(2);
+    for(int agent = 0; agent < 2; ++agent)
+        abst_values.at(agent) = getAbstractBasedAgent(side, agent);
+
+    auto calc = [&](std::vector<int>& abst){
+        double value = 0;
+
+        double const_tile_count = 0;
+        double const_empty_count = 0;
+        double const_side_count = 0;
+        double const_enemy_side_count = 0;
+        double const_empty_sum = 0;
+        double const_side_sum = 0;
+        double const_enemy_side_sum = 0;
+        double const_agent_count = 0;
+        double const_enemy_agent_count = 0;
+
+        value += 1.0 * abst.at(0) * const_tile_count;
+        value += 1.0 * abst.at(1) * const_empty_count;
+        value += 1.0 * abst.at(2) * const_side_count;
+        value += 1.0 * abst.at(3) * const_enemy_side_count;
+        value += 1.0 * abst.at(4) * const_empty_sum;
+        value += 1.0 * abst.at(5) * const_side_sum;
+        value += 1.0 * abst.at(6) * const_enemy_side_sum;
+        value += 1.0 * abst.at(7) * const_agent_count;
+        value += 1.0 * abst.at(8) * const_enemy_agent_count;
+
+        return value;
+    };
+
+    // 111 333
+    // 4 222 444
+    auto eval = [&](bool agent, int move_int, bool is_delete){
+
+        std::vector<int> move = {x_list.at(move_int), y_list.at(move_int)};
+        std::vector<int> values(9, 0);
+        for(int count = 0; count < 4; ++count)
+            if((!move_int && count == 3) || ((count * 2 <= move_int) && (count * 2 + 2 >= move_int)))
+                for(int index = 0; index < 9; ++index)
+                    values.at(index) += abst_values.at(agent).at(count).at(index);
+
+
+        std::vector<int> pos = {field.getAgent(side, agent).first, field.getAgent(side, agent).second};
+        for(int index = 0; index < 2; ++index){
+            pos.at(index) += move.at(index);
+            // out of range
+            if(pos.at(index) < 0 || pos.at(index) >= (index ? field.getSize().second : field.getSize().first))
+                return -(1e9 + 9);
+
+            int state = field.getState(pos.at(0), pos.at(1)).first;
+            // delete move
+            if((!state && is_delete) || (state == (side ? 1 : 2) && !is_delete))
+                return -(1e9 + 7);
         }
-        std::cout << std::endl;
-    }
+
+        double value = calc(values);
+        return value;
+    };
+
 
     return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
 }
@@ -62,7 +112,5 @@ std::vector<std::vector<int>> UseAbstractData::getAbstractBasedAgent(bool eval_s
        if(!((eval_side << 1) + agent == count))
            add_value(std::vector<int>({field.getAgent(count >> 1, count & 1).first, field.getAgent(count >> 1, count & 1).second}), 7 + (count >> 1), 1);
 
-   std::cout <<"ag : " << agent_pos.at(0) << " , " << agent_pos.at(1) << std::endl;
-   std::cout <<"sz : " << field.getSize().first << " , " << field.getSize().second << std::endl;
     return return_values;
 }

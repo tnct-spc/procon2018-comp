@@ -11,6 +11,18 @@ public:
 
 private:
     std::vector<std::vector<int>> getAbstractBasedAgent(bool side, bool agent);
+
+    std::vector<int> x_list = {-1, 0, 1, 1, 1, 0, -1, -1};
+    std::vector<int> y_list = {1, 1, 1, 0, -1, -1, -1, 0};
+    /*
+
+      12
+      43
+
+      111 333
+      4 222 444
+
+      */
 };
 
 #endif // USEABSTRACTDATA_H
