@@ -56,7 +56,7 @@ std::vector<std::vector<int>> UseAbstractData::getAbstractBasedAgent(bool side, 
         }
 
    for(int count = 0; count < 4; ++count)
-       add_value(std::vector<int>({field.getAgent(count & 2, count & 1).first, field.getAgent(count & 2, count & 1).second}), 7 + (count >> 1), 1);
+       add_value(std::vector<int>({field.getAgent(count >> 1, count & 1).first, field.getAgent(count >> 1, count & 1).second}), 7 + (count >> 1), 1);
 
     return return_values;
 }
