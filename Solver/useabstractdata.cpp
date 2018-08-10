@@ -18,7 +18,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 // 4方向(右上右下…)の{マスの数,各色タイルの{数,得点の総和},エージェントの存在(0,1)}
 // {マス数,数0,数1,数2,総和0,総和1,総和2,存在0,存在1} size:9
 // 12
-// 34 みたいにする
+// 43 みたいにする
 std::vector<std::vector<int>> UseAbstractData::getAbstractBasedAgent(bool eval_side, bool agent){
 
     std::vector<int> agent_pos = {field.getAgent(eval_side, agent).first, field.getAgent(eval_side, agent).second};
@@ -33,8 +33,8 @@ std::vector<std::vector<int>> UseAbstractData::getAbstractBasedAgent(bool eval_s
 
     return_values.at(0).at(0) = (agent_pos.at(0) + 1) * (agent_pos.at(1) + 1);
     return_values.at(1).at(0) = (field.getSize().first - agent_pos.at(0)) * (agent_pos.at(1) + 1);
-    return_values.at(2).at(0) = (agent_pos.at(0) + 1) * (field.getSize().second - agent_pos.at(1));
-    return_values.at(3).at(0) = (field.getSize().first - agent_pos.at(0)) * (field.getSize().second - agent_pos.at(1));
+    return_values.at(3).at(0) = (agent_pos.at(0) + 1) * (field.getSize().second - agent_pos.at(1));
+    return_values.at(2).at(0) = (field.getSize().first - agent_pos.at(0)) * (field.getSize().second - agent_pos.at(1));
 
     //位置と追加したい要素のインデックス、値を指定する
     auto add_value = [&](std::vector<int> pos, int index, int value){
@@ -44,9 +44,9 @@ std::vector<std::vector<int>> UseAbstractData::getAbstractBasedAgent(bool eval_s
         if(pos.at(0) >= agent_pos.at(0) && pos.at(1) <= agent_pos.at(1))
             return_values.at(1).at(index) += value;
         if(pos.at(0) <= agent_pos.at(0) && pos.at(1) >= agent_pos.at(1))
-            return_values.at(2).at(index) += value;
-        if(pos.at(0) >= agent_pos.at(0) && pos.at(1) >= agent_pos.at(1))
             return_values.at(3).at(index) += value;
+        if(pos.at(0) >= agent_pos.at(0) && pos.at(1) >= agent_pos.at(1))
+            return_values.at(2).at(index) += value;
     };
 
     std::vector<int> search_pos(2, 0);
