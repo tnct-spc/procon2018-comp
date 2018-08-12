@@ -50,6 +50,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 
     auto eval = [&](bool agent, int move_int, bool is_delete){
 
+
         std::vector<int> move = {x_list.at(move_int), y_list.at(move_int)};
         std::vector<int> values(9, 0);
         int cnt = 0;
@@ -76,7 +77,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 
         double value = calc(values) / cnt;
 
-        value *= (16 + field.getState(x_list.at(move_int), y_list.at(move_int)).second);
+        // value *= (16 + field.getState(pos.at(0), pos.at(1)).second);
 
         return value;
     };
@@ -106,9 +107,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
             aft_pos.at(agent).second += y_list.at(move_index.at(agent) % 8);
         }
 
+        std::cout << "( " << is_delete.at(0) + 1 << " , " << x_list.at(move_index.at(0) % 8) << " , " << y_list.at(move_index.at(0) % 8) << " )   "
+                  << "( " << is_delete.at(1) + 1 << " , " << x_list.at(move_index.at(1) % 8) << " , " << y_list.at(move_index.at(0) % 8) << " )\n";
         if(aft_pos.at(0) != aft_pos.at(1))
-            return std::make_pair(std::make_tuple(is_delete.at(0), x_list.at(move_index.at(0) % 8), y_list.at(move_index.at(0) % 8)),
-                                  std::make_tuple(is_delete.at(1), x_list.at(move_index.at(1) % 8), y_list.at(move_index.at(1) % 8)));
+            return std::make_pair(std::make_tuple(is_delete.at(0) + 1, x_list.at(move_index.at(0) % 8), y_list.at(move_index.at(0) % 8)),
+                                  std::make_tuple(is_delete.at(1) + 1, x_list.at(move_index.at(1) % 8), y_list.at(move_index.at(1) % 8)));
     }
 
     return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
