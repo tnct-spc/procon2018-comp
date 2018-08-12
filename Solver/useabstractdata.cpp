@@ -61,7 +61,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
                 ++cnt;
             }
 
-
         std::vector<int> pos = {field.getAgent(side, agent).first, field.getAgent(side, agent).second};
         for(int index = 0; index < 2; ++index){
             pos.at(index) += move.at(index);
@@ -87,6 +86,30 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
             for(int is_delete = 0; is_delete < 2; ++is_delete)
                 eval_results.at(agent).at(8 * is_delete + move) = eval(agent, move, is_delete);
 
+    std::vector<std::pair<double, std::pair<int, int>>> moves;
+
+    for(int move_1 = 0; move_1 < 16; ++move_1)
+        for(int move_2 = 0; move_2 < 16; ++move_2)
+            moves.push_back(std::make_pair(eval_results.at(0).at(move_1) * eval_results.at(1).at(move_2), std::make_pair(move_1, move_2)));
+
+    std::sort(moves.begin(), moves.end(), std::greater<std::pair<double, std::pair<int, int>>>());
+
+    for(auto move_pair : moves){
+
+        std::vector<int> move_index = {move_pair.second.first, move_pair.second.second};
+        std::vector<bool> is_delete = {move_index.at(0) > 8, move_index.at(1) > 8};
+        std::vector<std::pair<int, int>> bef_pos = {field.getAgent(side, 0), field.getAgent(side, 1)};
+        std::vector<std::pair<int, int>> aft_pos = bef_pos;
+
+        for(int agent = 0; agent < 2; ++agent){
+            aft_pos.at(agent).first += x_list.at(move_index.at(agent) % 8);
+            aft_pos.at(agent).second += y_list.at(move_index.at(agent) % 8);
+        }
+
+        if(aft_pos.at(0) != aft_pos.at(1))
+            return std::make_pair(std::make_tuple(is_delete.at(0), x_list.at(move_index.at(0) % 8), y_list.at(move_index.at(0) % 8)),
+                                  std::make_tuple(is_delete.at(1), x_list.at(move_index.at(1) % 8), y_list.at(move_index.at(1) % 8)));
+    }
 
     return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
 }

@@ -3,6 +3,8 @@
 
 #include "algorithmwrapper.h"
 
+#include <algorithm>
+
 class UseAbstractData : public AlgorithmWrapper
 {
     using AlgorithmWrapper::AlgorithmWrapper;
