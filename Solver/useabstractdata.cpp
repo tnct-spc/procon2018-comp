@@ -20,15 +20,15 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
     auto calc = [&](std::vector<int>& abst){
         double value = 0;
 
-        double const_tile_count = 0.8;
+        double const_tile_count = 1.6;
         double const_empty_count = 1.2;
         double const_side_count = -0.7;
-        double const_enemy_side_count = 0.8;
+        double const_enemy_side_count = 1.2;
         double const_empty_sum = 1.2;
         double const_side_sum = -0.3;
-        double const_enemy_side_sum = 0.8;
-        double const_agent_count = -0.8;
-        double const_enemy_agent_count = -0.8;
+        double const_enemy_side_sum = 1.2;
+        double const_agent_count = -0.4;
+        double const_enemy_agent_count = -0.4;
 
         // [0,1]
         value += 1.0 * abst.at(0) * const_tile_count / (field.getSize().first * field.getSize().second);
