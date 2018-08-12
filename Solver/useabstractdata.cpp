@@ -3,37 +3,51 @@
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractData::agentAct(int now_turn){
 
     std::vector<std::vector<std::vector<int>>> abst_values(2);
+    std::vector<std::vector<double>> eval_results(2, std::vector<double>(16));
+
     for(int agent = 0; agent < 2; ++agent)
         abst_values.at(agent) = getAbstractBasedAgent(side, agent);
+
+
+    int point_sum = 0;
+    const std::vector<std::vector<int>>& field_points = field.getValue();
+    for(auto raw : field_points)
+        for(auto val : raw)
+            point_sum += val;
+
+    double point_average = point_sum / (field.getSize().first * field.getSize().second);
 
     auto calc = [&](std::vector<int>& abst){
         double value = 0;
 
-        double const_tile_count = 0;
-        double const_empty_count = 0;
-        double const_side_count = 0;
-        double const_enemy_side_count = 0;
-        double const_empty_sum = 0;
-        double const_side_sum = 0;
-        double const_enemy_side_sum = 0;
-        double const_agent_count = 0;
-        double const_enemy_agent_count = 0;
+        double const_tile_count = 0.8;
+        double const_empty_count = 1.2;
+        double const_side_count = -0.7;
+        double const_enemy_side_count = 0.8;
+        double const_empty_sum = 1.2;
+        double const_side_sum = -0.3;
+        double const_enemy_side_sum = 0.8;
+        double const_agent_count = -0.8;
+        double const_enemy_agent_count = -0.8;
 
-        value += 1.0 * abst.at(0) * const_tile_count;
-        value += 1.0 * abst.at(1) * const_empty_count;
-        value += 1.0 * abst.at(2) * const_side_count;
-        value += 1.0 * abst.at(3) * const_enemy_side_count;
-        value += 1.0 * abst.at(4) * const_empty_sum;
-        value += 1.0 * abst.at(5) * const_side_sum;
-        value += 1.0 * abst.at(6) * const_enemy_side_sum;
+        // [0,1]
+        value += 1.0 * abst.at(0) * const_tile_count / (field.getSize().first * field.getSize().second);
+
+        value += 1.0 * abst.at(1) * const_empty_count / abst.at(0);
+        value += 1.0 * abst.at(2) * const_side_count / abst.at(0);
+        value += 1.0 * abst.at(3) * const_enemy_side_count / abst.at(0);
+
+        // about [-1,1] sum neq 1
+        value += 1.0 * abst.at(4) * const_empty_sum / (point_average * abst.at(0));
+        value += 1.0 * abst.at(5) * const_side_sum / (point_average * abst.at(0));
+        value += 1.0 * abst.at(6) * const_enemy_side_sum / (point_average * abst.at(0));
+
         value += 1.0 * abst.at(7) * const_agent_count;
         value += 1.0 * abst.at(8) * const_enemy_agent_count;
 
         return value;
     };
 
-    // 111 333
-    // 4 222 444
     auto eval = [&](bool agent, int move_int, bool is_delete){
 
         std::vector<int> move = {x_list.at(move_int), y_list.at(move_int)};
@@ -62,8 +76,16 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
         }
 
         double value = calc(values) / cnt;
+
+        value *= (16 + field.getState(x_list.at(move_int), y_list.at(move_int)).second);
+
         return value;
     };
+
+    for(int agent = 0; agent < 2; ++agent)
+        for(int move = 0; move < 8; ++move)
+            for(int is_delete = 0; is_delete < 2; ++is_delete)
+                eval_results.at(agent).at(8 * is_delete + move) = eval(agent, move, is_delete);
 
 
     return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
