@@ -54,11 +54,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
         std::vector<int> move = {x_list.at(move_int), y_list.at(move_int)};
         std::vector<int> values(9, 0);
         int cnt = 0;
+        double value = 0;
 
         for(int count = 0; count < 4; ++count)
             if((!move_int && count == 3) || ((count * 2 <= move_int) && (count * 2 + 2 >= move_int))){
-                for(int index = 0; index < 9; ++index)
-                    values.at(index) += abst_values.at(agent).at(count).at(index);
+                value += calc(abst_values.at(agent).at(count));
                 ++cnt;
             }
 
@@ -67,17 +67,18 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
             pos.at(index) += move.at(index);
             // out of range
             if(pos.at(index) < 0 || pos.at(index) >= (index ? field.getSize().second : field.getSize().first))
-                return -(1e9 + 9);
-
-            int state = field.getState(pos.at(0), pos.at(1)).first;
-            // delete move
-            if((!state && is_delete) || (state == (side ? 1 : 2) && !is_delete))
-                return -(1e9 + 7);
+            return -(1e9 + 9);
         }
 
-        double value = calc(values) / cnt;
+        int state = field.getState(pos.at(0), pos.at(1)).first;
 
-        // value *= (16 + field.getState(pos.at(0), pos.at(1)).second);
+        // delete move
+        if( (state == (side ? 1 : 2)) ^ is_delete)
+            return -(1e9 + 7);
+
+        value *= (cnt > 1 ? 0.75 : 1);
+
+        value *= (state == side + 1 ? 12 : (16 + field.getState(pos.at(0), pos.at(1)).second));
 
         return value;
     };
@@ -89,9 +90,13 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 
     std::vector<std::pair<double, std::pair<int, int>>> moves;
 
-    for(int move_1 = 0; move_1 < 16; ++move_1)
+    for(int move_1 = 0; move_1 < 16; ++move_1){
+        if(eval_results.at(0).at(move_1) < 0)
+            continue;
         for(int move_2 = 0; move_2 < 16; ++move_2)
-            moves.push_back(std::make_pair(eval_results.at(0).at(move_1) * eval_results.at(1).at(move_2), std::make_pair(move_1, move_2)));
+            if(eval_results.at(1).at(move_2) > 0)
+                moves.push_back(std::make_pair(eval_results.at(0).at(move_1) + eval_results.at(1).at(move_2), std::make_pair(move_1, move_2)));
+    }
 
     std::sort(moves.begin(), moves.end(), std::greater<std::pair<double, std::pair<int, int>>>());
 
@@ -107,6 +112,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
             aft_pos.at(agent).second += y_list.at(move_index.at(agent) % 8);
         }
 
+        std::cout << move_pair.first << "   :   ";
         std::cout << "( " << is_delete.at(0) + 1 << " , " << x_list.at(move_index.at(0) % 8) << " , " << y_list.at(move_index.at(0) % 8) << " )   "
                   << "( " << is_delete.at(1) + 1 << " , " << x_list.at(move_index.at(1) % 8) << " , " << y_list.at(move_index.at(0) % 8) << " )\n";
         if(aft_pos.at(0) != aft_pos.at(1))
