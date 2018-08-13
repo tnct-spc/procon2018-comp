@@ -3,7 +3,7 @@
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractData::agentAct(int now_turn){
 
     std::vector<std::vector<std::vector<int>>> abst_values(2);
-    std::vector<std::vector<double>> eval_results(2, std::vector<double>(16));
+    std::vector<std::vector<double>> eval_results(2, std::vector<double>(8));
 
     for(int agent = 0; agent < 2; ++agent)
         abst_values.at(agent) = getAbstractBasedAgent(side, agent);
@@ -48,8 +48,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
         return value;
     };
 
-    auto eval = [&](bool agent, int move_int, bool is_delete){
-
+    auto eval = [&](bool agent, int move_int){
 
         std::vector<int> move = {x_list.at(move_int), y_list.at(move_int)};
         std::vector<int> values(9, 0);
@@ -72,10 +71,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 
         int state = field.getState(pos.at(0), pos.at(1)).first;
 
-        // delete move
-        if( (state == (side ? 1 : 2)) ^ is_delete)
-            return -(1e9 + 7);
-
         value *= (cnt > 1 ? 0.75 : 1);
 
         value *= (state == side + 1 ? 12 : (16 + field.getState(pos.at(0), pos.at(1)).second));
@@ -86,14 +81,14 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
     for(int agent = 0; agent < 2; ++agent)
         for(int move = 0; move < 8; ++move)
             for(int is_delete = 0; is_delete < 2; ++is_delete)
-                eval_results.at(agent).at(8 * is_delete + move) = eval(agent, move, is_delete);
+                eval_results.at(agent).at(move) = eval(agent, move);
 
     std::vector<std::pair<double, std::pair<int, int>>> moves;
 
-    for(int move_1 = 0; move_1 < 16; ++move_1){
+    for(int move_1 = 0; move_1 < 8; ++move_1){
         if(eval_results.at(0).at(move_1) < 0)
             continue;
-        for(int move_2 = 0; move_2 < 16; ++move_2)
+        for(int move_2 = 0; move_2 < 8; ++move_2)
             if(eval_results.at(1).at(move_2) > 0)
                 moves.push_back(std::make_pair(eval_results.at(0).at(move_1) + eval_results.at(1).at(move_2), std::make_pair(move_1, move_2)));
     }
@@ -103,21 +98,25 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
     for(auto move_pair : moves){
 
         std::vector<int> move_index = {move_pair.second.first, move_pair.second.second};
-        std::vector<bool> is_delete = {move_index.at(0) > 8, move_index.at(1) > 8};
         std::vector<std::pair<int, int>> bef_pos = {field.getAgent(side, 0), field.getAgent(side, 1)};
         std::vector<std::pair<int, int>> aft_pos = bef_pos;
+        std::vector<bool> is_delete(2);
 
         for(int agent = 0; agent < 2; ++agent){
-            aft_pos.at(agent).first += x_list.at(move_index.at(agent) % 8);
-            aft_pos.at(agent).second += y_list.at(move_index.at(agent) % 8);
+            aft_pos.at(agent).first += x_list.at(move_index.at(agent));
+            aft_pos.at(agent).second += y_list.at(move_index.at(agent));
         }
 
+        for(int agent = 0; agent < 2; ++agent)
+            is_delete.at(agent) = (field.getState(aft_pos.at(agent).first, aft_pos.at(agent).second).first == (side ? 1 : 2));
+
         std::cout << move_pair.first << "   :   ";
-        std::cout << "( " << is_delete.at(0) + 1 << " , " << x_list.at(move_index.at(0) % 8) << " , " << y_list.at(move_index.at(0) % 8) << " )   "
-                  << "( " << is_delete.at(1) + 1 << " , " << x_list.at(move_index.at(1) % 8) << " , " << y_list.at(move_index.at(1) % 8) << " )\n";
+        std::cout << "( " << is_delete.at(0) + 1 << " , " << x_list.at(move_index.at(0)) << " , " << y_list.at(move_index.at(0)) << " )   "
+                  << "( " << is_delete.at(1) + 1 << " , " << x_list.at(move_index.at(1)) << " , " << y_list.at(move_index.at(1)) << " )\n";
+
         if(aft_pos.at(0) != aft_pos.at(1))
-            return std::make_pair(std::make_tuple(is_delete.at(0) + 1, x_list.at(move_index.at(0) % 8), y_list.at(move_index.at(0) % 8)),
-                                  std::make_tuple(is_delete.at(1) + 1, x_list.at(move_index.at(1) % 8), y_list.at(move_index.at(1) % 8)));
+            return std::make_pair(std::make_tuple(is_delete.at(0) + 1, x_list.at(move_index.at(0)), y_list.at(move_index.at(0))),
+                                  std::make_tuple(is_delete.at(1) + 1, x_list.at(move_index.at(1)), y_list.at(move_index.at(1))));
     }
 
     return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
