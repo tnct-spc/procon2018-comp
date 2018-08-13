@@ -33,6 +33,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
         // [0,1]
         value += 1.0 * abst.at(0) * const_tile_count / (field.getSize().first * field.getSize().second);
 
+        // [0,1] sum eq 1
         value += 1.0 * abst.at(1) * const_empty_count / abst.at(0);
         value += 1.0 * abst.at(2) * const_side_count / abst.at(0);
         value += 1.0 * abst.at(3) * const_enemy_side_count / abst.at(0);
@@ -114,13 +115,14 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
         for(int agent = 0; agent < 2; ++agent)
             is_delete.at(agent) = (field.getState(aft_pos.at(agent).first, aft_pos.at(agent).second).first == (side ? 1 : 2));
 
-        std::cout << move_pair.first << "   :   ";
-        std::cout << "( " << is_delete.at(0) + 1 << " , " << x_list.at(move_index.at(0)) << " , " << y_list.at(move_index.at(0)) << " )   "
-                  << "( " << is_delete.at(1) + 1 << " , " << x_list.at(move_index.at(1)) << " , " << y_list.at(move_index.at(1)) << " )\n";
 
-        if(aft_pos.at(0) != aft_pos.at(1))
+        if(aft_pos.at(0) != aft_pos.at(1)){
+            std::cout << move_pair.first << "   :   ";
+            std::cout << "( " << is_delete.at(0) + 1 << " , " << x_list.at(move_index.at(0)) << " , " << y_list.at(move_index.at(0)) << " )   "
+                      << "( " << is_delete.at(1) + 1 << " , " << x_list.at(move_index.at(1)) << " , " << y_list.at(move_index.at(1)) << " )\n";
             return std::make_pair(std::make_tuple(is_delete.at(0) + 1, x_list.at(move_index.at(0)), y_list.at(move_index.at(0))),
                                   std::make_tuple(is_delete.at(1) + 1, x_list.at(move_index.at(1)), y_list.at(move_index.at(1))));
+        }
     }
 
     return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
@@ -128,18 +130,10 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 
 // 4方向(右上右下…)の{マスの数,各色タイルの{数,得点の総和},エージェントの存在(0,1)}
 // {マス数,数0,数1,数2,総和0,総和1,総和2,存在0,存在1} size:9
-// 12
-// 43 みたいにする
 std::vector<std::vector<int>> UseAbstractData::getAbstractBasedAgent(bool eval_side, bool agent){
 
     std::vector<int> agent_pos = {field.getAgent(eval_side, agent).first, field.getAgent(eval_side, agent).second};
 
-    /*
-    auto calc_distance = [&](std::vector<int> pos){
-        return 1.0 * std::max(std::abs(agent_pos.at(0) - pos.at(0)), std::abs(agent_pos.at(1) - pos.at(1)))
-            +  0.5 * std::min(std::abs(agent_pos.at(0) - pos.at(0)), std::abs(agent_pos.at(1) - pos.at(1)));
-    };
-    */
     std::vector<std::vector<int>> return_values(4, std::vector<int>(9, 0));
 
     return_values.at(0).at(0) = (agent_pos.at(0) + 1) * (agent_pos.at(1) + 1);
