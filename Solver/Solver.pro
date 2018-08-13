@@ -46,7 +46,8 @@ SOURCES += \
     doubleagent/agents/evaluateparam.cpp \
     doubleagent/algorithms/simplemcforduble.cpp \
     doubleagent/algorithms/nashequilibrium.cpp \
-    useabstractdata.cpp
+    useabstractdata.cpp \
+    doubleagent/agents/directionbasedalgo.cpp
 HEADERS += \
         algorithm_global.h \ 
         testalgorithm.h \
@@ -68,7 +69,8 @@ HEADERS += \
     doubleagent/agents/evaluateparam.h \
     doubleagent/algorithms/simplemcforduble.h \
     doubleagent/algorithms/nashequilibrium.h \
-    useabstractdata.h
+    useabstractdata.h \
+    doubleagent/agents/directionbasedalgo.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

@@ -14,6 +14,7 @@ public:
 private:
     std::vector<std::vector<int>> getAbstractBasedAgent(bool side, bool agent);
 
+
 	// 盤面状態の評価に用いる倍率
 	/*
 	  先頭要素から
