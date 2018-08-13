@@ -1177,5 +1177,3 @@ std::vector<double> procon::Field::calcSituationFeature(std::pair<std::tuple<int
     */
     return ans;
 }
-
-
