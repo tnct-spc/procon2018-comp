@@ -12,7 +12,7 @@ public:
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
 
 private:
-    std::vector<std::vector<int>> getAbstractBasedAgent(bool side, bool agent);
+    std::vector<std::vector<int>> getAbstractBasedAgent(bool eval_side, bool agent);
 
 
 	// 盤面状態の評価に用いる倍率
