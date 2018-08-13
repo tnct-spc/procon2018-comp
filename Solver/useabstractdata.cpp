@@ -33,7 +33,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
         // [0,1]
         value += 1.0 * abst.at(0) * const_tile_count / (field.getSize().first * field.getSize().second);
 
-        /*
         value += 1.0 * abst.at(1) * const_empty_count / abst.at(0);
         value += 1.0 * abst.at(2) * const_side_count / abst.at(0);
         value += 1.0 * abst.at(3) * const_enemy_side_count / abst.at(0);
@@ -45,7 +44,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 
         value += 1.0 * abst.at(7) * const_agent_count;
         value += 1.0 * abst.at(8) * const_enemy_agent_count;
-        */
 
         return value;
     };
@@ -69,7 +67,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
             pos.at(index) += move.at(index);
             // out of range
             if(pos.at(index) < 0 || pos.at(index) >= (index ? field.getSize().second : field.getSize().first))
-            return -(1e9 + 9);
+                return -(1e9 + 9);
         }
 
         int state = field.getState(pos.at(0), pos.at(1)).first;
@@ -116,7 +114,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 
         std::cout << move_pair.first << "   :   ";
         std::cout << "( " << is_delete.at(0) + 1 << " , " << x_list.at(move_index.at(0) % 8) << " , " << y_list.at(move_index.at(0) % 8) << " )   "
-                  << "( " << is_delete.at(1) + 1 << " , " << x_list.at(move_index.at(1) % 8) << " , " << y_list.at(move_index.at(0) % 8) << " )\n";
+                  << "( " << is_delete.at(1) + 1 << " , " << x_list.at(move_index.at(1) % 8) << " , " << y_list.at(move_index.at(1) % 8) << " )\n";
         if(aft_pos.at(0) != aft_pos.at(1))
             return std::make_pair(std::make_tuple(is_delete.at(0) + 1, x_list.at(move_index.at(0) % 8), y_list.at(move_index.at(0) % 8)),
                                   std::make_tuple(is_delete.at(1) + 1, x_list.at(move_index.at(1) % 8), y_list.at(move_index.at(1) % 8)));
