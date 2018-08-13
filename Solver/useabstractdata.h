@@ -11,6 +11,8 @@ class UseAbstractData : public AlgorithmWrapper
 public:
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
 
+    void setParameters(std::vector<double>& values, std::function<void(double&, bool, int)>& tile_value_func, std::function<double(double, double)>& eval_sum_func);
+
 private:
     std::vector<std::vector<int>> getAbstractBasedAgent(bool eval_side, bool agent);
 
