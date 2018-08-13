@@ -33,6 +33,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
         // [0,1]
         value += 1.0 * abst.at(0) * const_tile_count / (field.getSize().first * field.getSize().second);
 
+        /*
         value += 1.0 * abst.at(1) * const_empty_count / abst.at(0);
         value += 1.0 * abst.at(2) * const_side_count / abst.at(0);
         value += 1.0 * abst.at(3) * const_enemy_side_count / abst.at(0);
@@ -44,6 +45,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 
         value += 1.0 * abst.at(7) * const_agent_count;
         value += 1.0 * abst.at(8) * const_enemy_agent_count;
+        */
 
         return value;
     };

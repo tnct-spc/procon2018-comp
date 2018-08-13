@@ -14,8 +14,13 @@ public:
 private:
     std::vector<std::vector<int>> getAbstractBasedAgent(bool side, bool agent);
 
+    /*
     std::vector<int> x_list = {-1, 0, 1, 1, 1, 0, -1, -1};
     std::vector<int> y_list = {1, 1, 1, 0, -1, -1, -1, 0};
+    */
+
+    std::vector<int> x_list = {-1, -1, 0, 1, 1, 1, 0, -1};
+    std::vector<int> y_list = {0, -1, -1, -1, 0, 1, 1, 1};
     /*
 
       12
