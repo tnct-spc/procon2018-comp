@@ -161,13 +161,17 @@ std::vector<std::vector<int>> UseAbstractData::getAbstractBasedAgent(bool eval_s
     for(;search_pos.at(0) < field.getSize().first; ++search_pos.at(0))
         for(search_pos.at(1) = 0;search_pos.at(1) < field.getSize().second; ++search_pos.at(1)){
             std::pair<int, int> state = field.getState(search_pos.at(0), search_pos.at(1));
+
+            if(eval_side && state.first)
+                state.first = (state.first == 1 ? 2 : 1);
+
             add_value(search_pos, 1 + state.first, 1);
             add_value(search_pos, 4 + state.first, state.second);
         }
 
    for(int count = 0; count < 4; ++count)
        if(!((eval_side << 1) + agent == count))
-           add_value(std::vector<int>({field.getAgent(count >> 1, count & 1).first, field.getAgent(count >> 1, count & 1).second}), 7 + (count >> 1), 1);
+           add_value(std::vector<int>({field.getAgent(count >> 1, count & 1).first, field.getAgent(count >> 1, count & 1).second}), 7 + (eval_side ^ (count >> 1)), 1);
 
     return return_values;
 }
