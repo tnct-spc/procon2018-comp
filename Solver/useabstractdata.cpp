@@ -20,15 +20,15 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
     auto calc = [&](std::vector<int>& abst){
         double value = 0;
 
-        double const_tile_count = 1.6;
-        double const_empty_count = 1.2;
-        double const_side_count = -0.7;
-        double const_enemy_side_count = 1.2;
-        double const_empty_sum = 1.2;
-        double const_side_sum = -0.3;
-        double const_enemy_side_sum = 1.2;
-        double const_agent_count = -0.4;
-        double const_enemy_agent_count = -0.4;
+        double const_tile_count = const_values.at(0);
+        double const_empty_count = const_values.at(1);
+        double const_side_count = const_values.at(2);
+        double const_enemy_side_count = const_values.at(3);
+        double const_empty_sum = const_values.at(4);
+        double const_side_sum = const_values.at(5);
+        double const_enemy_side_sum = const_values.at(6);
+        double const_agent_count = const_values.at(7);
+        double const_enemy_agent_count = const_values.at(8);
 
         // [0,1]
         value += 1.0 * abst.at(0) * const_tile_count / (field.getSize().first * field.getSize().second);
@@ -71,9 +71,13 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 
         int state = field.getState(pos.at(0), pos.at(1)).first;
 
-        value *= (cnt > 1 ? 0.75 : 1);
 
-        value *= (state == side + 1 ? 12 : (16 + field.getState(pos.at(0), pos.at(1)).second));
+        value /= cnt;
+
+        if(state == side + 1)
+            value *= diagonal_move;
+
+        calc_value_func(value, state == side + 1, field.getState(pos.at(0), pos.at(1)).second);
 
         return value;
     };
@@ -90,7 +94,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
             continue;
         for(int move_2 = 0; move_2 < 8; ++move_2)
             if(eval_results.at(1).at(move_2) > 0)
-                moves.push_back(std::make_pair(eval_results.at(0).at(move_1) + eval_results.at(1).at(move_2), std::make_pair(move_1, move_2)));
+                moves.push_back(std::make_pair(calc_eval_sum(eval_results.at(0).at(move_1), eval_results.at(1).at(move_2)), std::make_pair(move_1, move_2)));
     }
 
     std::sort(moves.begin(), moves.end(), std::greater<std::pair<double, std::pair<int, int>>>());
