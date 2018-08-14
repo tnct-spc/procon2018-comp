@@ -45,7 +45,7 @@ int TestAlgorithmPlayout::playout(params& param_1, params& param_2){
     if(points.at(0) == points.at(1))
         return -1;
 
-    return points.at(0) < points.at(1);
+    return (points.at(0) < points.at(1));
 }
 
 void TestAlgorithmPlayout::run(){
@@ -73,9 +73,9 @@ void TestAlgorithmPlayout::run(){
     params p1(const_values_1, diagonal_move_1, calc_value_func_1, calc_eval_sum_1);
     params p2(const_values_2, diagonal_move_2, calc_value_func_2, calc_eval_sum_2);
 
-    std::vector<int> win_count(3);
+    std::vector<int> win_count(3, 0);
 
-    for(int hoge = 0; hoge < 100; ++hoge)
+    for(int hoge = 0; hoge < 1000; ++hoge)
         ++win_count.at(playout(p1, p2) + 1);
 
     std::cout << std::endl << "side 0" << std::endl;
