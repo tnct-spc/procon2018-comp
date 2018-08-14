@@ -18,7 +18,7 @@ int main()
         std::cout << "algo number : ";
         std::cin >> test_number;
 
-        if(test_number >= 0 && test_number <= 1)
+        if(test_number >= 0 && test_number <= 2)
             break;
 
         std::cout << "incorrect" << std::endl;

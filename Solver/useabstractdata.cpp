@@ -117,9 +117,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 
 
         if(aft_pos.at(0) != aft_pos.at(1)){
+            /*
             std::cout << move_pair.first << "   :   ";
             std::cout << "( " << is_delete.at(0) + 1 << " , " << x_list.at(move_index.at(0)) << " , " << y_list.at(move_index.at(0)) << " )   "
                       << "( " << is_delete.at(1) + 1 << " , " << x_list.at(move_index.at(1)) << " , " << y_list.at(move_index.at(1)) << " )\n";
+            */
             return std::make_pair(std::make_tuple(is_delete.at(0) + 1, x_list.at(move_index.at(0)), y_list.at(move_index.at(0))),
                                   std::make_tuple(is_delete.at(1) + 1, x_list.at(move_index.at(1)), y_list.at(move_index.at(1))));
         }
