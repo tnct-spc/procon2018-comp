@@ -174,8 +174,9 @@ std::vector<std::vector<int>> UseAbstractData::getAbstractBasedAgent(bool eval_s
     return return_values;
 }
 
-void UseAbstractData::setParameters(std::vector<double>& values, std::function<void(double&, bool, int)>& tile_value_func, std::function<double(double, double)>& eval_sum_func){
+void UseAbstractData::setParameters(std::vector<double>& values, double diagonal, std::function<void(double&, bool, int)>& tile_value_func, std::function<double(double, double)>& eval_sum_func){
 
+    diagonal_move = diagonal;
     const_values = values;
     calc_value_func = tile_value_func;
     calc_eval_sum = eval_sum_func;
