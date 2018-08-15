@@ -109,8 +109,8 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
             }
         }
 
-        std::uniform_int_distribution<> random_x(0,(grid_x - 1) / 2);
-        std::uniform_int_distribution<> random_y(0,(grid_y - 1) / 2);
+        std::uniform_int_distribution<> random_x(0,grid_x / 2 - 1);
+        std::uniform_int_distribution<> random_y(0,grid_y / 2 - 1);
 
         int agent_x = random_x(mt);
         int agent_y = random_y(mt);
@@ -134,7 +134,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         }
 
         std::uniform_int_distribution<> random_x(0,grid_x - 1);
-        std::uniform_int_distribution<> random_y(0,(grid_y - 1) / 2);
+        std::uniform_int_distribution<> random_y(0,grid_y / 2 - 1);
 
         int agent_x = random_x(mt);
         int agent_y = random_y(mt);
@@ -163,7 +163,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
             }
         }
 
-        std::uniform_int_distribution<> random_x(0,(grid_x - 1) / 2);
+        std::uniform_int_distribution<> random_x(0,grid_x / 2 - 1);
         std::uniform_int_distribution<> random_y(0,grid_y - 1);
 
         int agent_x = random_x(mt);
