@@ -6,10 +6,6 @@ CipherCards::CipherCards(QWidget *parent) :
     ui(new Ui::CipherCards)
 {
     ui->setupUi(this);
-
-    // 新しいラベルを各Widget内に作成
-    QLabel *l = new QLabel(this);
-    l->setText(tr("hello"));
 }
 
 CipherCards::~CipherCards()
@@ -22,6 +18,9 @@ void CipherCards::resizeEvent(QResizeEvent *event)
     Q_UNUSED(event);
 
     // 画像をresize
+    int num = ui->agent1Widget->children().size();
+    for (int i = 0; i < num; i++) {
+    }
 //    QPixmap pix1 = QPixmap(image1);
 //    ui->cards1Label->setPixmap(pix1.scaledToWidth(ui->cards1Label->width()));
 
@@ -53,25 +52,11 @@ void CipherCards::updata(std::vector<std::pair<int, int>> move)
 
     std::vector<Cipher> cards2;
     cards2.push_back(ciphers.at(1).at(agent_move.at(1)));
-    cards2.push_back(ciphers.at(1).at((agent_move.at(1) + 4) % 9));
 
     to_draw.push_back(cards1);
     to_draw.push_back(cards2);
 
     drawCards(to_draw);
-
-    printf("log");
-
-    // Pathを作成
-//    image1 = makePath(ciphers.at(0).at(agent_move.at(0)));
-//    image2 = makePath(ciphers.at(1).at(agent_move.at(1)));
-
-    // Labelに画像を貼り付ける
-//    QPixmap pix1 = QPixmap(image1);
-//    ui->cards1Label->setPixmap(pix1.scaledToWidth(ui->cards1Label->width()));
-
-//    QPixmap pix2 = QPixmap(image2);
-//    ui->cards2Label->setPixmap(pix2.scaledToWidth(ui->cards2Label->width()));
 }
 
 void CipherCards::setCipher(unsigned long int agent, unsigned long int pos, Cipher cip)
@@ -140,33 +125,30 @@ void CipherCards::drawCards(std::vector<std::vector<Cipher>> cards)
         // path保存用のvector
         std::vector<QString> paths;
 
-        // label保存用のvector
-        std::vector<QLabel*> agent_label;
-
+        // 各WidgetはQGridLayoutを使用
         QGridLayout *layout = new QGridLayout(wid);
 
         for (unsigned int num = 0; num < card_num; num++) {
-
             // Pathを作成
             QString path = makePath(cards.at(agent).at(num));
             paths.push_back(path);
 
-            // 新しいラベルを各Widget内に作成
+            // 新しいラベル
             QLabel *label = new QLabel;
 
-            layout->addWidget(label, num, 0, Qt::AlignRight);
+            // ラベルにobjectnameを設定する
+            QString object_name = "image" + QString::number(agent) + "_" + QString::number(num);
+            label->setObjectName(object_name);
 
             // Labelに画像を貼り付ける
             QPixmap pix = QPixmap(path);
             label->setPixmap(pix.scaledToWidth(wid->width() / card_num));
 
-            agent_label.push_back(label);
+            // 各Widget内に設置
+            layout->addWidget(label, 0, num, Qt::AlignLeft);
         }
 
         // エージェントのカードのPathを保存
         images.push_back(paths);
-
-        // エージェントごとのlabelを保存
-        labels.push_back(agent_label);
     }
 }
