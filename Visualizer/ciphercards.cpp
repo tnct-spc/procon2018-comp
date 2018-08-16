@@ -6,6 +6,10 @@ CipherCards::CipherCards(QWidget *parent) :
     ui(new Ui::CipherCards)
 {
     ui->setupUi(this);
+
+    // 新しいラベルを各Widget内に作成
+    QLabel *l = new QLabel(this);
+    l->setText(tr("hello"));
 }
 
 CipherCards::~CipherCards()
@@ -18,11 +22,11 @@ void CipherCards::resizeEvent(QResizeEvent *event)
     Q_UNUSED(event);
 
     // 画像をresize
-    QPixmap pix1 = QPixmap(image1);
-    ui->cards1Label->setPixmap(pix1.scaledToWidth(ui->cards1Label->width()));
+//    QPixmap pix1 = QPixmap(image1);
+//    ui->cards1Label->setPixmap(pix1.scaledToWidth(ui->cards1Label->width()));
 
-    QPixmap pix2 = QPixmap(image2);
-    ui->cards2Label->setPixmap(pix2.scaledToWidth(ui->cards2Label->width()));
+//    QPixmap pix2 = QPixmap(image2);
+//    ui->cards2Label->setPixmap(pix2.scaledToWidth(ui->cards2Label->width()));
 }
 
 void CipherCards::updata(std::vector<std::pair<int, int>> move)
@@ -41,16 +45,33 @@ void CipherCards::updata(std::vector<std::pair<int, int>> move)
         }
     }
 
+    std::vector<std::vector<Cipher>> to_draw;
+
+    std::vector<Cipher> cards1;
+    cards1.push_back(ciphers.at(0).at(agent_move.at(0)));
+    cards1.push_back(ciphers.at(0).at((agent_move.at(0) + 3) % 9));
+
+    std::vector<Cipher> cards2;
+    cards2.push_back(ciphers.at(1).at(agent_move.at(1)));
+    cards2.push_back(ciphers.at(1).at((agent_move.at(1) + 4) % 9));
+
+    to_draw.push_back(cards1);
+    to_draw.push_back(cards2);
+
+    drawCards(to_draw);
+
+    printf("log");
+
     // Pathを作成
-    image1 = makePath(ciphers.at(0).at(agent_move.at(0)));
-    image2 = makePath(ciphers.at(1).at(agent_move.at(1)));
+//    image1 = makePath(ciphers.at(0).at(agent_move.at(0)));
+//    image2 = makePath(ciphers.at(1).at(agent_move.at(1)));
 
     // Labelに画像を貼り付ける
-    QPixmap pix1 = QPixmap(image1);
-    ui->cards1Label->setPixmap(pix1.scaledToWidth(ui->cards1Label->width()));
+//    QPixmap pix1 = QPixmap(image1);
+//    ui->cards1Label->setPixmap(pix1.scaledToWidth(ui->cards1Label->width()));
 
-    QPixmap pix2 = QPixmap(image2);
-    ui->cards2Label->setPixmap(pix2.scaledToWidth(ui->cards2Label->width()));
+//    QPixmap pix2 = QPixmap(image2);
+//    ui->cards2Label->setPixmap(pix2.scaledToWidth(ui->cards2Label->width()));
 }
 
 void CipherCards::setCipher(unsigned long int agent, unsigned long int pos, Cipher cip)
@@ -92,7 +113,7 @@ QString CipherCards::makePath(Cipher card)
 
     // 数（頭悪そう）
     QString number;
-    if (card.num < 10) {
+    if (card.num < 9) {
         image_name += "0";
         image_name += number.setNum(card.num+1);
     } else {
@@ -102,4 +123,50 @@ QString CipherCards::makePath(Cipher card)
     image_name += ".gif";
 
     return image_name;
+}
+
+void CipherCards::drawCards(std::vector<std::vector<Cipher>> cards)
+{
+    for (unsigned int agent = 0; agent < 2; agent++) {
+        // そのエージェントのカード数を取得
+        unsigned int card_num = cards.at(agent).size();
+
+        // エージェントごとにWidgetを切り替える
+        // かっこ悪いので、あとでどうにかする
+        QWidget *wid;
+        if (agent == 0) wid = ui->agent1Widget;
+        else wid = ui->agent2Widget;
+
+        // path保存用のvector
+        std::vector<QString> paths;
+
+        // label保存用のvector
+        std::vector<QLabel*> agent_label;
+
+        QGridLayout *layout = new QGridLayout(wid);
+
+        for (unsigned int num = 0; num < card_num; num++) {
+
+            // Pathを作成
+            QString path = makePath(cards.at(agent).at(num));
+            paths.push_back(path);
+
+            // 新しいラベルを各Widget内に作成
+            QLabel *label = new QLabel;
+
+            layout->addWidget(label, num, 0, Qt::AlignRight);
+
+            // Labelに画像を貼り付ける
+            QPixmap pix = QPixmap(path);
+            label->setPixmap(pix.scaledToWidth(wid->width() / card_num));
+
+            agent_label.push_back(label);
+        }
+
+        // エージェントのカードのPathを保存
+        images.push_back(paths);
+
+        // エージェントごとのlabelを保存
+        labels.push_back(agent_label);
+    }
 }

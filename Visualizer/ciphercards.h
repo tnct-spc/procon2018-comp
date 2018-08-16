@@ -6,6 +6,7 @@
 #include <QPixmap>
 #include <QDir>
 #include <QResizeEvent>
+#include <QGridLayout>
 
 namespace Ui {
 class CipherCards;
@@ -52,11 +53,14 @@ private:
     // 暗号を設定
     void setCipher(unsigned long int agent, unsigned long int pos, Cipher cip);
 
+    // 0~53で渡された数字を対応するカードに変更
     Cipher changeIntToCipher(int card);
 
+    // カードを表示
+    void drawCards(std::vector<std::vector<Cipher>> cards);
+
     // Path
-    QString image1;
-    QString image2;
+    std::vector<std::vector<QString>> images;
 };
 
 #endif // CIPHERCARDS_H

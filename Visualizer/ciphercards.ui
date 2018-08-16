@@ -40,20 +40,6 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="2">
-    <widget class="QLabel" name="cards2Label">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="cards1Label">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="1">
     <spacer name="horizontalSpacer">
      <property name="orientation">
@@ -69,6 +55,12 @@
       </size>
      </property>
     </spacer>
+   </item>
+   <item row="1" column="0">
+    <widget class="QWidget" name="agent1Widget" native="true"/>
+   </item>
+   <item row="1" column="2">
+    <widget class="QWidget" name="agent2Widget" native="true"/>
    </item>
   </layout>
  </widget>
