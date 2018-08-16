@@ -502,6 +502,25 @@ void GameManager::changeTurn(bool update){
 
 }
 
+void GameManager::showAgentAct(bool side, std::tuple<int,int,int> move){
+    bool destroy = (std::get<0>(move) == 2);
+    std::pair<int,int> to;
+    to.first = std::get<1>(move);
+    to.second = std::get<2>(move);
+    int relative_move = (to.first*-1+1)+(to.second+1)*3;
+    if(side == 0){
+        relative_move = ((relative_move % 3)*-1+2)*3+relative_move/3;
+    }
+    else{
+        relative_move = (relative_move % 3)*3+(relative_move/3*-1+2);
+    }
+    if(destroy){
+        relative_move += 9;
+    }
+    Ui::CipherCards Cipher();
+    Cipher; changeIntToCipher(relative_move);
+}
+
 void GameManager::setAutoMode(bool value){
     is_auto = value;
 }

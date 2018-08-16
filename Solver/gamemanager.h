@@ -46,6 +46,8 @@ public:
 
     unsigned int getFinalTurn();
 
+    void showAgentAct(bool bside, std::tuple<int,int,int> move);
+
     void setAutoMode(bool value);
 
     void changeTurn(bool update = true);

@@ -59,7 +59,6 @@ void Visualizer::paintEvent(QPaintEvent *event){
             painter.drawLine(horizontal_margin,vertical_margin + grid_size * count, window_width - horizontal_margin, vertical_margin + grid_size * count);
 
     };
-
     auto drawTiles = [&]{
         for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
             for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
