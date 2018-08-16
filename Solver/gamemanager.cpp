@@ -8,6 +8,7 @@
 #include "BreadthFirstSearch/beamsearch.h"
 #include "geneticalgo/simplealgorithm.h"
 #include "doubleagent/agentmanager.h"
+#include "useabstractdata.h"
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
@@ -111,6 +112,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 0|(3<<16));
     }else if(QString::compare("EvaluateParam", my_algo) == 0){
         team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 1);
+    } else if (QString::compare("UseAbstractData", my_algo) == 0) {
+        team_1 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 0);
     }
 
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
@@ -133,6 +136,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 0|(3<<16));
     }else if(QString::compare("EvaluateParam", opponent_algo) == 0){
         team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 1);
+    } else if (QString::compare("UseAbstractData", opponent_algo) == 0) {
+        team_2 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 1);
     }
 
 
