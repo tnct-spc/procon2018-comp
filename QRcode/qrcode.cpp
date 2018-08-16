@@ -21,7 +21,7 @@ void QRCode::on_Start_clicked(){
 }
 
 std::string QRCode::decodeQRcode(){
-    VideoCapture cap(0);
+    cv::VideoCapture cap(0);
     if(!cap.isOpened()){
         std::cout<<"Can not connect to cammera."<<std::endl;
         ui->lineResult->setText("Can not connect to cammera.");
@@ -32,8 +32,8 @@ std::string QRCode::decodeQRcode(){
     std::string code = {"."};
     std::string type = {""};
 
-    ImageScanner scanner;
-    scanner.set_config(ZBAR_NONE,ZBAR_CFG_ENABLE,1);
+    zbar::ImageScanner scanner;
+    scanner.set_config(zbar::ZBAR_NONE,zbar::ZBAR_CFG_ENABLE,1);
 
     double width = cap.get(CV_CAP_PROP_FRAME_WIDTH);
     double height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
@@ -45,7 +45,7 @@ std::string QRCode::decodeQRcode(){
     resizedw = (width-height)/2;
 
     while(1){
-        Mat frame;
+        cv::Mat frame;
 
         bool success = cap.read(frame);
 
@@ -56,41 +56,40 @@ std::string QRCode::decodeQRcode(){
         }
         else ui->lineResult->setText("Ok");
 
-        Mat zframe(frame,Rect(resizedw,0,height,height));
-        Mat gray;
+        cv::Mat zframe(frame,cv::Rect(resizedw,0,height,height));
+        cv::Mat gray;
         cvtColor(zframe,gray,CV_BGR2GRAY);
 
         unsigned int zwidth = zframe.cols;
         unsigned int zheight = zframe.cols;
         uchar *raw = (uchar *)gray.data;
 
-        Image image(zwidth,zheight,"Y800",raw,zwidth*zheight);
+        zbar::Image image(zwidth,zheight,"Y800",raw,zwidth*zheight);
         int n = scanner.scan(image);
 
-        for(Image::SymbolIterator symbol = image.symbol_begin();symbol != image.symbol_end();++symbol){
-            std::vector<Point> vp;
+        for(zbar::Image::SymbolIterator symbol = image.symbol_begin();symbol != image.symbol_end();++symbol){
+            std::vector<cv::Point> vp;
 
             code = symbol->get_data();
             type = symbol->get_type_name();
             //std::cout<<symbol->get_type_name()<<" \""<<symbol->get_data()<<'"'<<std::endl;
             //on_Exit_clicked();
-            destroyWindow("Video Stream");
+            cv::destroyWindow("Video Stream");
             return code;
-            break;
             ui->lineType->setText(QString::fromStdString(symbol->get_type_name()));
 
             int n = symbol->get_location_size();
-            for(int i=0;i<n;i++)vp.push_back(Point(symbol->get_location_x(i),symbol->get_location_y(i)));
-            RotatedRect r = minAreaRect(vp);
-            Point2f pts[4];
+            for(int i=0;i<n;i++)vp.push_back(cv::Point(symbol->get_location_x(i),symbol->get_location_y(i)));
+            cv::RotatedRect r = minAreaRect(vp);
+            cv::Point2f pts[4];
             r.points(pts);
-            for(int i=0;i<4;i++)line(zframe,pts[i],pts[(i+1)%4],Scalar(255,0,0),3);
+            for(int i=0;i<4;i++)line(zframe,pts[i],pts[(i+1)%4],cv::Scalar(255,0,0),3);
             //std::cout<<"Angle:"<<r.angle<<std::endl;
             read_only_data = code;
             ui->lineCode->setText(QString::fromStdString(read_only_data));
         }
         imshow("Video Stream",zframe);
-        waitKey(1);
+        cv::waitKey(1);
         /*if(code != "."){
             ConvertCsvToField(read_only_data);
             ui->lineResult->setText("decoded");

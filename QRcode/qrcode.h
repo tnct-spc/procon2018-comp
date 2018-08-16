@@ -13,8 +13,8 @@
 #include <opencv2/opencv.hpp>
 #include <zbar.h>
 
-using namespace cv;
-using namespace zbar;
+//using namespace cv;
+//using namespace zbar;
 
 namespace Ui{
     class QRCode;
