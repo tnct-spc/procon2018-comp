@@ -14,8 +14,12 @@ public:
 
 private:
     bool checkMate = false;
-    bool calc(procon::Field field, int depth);
-    procon::Field moveAgent(std::shared_ptr<procon::Field> field, std::vector<int> act);
+    bool calc(procon::Field field,int depth);
+    procon::Field moveAgent(procon::Field field, std::vector<int> act);
+
+    std::pair<int,int> ans;
+
+    int now_turn;
 };
 
 #endif // LASTFORCE_H
