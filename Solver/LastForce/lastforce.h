@@ -18,8 +18,7 @@ private:
     procon::Field moveAgent(procon::Field field, std::vector<int> act);
 
     std::pair<int,int> ans;
-
-    int now_turn;
+    int count = 0;
 };
 
 #endif // LASTFORCE_H

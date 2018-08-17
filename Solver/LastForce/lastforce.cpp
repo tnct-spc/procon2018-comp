@@ -2,14 +2,25 @@
 
 
 const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> LastForce::agentAct(int){
+
+    std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
+    std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
+
+    std::cout<<"詰め"<<std::endl;
+
+    calc(field,0);
     if(checkMate){
-
+        std::cout<<"勝利が確定しました"<<std::endl;
+        return std::make_pair(std::make_tuple(ans.first/9+1,x_list[ans.first%9],y_list[ans.first%9]),std::make_tuple(ans.second/9+1,x_list[ans.second%9],y_list[ans.second%9]));
+    }else{
+        std::cout<<"不詰みです"<<std::endl;
+        return std::make_pair(std::make_tuple(0,0,0),std::make_tuple(0,0,0));
     }
-
 }
-bool LastForce::calc(procon::Field field,int depth){
-    if(field.getTurnCount() == field.getFinalTurn()){
-        std::vector<std::pair<int,int>> points = field.getPoints(true);
+bool LastForce::calc(procon::Field ins_field,int depth){
+   // std::cout<<ins_field.getTurnCount()<<" "<<depth<<" "<<ins_field.getFinalTurn()<<std::endl;
+    if(ins_field.getTurnCount() + depth + 1 == ins_field.getFinalTurn()){
+        std::vector<std::pair<int,int>> points = ins_field.getPoints(true);
         return points.at(0).first + points.at(0).second > points.at(1).first + points.at(1).second;
     }
     for(int a = 0;a < 17;a++){
@@ -18,21 +29,28 @@ bool LastForce::calc(procon::Field field,int depth){
             for(int c = 0;c < 17;c++){
                 for(int d = 0;d < 17;d++){
                     std::vector<int> vec = {a,b,c,d};
-                    if(!calc(moveAgent(field,vec),depth + 1)){
+                    if(!calc(moveAgent(ins_field,vec),depth + 1)){
                         result = false;
+                  //      count++;
+                    //    std::cout<<count<<std::endl;
                         break;
+
                     }
                 }
                 if(!result)break;
             }
-            if(result){
+            if(result && depth == 0){
                 ans.first = a;
                 ans.second = b;
                 checkMate = true;
                 return true;
             }
+            if(result){
+                return true;
+            }
         }
     }
+    return false;
 }
 
 procon::Field LastForce::moveAgent(procon::Field field, std::vector<int> act){
@@ -40,7 +58,7 @@ procon::Field LastForce::moveAgent(procon::Field field, std::vector<int> act){
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
 
-    std::vector<std::vector<std::tuple<int,int,int>>> act_stack;
+    std::vector<std::vector<std::tuple<int,int,int>>> act_stack(2, std::vector<std::tuple<int,int,int>>(2));
     auto agentAct = [&](const int turn, const int agent, const std::tuple<int, int, int> tuple_val){
 
         int type, x_inp, y_inp;
@@ -138,7 +156,6 @@ procon::Field LastForce::moveAgent(procon::Field field, std::vector<int> act){
                 field.setAgent(moves.second.second.first, moves.second.second.second, moves.first.first, moves.first.second);
         }
 
-        field.setTurnCount(field.getTurnCount() + 1);
 
     };
     auto making_tuple = [&](int act_num){

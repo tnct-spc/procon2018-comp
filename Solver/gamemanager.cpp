@@ -9,6 +9,7 @@
 #include "geneticalgo/simplealgorithm.h"
 #include "doubleagent/agentmanager.h"
 #include "useabstractdata.h"
+#include "LastForce/lastforce.h"
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
@@ -173,6 +174,9 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             th1.join();
             th2.join();
             */
+            if(getFinalTurn() - getTurnCount() == 3){
+                team_1 = std::make_shared<LastForce>(*field, field->getFinalTurn(), 0);
+            }
 
             team_1_ans = team_1->agentAct(0);
             team_2_ans = team_2->agentAct(1);
