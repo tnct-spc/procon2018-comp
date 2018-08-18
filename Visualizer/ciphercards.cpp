@@ -18,14 +18,38 @@ void CipherCards::resizeEvent(QResizeEvent *event)
     Q_UNUSED(event);
 
     // 画像をresize
-    int num = ui->agent1Widget->children().size();
-    for (int i = 0; i < num; i++) {
-    }
-//    QPixmap pix1 = QPixmap(image1);
-//    ui->cards1Label->setPixmap(pix1.scaledToWidth(ui->cards1Label->width()));
 
-//    QPixmap pix2 = QPixmap(image2);
-//    ui->cards2Label->setPixmap(pix2.scaledToWidth(ui->cards2Label->width()));
+    // agent1
+    // ラベルの数。layoutの文は引く
+    int num = ui->agent1Widget->children().size() - 1;
+
+    for (int i = 0; i < num; i++) {
+        // 保存していた画像を貼り直す
+        QPixmap pix = QPixmap(images.at(0).at(i));
+
+        // objectNameからLabelを探す
+        QString object_name = "image0_" + QString::number(i);
+        QLabel *label = ui->agent1Widget->findChild<QLabel *>(object_name);
+
+        // Widgetの横幅に合わせる
+        label->setPixmap(pix.scaledToWidth(ui->agent1Widget->width() / num - 5));
+    }
+
+    // agent2
+    // ラベルの数。layoutの文は引く
+    num = ui->agent2Widget->children().size() - 1;
+
+    for (int i = 0; i < num; i++) {
+        // 保存していた画像を貼り直す
+        QPixmap pix = QPixmap(images.at(0).at(i));
+
+        // objectNameからLabelを探す
+        QString object_name = "image1_" + QString::number(i);
+        QLabel *label = ui->agent2Widget->findChild<QLabel *>(object_name);
+
+        // Widgetの横幅に合わせる
+        label->setPixmap(pix.scaledToWidth(ui->agent2Widget->width() / num - 5));
+    }
 }
 
 void CipherCards::updata(std::vector<std::pair<int, int>> move)
@@ -44,6 +68,7 @@ void CipherCards::updata(std::vector<std::pair<int, int>> move)
         }
     }
 
+    // test用
     std::vector<std::vector<Cipher>> to_draw;
 
     std::vector<Cipher> cards1;
@@ -67,6 +92,13 @@ void CipherCards::setCipher(unsigned long int agent, unsigned long int pos, Ciph
 CipherCards::Cipher CipherCards::changeIntToCipher(int card)
 {
     Cipher cip;
+
+    // 範囲外の数字が来たらerrorを返す
+    if ((card < 0) || (card > 53)) {
+        std::cout << "argument is not true." << std::endl;
+        return cip = {Error, -1};
+    }
+
     cip.mark = static_cast<CardType>(card / 13);
     cip.num = (card - cip.mark * 13) % 13;
 
@@ -94,9 +126,19 @@ QString CipherCards::makePath(Cipher card)
         case Joker:
             image_name += "x";
             break;
+        case Error:
+            std::cout << "cardType is not true." << std::endl;
+            return NULL;
     }
 
     // 数（頭悪そう）
+
+    // 範囲外ならNULLを返す
+    if ((card.num < 0) || (card.num > 13)) {
+        std::cout<< "cardNumber is not true." << std::endl;
+        return NULL;
+    }
+
     QString number;
     if (card.num < 9) {
         image_name += "0";
@@ -127,6 +169,10 @@ void CipherCards::drawCards(std::vector<std::vector<Cipher>> cards)
 
         // 各WidgetはQGridLayoutを使用
         QGridLayout *layout = new QGridLayout(wid);
+
+        // marginをなくす
+        layout->setMargin(0);
+        layout->setSpacing(0);
 
         for (unsigned int num = 0; num < card_num; num++) {
             // Pathを作成

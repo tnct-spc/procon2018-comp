@@ -1,6 +1,7 @@
 #ifndef CIPHERCARDS_H
 #define CIPHERCARDS_H
 
+#include <iostream>
 #include <QWidget>
 #include <QLabel>
 #include <QPixmap>
@@ -34,6 +35,7 @@ private:
         Club,
         Spade,
         Joker,
+        Error = -1,
     };
 
     // 暗号
