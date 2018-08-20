@@ -518,7 +518,7 @@ void GameManager::showAgentAct(bool side, std::tuple<int,int,int> move){
         relative_move += 9;
     }
     Ui::CipherCards Cipher();
-    Cipher; changeIntToCipher(relative_move);
+    Cipher changeIntToCipher(relative_move);
 }
 
 void GameManager::setAutoMode(bool value){
