@@ -1,36 +1,20 @@
 #include "qrcode.h"
-#include "ui_qrcode.h"
 
-QRCode::QRCode(QWidget *parent):
-    QWidget(parent),
-    ui(new Ui::QRCode){
-    ui->setupUi(this);
-    ui->lineResult->setText("Push Start button.");
-    QRCode::decodeQRcode();
+QRCode::QRCode(){
 }
 
 QRCode::~QRCode(){
-    delete ui;
-}
-
-
-
-void QRCode::on_Start_clicked(){
-    this->clearAll();
-    QRCode::decodeQRcode();
 }
 
 std::string QRCode::decodeQRcode(){
     cv::VideoCapture cap(0);
     if(!cap.isOpened()){
         std::cout<<"Can not connect to cammera."<<std::endl;
-        ui->lineResult->setText("Can not connect to cammera.");
         while(!cap.isOpened()){}
     }
 
     int resizedw;
     std::string code = {"."};
-    std::string type = {""};
 
     zbar::ImageScanner scanner;
     scanner.set_config(zbar::ZBAR_NONE,zbar::ZBAR_CFG_ENABLE,1);
@@ -38,23 +22,16 @@ std::string QRCode::decodeQRcode(){
     double width = cap.get(CV_CAP_PROP_FRAME_WIDTH);
     double height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
 
-    std::cout<<"Size::"<<width<<"x"<<height<<std::endl;
-    ui->lineWidth->setText(QString::fromStdString(std::to_string(width)));
-    ui->lineHeight->setText(QString::fromStdString(std::to_string(height)));
-
     resizedw = (width-height)/2;
 
     while(1){
         cv::Mat frame;
-
         bool success = cap.read(frame);
 
         if(!success){
             std::cout<<"Can not read a frame from video stream."<<std::endl;
-            ui->lineResult->setText("Can not read a frame from video stream.");
             break;
         }
-        else ui->lineResult->setText("Ok");
 
         cv::Mat zframe(frame,cv::Rect(resizedw,0,height,height));
         cv::Mat gray;
@@ -67,48 +44,15 @@ std::string QRCode::decodeQRcode(){
         zbar::Image image(zwidth,zheight,"Y800",raw,zwidth*zheight);
         int n = scanner.scan(image);
 
-        for(zbar::Image::SymbolIterator symbol = image.symbol_begin();symbol != image.symbol_end();++symbol){
-            std::vector<cv::Point> vp;
+        for(zbar::Image::SymbolIterator symbol = image.symbol_begin();symbol != image.symbol_end();++symbol)code = symbol->get_data();
 
-            code = symbol->get_data();
-            type = symbol->get_type_name();
-            //std::cout<<symbol->get_type_name()<<" \""<<symbol->get_data()<<'"'<<std::endl;
-            //on_Exit_clicked();
-            cv::destroyWindow("Video Stream");
-            return code;
-            ui->lineType->setText(QString::fromStdString(symbol->get_type_name()));
-
-            int n = symbol->get_location_size();
-            for(int i=0;i<n;i++)vp.push_back(cv::Point(symbol->get_location_x(i),symbol->get_location_y(i)));
-            cv::RotatedRect r = minAreaRect(vp);
-            cv::Point2f pts[4];
-            r.points(pts);
-            for(int i=0;i<4;i++)line(zframe,pts[i],pts[(i+1)%4],cv::Scalar(255,0,0),3);
-            //std::cout<<"Angle:"<<r.angle<<std::endl;
-            read_only_data = code;
-            ui->lineCode->setText(QString::fromStdString(read_only_data));
-        }
         imshow("Video Stream",zframe);
         cv::waitKey(1);
-        /*if(code != "."){
-            ConvertCsvToField(read_only_data);
-            ui->lineResult->setText("decoded");
-            std::cout<<"decoded"<<std::endl;
-            destroyWindow("Video Stream");
+        if(code != "."){
+            cv::destroyWindow("Video Stream");
             break;
-        }*/
+        }
+
     }
     return code;
-}
-
-void  QRCode::on_Exit_clicked(){
-    exit(0);
-}
-
-void QRCode::clearAll(){
-    ui->lineWidth->clear();
-    ui->lineHeight->clear();
-    ui->lineType->clear();
-    ui->lineResult->clear();
-    ui->lineCode->clear();
 }

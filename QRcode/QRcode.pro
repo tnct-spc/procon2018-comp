@@ -31,9 +31,6 @@ HEADERS += \
         qrcode_global.h \
         qrconverterfield.h
 
-FORMS += \
-    qrcode.ui
-
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
 DEPENDPATH += $$PWD/../Field
