@@ -14,11 +14,11 @@ public:
 
 private:
     bool checkMate = false;
-    bool calc(procon::Field field,int depth);
+    bool calc(procon::Field field,int depth,int a, int b);
     procon::Field moveAgent(procon::Field field, std::vector<int> act);
 
     std::pair<int,int> ans;
-    int count = 0;
+    std::vector<std::vector<int>> winner;
 };
 
 #endif // LASTFORCE_H

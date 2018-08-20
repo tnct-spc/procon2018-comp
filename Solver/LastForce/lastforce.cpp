@@ -2,61 +2,88 @@
 
 
 const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> LastForce::agentAct(int){
-
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
-    std::cout<<"詰め"<<std::endl;
+    winner = std::vector<std::vector<int>>(18,std::vector<int>(18,0));
 
-    calc(field,0);
+    //std::cout<<"詰め"<<std::endl;
+
+    calc(field,0,0,0);
+
     if(checkMate){
         std::cout<<"勝利が確定しました"<<std::endl;
+        std::cout<<ans.first <<" "<<ans.second<<std::endl;
         return std::make_pair(std::make_tuple(ans.first/9+1,x_list[ans.first%9],y_list[ans.first%9]),std::make_tuple(ans.second/9+1,x_list[ans.second%9],y_list[ans.second%9]));
     }else{
         std::cout<<"不詰みです"<<std::endl;
-        return std::make_pair(std::make_tuple(0,0,0),std::make_tuple(0,0,0));
+        int co = -1;
+        for(int a = 0;a < 17;a++){
+            for(int b = 0;b < 17;b++){
+                if(co < winner.at(a).at(b)){
+                    co = winner.at(a).at(b);
+                    ans.first = a;
+                    ans.second = b;
+                }
+            }
+        }
+        std::cout<<ans.first <<" "<<ans.second<<std::endl;
+        return std::make_pair(std::make_tuple(ans.first/9+1,x_list[ans.first%9],y_list[ans.first%9]),std::make_tuple(ans.second/9+1,x_list[ans.second%9],y_list[ans.second%9]));
     }
 }
-bool LastForce::calc(procon::Field ins_field,int depth){
+bool LastForce::calc(procon::Field ins_field,int depth,int x,int y){
    // std::cout<<ins_field.getTurnCount()<<" "<<depth<<" "<<ins_field.getFinalTurn()<<std::endl;
-    if(ins_field.getTurnCount() + depth + 1 == ins_field.getFinalTurn()){
+    if(ins_field.getTurnCount() + depth  == ins_field.getFinalTurn()){
         std::vector<std::pair<int,int>> points = ins_field.getPoints(true);
-        return points.at(0).first + points.at(0).second > points.at(1).first + points.at(1).second;
+        bool result = points.at(0).first + points.at(0).second > points.at(1).first + points.at(1).second;
+        if(result){
+            winner.at(x).at(y) +=  points.at(0).first + points.at(0).second - points.at(1).first + points.at(1).second;
+        }
+        return result;
     }
-    for(int a = 0;a < 17;a++){
-        for(int b = 0;b < 17;b++){
+    bool result_hoge = false;
+    for(int a = 0;a < 18;a++){
+        for(int b = 0;b < 18;b++){
             bool result = true;
-            for(int c = 0;c < 17;c++){
-                for(int d = 0;d < 17;d++){
+            for(int c = 0;c < 18;c++){
+                for(int d = 0;d < 18;d++){
                     std::vector<int> vec = {a,b,c,d};
-                    if(!calc(moveAgent(ins_field,vec),depth + 1)){
-                        result = false;
-                  //      count++;
-                    //    std::cout<<count<<std::endl;
-                        break;
-
+                    if(depth == 0){
+                        if(!calc(moveAgent(ins_field,vec),depth+1,a,b)){
+                            result = false;
+                    //      count++;
+                      //    std::cout<<count<<std::endl;
+                          //  break;
+                        }
+                    }else{
+                        if(!calc(moveAgent(ins_field,vec),depth + 1,x,y)){
+                            result = false;
+                    //      count++;
+                      //    std::cout<<count<<std::endl;
+                        //    break;
+                        }
                     }
                 }
-                if(!result)break;
+              //  if(!result)break;
             }
             if(result && depth == 0){
                 ans.first = a;
                 ans.second = b;
                 checkMate = true;
-                return true;
+                result_hoge = true;
             }
             if(result){
-                return true;
+               result_hoge = true;
             }
         }
     }
-    return false;
+    return result_hoge;
 }
 
 procon::Field LastForce::moveAgent(procon::Field field, std::vector<int> act){
+
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
-
 
     std::vector<std::vector<std::tuple<int,int,int>>> act_stack(2, std::vector<std::tuple<int,int,int>>(2));
     auto agentAct = [&](const int turn, const int agent, const std::tuple<int, int, int> tuple_val){

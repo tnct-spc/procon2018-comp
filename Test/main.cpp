@@ -1,6 +1,7 @@
 #include <iostream>
 #include "testagentparam.h"
 #include "testevaluatespeed.h"
+#include "testlastforce.h"
 
 int main()
 {
@@ -30,13 +31,13 @@ int main()
         std::cout << "0 : runFix" << std::endl;
         std::cout << "1 : runRand" << std::endl;
         std::cout << "2 : runDoubleRand" << std::endl;
-
+        std::cout << "3 : LastForce" << std::endl;
         while(1){
 
             std::cout << "test number : ";
             std::cin >> test_number;
 
-            if(test_number >= 0 && test_number <= 2)
+            if(test_number >= 0 && test_number <= 3)
                 break;
 
             std::cout << "incorrect" << std::endl;
@@ -46,6 +47,10 @@ int main()
             test.runFix();
         if(test_number == 1 || test_number == 2)
             test.runRand( (test_number == 2) );
+        else if(test_number == 3){
+            TestLastForce test;
+            test.run();
+            }
     }
     else if(test_number == 1){
 
