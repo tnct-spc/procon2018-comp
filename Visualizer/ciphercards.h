@@ -1,15 +1,43 @@
 #ifndef CIPHERCARDS_H
 #define CIPHERCARDS_H
 
+#include <iostream>
 #include <QWidget>
 #include <QLabel>
 #include <QPixmap>
 #include <QDir>
 #include <QResizeEvent>
+#include <QGridLayout>
 
 namespace Ui {
 class CipherCards;
 }
+
+namespace procon{
+    // カード
+    enum CardType {
+        Heart,
+        Dia,
+        Club,
+        Spade,
+        Joker,
+        Error = -1,
+    };
+
+    // 暗号
+    struct Cipher {
+        CardType mark;
+        int num;
+    };
+
+    // 0~53で渡された数字を対応するカードに変更
+    Cipher changeIntToCipher(int card);
+
+    // PathのStringを作成
+    QString makePath(procon::Cipher card);
+
+
+};
 
 class CipherCards : public QWidget
 {
@@ -26,34 +54,20 @@ private:
     Ui::CipherCards *ui;
     void resizeEvent(QResizeEvent *event);
 
-    // カード
-    enum CardType {
-        Heart,
-        Dia,
-        Club,
-        Spade,
+    std::vector<std::vector<procon::Cipher>> ciphers = {
+        {{procon::Heart, 1}, {procon::Heart, 2}, {procon::Heart, 3}, {procon::Heart, 4}, {procon::Heart, 5}, {procon::Heart, 6}, {procon::Heart, 7}, {procon::Heart, 8}, {procon::Heart, 9}},
+        {{procon::Dia, 1}, {procon::Dia, 2}, {procon::Dia, 3}, {procon::Dia, 4}, {procon::Dia, 5}, {procon::Dia, 6}, {procon::Dia, 7}, {procon::Dia, 8}, {procon::Dia, 9}},
     };
-
-    // 暗号
-    struct Cipher {
-        CardType mark;
-        int num;
-    };
-
-    std::vector<std::vector<Cipher>> ciphers = {
-        {{Heart, 1}, {Heart, 2}, {Heart, 3}, {Heart, 4}, {Heart, 5}, {Heart, 6}, {Heart, 7}, {Heart, 8}, {Heart, 9}},
-        {{Dia, 1}, {Dia, 2}, {Dia, 3}, {Dia, 4}, {Dia, 5}, {Dia, 6}, {Dia, 7}, {Dia, 8}, {Dia, 9}},
-    };
-
-    // PathのStringを作成
-    QString makePath(Cipher card);
 
     // 暗号を設定
-    void setCipher(unsigned long int agent, unsigned long int pos, Cipher cip);
+    void setCipher(unsigned long int agent, unsigned long int pos, procon::Cipher cip);
+
+    // カードを表示
+    void drawCards(std::vector<std::vector<procon::Cipher>> cards);
 
     // Path
-    QString image1;
-    QString image2;
+    std::vector<std::vector<QString>> images;
 };
+
 
 #endif // CIPHERCARDS_H

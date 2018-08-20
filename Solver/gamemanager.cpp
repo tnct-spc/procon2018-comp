@@ -8,6 +8,7 @@
 #include "BreadthFirstSearch/beamsearch.h"
 #include "geneticalgo/simplealgorithm.h"
 #include "doubleagent/agentmanager.h"
+#include "useabstractdata.h"
 
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
@@ -111,6 +112,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 0|(3<<16));
     }else if(QString::compare("EvaluateParam", my_algo) == 0){
         team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 1);
+    } else if (QString::compare("UseAbstractData", my_algo) == 0) {
+        team_1 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 0);
     }
 
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
@@ -133,6 +136,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 0|(3<<16));
     }else if(QString::compare("EvaluateParam", opponent_algo) == 0){
         team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 1);
+    } else if (QString::compare("UseAbstractData", opponent_algo) == 0) {
+        team_2 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 1);
     }
 
 
@@ -210,7 +215,6 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         // progresdock->show();
 
     }else{
-
         ciphercard = std::make_shared<CipherCards>();
         ciphercard->show();
 
@@ -349,7 +353,6 @@ void GameManager::agentAct(const int turn, const int agent, const std::tuple<int
 
     int type, x_inp, y_inp;
     std::tie(type, x_inp, y_inp) = tuple_val;
-
 
     std::pair<int,int> agent_pos = field->getAgent(turn, agent);
     std::pair<int,int> grid_size = field->getSize();
@@ -517,8 +520,7 @@ void GameManager::showAgentAct(bool side, std::tuple<int,int,int> move){
     if(destroy){
         relative_move += 9;
     }
-    Ui::CipherCards Cipher();
-    Cipher changeIntToCipher(relative_move);
+    procon::Cipher cipher = procon::changeIntToCipher(relative_move);
 }
 
 void GameManager::setAutoMode(bool value){

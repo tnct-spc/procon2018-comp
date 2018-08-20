@@ -22,6 +22,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+CONFIG += precompile_header
+PRECOMPILED_HEADER = $$PWD/../precompile/precompile.h
+precompile_header:!isEmpty(PRECOMPILED_HEADER) {
+    DEFINES += USING_PCH
+}
+INCLUDEPATH += $$PWD/../precompile
+DEPENDPATH += $$PWD/../precompile
+
 SOURCES += \
     BreadthFirstSearch/beamsearch.cpp \
         dummyalgorithm.cpp \
@@ -37,7 +45,9 @@ SOURCES += \
     doubleagent/agents/testdoubleagentalgo.cpp \
     doubleagent/agents/evaluateparam.cpp \
     doubleagent/algorithms/simplemcforduble.cpp \
-    doubleagent/algorithms/nashequilibrium.cpp
+    doubleagent/algorithms/nashequilibrium.cpp \
+    useabstractdata.cpp \
+    doubleagent/agents/directionbasedalgo.cpp
 HEADERS += \
         algorithm_global.h \ 
         testalgorithm.h \
@@ -58,7 +68,9 @@ HEADERS += \
     doubleagent/agents/testdoubleagentalgo.h \
     doubleagent/agents/evaluateparam.h \
     doubleagent/algorithms/simplemcforduble.h \
-    doubleagent/algorithms/nashequilibrium.h
+    doubleagent/algorithms/nashequilibrium.h \
+    useabstractdata.h \
+    doubleagent/agents/directionbasedalgo.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

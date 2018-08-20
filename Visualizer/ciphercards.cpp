@@ -18,11 +18,38 @@ void CipherCards::resizeEvent(QResizeEvent *event)
     Q_UNUSED(event);
 
     // 画像をresize
-    QPixmap pix1 = QPixmap(image1);
-    ui->cards1Label->setPixmap(pix1.scaledToWidth(ui->cards1Label->width()));
 
-    QPixmap pix2 = QPixmap(image2);
-    ui->cards2Label->setPixmap(pix2.scaledToWidth(ui->cards2Label->width()));
+    // agent1
+    // ラベルの数。layoutの文は引く
+    int num = ui->agent1Widget->children().size() - 1;
+
+    for (int i = 0; i < num; i++) {
+        // 保存していた画像を貼り直す
+        QPixmap pix = QPixmap(images.at(0).at(i));
+
+        // objectNameからLabelを探す
+        QString object_name = "image0_" + QString::number(i);
+        QLabel *label = ui->agent1Widget->findChild<QLabel *>(object_name);
+
+        // Widgetの横幅に合わせる
+        label->setPixmap(pix.scaledToWidth(ui->agent1Widget->width() / num - 5));
+    }
+
+    // agent2
+    // ラベルの数。layoutの文は引く
+    num = ui->agent2Widget->children().size() - 1;
+
+    for (int i = 0; i < num; i++) {
+        // 保存していた画像を貼り直す
+        QPixmap pix = QPixmap(images.at(0).at(i));
+
+        // objectNameからLabelを探す
+        QString object_name = "image1_" + QString::number(i);
+        QLabel *label = ui->agent2Widget->findChild<QLabel *>(object_name);
+
+        // Widgetの横幅に合わせる
+        label->setPixmap(pix.scaledToWidth(ui->agent2Widget->width() / num - 5));
+    }
 }
 
 void CipherCards::updata(std::vector<std::pair<int, int>> move)
@@ -41,24 +68,79 @@ void CipherCards::updata(std::vector<std::pair<int, int>> move)
         }
     }
 
-    // Pathを作成
-    image1 = makePath(ciphers.at(0).at(agent_move.at(0)));
-    image2 = makePath(ciphers.at(1).at(agent_move.at(1)));
+    // test用
+    std::vector<std::vector<procon::Cipher>> to_draw;
 
-    // Labelに画像を貼り付ける
-    QPixmap pix1 = QPixmap(image1);
-    ui->cards1Label->setPixmap(pix1.scaledToWidth(ui->cards1Label->width()));
+    std::vector<procon::Cipher> cards1;
+    cards1.push_back(ciphers.at(0).at(agent_move.at(0)));
+    cards1.push_back(ciphers.at(0).at((agent_move.at(0) + 3) % 9));
 
-    QPixmap pix2 = QPixmap(image2);
-    ui->cards2Label->setPixmap(pix2.scaledToWidth(ui->cards2Label->width()));
+    std::vector<procon::Cipher> cards2;
+    cards2.push_back(ciphers.at(1).at(agent_move.at(1)));
+
+    to_draw.push_back(cards1);
+    to_draw.push_back(cards2);
+
+    drawCards(to_draw);
 }
 
-void CipherCards::setCipher(unsigned long int agent, unsigned long int pos, Cipher cip)
+void CipherCards::setCipher(unsigned long int agent, unsigned long int pos, procon::Cipher cip)
 {
     ciphers.at(agent).at(pos) = cip;
 }
 
-QString CipherCards::makePath(Cipher card)
+void CipherCards::drawCards(std::vector<std::vector<procon::Cipher>> cards)
+{
+    for (unsigned int agent = 0; agent < 2; agent++) {
+        // そのエージェントのカード数を取得
+        unsigned int card_num = cards.at(agent).size();
+
+        // エージェントごとにWidgetを切り替える
+        // かっこ悪いので、あとでどうにかする
+        QWidget *wid;
+        if (agent == 0) wid = ui->agent1Widget;
+        else wid = ui->agent2Widget;
+
+        // path保存用のvector
+        std::vector<QString> paths;
+
+        // 各WidgetはQGridLayoutを使用
+        QGridLayout *layout = new QGridLayout(wid);
+
+        // marginをなくす
+        layout->setMargin(0);
+        layout->setSpacing(0);
+
+        for (unsigned int num = 0; num < card_num; num++) {
+            // Pathを作成
+            QString path = makePath(cards.at(agent).at(num));
+            paths.push_back(path);
+
+            // 新しいラベル
+            QLabel *label = new QLabel;
+
+            // ラベルにobjectnameを設定する
+            QString object_name = "image" + QString::number(agent) + "_" + QString::number(num);
+            label->setObjectName(object_name);
+
+            // Labelに画像を貼り付ける
+            QPixmap pix = QPixmap(path);
+            label->setPixmap(pix.scaledToWidth(wid->width() / card_num));
+
+            // 各Widget内に設置
+            layout->addWidget(label, 0, num, Qt::AlignLeft);
+        }
+
+        // エージェントのカードのPathを保存
+        images.push_back(paths);
+    }
+}
+
+
+
+
+
+QString procon::makePath(procon::Cipher card)
 {
     QString image_name = "./../../procon2018-comp/Visualizer/cards/";
 
@@ -76,18 +158,47 @@ QString CipherCards::makePath(Cipher card)
         case Spade:
             image_name += "s";
             break;
+        case Joker:
+            image_name += "x";
+            break;
+        case Error:
+            std::cout << "cardType is not true." << std::endl;
+            return NULL;
     }
 
     // 数（頭悪そう）
+
+    // 範囲外ならNULLを返す
+    if ((card.num < 0) || (card.num > 13)) {
+        std::cout<< "cardNumber is not true." << std::endl;
+        return NULL;
+    }
+
     QString number;
-    if (card.num < 10) {
+    if (card.num < 9) {
         image_name += "0";
-        image_name += number.setNum(card.num);
+        image_name += number.setNum(card.num+1);
     } else {
-        image_name += number.setNum(card.num);
+        image_name += number.setNum(card.num+1);
     }
 
     image_name += ".gif";
 
     return image_name;
+}
+
+procon::Cipher procon::changeIntToCipher(int card)
+{
+    procon::Cipher cip;
+
+    // 範囲外の数字が来たらerrorを返す
+    if ((card < 0) || (card > 53)) {
+        std::cout << "argument is not true." << std::endl;
+        return cip = {Error, -1};
+    }
+
+    cip.mark = static_cast<procon::CardType>(card / 13);
+    cip.num = (card - cip.mark * 13) % 13;
+
+    return cip;
 }
