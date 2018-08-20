@@ -109,8 +109,8 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
             }
         }
 
-        std::uniform_int_distribution<> random_x(0,(grid_x - 1) / 2);
-        std::uniform_int_distribution<> random_y(0,(grid_y - 1) / 2);
+        std::uniform_int_distribution<> random_x(0,grid_x / 2 - 1);
+        std::uniform_int_distribution<> random_y(0,grid_y / 2 - 1);
 
         int agent_x = random_x(mt);
         int agent_y = random_y(mt);
@@ -134,7 +134,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         }
 
         std::uniform_int_distribution<> random_x(0,grid_x - 1);
-        std::uniform_int_distribution<> random_y(0,(grid_y - 1) / 2);
+        std::uniform_int_distribution<> random_y(0,grid_y / 2 - 1);
 
         int agent_x = random_x(mt);
         int agent_y = random_y(mt);
@@ -163,7 +163,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
             }
         }
 
-        std::uniform_int_distribution<> random_x(0,(grid_x - 1) / 2);
+        std::uniform_int_distribution<> random_x(0,grid_x / 2 - 1);
         std::uniform_int_distribution<> random_y(0,grid_y - 1);
 
         int agent_x = random_x(mt);
@@ -392,6 +392,10 @@ int procon::Field::getFinalTurn(){
 }
 
 void procon::Field::setTurnCount(int turn_count){
+    if(turn_count > final_turn){
+        std::cerr<<"ERROR : 終了ターンを超えたturnを設定しようとしています"<<std::endl;
+        std::abort();
+    }
     now_turn = turn_count;
 }
 
@@ -427,6 +431,10 @@ std::pair<int,int> procon::Field::getAgent(const unsigned int side, const unsign
 
 //pair<タイル状況,評価値>を返す
 std::pair<int,int> procon::Field::getState(const unsigned int x, const unsigned int y) const{
+    if(!(0 <= x && x <= grid_x - 1 && 0 <= y && y <= grid_y - 1)){
+        std::cerr<<"ERROR : getStateにて盤面外を指定しています!!"<<std::endl;
+        std::abort();
+    }
     std::bitset<288> w(0uL);
     w |= field_data >> (2*(12*y+x));
     w &= 3;
@@ -434,6 +442,10 @@ std::pair<int,int> procon::Field::getState(const unsigned int x, const unsigned 
 }
 
 void procon::Field::setState(const unsigned int x, const unsigned int y, const unsigned int state){
+    if(!(0 <= x && x <= grid_x - 1 && 0 <= y && y <= grid_y - 1)){
+        std::cerr<<"ERROR :  setStateにて盤面外を指定しています!!"<<std::endl;
+        std::abort();
+    }
     std::bitset<288> w = 3;
     field_data &= ~( w << (2*(12*y+x)));
     w = state;
@@ -1165,5 +1177,3 @@ std::vector<double> procon::Field::calcSituationFeature(std::pair<std::tuple<int
     */
     return ans;
 }
-
-

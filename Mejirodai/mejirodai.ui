@@ -239,6 +239,11 @@
       </item>
       <item>
        <property name="text">
+        <string>UseAbstractData</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>DoubleAgentWithNash</string>
        </property>
       </item>
@@ -295,6 +300,11 @@
       <item>
        <property name="text">
         <string>GeneticAlgo</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>UseAbstractData</string>
        </property>
       </item>
       <item>
@@ -373,7 +383,7 @@
      <x>0</x>
      <y>0</y>
      <width>928</width>
-     <height>30</height>
+     <height>18</height>
     </rect>
    </property>
   </widget>
