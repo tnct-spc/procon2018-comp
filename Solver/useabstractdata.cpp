@@ -75,7 +75,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 
         value /= cnt;
 
-        if(state == side + 1)
+        if(cnt > 1)
             value *= diagonal_move;
 
         calc_value_func(value, state == side + 1, field.getState(pos.at(0), pos.at(1)).second);
