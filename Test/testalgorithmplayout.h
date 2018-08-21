@@ -4,6 +4,11 @@
 #include "gamemanager.h"
 #include "useabstractdata.h"
 
+#define SPDLOG_EOL ""
+
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
+
 // クソ
 struct params;
 
@@ -16,7 +21,7 @@ public:
     void run();
 
 private:
-    int playout(params& param_1, params& param_2);
+    int playout(params& param_1, params& param_2, std::string write_path = "");
 
     std::random_device device;
     std::mt19937 mt;

@@ -10,7 +10,7 @@ TestAlgorithmPlayout::TestAlgorithmPlayout() :
 
 }
 
-int TestAlgorithmPlayout::playout(params& param_1, params& param_2){
+int TestAlgorithmPlayout::playout(params& param_1, params& param_2, std::string write_path){
 
     manager->resetManager(rand_size(mt), rand_size(mt), false, rand_turn(mt));
 
@@ -41,7 +41,46 @@ int TestAlgorithmPlayout::playout(params& param_1, params& param_2){
     for(int side = 0; side < 2; ++side)
         points.at(side) = field_points.at(side).first + field_points.at(side).second;
 
-	// 同点なら-1を、それ以外なら勝ったside(0もしくは1)を返す
+    if(!write_path.empty()){
+        // パス渡されたら適当にコンマ区切りで出すようにしたので、適当に確認お願いします
+        // 盤面の特徴 -> side=0側のデータ -> side=1側のデータ -> お互いの得点
+
+
+        std::random_device rnd;
+        std::mt19937 mt(rnd());
+        std::uniform_int_distribution<> rnd_int(0, INT_MAX);
+
+        std::shared_ptr<spdlog::logger> logger = spdlog::basic_logger_mt(std::to_string(static_cast<int>(rnd_int(mt))), write_path);
+        logger->set_pattern("%v");
+
+        const std::vector<double>& features = manager->getField().getFeatures();
+
+        std::stringstream outstream;
+
+        for(auto it = features.begin(); it != features.end(); ++it){
+            outstream <<  std::noshowpoint << *it;
+            outstream << (it != std::prev(features.end()) ? "," : ":");
+        }
+
+        for(auto value : param_1.values){
+            outstream << std::noshowpoint << value;
+            outstream << ",";
+        }
+        outstream << std::noshowpoint << param_1.diagonal;
+        outstream << ":";
+
+        for(auto value : param_2.values){
+            outstream << std::noshowpoint << value;
+            outstream << ",";
+        }
+        outstream << std::noshowpoint << param_2.diagonal;
+        outstream << ":";
+
+        outstream << points.at(0) << "," << points.at(1) << "\n";
+        logger->info(outstream.str());
+    }
+
+    // 同点なら-1を、それ以外なら勝ったside(0もしくは1)を返す
     if(points.at(0) == points.at(1))
         return -1;
 
@@ -76,7 +115,8 @@ void TestAlgorithmPlayout::run(){
     std::vector<int> win_count(3, 0);
 
     for(int hoge = 0; hoge < 1000; ++hoge)
-        ++win_count.at(playout(p1, p2) + 1);
+        ++win_count.at(playout(p1, p2, "../../procon2018-comp/Data/TestAlgorithmPlayout/result.csv") + 1);
+        // ++win_count.at(playout(p1, p2) + 1);
 
     std::cout << std::endl << "side 0" << std::endl;
     std::cout << "win : " << win_count.at(1) << std::endl;
