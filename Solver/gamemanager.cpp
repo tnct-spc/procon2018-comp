@@ -9,13 +9,23 @@
 #include "geneticalgo/simplealgorithm.h"
 #include "doubleagent/agentmanager.h"
 #include "useabstractdata.h"
-GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
+GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
     vis_show(vis_show)
 {
 
-   field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
-   field->setFinalTurn(turn_max);
+    use_random_field = (x_size == -1);
+
+    if(use_random_field){
+        std::random_device rnd;
+        std::mt19937 mt(rnd());
+        std::uniform_int_distribution<> rand_size(8, 12);
+        x_size = rand_size(mt);
+        y_size = rand_size(mt);
+    }
+
+    field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val, use_random_field);
+    field->setFinalTurn(turn_max);
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
@@ -69,9 +79,19 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
 void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod) {
 
     if (QString::compare("GenerateField", InputMethod) == 0) {
+        int x_size = field->getSize().first;
+        int y_size = field->getSize().second;
+
+        if(use_random_field){
+            std::random_device rnd;
+            std::mt19937 mt(rnd());
+            std::uniform_int_distribution<> rand_size(8, 12);
+            x_size = rand_size(mt);
+            y_size = rand_size(mt);
+        }
 
         int final_turn = field->getFinalTurn();
-        field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
+        field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val, use_random_field);
         field->setFinalTurn(final_turn);
         field_vec.clear();
         field_vec.push_back(std::make_shared<procon::Field>(*field));

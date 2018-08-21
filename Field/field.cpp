@@ -57,7 +57,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
 }
 
 //ここサイズ対応します
-procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const int max_val, const int min_val) :
+procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const int max_val, const int min_val, bool use_fieldtype) :
     max_val(max_val),
     min_val(min_val)
 {
@@ -66,6 +66,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     std::mt19937 mt (rnd());
 
     std::uniform_int_distribution<> rndor(0,1);//[0,1]
+    std::uniform_int_distribution<> rand_fieldtype(0, 8);//[0,1]
 
     grid_x = size_x;
     grid_y = size_y;
@@ -95,7 +96,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     std::vector<std::vector<int>> create_data;
 
     if(!val){
-        create_data = createField(grid_x / 2 + 1, grid_y / 2 + 1);
+        create_data = createField(grid_x / 2 + 1, grid_y / 2 + 1, (use_fieldtype ? static_cast<int>(rand_fieldtype(mt)) : 0));
 
         for(unsigned int x = 0; x < grid_x / 2 + 1; ++x){
             for(unsigned int y = 0; y < grid_y / 2 + 1; ++y){
@@ -121,7 +122,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
 
     }else if(val < 3){
 
-        create_data = createField(grid_x, grid_y / 2 + 1);
+        create_data = createField(grid_x, grid_y / 2 + 1, use_fieldtype ?  static_cast<int>(rand_fieldtype(mt)) : 0);
 
         for(unsigned int x = 0; x < grid_x; ++x){
             for(unsigned int y = 0; y < grid_y / 2 + 1; ++y){
@@ -151,7 +152,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
         agents.at(1).at(1) = std::make_pair(agent_x, agent_y);
 
     }else{
-        create_data = createField(grid_x / 2 + 1, grid_y);
+        create_data = createField(grid_x / 2 + 1, grid_y, (use_fieldtype ? static_cast<int>(rand_fieldtype(mt)) : 0));
 
         for(unsigned int x = 0; x < grid_x / 2 + 1; ++x){
             for(unsigned int y = 0; y < grid_y; ++y){
@@ -216,7 +217,7 @@ int procon::Field::translateMoveToInt(int side, std::tuple<int, int, int> move){
     return relative_move;
 }
 
-std::vector<std::vector<int>> procon::Field::createField(int x_size, int y_size){
+std::vector<std::vector<int>> procon::Field::createField(int x_size, int y_size, int field_type){
 
     std::vector<std::vector<int>> out_vector(static_cast<unsigned int>(x_size), std::vector<int>(static_cast<unsigned int>(y_size)));
 
