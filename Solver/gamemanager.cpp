@@ -9,7 +9,6 @@
 #include "geneticalgo/simplealgorithm.h"
 #include "doubleagent/agentmanager.h"
 #include "useabstractdata.h"
-
 GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
     vis_show(vis_show)
@@ -83,9 +82,16 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     } else if (QString::compare("CSVImport", InputMethod) == 0) {
 
         std::string path = QFileDialog::getOpenFileName().toStdString();
-
         field = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
 
+    } else if (QString::compare("QRcode", InputMethod) == 0) {
+        QRCode qr;
+        QrConverterField qrc;
+        std::string f = qr.decodeQRcode();
+        procon::Field hoge = qrc.ConvertCsvToField(f);
+        field = std::make_shared<procon::Field>(hoge);
+        field_vec.clear();
+        field_vec.push_back(std::make_shared<procon::Field>(*field));
     }else if (QString::compare("BinaryImport", InputMethod) == 0) {
         std::string path = QFileDialog::getOpenFileName().toStdString();
         field = std::make_shared<procon::Field>(procon::BinaryIo::importField(path));

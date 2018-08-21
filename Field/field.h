@@ -94,7 +94,7 @@ private:
     int now_turn = 0;
     int final_turn = 0;
 
-    static const int field_type = 5;
+    static const int field_type = 0;
 
     //players.at(turn_flag)みたいな事ができるのでvectorにしてます 変えてもいい
     //めっちゃ分かりづらいですね
