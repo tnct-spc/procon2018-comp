@@ -23,17 +23,20 @@ int TestLastForce::playout(){
     }
 
     while(manager->getTurnCount() < manager->getFinalTurn()){
-        if(manager->getFinalTurn() - manager->getTurnCount() == 1){
+        if(manager->getFinalTurn() - manager->getTurnCount() <= 2){
             for(int index = 0; index < 2; ++index){
                 Last.at(index) = std::make_shared<LastForce>(manager->getField(), manager->getFinalTurn(), index);
             }
-            std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> act = Last.at(0)->agentAct(manager->getTurnCount());
-            manager->agentAct(0, 0, act.first);
-            manager->agentAct(0, 1, act.second);
-
-            act = agents.at(1)->agentAct(manager->getTurnCount());
+            std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> act = Last.at(1)->agentAct(manager->getTurnCount());
+            if(act == std::make_pair(std::make_tuple(0,0,0),std::make_tuple(0,0,0))){
+                act = agents.at(1)->agentAct(manager->getTurnCount());
+            }
             manager->agentAct(1, 0, act.first);
             manager->agentAct(1, 1, act.second);
+
+            act = agents.at(0)->agentAct(manager->getTurnCount());
+            manager->agentAct(0, 0, act.first);
+            manager->agentAct(0, 1, act.second);
 
         }else{
             for(int side = 0; side < 2; ++side){
@@ -64,9 +67,10 @@ void TestLastForce::run(){
 
     std::vector<int> win_count(3, 0);
 
-    for(int hoge = 0; hoge < 1000; ++hoge){
+    for(int hoge = 0; hoge < 10000; ++hoge){
+        std::cout<<hoge<<"回目のプレイアウトだよ"<<std::endl;
         int s = playout()+1;
-        std::cout<<s<<std::endl;
+        //std::cout<<s<<std::endl;
         ++win_count.at(s);
     }
 

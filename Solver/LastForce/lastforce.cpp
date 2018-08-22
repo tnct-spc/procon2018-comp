@@ -5,18 +5,35 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> LastForce::agen
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};
     std::vector<int> y_list = {-1, 0, 1, -1, 1, -1, 0, 1, 0};
 
+    procon::Field ins_field = field;
+
+    int nokori = ins_field.getFinalTurn() - ins_field.getTurnCount();
+
+    if(EdgeCut){
+        if(nokori >= 3){
+            std::cerr<<"計算量危ないです。枝切りを行っていますが、2ターンが限度です"<<std::endl;
+        }
+    }else{
+        if(nokori >= 2){
+            std::cerr<<"計算量危ないです。枝切りを行っていませんので、1ターンが限度です"<<std::endl;
+        }
+    }
+
     winner = std::vector<std::vector<int>>(18,std::vector<int>(18,0));
 
     //std::cout<<"詰め"<<std::endl;
 
     calc(field,0,0,0);
-
+    std::cout<<coun <<"回計算しました"<<std::endl;
     if(checkMate){
         std::cout<<"勝利が確定しました"<<std::endl;
-        std::cout<<ans.first <<" "<<ans.second<<std::endl;
+    //    std::cout<<ans.first <<" "<<ans.second<<std::endl;
         return std::make_pair(std::make_tuple(ans.first/9+1,x_list[ans.first%9],y_list[ans.first%9]),std::make_tuple(ans.second/9+1,x_list[ans.second%9],y_list[ans.second%9]));
     }else{
         std::cout<<"不詰みです"<<std::endl;
+        if(EdgeCut){
+            return std::make_pair(std::make_tuple(0,0,0),std::make_tuple(0,0,0));
+        }
         int co = -1;
         for(int a = 0;a < 17;a++){
             for(int b = 0;b < 17;b++){
@@ -32,12 +49,15 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> LastForce::agen
     }
 }
 bool LastForce::calc(procon::Field ins_field,int depth,int x,int y){
+   coun++;
    // std::cout<<ins_field.getTurnCount()<<" "<<depth<<" "<<ins_field.getFinalTurn()<<std::endl;
     if(ins_field.getTurnCount() + depth  == ins_field.getFinalTurn()){
+        bool result;
         std::vector<std::pair<int,int>> points = ins_field.getPoints(true);
-        bool result = points.at(0).first + points.at(0).second > points.at(1).first + points.at(1).second;
+        if(side == 0)result = points.at(0).first + points.at(0).second > points.at(1).first + points.at(1).second;
+        if(side == 1)result = points.at(0).first + points.at(0).second < points.at(1).first + points.at(1).second;
         if(result){
-            winner.at(x).at(y) +=  points.at(0).first + points.at(0).second - points.at(1).first + points.at(1).second;
+            winner.at(x).at(y) +=  points.at(0).first++;
         }
         return result;
     }
@@ -53,27 +73,29 @@ bool LastForce::calc(procon::Field ins_field,int depth,int x,int y){
                             result = false;
                     //      count++;
                       //    std::cout<<count<<std::endl;
-                          //  break;
+                          if(EdgeCut)  break;
                         }
                     }else{
                         if(!calc(moveAgent(ins_field,vec),depth + 1,x,y)){
                             result = false;
                     //      count++;
                       //    std::cout<<count<<std::endl;
-                        //    break;
+                        if(EdgeCut)    break;
                         }
                     }
                 }
-              //  if(!result)break;
+              if(!result && EdgeCut)break;
             }
             if(result && depth == 0){
                 ans.first = a;
                 ans.second = b;
                 checkMate = true;
                 result_hoge = true;
+                if(EdgeCut)return true;
             }
             if(result){
                result_hoge = true;
+               if(EdgeCut)return true;
             }
         }
     }
@@ -189,11 +211,17 @@ procon::Field LastForce::moveAgent(procon::Field field, std::vector<int> act){
         return std::make_tuple((act_num/9 + 1),x_list[act_num % 9],y_list[act_num % 9]);
     };
 
-    agentAct(0,0,making_tuple(act.at(0)));
-    agentAct(0,1,making_tuple(act.at(1)));
-    agentAct(1,0,making_tuple(act.at(2)));
-    agentAct(1,1,making_tuple(act.at(3)));
-
+    if(side == 0){
+        agentAct(0,0,making_tuple(act.at(0)));
+        agentAct(0,1,making_tuple(act.at(1)));
+        agentAct(1,0,making_tuple(act.at(2)));
+        agentAct(1,1,making_tuple(act.at(3)));
+    }else{
+        agentAct(0,0,making_tuple(act.at(2)));
+        agentAct(0,1,making_tuple(act.at(3)));
+        agentAct(1,0,making_tuple(act.at(0)));
+        agentAct(1,1,making_tuple(act.at(1)));
+    }
     changeTurn();
 
     return field;

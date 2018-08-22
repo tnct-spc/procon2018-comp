@@ -10,7 +10,9 @@ class LastForce : public AlgorithmWrapper
     using AlgorithmWrapper::AlgorithmWrapper;
 public:
 
+
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int);
+    bool EdgeCut = true;
 
 private:
     bool checkMate = false;
@@ -19,6 +21,7 @@ private:
 
     std::pair<int,int> ans;
     std::vector<std::vector<int>> winner;
+    int coun = 0;
 };
 
 #endif // LASTFORCE_H
