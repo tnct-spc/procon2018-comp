@@ -46,7 +46,7 @@ public:
 
     unsigned int getFinalTurn();
 
-    void showAgentAct(bool bside, std::tuple<int,int,int> move);
+    std::vector<int> showAgentAct(bool bside, std::tuple<int,int,int> move, bool hoge = false);
 
     void setAutoMode(bool value);
 

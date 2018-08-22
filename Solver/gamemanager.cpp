@@ -505,7 +505,7 @@ void GameManager::changeTurn(bool update){
 
 }
 
-void GameManager::showAgentAct(bool side, std::tuple<int,int,int> move){
+std::vector<int> GameManager::showAgentAct(bool side, std::tuple<int,int,int> move, bool hoge){
     bool destroy = (std::get<0>(move) == 2);
     std::pair<int,int> to;
     to.first = std::get<1>(move);
@@ -520,7 +520,129 @@ void GameManager::showAgentAct(bool side, std::tuple<int,int,int> move){
     if(destroy){
         relative_move += 9;
     }
-    procon::Cipher cipher = procon::changeIntToCipher(relative_move);
+
+    std::vector<int> cards (2);
+    int random = rand() % 4;
+    if(relative_move < 9){
+        if(rand() % 2 == 1){
+            cards.at(0) = 8 + 13 * random;
+        }
+        else{
+            cards.at(0) = 10 + 13 * random;
+        }
+    }
+    if(relative_move > 8){
+        if(rand() % 2 == 1){
+            cards.at(0) = 9 + 13 * random;
+        }
+        else{
+            cards.at(0) = 11 + 13 * random;
+        }
+    }
+    if(relative_move == 4 || relative_move == 13){
+        cards.at(0) = 12 + 13 * random;
+    }
+
+    random = rand() % 4;
+    if(hoge = true){
+        if(random == 0){
+            if(relative_move == 0)relative_move = 7;
+            if(relative_move == 1)relative_move = 0;
+            if(relative_move == 2)relative_move = 1;
+            if(relative_move == 3)relative_move = 6;
+            if(relative_move == 4)relative_move = rand() % 8;
+            if(relative_move == 5)relative_move = 2;
+            if(relative_move == 6)relative_move = 5;
+            if(relative_move == 7)relative_move = 4;
+            if(relative_move == 8)relative_move = 3;
+         }
+        if(random == 1){
+            if(relative_move == 0)relative_move = 5 + 13;
+            if(relative_move == 1)relative_move = 6 + 13;
+            if(relative_move == 2)relative_move = 7 + 13;
+            if(relative_move == 3)relative_move = 4 + 13;
+            if(relative_move == 4)relative_move = rand() % 8 + 13;
+            if(relative_move == 5)relative_move = 0 + 13;
+            if(relative_move == 6)relative_move = 3 + 13;
+            if(relative_move == 7)relative_move = 2 + 13;
+            if(relative_move == 8)relative_move = 1 + 13;
+        }
+        if(random == 2){
+            if(relative_move == 0)relative_move = 3 + 26;
+            if(relative_move == 1)relative_move = 4 + 26;
+            if(relative_move == 2)relative_move = 5 + 26;
+            if(relative_move == 3)relative_move = 2 + 26;
+            if(relative_move == 4)relative_move = rand() % 8 + 26;
+            if(relative_move == 5)relative_move = 6 + 26;
+            if(relative_move == 6)relative_move = 1 + 26;
+            if(relative_move == 7)relative_move = 0 + 26;
+            if(relative_move == 8)relative_move = 7 + 26;
+        }
+        if(random == 3){
+            if(relative_move == 0)relative_move = 1 + 39;
+            if(relative_move == 1)relative_move = 2 + 39;
+            if(relative_move == 2)relative_move = 3 + 39;
+            if(relative_move == 3)relative_move = 0 + 39;
+            if(relative_move == 4)relative_move = rand() % 8 + 39;
+            if(relative_move == 5)relative_move = 4 + 39;
+            if(relative_move == 6)relative_move = 7 + 39;
+            if(relative_move == 7)relative_move = 6 + 39;
+            if(relative_move == 8)relative_move = 5 + 39;
+        }
+    }
+    else{
+        if(random == 0){
+            if(relative_move == 0)relative_move = 1;
+            if(relative_move == 1)relative_move = 0;
+            if(relative_move == 2)relative_move = 7;
+            if(relative_move == 3)relative_move = 2;
+            if(relative_move == 4)relative_move = rand() % 8;
+            if(relative_move == 5)relative_move = 6;
+            if(relative_move == 6)relative_move = 3;
+            if(relative_move == 7)relative_move = 4;
+            if(relative_move == 8)relative_move = 5;
+         }
+        if(random == 1){
+            if(relative_move == 0)relative_move = 3 + 13;
+            if(relative_move == 1)relative_move = 2 + 13;
+            if(relative_move == 2)relative_move = 1 + 13;
+            if(relative_move == 3)relative_move = 4 + 13;
+            if(relative_move == 4)relative_move = rand() % 8 + 13;
+            if(relative_move == 5)relative_move = 0 + 13;
+            if(relative_move == 6)relative_move = 5 + 13;
+            if(relative_move == 7)relative_move = 6 + 13;
+            if(relative_move == 8)relative_move = 7 + 13;
+        }
+        if(random == 2){
+            if(relative_move == 0)relative_move = 5 + 26;
+            if(relative_move == 1)relative_move = 4 + 26;
+            if(relative_move == 2)relative_move = 3 + 26;
+            if(relative_move == 3)relative_move = 6 + 26;
+            if(relative_move == 4)relative_move = rand() % 8 + 26;
+            if(relative_move == 5)relative_move = 2 + 26;
+            if(relative_move == 6)relative_move = 7 + 26;
+            if(relative_move == 7)relative_move = 0 + 26;
+            if(relative_move == 8)relative_move = 1 + 26;
+        }
+        if(random == 3){
+            if(relative_move == 0)relative_move = 7 + 39;
+            if(relative_move == 1)relative_move = 6 + 39;
+            if(relative_move == 2)relative_move = 5 + 39;
+            if(relative_move == 3)relative_move = 0 + 39;
+            if(relative_move == 4)relative_move = rand() % 8 + 39;
+            if(relative_move == 5)relative_move = 1 + 39;
+            if(relative_move == 6)relative_move = 2 + 39;
+            if(relative_move == 7)relative_move = 3 + 39;
+            if(relative_move == 8)relative_move = 4 + 39;
+        }
+    }
+    cards.at(1) = relative_move;
+
+    random = rand() % 10;
+    if(random == 0){
+        cards.push_back(52);
+    }
+    return cards;
 }
 
 void GameManager::setAutoMode(bool value){
