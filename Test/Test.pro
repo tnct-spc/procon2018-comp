@@ -14,12 +14,17 @@ DEPENDPATH += $$PWD/../precompile
 
 SOURCES += \
         main.cpp \
-    testagentparam.cpp \
-    testevaluatespeed.cpp
+        testagentparam.cpp \
+        testevaluatespeed.cpp \
+        testconvertfield.cpp
 
 HEADERS += \
-    testagentparam.h \
-    testevaluatespeed.h
+        testagentparam.h \
+        testevaluatespeed.h \
+        testconvertfield.h
+
+LIBS += -L/usr/lib `pkg-config --libs opencv`
+LIBS += -L/usr/lib64 -lzbar
 
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
@@ -32,3 +37,7 @@ DEPENDPATH += $$PWD/../Visualizer
 LIBS += -L$$OUT_PWD/../Solver/ -lSolver
 INCLUDEPATH += $$PWD/../Solver
 DEPENDPATH += $$PWD/../Solver
+
+LIBS += -L$$OUT_PWD/../QRcode/ -lQRcode
+INCLUDEPATH += $$PWD/../QRcode
+DEPENDPATH += $$PWD/../QRcode

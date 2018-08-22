@@ -26,7 +26,7 @@ class Field
 public:
     Field(const unsigned int size_x, const unsigned int size_y);
     Field(const unsigned int size_x, const unsigned int size_y, const std::vector<std::vector<int>>& input_val);
-    Field(const unsigned int size_x, const unsigned int size_y,const int max_val,const int min_val);
+    Field(const unsigned int size_x, const unsigned int size_y,const int max_val,const int min_val, bool use_fieldtype = false);
 
     const std::vector<std::vector<std::pair<int,int>>>& getAgents() const;
 
@@ -94,8 +94,6 @@ private:
     int now_turn = 0;
     int final_turn = 0;
 
-    static const int field_type = 5;
-
     //players.at(turn_flag)みたいな事ができるのでvectorにしてます 変えてもいい
     //めっちゃ分かりづらいですね
     std::vector<std::vector<std::pair<int,int>>> agents;
@@ -112,7 +110,7 @@ private:
 
     std::vector<double> feature;
 
-    std::vector<std::vector<int>> createField(int x_size, int y_size);
+    std::vector<std::vector<int>> createField(int x_size, int y_size, int field_type);
 };
 }
 

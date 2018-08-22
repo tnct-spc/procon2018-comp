@@ -78,6 +78,9 @@ unix {
     INSTALLS += target
 }
 
+LIBS += -L/usr/lib `pkg-config --libs opencv`
+LIBS += -L/usr/lib64 -lzbar
+
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
 DEPENDPATH += $$PWD/../Field
@@ -85,3 +88,7 @@ DEPENDPATH += $$PWD/../Field
 LIBS += -L$$OUT_PWD/../Visualizer/ -lVisualizer
 INCLUDEPATH += $$PWD/../Visualizer
 DEPENDPATH += $$PWD/../Visualizer
+
+LIBS += -L$$OUT_PWD/../QRcode/ -lQRcode
+INCLUDEPATH += $$PWD/../QRcode
+DEPENDPATH += $$PWD/../QRcode
