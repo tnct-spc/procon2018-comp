@@ -15,13 +15,11 @@ DEPENDPATH += $$PWD/../precompile
 SOURCES += \
         main.cpp \
     testagentparam.cpp \
-    testevaluatespeed.cpp \
-    testlastforce.cpp
+    testevaluatespeed.cpp
 
 HEADERS += \
     testagentparam.h \
-    testevaluatespeed.h \
-    testlastforce.h
+    testevaluatespeed.h
 
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
