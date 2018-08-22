@@ -174,9 +174,10 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             th1.join();
             th2.join();
             */
-            if(getFinalTurn() - getTurnCount() <= 2){
-                team_1 = std::make_shared<LastForce>(*field, field->getFinalTurn(), 0);
-            }
+            //LastForce呼ぶときはこんな感じで
+//            if(getFinalTurn() - getTurnCount() <= 2){
+//                team_1 = std::make_shared<LastForce>(*field, field->getFinalTurn(), 0);
+//            }
 
             team_1_ans = team_1->agentAct(0);
             team_2_ans = team_2->agentAct(1);

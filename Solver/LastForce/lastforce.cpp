@@ -44,13 +44,14 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> LastForce::agen
                 }
             }
         }
-        std::cout<<ans.first <<" "<<ans.second<<std::endl;
+        //std::cout<<ans.first <<" "<<ans.second<<std::endl;
         return std::make_pair(std::make_tuple(ans.first/9+1,x_list[ans.first%9],y_list[ans.first%9]),std::make_tuple(ans.second/9+1,x_list[ans.second%9],y_list[ans.second%9]));
     }
 }
 bool LastForce::calc(procon::Field ins_field,int depth,int x,int y){
    coun++;
    // std::cout<<ins_field.getTurnCount()<<" "<<depth<<" "<<ins_field.getFinalTurn()<<std::endl;
+   if(coun > 150000)return false;
     if(ins_field.getTurnCount() + depth  == ins_field.getFinalTurn()){
         bool result;
         std::vector<std::pair<int,int>> points = ins_field.getPoints(true);

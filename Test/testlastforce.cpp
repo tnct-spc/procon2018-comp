@@ -29,6 +29,7 @@ int TestLastForce::playout(){
             }
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> act = Last.at(1)->agentAct(manager->getTurnCount());
             if(act == std::make_pair(std::make_tuple(0,0,0),std::make_tuple(0,0,0))){
+                std::cout<<"GAを読んでいる"<<std::endl;
                 act = agents.at(1)->agentAct(manager->getTurnCount());
             }
             manager->agentAct(1, 0, act.first);
@@ -67,11 +68,24 @@ void TestLastForce::run(){
 
     std::vector<int> win_count(3, 0);
 
-    for(int hoge = 0; hoge < 10000; ++hoge){
+    for(int hoge = 0; hoge < 5000; ++hoge){
         std::cout<<hoge<<"回目のプレイアウトだよ"<<std::endl;
         int s = playout()+1;
-        //std::cout<<s<<std::endl;
+        if(s == 0){
+            std::cout<<"引き分け"<<std::endl;
+        }
+        if(s == 1){
+            std::cout<<"先手の勝ち"<<std::endl;
+        }
+        if(s == 2){
+            std::cout<<"後手の勝ち"<<std::endl;
+        }
+
         ++win_count.at(s);
+        std::cout << std::endl << "side 0" << std::endl;
+        std::cout << "win : " << win_count.at(1) << std::endl;
+        std::cout << "lose : " << win_count.at(2) << std::endl;
+        std::cout << "draw : " << win_count.at(0) << std::endl;
     }
 
     std::cout << std::endl << "side 0" << std::endl;
