@@ -38,7 +38,7 @@ int main()
             std::cout << "test number : ";
             std::cin >> test_number;
 
-            if(test_number >= 0 && test_number <= 3)
+            if(test_number >= 0 && test_number <= 2)
                 break;
 
             std::cout << "incorrect" << std::endl;
