@@ -7,10 +7,13 @@ TestAlgorithmPlayout::TestAlgorithmPlayout() :
     agents(2)
 {
     manager = std::make_shared<GameManager>(8, 10, false, 60);
+    logger = spdlog::basic_logger_mt("TestAlgorithmPlayout", path);
+    logger->set_pattern("%v");
+
 
 }
 
-int TestAlgorithmPlayout::playout(params& param_1, params& param_2, std::string write_path){
+int TestAlgorithmPlayout::playout(params& param_1, params& param_2, bool iswrite){
 
     manager->resetManager(rand_size(mt), rand_size(mt), false, rand_turn(mt));
 
@@ -41,7 +44,7 @@ int TestAlgorithmPlayout::playout(params& param_1, params& param_2, std::string 
     for(int side = 0; side < 2; ++side)
         points.at(side) = field_points.at(side).first + field_points.at(side).second;
 
-    if(!write_path.empty()){
+    if(iswrite){
         // パス渡されたら適当にコンマ区切りで出すようにしたので、適当に確認お願いします
         // 盤面の特徴 -> side=0側のデータ -> side=1側のデータ -> お互いの得点
 
@@ -49,9 +52,6 @@ int TestAlgorithmPlayout::playout(params& param_1, params& param_2, std::string 
         std::random_device rnd;
         std::mt19937 mt(rnd());
         std::uniform_int_distribution<> rnd_int(0, INT_MAX);
-
-        std::shared_ptr<spdlog::logger> logger = spdlog::basic_logger_mt(std::to_string(static_cast<int>(rnd_int(mt))), write_path);
-        logger->set_pattern("%v");
 
         const std::vector<double>& features = manager->getField().getFeatures();
 
@@ -110,13 +110,19 @@ void TestAlgorithmPlayout::run(){
     };
 
     params p1(const_values_1, diagonal_move_1, calc_value_func_1, calc_eval_sum_1);
-    params p2(const_values_2, diagonal_move_2, calc_value_func_2, calc_eval_sum_2);
+    params p2(const_values_2, diagonal_move_2, calc_value_func_1, calc_eval_sum_1);
 
     std::vector<int> win_count(3, 0);
 
-    for(int hoge = 0; hoge < 1000; ++hoge)
-        ++win_count.at(playout(p1, p2, "../../procon2018-comp/Data/TestAlgorithmPlayout/result.csv") + 1);
-        // ++win_count.at(playout(p1, p2) + 1);
+    std::uniform_real_distribution<> rand_param(-15, 15);
+
+    for(int hoge = 0; hoge < 3000; ++hoge){
+        for(auto& va : const_values_1)
+            va = rand_param(mt);
+        for(auto& va : const_values_2)
+            va = rand_param(mt);
+        ++win_count.at(playout(p1, p2, true) + 1);
+    }
 
     std::cout << std::endl << "side 0" << std::endl;
     std::cout << "win : " << win_count.at(1) << std::endl;

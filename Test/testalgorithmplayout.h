@@ -21,10 +21,14 @@ public:
     void run();
 
 private:
-    int playout(params& param_1, params& param_2, std::string write_path = "");
+    int playout(params& param_1, params& param_2, bool iswrite = false);
+
+    std::shared_ptr<spdlog::logger> logger;
 
     std::random_device device;
     std::mt19937 mt;
+
+    const std::string path = "../../procon2018-comp/Data/TestAlgorithmPlayout/result.csv";
 
     std::uniform_int_distribution<> rand_size;
     std::uniform_int_distribution<> rand_turn;
