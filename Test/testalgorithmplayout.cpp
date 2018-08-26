@@ -1,3 +1,6 @@
+#include <boost/random.hpp>
+#include <time.h>
+
 #include "testalgorithmplayout.h"
 
 TestAlgorithmPlayout::TestAlgorithmPlayout() :
@@ -88,12 +91,16 @@ int TestAlgorithmPlayout::playout(params& param_1, params& param_2, std::string 
 }
 
 void TestAlgorithmPlayout::run(){
+    std::vector<double> r;
+    boost::random::uniform_real_distribution<> dist(-10.0,10.0);
+    boost::random::mt19937_64 mt((unsigned)time(NULL));
+    for(int i=0;i<20;i++)r.push_back(dist(mt));
 
-    std::vector<double> const_values_1 = {1.6, 1.2, -0.7, 1.2, 1.2, -0.3 ,1.2, -0.4, -0.4};
-    std::vector<double> const_values_2 = {1.2, 1.7, -0.4, 1.5, 1.0, 0 ,0.8, -0.4, -0.2};
+    std::vector<double> const_values_1 = {r[0], r[1], r[2], r[3], r[4], r[5] ,r[6], r[7], r[8]};
+    std::vector<double> const_values_2 = {r[9], r[10], r[11], r[12], r[13], r[14] ,r[15], r[16], r[17]};
 
-    double diagonal_move_1 = 1.5;
-    double diagonal_move_2 = 1.0;
+    double diagonal_move_1 = r[18];
+    double diagonal_move_2 = r[19];
 
     std::function<void(double&, bool, int)> calc_value_func_1 = [](double& eval_result, bool is_return, int tile_value){
             eval_result *= (is_return ? 12 : 16 + tile_value);
