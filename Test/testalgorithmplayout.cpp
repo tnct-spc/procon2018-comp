@@ -55,7 +55,6 @@ int TestAlgorithmPlayout::playout(params& param_1, params& param_2, std::string 
         std::mt19937 mt(rnd());
         std::uniform_int_distribution<> rnd_int(0, INT_MAX);
 
-        //std::shared_ptr<spdlog::logger> logger = spdlog::basic_logger_mt(std::to_string(static_cast<int>(rnd_int(mt))), write_path);
 
         const std::vector<double>& features = manager->getField().getFeatures();
 
