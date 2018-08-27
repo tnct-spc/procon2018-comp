@@ -87,13 +87,15 @@ int TestAlgorithmPlayout::playout(params& param_1, params& param_2, bool iswrite
     return (points.at(0) < points.at(1));
 }
 
-void TestAlgorithmPlayout::run(){
+void TestAlgorithmPlayout::run2(double v1, double v2){
 
     std::vector<double> const_values_1 = {1.6, 1.2, -0.7, 1.2, 1.2, -0.3 ,1.2, -0.4, -0.4};
     std::vector<double> const_values_2 = {1.2, 1.7, -0.4, 1.5, 1.0, 0 ,0.8, -0.4, -0.2};
 
     double diagonal_move_1 = 1.5;
     double diagonal_move_2 = 1.0;
+    diagonal_move_1 = v1;
+    diagonal_move_2 = v2;
 
     std::function<void(double&, bool, int)> calc_value_func_1 = [](double& eval_result, bool is_return, int tile_value){
             eval_result *= (is_return ? 12 : 16 + tile_value);
@@ -116,16 +118,28 @@ void TestAlgorithmPlayout::run(){
 
     std::uniform_real_distribution<> rand_param(-15, 15);
 
-    for(int hoge = 0; hoge < 3000; ++hoge){
+    for(int hoge = 0; hoge < 1000; ++hoge){
         for(auto& va : const_values_1)
             va = rand_param(mt);
         for(auto& va : const_values_2)
             va = rand_param(mt);
-        ++win_count.at(playout(p1, p2, true) + 1);
+        p1.values = const_values_1;
+        p2.values = const_values_2;
+        ++win_count.at(playout(p1, p2) + 1);
+        // ++win_count.at(playout(p1, p2, true) + 1);
     }
 
-    std::cout << std::endl << "side 0" << std::endl;
-    std::cout << "win : " << win_count.at(1) << std::endl;
-    std::cout << "lose : " << win_count.at(2) << std::endl;
-    std::cout << "draw : " << win_count.at(0) << std::endl;
+    std::stringstream outstream;
+    outstream << v1 << " , " << v2 << " , ";
+    outstream << win_count.at(1) << " , ";
+    outstream << win_count.at(2) << " , ";
+    outstream << win_count.at(0) << std::endl;
+    logger->info(outstream.str());
+}
+
+void TestAlgorithmPlayout::run(){
+    for(double hog = 0.0; hog <= 2.5; hog+=0.1)
+        for(double hog2 = hog + 0.1; hog2 <= 2.5; hog2+=0.1){
+            run2(hog, hog2);
+        }
 }

@@ -19,6 +19,7 @@ public:
 
 
     void run();
+    void run2(double v1, double v2);
 
 private:
     int playout(params& param_1, params& param_2, bool iswrite = false);
