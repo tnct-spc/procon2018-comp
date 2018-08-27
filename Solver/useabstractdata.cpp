@@ -1,5 +1,18 @@
 #include "useabstractdata.h"
 
+UseAbstractData::UseAbstractData(const procon::Field& field, int final_turn, bool side, const GeneticAgent& agent) :
+    AlgorithmWrapper(field, final_turn, side),
+    agent_data(agent)
+{
+    std::vector<double> value = agent_data.getData();
+    for(int index = 0; index < 19; ++index){
+        // [10, -10]
+        const_values.at(index) = value.at(index) * 20 - 10;
+    }
+    // [3, 0]
+    diagonal_move = value.at(9) * 3;
+}
+
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractData::agentAct(int now_turn){
 
     std::vector<std::vector<std::vector<int>>> abst_values(2);

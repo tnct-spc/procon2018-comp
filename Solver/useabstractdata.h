@@ -2,13 +2,15 @@
 #define USEABSTRACTDATA_H
 
 #include "algorithmwrapper.h"
+#include "geneticalgo/geneticagent.h"
 
 #include <algorithm>
 
 class UseAbstractData : public AlgorithmWrapper
 {
-    using AlgorithmWrapper::AlgorithmWrapper;
+    // using AlgorithmWrapper::AlgorithmWrapper;
 public:
+    UseAbstractData(const procon::Field& field, int final_turn, bool side, const GeneticAgent& agent = GeneticAgent(10));
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
 
     void setParameters(std::vector<double>& values, double diagonal, std::function<void(double&, bool, int)>& tile_value_func, std::function<double(double, double)>& eval_sum_func);
@@ -47,6 +49,8 @@ private:
         return inp_1 + inp_2;
     };
 
+    // 上限下限の値や総和が異なる可能性があるので気をつける
+    GeneticAgent agent_data;
 
     const std::vector<int> x_list = {-1, -1, 0, 1, 1, 1, 0, -1};
     const std::vector<int> y_list = {0, -1, -1, -1, 0, 1, 1, 1};
