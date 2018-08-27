@@ -15,6 +15,11 @@ public:
 
     void setParameters(std::vector<double>& values, double diagonal, std::function<void(double&, bool, int)>& tile_value_func, std::function<double(double, double)>& eval_sum_func);
 
+    // 上限下限の値や総和が異なる可能性があるので気をつける
+    std::vector<double> const_values = {1.6, 1.2, -0.7, 1.2, 1.2, -0.3 ,1.2, -0.4, -0.4};
+    // 斜め方向に移動する場合にかける倍率
+    double diagonal_move = 1.5;
+
 private:
     std::vector<std::vector<int>> getAbstractBasedAgent(bool eval_side, bool agent);
 
@@ -30,10 +35,7 @@ private:
 	  このそれぞれに対して一定の倍率をかけて、その総和を評価値にする
 
 	*/
-    std::vector<double> const_values = {1.6, 1.2, -0.7, 1.2, 1.2, -0.3 ,1.2, -0.4, -0.4};
-
-	// 斜め方向に移動する場合にかける倍率
-    double diagonal_move = 1.5;
+    GeneticAgent agent_data;
 
 	// タイルの得点を評価値に反映させる関数
     std::function<void(double&, bool, int)> calc_value_func = [](double& eval_result, bool is_return, int tile_value){
@@ -48,9 +50,6 @@ private:
     std::function<double(double, double)> calc_eval_sum = [](double inp_1, double inp_2){
         return inp_1 + inp_2;
     };
-
-    // 上限下限の値や総和が異なる可能性があるので気をつける
-    GeneticAgent agent_data;
 
     const std::vector<int> x_list = {-1, -1, 0, 1, 1, 1, 0, -1};
     const std::vector<int> y_list = {0, -1, -1, -1, 0, 1, 1, 1};
