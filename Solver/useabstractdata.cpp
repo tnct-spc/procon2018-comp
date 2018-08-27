@@ -5,7 +5,7 @@ UseAbstractData::UseAbstractData(const procon::Field& field, int final_turn, boo
     agent_data(agent)
 {
     std::vector<double> value = agent_data.getData();
-    for(int index = 0; index < 19; ++index){
+    for(int index = 0; index < 9; ++index){
         // [10, -10]
         const_values.at(index) = value.at(index) * 20 - 10;
     }
