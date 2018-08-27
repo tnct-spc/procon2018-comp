@@ -30,6 +30,7 @@ private:
     std::uniform_int_distribution<> rand_turn;
 
     std::shared_ptr<GameManager> manager;
+    std::shared_ptr<spdlog::logger> logger;
 
     std::vector<std::shared_ptr<UseAbstractData>> agents;
 

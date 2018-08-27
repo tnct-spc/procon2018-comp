@@ -7,9 +7,10 @@ TestAlgorithmPlayout::TestAlgorithmPlayout() :
     mt(device()),
     rand_size(8, 12),
     rand_turn(60, 120),
-    std::shared_ptr<spdlog::logger> logger = spdlog::basic_logger_mt(std::to_string(static_cast<int>(rnd_int(mt))), "../../procon2018-comp/Data/TestAlgorithmPlayout/result.csv"),
     agents(2)
 {
+    logger = spdlog::basic_logger_mt("TestAlgorithmPlayout", "../../procon2018-comp/Data/TestAlgorithmPlayout/result.csv");
+    logger->set_pattern("%v");
     manager = std::make_shared<GameManager>(8, 10, false, 60);
 
 }
@@ -55,7 +56,6 @@ int TestAlgorithmPlayout::playout(params& param_1, params& param_2, std::string 
         std::uniform_int_distribution<> rnd_int(0, INT_MAX);
 
         //std::shared_ptr<spdlog::logger> logger = spdlog::basic_logger_mt(std::to_string(static_cast<int>(rnd_int(mt))), write_path);
-        logger->set_pattern("%v");
 
         const std::vector<double>& features = manager->getField().getFeatures();
 
