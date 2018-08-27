@@ -25,7 +25,7 @@ class NetWork(chainer.Chain):
     
     # ???
     def __call__(self, x):
-        return self.l3(F.relu(self.l2(F.relu(self.l1(x)))))
+        return F.softmax(self.l3(F.relu(self.l2(F.relu(self.l1(x))))))
 
 
 
