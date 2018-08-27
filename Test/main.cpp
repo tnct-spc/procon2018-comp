@@ -59,7 +59,14 @@ int main()
     else if(test_number == 2){
 
         TestAlgorithmPlayout test;
-        test.run();
+        for(int i=0;i<1000;i++){
+            std::chrono::system_clock::time_point start, end;
+            std::cout<<"["<<i<<"]"<<std::endl;
+            start = std::chrono::system_clock::now();
+            test.run();
+            end = std::chrono::system_clock::now();
+            std::cout<<std::chrono::duration_cast<std::chrono::seconds>(end-start).count()<<"sec"<<std::endl;
+        }
     }
     else if(test_number == 3){
 
