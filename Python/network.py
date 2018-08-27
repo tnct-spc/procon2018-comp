@@ -25,7 +25,7 @@ class NetWork(chainer.Chain):
     
     # ???
     def __call__(self, x):
-        return self.l3(F.dropout(self.l2(F.dropout(self.l1(x)))))
+        return self.l3(F.relu(self.l2(F.relu(self.l1(x)))))
 
 
 
@@ -34,8 +34,9 @@ def calc_neural(layers, train, test, data_path, data_suffix, train_batch_size, t
 
     net = NetWork(layers)
 
-    accfun = lambda x, t: F.sum(1 - abs(x-t))/x.size 
-    model = L.Classifier(net, lossfun=F.mean_squared_error, accfun=accfun)
+    # accfun = lambda x, t: F.sum(1 - abs(x-t))/x.size 
+    # model = L.Classifier(net, accfun=F.softmax_cross_entropy)
+    model = L.Classifier(net)
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
 
