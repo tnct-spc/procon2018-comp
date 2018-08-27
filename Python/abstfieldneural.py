@@ -44,7 +44,7 @@ def abst_field_neural():
     train_data = chainer.datasets.TupleDataset(inp_data[:train_size], out_data[:train_size])
     test_data = chainer.datasets.TupleDataset(inp_data[train_size:], out_data[train_size:])
 
-    network.calc_neural([50, 50, 3], train_data, test_data, const.result_path + '_abst_field/', '_abst_field', int(min(const.max_train, train_size)), int(min(const.max_test, int(const.test_data_per * len(data)))), const.epoch)
+    network.calc_neural([100, 100, 3], train_data, test_data, const.result_path + '_abst_field/', '_abst_field', int(min(const.max_train, train_size)), int(min(const.max_test, int(const.test_data_per * len(data)))), const.epoch)
 
 
 abst_field_neural()
