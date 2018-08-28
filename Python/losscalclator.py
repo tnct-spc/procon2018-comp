@@ -23,7 +23,7 @@ class LossCalclator():
         point = 0.0
         for wrap in self.wrappers:
             ret = wrap.predict(x)
-            point += 0 if ret == 1 else 0.5 if ret == 0 else 1
+            point += 1 if ret == 1 else 0.5 if ret == 0 else 0
         return point
 
     # 19層のパラメータが与えられて、そのパラメータでの勝ちやすさを返す

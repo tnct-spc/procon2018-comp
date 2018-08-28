@@ -24,12 +24,14 @@ class LossCalcNet(chainer.Chain):
             self.losscalc = losscalclator.LossCalclator(n_layers[:2] + [3], pathes)
     
     def __call__(self, x):
+        print('__call__')
         # ここで最適なパラメータを出している
-        h = self.l3(F.dropout(F.relu(self.l2(F.dropout(F.relu(self.l1(x)))))))
+        h = F.sigmoid(self.l3(F.dropout(F.relu(self.l2(F.dropout(F.relu(self.l1(x))))))))
 
         y = np.zeros((x.shape[0], 1), dtype=np.float32)
         for i in range(x.shape[0]):
-            y[i][0] = self.losscalc.losscalc(np.hstack((x[i],h[i].data)))
+            y[i][0] = self.losscalc.losscalc(np.hstack((x[i],h[i].data * 10)))
+        print(y[i][0])
         return y
 
 

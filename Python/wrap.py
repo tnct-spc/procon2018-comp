@@ -18,4 +18,6 @@ class Wrap():
 
     def predict(self, x):
         x = np.reshape(x, (1, x.shape[0]))
-        return self.net.predict_(x)
+        h = self.net.predict_(x)
+        print('predict : {}'.format(h))
+        return h
