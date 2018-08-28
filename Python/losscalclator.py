@@ -10,13 +10,13 @@ import const
 import network
 import wrap
 
-playout_count = 150
 rand_bound = 0.8
 
 class LossCalclator():
 
-    def __init__(self, n_layers, pathes):
+    def __init__(self, n_layers, pathes, p=150):
         self.wrappers = [wrap.Wrap(n_layers, path) for path in pathes]
+        self.playout_count=p
 
     # これは29層のパラメータが与えられる
     def paramcalc(self, x):
@@ -30,9 +30,9 @@ class LossCalclator():
     def losscalc(self, x):
 
         value = 0.0
-        max_value = 1.0 * len(self.wrappers) * playout_count
+        max_value = 1.0 * len(self.wrappers) * self.playout_count
 
-        for count in range(playout_count):
+        for count in range(self.playout_count):
             arr = np.zeros(10, dtype=np.float32)
             for i in range(10):
                 arr[i] = (np.random.rand() * 20.0 - 10 if np.random.rand() > rand_bound else max(min(x[9+i] + np.random.rand() * 8 - 4, 10.0), -10.0))
