@@ -16,12 +16,12 @@ import const
 class LossCalcNet(chainer.Chain):
 
     def __init__(self, n_layers, pathes):
-        super(NetWork, self).__init__()
+        super(LossCalcNet, self).__init__()
         with self.init_scope():
             self.l1 = L.Linear(None, n_layers[0])
             self.l2 = L.Linear(None, n_layers[1])
             self.l3 = L.Linear(None, n_layers[2])
-            self.losscalc = LossCalclator(n_layers, pathes)
+            self.losscalc = losscalclator.LossCalclator(n_layers[:2] + [3], pathes)
     
     def __call__(self, x):
         # ここで最適なパラメータを出している
@@ -68,22 +68,22 @@ def optimazation_param(layers, train, test, data_path, data_suffix, train_batch_
 def main():
     ma_list = [1.5, 15, -1.5, 5, 1.5, 16.0, 16.0, 12.0, 12.0]
     mi_list = [0.0, 2, -10, -2, -1.5, -16.0, -16.0, 8.0, 8.0]
-    inp_data = np.zeros((siz, 10), dtype=np.float32)
-    out_data = np.zeros((siz, 1), dtype=np.float32)
+    inp_data = np.zeros((const.siz, 9), dtype=np.float32)
+    out_data = np.zeros((const.siz, 1), dtype=np.float32)
 
     for index in range(const.siz):
-        out_data[index][siz] = 1.0;
+        out_data[index][0] = 1.0;
 
-        for i in range(10):
+        for i in range(9):
             inp_data[index][i] = np.random.rand() * (ma_list[i] - mi_list[i]) + mi_list[i]
 
-    train_size = int((1.0 - const.test_data_per) * siz)
+    train_size = int((1.0 - const.test_data_per) * const.siz)
 
     train_data = chainer.datasets.TupleDataset(inp_data[:train_size], out_data[:train_size])
     test_data = chainer.datasets.TupleDataset(inp_data[train_size:], out_data[train_size:])
 
-    network.calc_neural([100, 100, 9], train_data, test_data, const.result_path + '_optimazation/', '_optimazation', int(min(const.max_train, train_size)), int(min(const.max_test, int(const.test_data_per * len(data)))), const.epoch,
-            ['../Data/TestAlgorithmPlayout/results/result_' + str(i) + '/ans_abst_field.npz' for i in range(6)])
+    optimazation_param([100, 100, 10], train_data, test_data, const.result_path + '_optimazation/', '_optimazation', int(min(const.max_train, train_size)), int(min(const.max_test, int(const.test_data_per * const.siz))), const.epoch,
+            ['../Data/TestAlgorithmPlayout/results/result_' + str(i + 1) + '/and_abst_field.npz' for i in range(6)])
 
 if __name__ == '__main__':
     main()

@@ -12,8 +12,8 @@ import network
 class Wrap():
 
     def __init__(self, n_layers, path):
-        self.net = Network(n_layers)
-        self.model = L.classifier(self.net)
+        self.net = network.NetWork(n_layers)
+        self.model = L.Classifier(self.net)
         chainer.serializers.load_npz(path, self.model)
 
     def predict(self, x):

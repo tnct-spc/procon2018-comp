@@ -16,7 +16,7 @@ rand_bound = 0.5
 class LossCalclator():
 
     def __init__(self, n_layers, pathes):
-        self.wrappers = [Wrap(n_layers, path) for path in pathes]
+        self.wrappers = [wrap.Wrap(n_layers, path) for path in pathes]
 
     # これは29層のパラメータが与えられる
     def paramcalc(self, x):
