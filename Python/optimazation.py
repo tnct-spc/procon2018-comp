@@ -18,18 +18,26 @@ class LossCalcNet(chainer.Chain):
     def __init__(self, n_layers, pathes):
         super(NetWork, self).__init__()
         with self.init_scope():
+            self.l1 = L.Linear(None, n_layers[0])
+            self.l2 = L.Linear(None, n_layers[1])
+            self.l3 = L.Linear(None, n_layers[2])
             self.losscalc = LossCalclator(n_layers, pathes)
     
     def __call__(self, x):
-        return self.losscalc.losscalc(x)
+        # ここで最適なパラメータを出している
+        h = self.l3(F.dropout(F.relu(self.l2(F.dropout(F.relu(self.l1(x))))))))
+
+        return self.losscalc.losscalc(np.hstack((x,h)))
 
 
+# 10層が与えられた時の9層の最適化
 def optimazation_param(layers, train, test, data_path, data_suffix, train_batch_size, test_batch_size, epoch):
 
     net = LossCalcNet(layers)
 
-    accfun = lambda x, t: F.sum(1 - abs(x-t))/x.size 
-    model = L.Classifier(net, lossfun=F.mean_squared_error, accfun=accfun)
+    func = lambda x, t: F.sum(1 - x)/x.size 
+    accfun = lambda x, t: F.sum(x)/x.size 
+    model = L.Classifier(net, lossfun=func, accfun=accfun)
 
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
@@ -58,4 +66,5 @@ def optimazation_param(layers, train, test, data_path, data_suffix, train_batch_
     trainer.run()
 
     chainer.serializers.save_npz(data_path + const.save_model_name + data_suffix + '.npz', model)
+
 
