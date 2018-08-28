@@ -28,6 +28,12 @@ class NetWork(chainer.Chain):
         return F.softmax(self.l3(F.dropout(F.relu(self.l2(F.dropout(F.relu(self.l1(x))))))))
         # return F.softmax(self.l3(F.relu(self.l2(F.relu(self.l1(x))))))
 
+    # 29層の入力が与えられて結果を返す
+    def predict_(self, x):
+        y = self.__call__(x)
+        y = np.argmax(y.data[0])
+        return y
+
 
 
 # 隠れ層と出力層の数を配列で指定してtrainとtestのデータをTupleDataSetで作って、保存先フォルダの(相対)パスとファイル名のsuffixを指定する
