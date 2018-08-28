@@ -28,14 +28,16 @@ class LossCalclator():
 
     # 19層のパラメータが与えられて、そのパラメータでの勝ちやすさを返す
     def losscalc(self, x):
+
         value = 0.0
         max_value = 1.0 * len(self.wrappers) * playout_count
 
         for count in range(playout_count):
             arr = np.zeros(10, dtype=np.float32)
             for i in range(10):
-                arr[i] = (np.random.rand() * 20.0 - 10 if np.random.rand() > rand_bound else max(min(x[9+i] + np.random.rand() * 8 - 4, 10.0), -10.0))
-            y = np.hstack(x, arr)
+                arr[i] = np.random.rand() * 20.0 - 10
+                # arr[i] = (np.random.rand() * 20.0 - 10 if np.random.rand() > rand_bound else max(min(x[9+i] + np.random.rand() * 8 - 4, 10.0), -10.0))
+            y = np.hstack((x, arr))
             value += self.paramcalc(y)
 
         return value / max_value

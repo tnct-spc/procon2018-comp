@@ -27,7 +27,10 @@ class LossCalcNet(chainer.Chain):
         # ここで最適なパラメータを出している
         h = self.l3(F.dropout(F.relu(self.l2(F.dropout(F.relu(self.l1(x)))))))
 
-        return self.losscalc.losscalc(np.hstack((x,h)))
+        y = np.zeros((x.shape[0], 1), dtype=np.float32)
+        for i in range(x.shape[0]):
+            y[i][0] = self.losscalc.losscalc(np.hstack((x[i],h[i].data)))
+        return y
 
 
 # 10層が与えられた時の9層の最適化

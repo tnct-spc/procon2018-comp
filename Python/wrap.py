@@ -17,4 +17,5 @@ class Wrap():
         chainer.serializers.load_npz(path, self.model)
 
     def predict(self, x):
+        x = np.reshape(x, (1, x.shape[0]))
         return self.net.predict_(x)
