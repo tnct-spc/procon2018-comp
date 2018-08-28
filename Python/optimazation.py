@@ -25,15 +25,15 @@ class LossCalcNet(chainer.Chain):
     
     def __call__(self, x):
         # ここで最適なパラメータを出している
-        h = self.l3(F.dropout(F.relu(self.l2(F.dropout(F.relu(self.l1(x))))))))
+        h = self.l3(F.dropout(F.relu(self.l2(F.dropout(F.relu(self.l1(x)))))))
 
         return self.losscalc.losscalc(np.hstack((x,h)))
 
 
 # 10層が与えられた時の9層の最適化
-def optimazation_param(layers, train, test, data_path, data_suffix, train_batch_size, test_batch_size, epoch):
+def optimazation_param(layers, train, test, data_path, data_suffix, train_batch_size, test_batch_size, epoch, pathes):
 
-    net = LossCalcNet(layers)
+    net = LossCalcNet(layers, pathes)
 
     func = lambda x, t: F.sum(1 - x)/x.size 
     accfun = lambda x, t: F.sum(x)/x.size 
@@ -65,6 +65,25 @@ def optimazation_param(layers, train, test, data_path, data_suffix, train_batch_
 
     trainer.run()
 
-    chainer.serializers.save_npz(data_path + const.save_model_name + data_suffix + '.npz', model)
+def main():
+    ma_list = [1.5, 15, -1.5, 5, 1.5, 16.0, 16.0, 12.0, 12.0]
+    mi_list = [0.0, 2, -10, -2, -1.5, -16.0, -16.0, 8.0, 8.0]
+    inp_data = np.zeros((siz, 10), dtype=np.float32)
+    out_data = np.zeros((siz, 1), dtype=np.float32)
 
+    for index in range(const.siz):
+        out_data[index][siz] = 1.0;
 
+        for i in range(10):
+            inp_data[index][i] = np.random.rand() * (ma_list[i] - mi_list[i]) + mi_list[i]
+
+    train_size = int((1.0 - const.test_data_per) * siz)
+
+    train_data = chainer.datasets.TupleDataset(inp_data[:train_size], out_data[:train_size])
+    test_data = chainer.datasets.TupleDataset(inp_data[train_size:], out_data[train_size:])
+
+    network.calc_neural([100, 100, 9], train_data, test_data, const.result_path + '_optimazation/', '_optimazation', int(min(const.max_train, train_size)), int(min(const.max_test, int(const.test_data_per * len(data)))), const.epoch,
+            ['../Data/TestAlgorithmPlayout/results/result_' + str(i) + '/ans_abst_field.npz' for i in range(6)])
+
+if __name__ == '__main__':
+    main()
