@@ -24,24 +24,32 @@ class LossCalcNet(chainer.Chain):
             self.losscalc = losscalclator.LossCalclator(n_layers[:2] + [3], pathes)
     
     def __call__(self, x):
-        print('__call__')
+        print('__call__ : {}'.format(x.shape))
         # ここで最適なパラメータを出している
         h = F.sigmoid(self.l3(F.dropout(F.relu(self.l2(F.dropout(F.relu(self.l1(x))))))))
 
         y = np.zeros((x.shape[0], 1), dtype=np.float32)
         for i in range(x.shape[0]):
             y[i][0] = self.losscalc.losscalc(np.hstack((x[i],h[i].data * 10)))
-        print(y[i][0])
         return y
 
+def func(x,t):
+    lfunc = lambda x, t: F.sum(1 - x)/x.size 
+    y = lfunc(x,t)
+    print('func : {}'.format(y.data))
+    return y
+
+def accfun(x,t):
+    laccfun = lambda x, t: F.sum(x)/x.size 
+    y = laccfun(x,t)
+    print('accfun : {}'.format(y.data))
+    return y
 
 # 10層が与えられた時の9層の最適化
 def optimazation_param(layers, train, test, data_path, data_suffix, train_batch_size, test_batch_size, epoch, pathes):
 
     net = LossCalcNet(layers, pathes)
 
-    func = lambda x, t: F.sum(1 - x)/x.size 
-    accfun = lambda x, t: F.sum(x)/x.size 
     model = L.Classifier(net, lossfun=func, accfun=accfun)
 
     optimizer = chainer.optimizers.Adam()

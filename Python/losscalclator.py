@@ -10,8 +10,8 @@ import const
 import network
 import wrap
 
-playout_count = 1000
-rand_bound = 0.5
+playout_count = 150
+rand_bound = 0.8
 
 class LossCalclator():
 
@@ -35,8 +35,7 @@ class LossCalclator():
         for count in range(playout_count):
             arr = np.zeros(10, dtype=np.float32)
             for i in range(10):
-                arr[i] = np.random.rand() * 20.0 - 10
-                # arr[i] = (np.random.rand() * 20.0 - 10 if np.random.rand() > rand_bound else max(min(x[9+i] + np.random.rand() * 8 - 4, 10.0), -10.0))
+                arr[i] = (np.random.rand() * 20.0 - 10 if np.random.rand() > rand_bound else max(min(x[9+i] + np.random.rand() * 8 - 4, 10.0), -10.0))
             y = np.hstack((x, arr))
             value += self.paramcalc(y)
 
