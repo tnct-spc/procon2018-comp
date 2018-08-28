@@ -9,14 +9,25 @@
 #include "geneticalgo/simplealgorithm.h"
 #include "doubleagent/agentmanager.h"
 #include "useabstractdata.h"
+#include "LastForce/lastforce.h"
 
-GameManager::GameManager(const unsigned int x_size, const unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
+GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
     vis_show(vis_show)
 {
 
-   field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
-   field->setFinalTurn(turn_max);
+    use_random_field = (x_size == -1);
+
+    if(use_random_field){
+        std::random_device rnd;
+        std::mt19937 mt(rnd());
+        std::uniform_int_distribution<> rand_size(8, 12);
+        x_size = rand_size(mt);
+        y_size = rand_size(mt);
+    }
+
+    field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val, use_random_field);
+    field->setFinalTurn(turn_max);
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
@@ -70,9 +81,19 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
 void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod) {
 
     if (QString::compare("GenerateField", InputMethod) == 0) {
+        int x_size = field->getSize().first;
+        int y_size = field->getSize().second;
+
+        if(use_random_field){
+            std::random_device rnd;
+            std::mt19937 mt(rnd());
+            std::uniform_int_distribution<> rand_size(8, 12);
+            x_size = rand_size(mt);
+            y_size = rand_size(mt);
+        }
 
         int final_turn = field->getFinalTurn();
-        field = std::make_shared<procon::Field>(field->getSize().first, field->getSize().second, max_val, min_val);
+        field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val, use_random_field);
         field->setFinalTurn(final_turn);
         field_vec.clear();
         field_vec.push_back(std::make_shared<procon::Field>(*field));
@@ -83,9 +104,16 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     } else if (QString::compare("CSVImport", InputMethod) == 0) {
 
         std::string path = QFileDialog::getOpenFileName().toStdString();
-
         field = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
 
+    } else if (QString::compare("QRcode", InputMethod) == 0) {
+        QRCode qr;
+        QrConverterField qrc;
+        std::string f = qr.decodeQRcode();
+        procon::Field hoge = qrc.ConvertCsvToField(f);
+        field = std::make_shared<procon::Field>(hoge);
+        field_vec.clear();
+        field_vec.push_back(std::make_shared<procon::Field>(*field));
     }else if (QString::compare("BinaryImport", InputMethod) == 0) {
         std::string path = QFileDialog::getOpenFileName().toStdString();
         field = std::make_shared<procon::Field>(procon::BinaryIo::importField(path));
@@ -173,6 +201,10 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             th1.join();
             th2.join();
             */
+            //LastForce呼ぶときはこんな感じで
+//            if(getFinalTurn() - getTurnCount() <= 2){
+//                team_1 = std::make_shared<LastForce>(*field, field->getFinalTurn(), 0);
+//            }
 
             team_1_ans = team_1->agentAct(0);
             team_2_ans = team_2->agentAct(1);

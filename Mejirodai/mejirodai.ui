@@ -211,6 +211,11 @@
       </item>
       <item>
        <property name="text">
+        <string>QRcode</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>BinaryImport</string>
        </property>
       </item>
