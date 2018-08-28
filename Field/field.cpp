@@ -431,7 +431,7 @@ std::pair<int,int> procon::Field::getAgent(const unsigned int side, const unsign
 
 
 //pair<タイル状況,評価値>を返す
-std::pair<int,int> procon::Field::getState(const unsigned int x, const unsigned int y) const{
+std::pair<int,int> procon::Field::getState(const int x, const int y) const{
     if(!(0 <= x && x <= grid_x - 1 && 0 <= y && y <= grid_y - 1)){
         std::cerr<<"ERROR : getStateにて盤面外を指定しています!!"<<std::endl;
         std::abort();
