@@ -9,7 +9,7 @@ from chainer.training import extensions
 import const
 import network
 
-class wrap():
+class Wrap():
 
     def __init__(self, n_layers, path):
         self.net = Network(n_layers)
