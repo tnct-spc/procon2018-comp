@@ -103,9 +103,7 @@ void CipherCards::drawCards(std::vector<std::vector<procon::Cipher>> cards)
         std::vector<QString> paths;
 
         // 各WidgetはQGridLayoutを使用
-        std::cout << "before\n";
         delete wid->layout();
-        std::cout << "after\n";
         QGridLayout *layout = new QGridLayout(wid);
 
         // marginをなくす
@@ -114,7 +112,6 @@ void CipherCards::drawCards(std::vector<std::vector<procon::Cipher>> cards)
 
         for (unsigned int num = 0; num < card_num; num++) {
 
-            std::cout << "card : " << cards.at(agent).at(num).mark << " , " << cards.at(agent).at(num).num << std::endl;
             // Pathを作成
             QString path = makePath(cards.at(agent).at(num));
             paths.push_back(path);

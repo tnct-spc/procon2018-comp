@@ -749,15 +749,8 @@ void GameManager::nextMoveForManualMode(){
     candidate_move.at(1) = team_2->agentAct(1);
 
     std::vector<std::vector<procon::Cipher>> ciphers (2, std::vector<procon::Cipher>(1));
-    std::cout << "(" << std::get<0>(candidate_move.at(0).first) << " ";
-    std::cout << std::get<1>(candidate_move.at(0).first) << " ";
-    std::cout << std::get<2>(candidate_move.at(0).first) << ") ";
-    std::cout << "(" << std::get<0>(candidate_move.at(0).second) << " ";
-    std::cout << std::get<1>(candidate_move.at(0).second) << " ";
-    std::cout << std::get<2>(candidate_move.at(0).second) << ")";
     int move_0 = field->translateMoveToInt(0, candidate_move.at(0).first);
-    int move_1 = field->translateMoveToInt(0, candidate_move.at(0).second);
-    std::cout << " : " << move_0 << " , " << move_1 << "\n";
+    int move_1 = 26 + field->translateMoveToInt(0, candidate_move.at(0).second);
     ciphers.at(0).at(0) = procon::changeIntToCipher(move_0);
     ciphers.at(1).at(0) = procon::changeIntToCipher(move_1);
     ciphercard->drawCards(ciphers);
