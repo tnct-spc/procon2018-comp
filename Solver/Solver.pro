@@ -48,7 +48,8 @@ SOURCES += \
     doubleagent/algorithms/nashequilibrium.cpp \
     useabstractdata.cpp \
     doubleagent/agents/directionbasedalgo.cpp \
-    LastForce/lastforce.cpp
+    LastForce/lastforce.cpp \
+    depthfirstproofnumber/depthfirstproofnumber.cpp
 HEADERS += \
         algorithm_global.h \ 
         testalgorithm.h \
@@ -72,7 +73,8 @@ HEADERS += \
     doubleagent/algorithms/nashequilibrium.h \
     useabstractdata.h \
     doubleagent/agents/directionbasedalgo.h \
-    LastForce/lastforce.h
+    LastForce/lastforce.h \
+    depthfirstproofnumber/depthfirstproofnumber.h
 unix {
     target.path = /usr/lib
     INSTALLS += target
