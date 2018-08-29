@@ -21,8 +21,6 @@ void CipherCards::resizeEvent(QResizeEvent *event)
     // 画像をresize
 
     // agent1
-    // ラベルの数。layoutの文は引く
-    int num = ui->agent1Widget->children().size() - 1;
 
     for (int i = 0; i < images.at(0).size(); i++) {
         // 保存していた画像を貼り直す
@@ -33,12 +31,10 @@ void CipherCards::resizeEvent(QResizeEvent *event)
         QLabel *label = ui->agent1Widget->findChild<QLabel *>(object_name);
 
         // Widgetの横幅に合わせる
-        label->setPixmap(pix.scaledToWidth(ui->agent1Widget->width() / num - 5));
+        label->setPixmap(pix.scaledToWidth(ui->agent1Widget->width() / images.at(0).size() - 5));
     }
 
     // agent2
-    // ラベルの数。layoutの文は引く
-    num = ui->agent2Widget->children().size() - 1;
 
     for (int i = 0; i < images.at(1).size(); i++) {
         // 保存していた画像を貼り直す
@@ -49,7 +45,7 @@ void CipherCards::resizeEvent(QResizeEvent *event)
         QLabel *label = ui->agent2Widget->findChild<QLabel *>(object_name);
 
         // Widgetの横幅に合わせる
-        label->setPixmap(pix.scaledToWidth(ui->agent2Widget->width() / num - 5));
+        label->setPixmap(pix.scaledToWidth(ui->agent2Widget->width() / images.at(1).size() - 5));
     }
 }
 
