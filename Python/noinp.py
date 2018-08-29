@@ -17,15 +17,18 @@ class NoInpNet(chainer.Chain):
     def __init__(self, fdata, pathes):
         super(NoInpNet, self).__init__()
         with self.init_scope():
+            self.a = 0
             self.f = fdata
             self.l1 = L.Linear(1, 10)
             self.losscalc = losscalclator.LossCalclator([100,100,3], pathes, 1)
     
     def __call__(self, x):
-
+        self.a += 1
+        print('{} , __call__ : {}'.format(self.a, x.shape[0]))
         h = F.sigmoid(self.l1(x))
 
         y = np.zeros((x.shape[0], 1), dtype=np.float32)
+
 
         for i in range(x.shape[0]):
             y[i][0] = self.losscalc.losscalc(np.hstack((self.f,h[i].data * 10)))
