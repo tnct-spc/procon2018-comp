@@ -20,6 +20,7 @@ Visualizer::~Visualizer()
 }
 
 void Visualizer::setField(const procon::Field& inp_field, int now_turn, int max_t){
+    candidate = std::vector<std::vector<std::pair<int, int>>>(2, std::vector<std::pair<int,int>>(2, std::make_pair(-1, -1)));
     field = inp_field;
     turn = now_turn;
     max_turn = max_t;
@@ -553,7 +554,6 @@ void Visualizer::getData(const std::pair<int, int> data, const bool agent) {
             field.setState(clicked_grid_change.first, clicked_grid_change.second, selected_agent.first + 1);
 
 //            std::pair<int, int> agent = field.getAgent(0,0);
-//            std::cout << agent.first << "," << agent.second << std::endl;
 
             selected = false;
         }

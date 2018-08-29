@@ -49,7 +49,7 @@ public:
     void setFinalTurn(int turn_count);
 
    // bool isPlaced(const unsigned int x, const unsigned int y);
-    std::pair<int,int> getState(const unsigned int x, const unsigned int y) const;//pair<タイル状況,評価値>
+    std::pair<int,int> getState(const int x, const int y) const;//pair<タイル状況,評価値>
 
     void setState(const unsigned int x, const unsigned int y, const unsigned int state);//タイル状況のみの変更
     void setAgent(const unsigned int side, const unsigned int number, const unsigned int x_pos, const unsigned int y_pos);
