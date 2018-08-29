@@ -24,7 +24,6 @@ class NoInpNet(chainer.Chain):
     
     def __call__(self, x):
         self.a += 1
-        print('{} , __call__ : {}'.format(self.a, x.shape[0]))
         h = F.sigmoid(self.l1(x))
 
         y = np.zeros((x.shape[0], 1), dtype=np.float32)
@@ -32,16 +31,18 @@ class NoInpNet(chainer.Chain):
 
         for i in range(x.shape[0]):
             y[i][0] = self.losscalc.losscalc(np.hstack((self.f,h[i].data * 10)))
+        # print('{} , __call__ : {}'.format(self.a, x.shape[0]))
         return y
 
 def func(x,t):
     lfunc = lambda x, t: F.sum(1 - x)/x.size 
-    y = lfunc(x,t)
+    y = F.mean_squared_error(x,t)
     return y
 
 def accfun(x,t):
     laccfun = lambda x, t: F.sum(x)/x.size 
     y = laccfun(x,t)
+    # y = F.mean_squared_error(x,t)
     return y
 
 # 10層が与えられた時の9層の最適化
