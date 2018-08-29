@@ -67,7 +67,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstMonteCa
 
         mgr_target->changeTurn(false);
 
-        bool win = mgr_target->simulationGenetic(*side_1, *side_2, 0);
+        bool win = mgr_target->simulationGenetic(*side_1, *side_2, 4);
 
         //反転
         if(side == 1)
@@ -89,7 +89,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstMonteCa
         std::set<std::pair<int,int>> move_list_1,move_list_2;
 
         //全てのエージェントで動きを試してみる
-        for(int agent_num = 0; agent_num < 20; ++agent_num){
+        for(int agent_num = 0; agent_num < values_size; ++agent_num){
             GeneticAgent agent(10);
             agent.setData(values.at(agent_num) );
             UseAbstractData algo(field, final_turn, side,agent);

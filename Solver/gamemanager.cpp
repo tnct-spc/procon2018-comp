@@ -9,6 +9,7 @@
 #include "geneticalgo/simplealgorithm.h"
 #include "doubleagent/agentmanager.h"
 #include "useabstractdata.h"
+#include "simplemontecarlo/useabstmontecarlo.h"
 GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
     vis_show(vis_show)
@@ -140,6 +141,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 1);
     } else if (QString::compare("UseAbstractData", my_algo) == 0) {
         team_1 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 0);
+    } else if (QString::compare("UseAbstMonteCarlo", my_algo) == 0) {
+        team_1 = std::make_shared<UseAbstMonteCarlo>(*field, field->getFinalTurn(), 0);
     }
 
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
@@ -164,6 +167,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 1);
     } else if (QString::compare("UseAbstractData", opponent_algo) == 0) {
         team_2 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 1);
+    } else if (QString::compare("UseAbstMonteCarlo", opponent_algo) == 0) {
+        team_2 = std::make_shared<UseAbstMonteCarlo>(*field, field->getFinalTurn(), 1);
     }
 
 
@@ -302,6 +307,10 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
     if(algo_number == 3){
         team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 0, &agent_1, &agent_2);
         team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 0, &agent_3, &agent_4);
+    }
+    if(algo_number == 4){
+        team_1 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 0, agent_1);
+        team_2 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 1, agent_2);
     }
 
 

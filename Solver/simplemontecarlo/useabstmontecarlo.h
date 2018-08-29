@@ -33,7 +33,7 @@ private:
     const double ucb_val = 1.4;//定数
 
     //合計での試行回数
-    unsigned int try_time = 3 * 1e6;
+    unsigned int try_time = 3 * 1e7;
 
     std::vector<std::vector<double>> values = {
         {1.6, 1.2, -0.7, 1.2, 1.2, -0.3 ,1.2, -0.4, -0.4, 1.5}
