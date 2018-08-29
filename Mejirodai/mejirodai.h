@@ -37,7 +37,7 @@ private:
     void runOperatorWindow();
     void exportFieldtoBinary();
 
-    const unsigned int x_size = 12;
+    const unsigned int x_size = -1;
     const unsigned int y_size = 8;
 
     // Runボタンが押されたか
