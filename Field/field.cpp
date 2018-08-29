@@ -1178,3 +1178,31 @@ std::vector<double> procon::Field::calcSituationFeature(std::pair<std::tuple<int
     */
     return ans;
 }
+void procon::Field::createQRstrinsg(int side){
+    std::string ans;
+    ans += std::to_string(grid_y);
+    ans.push_back(' ');
+    ans += std::to_string(grid_x);
+    ans.push_back(':');
+    for(int y = 0;y < grid_y;y++){
+        for(int x = 0;x < grid_x;x++){
+            if(x == 0){
+                ans += std::to_string(getState(x,y).second);
+            }else{
+                ans.push_back(' ');
+                ans += std::to_string(getState(x,y).second);
+            }
+        }
+        ans.push_back(':');
+    }
+    ans += std::to_string(1+agents.at(side).at(0).second);
+    ans.push_back(' ');
+    ans += std::to_string(1+agents.at(side).at(0).first);
+    ans.push_back(':');
+    ans += std::to_string(1+agents.at(side).at(1).second);
+    ans.push_back(' ');
+    ans += std::to_string(1+agents.at(side).at(1).first);
+    ans.push_back(':');
+    std::cout<<ans<<std::endl;
+    std::cout<<std::endl;
+}
