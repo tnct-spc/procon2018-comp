@@ -31,6 +31,8 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
+
+
     if(vis_show){
         visualizer = std::make_shared<Visualizer>(*field);
         visualizer->show();
@@ -66,6 +68,8 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
         is_auto = true;//この場合は自動進行
     }
 
+
+
     field->updatePoint();
 
 }
@@ -79,7 +83,6 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
 }
 
 void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod) {
-
     if (QString::compare("GenerateField", InputMethod) == 0) {
         int x_size = field->getSize().first;
         int y_size = field->getSize().second;
@@ -119,6 +122,9 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         field = std::make_shared<procon::Field>(procon::BinaryIo::importField(path));
     }
     //field->guessAgents(1);
+
+   // field->createQRstrinsg(0);
+    //field->createQRstrinsg(1);
 
     if (QString::compare("DummyAlgorithm", my_algo) == 0) {
         team_1 = std::make_shared<DummyAlgorithm>(*field, field->getFinalTurn(), 0);
@@ -167,6 +173,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     } else if (QString::compare("UseAbstractData", opponent_algo) == 0) {
         team_2 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 1);
     }
+
+
 
 
     // progressdockは一旦表示しない事にします(使う事があまりないため)
