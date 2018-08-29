@@ -47,7 +47,8 @@ SOURCES += \
     doubleagent/algorithms/simplemcforduble.cpp \
     doubleagent/algorithms/nashequilibrium.cpp \
     useabstractdata.cpp \
-    doubleagent/agents/directionbasedalgo.cpp
+    doubleagent/agents/directionbasedalgo.cpp \
+    simplemontecarlo/useabstmontecarlo.cpp
 HEADERS += \
         algorithm_global.h \ 
         testalgorithm.h \
@@ -70,7 +71,8 @@ HEADERS += \
     doubleagent/algorithms/simplemcforduble.h \
     doubleagent/algorithms/nashequilibrium.h \
     useabstractdata.h \
-    doubleagent/agents/directionbasedalgo.h
+    doubleagent/agents/directionbasedalgo.h \
+    simplemontecarlo/useabstmontecarlo.h
 unix {
     target.path = /usr/lib
     INSTALLS += target
