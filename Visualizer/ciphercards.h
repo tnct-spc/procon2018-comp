@@ -49,6 +49,9 @@ public:
 
     // 移動先が決まったら更新
     void updata(std::vector<std::pair<int, int>> move);
+    
+    // カードを表示
+    void drawCards(std::vector<std::vector<procon::Cipher>> cards);
 
 private:
     Ui::CipherCards *ui;
@@ -61,9 +64,6 @@ private:
 
     // 暗号を設定
     void setCipher(unsigned long int agent, unsigned long int pos, procon::Cipher cip);
-
-    // カードを表示
-    void drawCards(std::vector<std::vector<procon::Cipher>> cards);
 
     // Path
     std::vector<std::vector<QString>> images;
