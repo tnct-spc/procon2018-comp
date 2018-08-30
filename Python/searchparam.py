@@ -21,7 +21,7 @@ def main():
         if par > 0.9:
             print('count : {}'.format(count + 1))
             print('par : {}'.format(par))
-            print('diagnonal_move = {}'.format(params[9]), end=';\n')
+            print('diagonal_move = {}'.format(params[9]), end=';\n')
             print('const_values = {', end='')
             for val in params[:8]:
                 print(val, end=', ')
