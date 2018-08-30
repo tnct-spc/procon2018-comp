@@ -48,7 +48,9 @@ SOURCES += \
     doubleagent/algorithms/nashequilibrium.cpp \
     useabstractdata.cpp \
     doubleagent/agents/directionbasedalgo.cpp \
+    simplemontecarlo/useabstmontecarlo.cpp \
     LastForce/lastforce.cpp
+
 HEADERS += \
         algorithm_global.h \ 
         testalgorithm.h \
@@ -72,7 +74,9 @@ HEADERS += \
     doubleagent/algorithms/nashequilibrium.h \
     useabstractdata.h \
     doubleagent/agents/directionbasedalgo.h \
+    simplemontecarlo/useabstmontecarlo.h \
     LastForce/lastforce.h
+
 unix {
     target.path = /usr/lib
     INSTALLS += target

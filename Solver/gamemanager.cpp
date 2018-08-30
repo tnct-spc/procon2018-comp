@@ -9,6 +9,7 @@
 #include "geneticalgo/simplealgorithm.h"
 #include "doubleagent/agentmanager.h"
 #include "useabstractdata.h"
+#include "simplemontecarlo/useabstmontecarlo.h"
 #include "LastForce/lastforce.h"
 
 GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
@@ -148,6 +149,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 1);
     } else if (QString::compare("UseAbstractData", my_algo) == 0) {
         team_1 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 0);
+    } else if (QString::compare("UseAbstMonteCarlo", my_algo) == 0) {
+        team_1 = std::make_shared<UseAbstMonteCarlo>(*field, field->getFinalTurn(), 0);
     }
 
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
@@ -172,6 +175,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 1);
     } else if (QString::compare("UseAbstractData", opponent_algo) == 0) {
         team_2 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 1);
+    } else if (QString::compare("UseAbstMonteCarlo", opponent_algo) == 0) {
+        team_2 = std::make_shared<UseAbstMonteCarlo>(*field, field->getFinalTurn(), 1);
     }
 
 
@@ -255,6 +260,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         // progresdock->show();
 
     }else{
+        ciphercard = std::make_shared<CipherCards>();
+        ciphercard->show();
 
         nextMoveForManualMode();
 
@@ -316,6 +323,10 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
     if(algo_number == 3){
         team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 0, &agent_1, &agent_2);
         team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 0, &agent_3, &agent_4);
+    }
+    if(algo_number == 4){
+        team_1 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 0, agent_1);
+        team_2 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 1, agent_2);
     }
 
 
@@ -543,6 +554,146 @@ void GameManager::changeTurn(bool update){
 
 }
 
+std::vector<int> GameManager::showAgentAct(bool side, std::tuple<int,int,int> move, bool hoge){
+    bool destroy = (std::get<0>(move) == 2);
+    std::pair<int,int> to;
+    to.first = std::get<1>(move);
+    to.second = std::get<2>(move);
+    int relative_move = (to.first*-1+1)+(to.second+1)*3;
+    if(side == 0){
+        relative_move = ((relative_move % 3)*-1+2)*3+relative_move/3;
+    }
+    else{
+        relative_move = (relative_move % 3)*3+(relative_move/3*-1+2);
+    }
+    if(destroy){
+        relative_move += 9;
+    }
+
+    std::vector<int> cards (2);
+    int random = rand() % 4;
+    if(relative_move < 9){
+        if(rand() % 2 == 1){
+            cards.at(0) = 8 + 13 * random;
+        }
+        else{
+            cards.at(0) = 10 + 13 * random;
+        }
+    }
+    if(relative_move > 8){
+        if(rand() % 2 == 1){
+            cards.at(0) = 9 + 13 * random;
+        }
+        else{
+            cards.at(0) = 11 + 13 * random;
+        }
+    }
+    if(relative_move == 4 || relative_move == 13){
+        cards.at(0) = 12 + 13 * random;
+    }
+
+    random = rand() % 4;
+    if(hoge = true){
+        if(random == 0){
+            if(relative_move == 0)relative_move = 7;
+            if(relative_move == 1)relative_move = 0;
+            if(relative_move == 2)relative_move = 1;
+            if(relative_move == 3)relative_move = 6;
+            if(relative_move == 4)relative_move = rand() % 8;
+            if(relative_move == 5)relative_move = 2;
+            if(relative_move == 6)relative_move = 5;
+            if(relative_move == 7)relative_move = 4;
+            if(relative_move == 8)relative_move = 3;
+         }
+        if(random == 1){
+            if(relative_move == 0)relative_move = 5 + 13;
+            if(relative_move == 1)relative_move = 6 + 13;
+            if(relative_move == 2)relative_move = 7 + 13;
+            if(relative_move == 3)relative_move = 4 + 13;
+            if(relative_move == 4)relative_move = rand() % 8 + 13;
+            if(relative_move == 5)relative_move = 0 + 13;
+            if(relative_move == 6)relative_move = 3 + 13;
+            if(relative_move == 7)relative_move = 2 + 13;
+            if(relative_move == 8)relative_move = 1 + 13;
+        }
+        if(random == 2){
+            if(relative_move == 0)relative_move = 3 + 26;
+            if(relative_move == 1)relative_move = 4 + 26;
+            if(relative_move == 2)relative_move = 5 + 26;
+            if(relative_move == 3)relative_move = 2 + 26;
+            if(relative_move == 4)relative_move = rand() % 8 + 26;
+            if(relative_move == 5)relative_move = 6 + 26;
+            if(relative_move == 6)relative_move = 1 + 26;
+            if(relative_move == 7)relative_move = 0 + 26;
+            if(relative_move == 8)relative_move = 7 + 26;
+        }
+        if(random == 3){
+            if(relative_move == 0)relative_move = 1 + 39;
+            if(relative_move == 1)relative_move = 2 + 39;
+            if(relative_move == 2)relative_move = 3 + 39;
+            if(relative_move == 3)relative_move = 0 + 39;
+            if(relative_move == 4)relative_move = rand() % 8 + 39;
+            if(relative_move == 5)relative_move = 4 + 39;
+            if(relative_move == 6)relative_move = 7 + 39;
+            if(relative_move == 7)relative_move = 6 + 39;
+            if(relative_move == 8)relative_move = 5 + 39;
+        }
+    }
+    else{
+        if(random == 0){
+            if(relative_move == 0)relative_move = 1;
+            if(relative_move == 1)relative_move = 0;
+            if(relative_move == 2)relative_move = 7;
+            if(relative_move == 3)relative_move = 2;
+            if(relative_move == 4)relative_move = rand() % 8;
+            if(relative_move == 5)relative_move = 6;
+            if(relative_move == 6)relative_move = 3;
+            if(relative_move == 7)relative_move = 4;
+            if(relative_move == 8)relative_move = 5;
+         }
+        if(random == 1){
+            if(relative_move == 0)relative_move = 3 + 13;
+            if(relative_move == 1)relative_move = 2 + 13;
+            if(relative_move == 2)relative_move = 1 + 13;
+            if(relative_move == 3)relative_move = 4 + 13;
+            if(relative_move == 4)relative_move = rand() % 8 + 13;
+            if(relative_move == 5)relative_move = 0 + 13;
+            if(relative_move == 6)relative_move = 5 + 13;
+            if(relative_move == 7)relative_move = 6 + 13;
+            if(relative_move == 8)relative_move = 7 + 13;
+        }
+        if(random == 2){
+            if(relative_move == 0)relative_move = 5 + 26;
+            if(relative_move == 1)relative_move = 4 + 26;
+            if(relative_move == 2)relative_move = 3 + 26;
+            if(relative_move == 3)relative_move = 6 + 26;
+            if(relative_move == 4)relative_move = rand() % 8 + 26;
+            if(relative_move == 5)relative_move = 2 + 26;
+            if(relative_move == 6)relative_move = 7 + 26;
+            if(relative_move == 7)relative_move = 0 + 26;
+            if(relative_move == 8)relative_move = 1 + 26;
+        }
+        if(random == 3){
+            if(relative_move == 0)relative_move = 7 + 39;
+            if(relative_move == 1)relative_move = 6 + 39;
+            if(relative_move == 2)relative_move = 5 + 39;
+            if(relative_move == 3)relative_move = 0 + 39;
+            if(relative_move == 4)relative_move = rand() % 8 + 39;
+            if(relative_move == 5)relative_move = 1 + 39;
+            if(relative_move == 6)relative_move = 2 + 39;
+            if(relative_move == 7)relative_move = 3 + 39;
+            if(relative_move == 8)relative_move = 4 + 39;
+        }
+    }
+    cards.at(1) = relative_move;
+
+    random = rand() % 10;
+    if(random == 0){
+        cards.push_back(52);
+    }
+    return cards;
+}
+
 void GameManager::setAutoMode(bool value){
     is_auto = value;
 }
@@ -556,6 +707,8 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
 
     std::cout << "turn : " << field->getTurnCount()+1 << std::endl << std::endl;
 
+    std::vector<std::pair<int, int>> move_cipher;
+
     for(int side = 0; side < 2; ++side)
         for(int agent = 0; agent < 2; ++agent){
 
@@ -567,6 +720,8 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
 
             new_pos.first -= origin_pos.first;
             new_pos.second -= origin_pos.second;
+
+            if (side == 0) move_cipher.push_back(new_pos);
 
             //is_deleteなら強制的に削除
             agentAct(side, agent,  std::make_tuple( ( is_delete.at(side).at(agent) || (field->getState(pos.first, pos.second).first == (side == 0 ? 2 : 1)) ? 2 : 1 ), new_pos.first, new_pos.second ) );
@@ -584,6 +739,8 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
     setFieldCount(field_vec.size() - 1);
 
     visualizer->update();
+
+    ciphercard->updata(move_cipher);
 
     if(field->getTurnCount() == field->getFinalTurn()){
 
@@ -607,6 +764,13 @@ void GameManager::nextMoveForManualMode(){
     std::vector<std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>>> candidate_move(2);
     candidate_move.at(0) = team_1->agentAct(0);
     candidate_move.at(1) = team_2->agentAct(1);
+
+    std::vector<std::vector<procon::Cipher>> ciphers (2, std::vector<procon::Cipher>(1));
+    int move_0 = field->translateMoveToInt(0, candidate_move.at(0).first);
+    int move_1 = 26 + field->translateMoveToInt(0, candidate_move.at(0).second);
+    ciphers.at(0).at(0) = procon::changeIntToCipher(move_0);
+    ciphers.at(1).at(0) = procon::changeIntToCipher(move_1);
+    ciphercard->drawCards(ciphers);
 
     std::vector<std::vector<std::pair<int,int>>> return_vec(2, std::vector<std::pair<int,int>>(2) );
 
