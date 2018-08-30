@@ -22,6 +22,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+CONFIG += precompile_header
+PRECOMPILED_HEADER = $$PWD/../precompile/precompile.h
+precompile_header:!isEmpty(PRECOMPILED_HEADER) {
+    DEFINES += USING_PCH
+}
+INCLUDEPATH += $$PWD/../precompile
+DEPENDPATH += $$PWD/../precompile
 
 SOURCES += \
         main.cpp \
@@ -32,6 +39,9 @@ HEADERS += \
 
 FORMS += \
         mejirodai.ui
+
+LIBS += -L/usr/lib `pkg-config --libs opencv`
+LIBS += -L/usr/lib -lzbar
 
 LIBS += -L$$OUT_PWD/../Field/ -lField
 INCLUDEPATH += $$PWD/../Field
@@ -45,3 +55,7 @@ DEPENDPATH += $$PWD/../Solver
 LIBS += -L$$OUT_PWD/../Visualizer/ -lVisualizer
 INCLUDEPATH += $$PWD/../Visualizer
 DEPENDPATH += $$PWD/../Visualizer
+
+LIBS += -L$$OUT_PWD/../QRcode/ -lQRcode
+INCLUDEPATH += $$PWD/../QRcode
+DEPENDPATH += $$PWD/../QRcode

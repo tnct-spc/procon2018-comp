@@ -1,11 +1,17 @@
 #include <iostream>
 #include "testagentparam.h"
+#include "testevaluatespeed.h"
+#include "testalgorithmplayout.h"
+#include "testconvertfield.h"
 
 int main()
 {
 
     std::cout << "select mode" << std::endl;
     std::cout << "0 : TestAgentParam" << std::endl;
+    std::cout << "1 : TestEvaluateSpeed" << std::endl;
+    std::cout << "2 : TestAlgorithmPlayout" << std::endl;
+    std::cout << "3 : TestConvertField" << std::endl;
 
     int test_number = -1;
 
@@ -14,7 +20,7 @@ int main()
         std::cout << "algo number : ";
         std::cin >> test_number;
 
-        if(test_number == 0 || test_number == 2)
+        if(test_number >= 0 && test_number <= 3)
             break;
 
         std::cout << "incorrect" << std::endl;
@@ -34,7 +40,7 @@ int main()
             std::cout << "test number : ";
             std::cin >> test_number;
 
-            if(test_number >= 0 && test_number <= 2)
+            if(test_number >= 0 && test_number <= 3)
                 break;
 
             std::cout << "incorrect" << std::endl;
@@ -44,6 +50,21 @@ int main()
             test.runFix();
         if(test_number == 1 || test_number == 2)
             test.runRand( (test_number == 2) );
+    }
+    else if(test_number == 1){
+
+        TestEvaluateSpeed test;
+        test.run();
+    }
+    else if(test_number == 2){
+
+        TestAlgorithmPlayout test;
+        test.run();
+    }
+    else if(test_number == 3){
+
+        TestConvertField test;
+        test.run();
     }
 
 
