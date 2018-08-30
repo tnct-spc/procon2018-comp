@@ -84,6 +84,9 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
 }
 
 void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod) {
+    std::thread::id tid = std::this_thread::get_id();
+    std::cout << "startSimulation() thread id: " << tid << std::endl;
+
     if (QString::compare("GenerateField", InputMethod) == 0) {
         int x_size = field->getSize().first;
         int y_size = field->getSize().second;
@@ -855,4 +858,12 @@ void GameManager::getDataToOperator(const std::pair<int,int> grid, const bool ag
 void GameManager::getChangeOfData(const std::pair<int, int> data, const bool agent)
 {
     emit sendDataToVisualizer(data, agent);
+}
+
+void GameManager::startThread(QString my_algo, QString opponent_algo, QString InputMethod)
+{
+    std::thread search_thread(&GameManager::startSimulation, this, my_algo, opponent_algo, InputMethod);
+    std::thread::id main_tid = std::this_thread::get_id();
+    std::cout << "main thread id: " << main_tid << std::endl;
+    search_thread.join();
 }

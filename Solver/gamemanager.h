@@ -60,6 +60,8 @@ public:
     // ChangeModeを開始
     void startupChangeMode();
 
+    void startThread(QString my_algo, QString opponent_algo, QString InputMethod);
+
 
 
 signals:
