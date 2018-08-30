@@ -79,8 +79,6 @@ def optimazation_param(layers, train, test, data_path, data_suffix, train_batch_
     trainer.run()
 
 def main():
-    ma_list = [1.5, 15, -1.5, 5, 1.5, 16.0, 16.0, 12.0, 12.0]
-    mi_list = [0.0, 2, -10, -2, -1.5, -16.0, -16.0, 8.0, 8.0]
     inp_data = np.zeros((const.siz, 9), dtype=np.float32)
     out_data = np.zeros((const.siz, 1), dtype=np.float32)
 
@@ -88,7 +86,7 @@ def main():
         out_data[index][0] = 1.0;
 
         for i in range(9):
-            inp_data[index][i] = np.random.rand() * (ma_list[i] - mi_list[i]) + mi_list[i]
+            inp_data[index][i] = np.random.rand() * (const.ma_list[i] - const.mi_list[i]) + const.mi_list[i]
 
     train_size = int((1.0 - const.test_data_per) * const.siz)
 

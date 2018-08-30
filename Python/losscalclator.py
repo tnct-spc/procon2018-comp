@@ -6,7 +6,7 @@ from chainer import functions as F
 from chainer import training
 from chainer.training import extensions
 
-import const
+import constconst
 import network
 import wrap
 
@@ -25,6 +25,21 @@ class LossCalclator():
             ret = wrap.predict(x)
             point += 1 if ret == 1 else 0.5 if ret == 0 else 0
         return point
+
+    # お互いのパラメータ(20個)が与えられて、そのパラメータ同士の勝率を返す
+    def parcalc(self, x):
+        value = 0.0
+        max_value = 1.0 * len(self.wrappers) * self.playout_count
+
+        for count in range(self.playout_count):
+            arr = np.zeros(9, dtype=np.float32)
+            for i in range(9):
+                # 盤面をランダム生成している
+                arr[i] = const.mi_list[i] + np.random.rand() * (const.ma_list[i] - const.mi_list[i])
+            y = np.hstack((arr, x))
+            value += self.paramcalc(y)
+
+        return value / max_value
 
     # 19層のパラメータが与えられて、そのパラメータでの勝ちやすさを返す
     def losscalc(self, x):
