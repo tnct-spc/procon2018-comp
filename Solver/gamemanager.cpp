@@ -765,11 +765,20 @@ void GameManager::nextMoveForManualMode(){
     candidate_move.at(0) = team_1->agentAct(0);
     candidate_move.at(1) = team_2->agentAct(1);
 
+    /*
     std::vector<std::vector<procon::Cipher>> ciphers (2, std::vector<procon::Cipher>(1));
     int move_0 = field->translateMoveToInt(0, candidate_move.at(0).first);
     int move_1 = 26 + field->translateMoveToInt(0, candidate_move.at(0).second);
     ciphers.at(0).at(0) = procon::changeIntToCipher(move_0);
     ciphers.at(1).at(0) = procon::changeIntToCipher(move_1);
+    */
+
+    std::vector<std::vector<procon::Cipher>> ciphers(2, std::vector<procon::Cipher>(2));
+    ciphers.at(0).at(0) = procon::changeIntToCipher(std::get<1>(candidate_move.at(0).first) + 1);
+    ciphers.at(0).at(1) = procon::changeIntToCipher(- std::get<2>(candidate_move.at(0).first) + 14);
+    ciphers.at(1).at(0) = procon::changeIntToCipher(std::get<1>(candidate_move.at(0).second) + 27);
+    ciphers.at(1).at(1) = procon::changeIntToCipher(- std::get<2>(candidate_move.at(0).second) + 40);
+
     ciphercard->drawCards(ciphers);
 
     std::vector<std::vector<std::pair<int,int>>> return_vec(2, std::vector<std::pair<int,int>>(2) );
