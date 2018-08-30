@@ -9,6 +9,8 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
 
+#include <random>
+
 // クソ
 struct params;
 
@@ -21,14 +23,14 @@ public:
     void run();
 
 private:
-    void playout(bool iswrite = false);
+    int playout(bool iswrite = false);
 
     std::shared_ptr<spdlog::logger> logger;
 
     std::random_device device;
     std::mt19937 mt;
 
-    const std::string path = "../../procon2018-comp/Data/TestAlgorithmPlayout/result.csv";
+    const std::string path = "../../procon2018-comp/out";
 
     std::uniform_int_distribution<> rand_size;
     std::uniform_int_distribution<> rand_turn;
@@ -36,6 +38,8 @@ private:
     std::shared_ptr<GameManager> manager;
 
     std::vector<std::shared_ptr<UseAbstractData>> agents;
+
+    GeneticAgent agent, enemy;
 
 };
 

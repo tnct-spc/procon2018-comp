@@ -4,6 +4,7 @@ UseAbstractData::UseAbstractData(const procon::Field& field, int final_turn, boo
     AlgorithmWrapper(field, final_turn, side),
     agent_data(agent)
 {
+
     std::vector<double> value = agent_data.getData();
     for(int index = 0; index < 9; ++index){
         // [10, -10]

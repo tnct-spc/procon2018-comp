@@ -4,20 +4,29 @@ TestAlgorithmPlayout::TestAlgorithmPlayout() :
     mt(device()),
     rand_size(8, 12),
     rand_turn(60, 120),
-    agents(2)
+    agents(2),
+    agent(10),
+    enemy(10)
 {
     manager = std::make_shared<GameManager>(8, 10, false, 60);
     logger = spdlog::basic_logger_mt("TestAlgorithmPlayout", path);
     logger->set_pattern("%v");
 
+    enemy.setData(std::vector<double>({0.66, 0.62, 0.43, 0.62, 0.62, 0.47 ,0.62, 0.46, 0.46, 0.65}));
+
 }
 
-void TestAlgorithmPlayout::playout(bool iswrite){
+int TestAlgorithmPlayout::playout(bool iswrite){
 
     manager->resetManager(rand_size(mt), rand_size(mt), false, rand_turn(mt));
 
+    /*
     for(int index = 0; index < 2; ++index)
         agents.at(index) = std::make_shared<UseAbstractData>(manager->getField(), manager->getFinalTurn(), index);
+    */
+    agents.at(0) = std::make_shared<UseAbstractData>(manager->getField(), manager->getFinalTurn(), 0, agent);
+
+    agents.at(1) = std::make_shared<UseAbstractData>(manager->getField(), manager->getFinalTurn(), 1, enemy);
 
     while(manager->getTurnCount() < manager->getFinalTurn()){
         for(int side = 0; side < 2; ++side){
@@ -72,9 +81,37 @@ void TestAlgorithmPlayout::playout(bool iswrite){
         logger->info(outstream.str());
     }
 
+    if(points.at(0) == points.at(1))
+        return 0;
+
+    return (points.at(0) > points.at(1) ? 1 : -1);
+
 }
 
 void TestAlgorithmPlayout::run(){
-    for(int count = 0; count < 1e7; ++count)
-        playout(true);
+    std::random_device rnd;
+    std::mt19937 mt(rnd());
+    std::uniform_real_distribution<> rand_param(0, 1);
+    for(int count = 0; count < 1e7; ++count){
+        std::vector<double> param(10,0);
+        for(auto& p : param)
+            p = rand_param(mt);
+
+        int point = 0;
+        agent.setData(param);
+        for(int play = 0; play < 300; ++play){
+            point += playout();
+        }
+
+        if(point > 0){
+            std::stringstream out;
+            out << point << std::endl;
+            out << "{";
+            for(auto it = param.begin(); it != param.end(); ++it)
+                out << (*it) << (std::next(it) != param.end() ? ", ": "");
+            out << "}" << std::endl;
+            logger->info(out.str());
+            std::cout << out.str();
+        }
+    }
 }
