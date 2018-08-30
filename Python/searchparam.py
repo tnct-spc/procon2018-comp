@@ -18,10 +18,15 @@ def main():
         params = (np.random.rand(10) * 20 - 10).astype(np.float32)
         
         par = net.parcalc(np.hstack((params, target)))
-        if par > 0.5:
-            print(par)
-            print(params)
-            print()
+        if par > 0.9:
+            print('count : {}'.format(count + 1))
+            print('par : {}'.format(par))
+            print('diagnonal_move = {}'.format(params[9]))
+            print('params = {', end='')
+            for val in params[:8]:
+                print(val, end=', ')
+            print(params[9], end='')
+            print('}', end='\n\n')
 
 
 if __name__ == '__main__':
