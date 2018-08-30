@@ -12,13 +12,16 @@ TestAlgorithmPlayout::TestAlgorithmPlayout() :
     logger = spdlog::basic_logger_mt("TestAlgorithmPlayout", path);
     logger->set_pattern("%v");
 
-    enemy.setData(std::vector<double>({0.66, 0.62, 0.43, 0.62, 0.62, 0.47 ,0.62, 0.46, 0.46, 0.65}));
+    mt = std::mt19937(device());
+    rand_dist = std::uniform_int_distribution<>(0, params.size() - 1);
 
 }
 
 int TestAlgorithmPlayout::playout(bool iswrite){
 
     manager->resetManager(rand_size(mt), rand_size(mt), false, rand_turn(mt));
+
+    enemy.setData(params.at(rand_dist(mt)));
 
     /*
     for(int index = 0; index < 2; ++index)
@@ -49,9 +52,6 @@ int TestAlgorithmPlayout::playout(bool iswrite){
         // パス渡されたら適当にコンマ区切りで出すようにしたので、適当に確認お願いします
         // 盤面の特徴 -> side=0側のデータ -> side=1側のデータ -> お互いの得点
 
-
-        std::random_device rnd;
-        std::mt19937 mt(rnd());
         std::uniform_int_distribution<> rnd_int(0, INT_MAX);
 
         const std::vector<double>& features = manager->getField().getFeatures();
@@ -103,7 +103,7 @@ void TestAlgorithmPlayout::run(){
             point += playout();
         }
 
-        if(point > 0){
+        if(point > -20){
             std::stringstream out;
             out << point << std::endl;
             out << "{";
