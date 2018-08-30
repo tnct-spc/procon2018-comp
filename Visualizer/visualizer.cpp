@@ -107,6 +107,9 @@ void Visualizer::paintEvent(QPaintEvent *event){
                            : team_color_b);
                 paint_color.setAlpha(128);
 
+                if(index)
+                    paint_color.setGreen(128);
+
                 painter.setBrush(QBrush(paint_color));
 
                 int pos_x = field.getAgents().at(team).at(index).first;
