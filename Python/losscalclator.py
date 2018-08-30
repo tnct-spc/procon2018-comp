@@ -37,7 +37,9 @@ class LossCalclator():
                 # 盤面をランダム生成している
                 arr[i] = const.mi_list[i] + np.random.rand() * (const.ma_list[i] - const.mi_list[i])
             y = np.hstack((arr, x))
-            value += self.paramcalc(y)
+
+            for wrap in self.wrappers:
+                value += wrap.predict_win(y)
 
         return value / max_value
 

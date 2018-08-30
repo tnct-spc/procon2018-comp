@@ -34,6 +34,11 @@ class NetWork(chainer.Chain):
         y = np.argmax(y.data[0])
         return y
 
+    def predict_win(self, x):
+        y = self.__call__(x)
+        y = y.data[0][1]
+        return y
+
 
 
 # 隠れ層と出力層の数を配列で指定してtrainとtestのデータをTupleDataSetで作って、保存先フォルダの(相対)パスとファイル名のsuffixを指定する

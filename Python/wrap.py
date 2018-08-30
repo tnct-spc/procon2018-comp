@@ -20,3 +20,8 @@ class Wrap():
         x = np.reshape(x, (1, x.shape[0]))
         h = self.net.predict_(x)
         return h
+
+    def predict_win(self, x):
+        x = np.reshape(x, (1, x.shape[0]))
+        h = self.net.predict_win(x)
+        return h
