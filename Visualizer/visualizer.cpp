@@ -115,7 +115,10 @@ void Visualizer::paintEvent(QPaintEvent *event){
                 int pos_x = field.getAgents().at(team).at(index).first;
                 int pos_y = field.getAgents().at(team).at(index).second;
 
+                QString text = QString::fromStdString("agent" + std::to_string(index + 1));
+                painter.setFont(QFont("Decorative", grid_size * 0.2, QFont::Thin)); // text font
                 painter.drawEllipse(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size);
+                painter.drawText(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.2 + pos_y), text);
 
             }
         }
