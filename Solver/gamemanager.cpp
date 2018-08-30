@@ -866,4 +866,5 @@ void GameManager::startThread(QString my_algo, QString opponent_algo, QString In
     std::thread::id main_tid = std::this_thread::get_id();
     std::cout << "main thread id: " << main_tid << std::endl;
     search_thread.join();
+    std::cout << "search_thread started!" << std::endl;
 }

@@ -42,8 +42,9 @@ void Mejirodai::RunManagerSimulation(){
     manager->setAutoMode(ui->autoMode->isChecked());
 
 //    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
-    manager->startSimulation(my, opponnent, InputMethod);
-//    manager->startThread(my, opponnent, InputMethod);
+//    manager->startSimulation(my, opponnent, InputMethod);
+    manager->startThread(my, opponnent, InputMethod);
+    std::cout << "untiii!!!" << std::endl;
 }
 
 void Mejirodai::goNextState(){
