@@ -6,7 +6,7 @@ from chainer import functions as F
 from chainer import training
 from chainer.training import extensions
 
-import constconst
+import const
 import network
 import wrap
 
