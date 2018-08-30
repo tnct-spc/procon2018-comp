@@ -21,49 +21,6 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="5" column="2">
-     <widget class="QStackedWidget" name="opponent_stackedWidget">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="GeneticAlgo_opponent">
-       <widget class="QLabel" name="label_4">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>100</y>
-          <width>251</width>
-          <height>81</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>GeneticAlgo</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="DummyAlgorithm_opponent">
-       <widget class="QLabel" name="label_10">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>100</y>
-          <width>251</width>
-          <height>81</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>DummyAlgorithm</string>
-        </property>
-       </widget>
-      </widget>
-     </widget>
-    </item>
     <item row="12" column="1" alignment="Qt::AlignBottom">
      <widget class="QPushButton" name="goPrev">
       <property name="sizePolicy">
@@ -124,7 +81,7 @@
     <item row="5" column="1">
      <widget class="QStackedWidget" name="my_stackedWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="GeneticAlgo_my">
        <widget class="QLabel" name="label_3">
@@ -373,6 +330,49 @@
       <property name="text">
        <string>ExportField</string>
       </property>
+     </widget>
+    </item>
+    <item row="5" column="2">
+     <widget class="QStackedWidget" name="opponent_stackedWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="GeneticAlgo_opponent">
+       <widget class="QLabel" name="label_4">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>GeneticAlgo</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="DummyAlgorithm_opponent">
+       <widget class="QLabel" name="label_10">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>251</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>DummyAlgorithm</string>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </item>
    </layout>

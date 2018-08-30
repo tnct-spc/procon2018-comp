@@ -49,6 +49,7 @@ SOURCES += \
     useabstractdata.cpp \
     doubleagent/agents/directionbasedalgo.cpp \
     LastForce/lastforce.cpp
+
 HEADERS += \
         algorithm_global.h \ 
         testalgorithm.h \

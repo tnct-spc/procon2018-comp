@@ -10,6 +10,7 @@
 #include "qrcode.h"
 #include "qrconverterfield.h"
 #include "operator.h"
+#include "ciphercards.h"
 
 #include <thread>
 #include "csvio.h"
@@ -45,6 +46,8 @@ public:
     int simulationGenetic(const GeneticAgent& agent_1, const GeneticAgent& agent_2, int algo_number, const GeneticAgent& agent_3 = 0, const GeneticAgent& agent_4 = 0);
 
     unsigned int getFinalTurn();
+
+    std::vector<int> showAgentAct(bool bside, std::tuple<int,int,int> move, bool hoge = false);
 
     void setAutoMode(bool value);
 
@@ -87,6 +90,7 @@ private:
     std::shared_ptr<procon::Field> field;
     std::shared_ptr<Visualizer> visualizer;
     std::shared_ptr<Operator> ope;
+    std::shared_ptr<CipherCards> ciphercard;
     std::vector<std::shared_ptr<procon::Field>> field_vec;
 
     std::shared_ptr<AlgorithmWrapper> team_1;
