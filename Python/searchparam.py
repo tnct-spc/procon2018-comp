@@ -18,9 +18,10 @@ def main():
         params = (np.random.rand(10) * 20 - 10).astype(np.float32)
         
         par = net.parcalc(np.hstack((params, target)))
-        print(par)
         if par > 0.5:
+            print(par)
             print(params)
+            print()
 
 
 if __name__ == '__main__':
