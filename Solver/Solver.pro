@@ -49,7 +49,8 @@ SOURCES += \
     useabstractdata.cpp \
     doubleagent/agents/directionbasedalgo.cpp \
     simplemontecarlo/useabstmontecarlo.cpp \
-    LastForce/lastforce.cpp
+    LastForce/lastforce.cpp \
+    majorityrulewithabstdata.cpp
 
 HEADERS += \
         algorithm_global.h \ 
@@ -75,7 +76,8 @@ HEADERS += \
     useabstractdata.h \
     doubleagent/agents/directionbasedalgo.h \
     simplemontecarlo/useabstmontecarlo.h \
-    LastForce/lastforce.h
+    LastForce/lastforce.h \
+    majorityrulewithabstdata.h
 
 unix {
     target.path = /usr/lib
