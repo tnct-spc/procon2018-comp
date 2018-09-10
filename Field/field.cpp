@@ -1206,3 +1206,27 @@ void procon::Field::createQRString(int side){
     std::cout<<ans<<std::endl;
     std::cout<<std::endl;
 }
+
+std::vector<std::vector<std::vector<std::pair<int,int>>>> procon::Field::fieldAutoEncoder(int size){
+    if(size > grid_x || size > grid_y){
+        std::cerr << "fieldAutoEncoder size error" << std::endl;
+        abort();
+    }
+    std::vector<std::vector<std::vector<std::pair<int,int>>>> return_value(grid_x - size + 1, std::vector<std::vector<std::pair<int,int>>>(grid_y, std::vector<std::pair<int,int>>(4, std::make_pair(0, 0))));
+    // 実装サボってるので (h-siz+1)*(w-siz+1)*siz^2
+    // うねうねするとO(HW)でできるので、速度が足りなかったらそれをやります
+    for(int x_start = 0; x_start < grid_x - size + 1; ++x_start)
+        for(int y_start = 0; y_start < grid_y - size + 1; ++y_start){
+            std::vector<std::pair<int,int>> now_value(3, std::make_pair(0, 0));
+
+            for(int x_index = 0; x_index < size; ++x_index)
+                for(int y_index = 0; y_index < size; ++y_index){
+                    std::pair<int,int> tile_data = getState(x_index, y_index);
+                    ++now_value.at(tile_data.first).first;
+                    now_value.at(tile_data.first).second += tile_data.second;
+                }
+            return_value.at(x_start).at(y_start) = std::move(now_value);
+        }
+
+    return return_value;
+}
