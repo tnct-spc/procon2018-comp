@@ -1178,7 +1178,7 @@ std::vector<double> procon::Field::calcSituationFeature(std::pair<std::tuple<int
     */
     return ans;
 }
-void procon::Field::createQRstrinsg(int side){
+void procon::Field::createQRString(int side){
     std::string ans;
     ans += std::to_string(grid_y);
     ans.push_back(' ');

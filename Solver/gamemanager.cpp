@@ -125,8 +125,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     }
     //field->guessAgents(1);
 
-   // field->createQRstrinsg(0);
-    //field->createQRstrinsg(1);
+    // field->createQRString(0);
+    // field->createQRString(1);
 
     if (QString::compare("DummyAlgorithm", my_algo) == 0) {
         team_1 = std::make_shared<DummyAlgorithm>(*field, field->getFinalTurn(), 0);
