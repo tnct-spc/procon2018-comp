@@ -12,6 +12,7 @@
 #include "simplemontecarlo/useabstmontecarlo.h"
 #include "LastForce/lastforce.h"
 #include "majorityrulewithabstdata.h"
+#include "depthfirstsearch.h"
 
 GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
@@ -154,6 +155,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_1 = std::make_shared<UseAbstMonteCarlo>(*field, field->getFinalTurn(), 0);
     } else if (QString::compare("MajorityRuleWithAbstData", my_algo) == 0) {
         team_1 = std::make_shared<MajorityRuleWithAbstData>(*field, field->getFinalTurn(), 0);
+    } else if (QString::compare("DepthFirstSearch", my_algo) == 0) {
+        team_1 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 0);
     }
 
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
@@ -180,6 +183,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_2 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 1);
     } else if (QString::compare("MajorityRuleWithAbstData", opponent_algo) == 0) {
         team_2 = std::make_shared<MajorityRuleWithAbstData>(*field, field->getFinalTurn(), 1);
+    } else if (QString::compare("DepthFirstSearch", opponent_algo) == 0) {
+        team_2 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 1);
     }
 
 
