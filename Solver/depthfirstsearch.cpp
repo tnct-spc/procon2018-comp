@@ -9,7 +9,30 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 
 std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int agent, int turn_max){
     std::unordered_map<std::pair<int,int>, int, pairHash, pairEqual> used;
-    return std::make_shared<SearchNode>(0, 0, turn_max, field.getAgent(side, agent), side, field, used);
+    std::shared_ptr<SearchNode> node = std::make_shared<SearchNode>(0, 0, turn_max, field.getAgent(side, agent), side, field, used);
+
+    std::list<std::pair<int,int>> moves;
+    std::pair<int,int> now_pos = field.getAgent(side, agent);
+    moves.emplace_back(now_pos);
+    std::shared_ptr<SearchNode> now_node = node;
+    std::pair<int,int> value(0, 0);
+
+    while(1){
+        value = now_node->getMaxAdvMove();
+        if(value.first == -1000000007)
+            break;
+
+        now_pos.first += SearchNode::dx.at(value.second);
+        now_pos.second += SearchNode::dy.at(value.second);
+        moves.emplace_back(now_pos);
+        now_node = now_node->childs[value.second];
+    }
+
+    minimum = std::make_shared<MinimumVisualizer>(field.getSize());
+    minimum->setRoute(moves);
+    minimum->show();
+
+    return node;
 }
 
 DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const procon::Field& field, std::unordered_map<std::pair<int,int>, int, pairHash, pairEqual>& used) :
@@ -64,7 +87,7 @@ int DepthFirstSearch::SearchNode::getAdvSum(){
 }
 
 std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
-    std::pair<int,int> maxmove(-10000000007, 0);
+    std::pair<int,int> maxmove(-1000000007, -1);
     for(auto ch : childs)
         if(maxmove.first < ch.second->getAdvSum())
             maxmove = std::make_pair(ch.second->getAdvSum(), ch.first);

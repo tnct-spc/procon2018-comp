@@ -45,8 +45,10 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show
         connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
         connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
 
+        /*
         minimum = std::make_shared<MinimumVisualizer>(std::make_pair(x_size, y_size));
         minimum->show();
+        */
 
     }else{
         is_auto = true;//この場合は自動進行
@@ -70,7 +72,7 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
         connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
         connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
 
-        minimum = std::make_shared<MinimumVisualizer>(std::make_pair(x_size, y_size));
+        // minimum = std::make_shared<MinimumVisualizer>(std::make_pair(x_size, y_size));
     }else{
         is_auto = true;//この場合は自動進行
     }
@@ -204,9 +206,11 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     if(vis_show){
         visualizer->update();
         visualizer->setField(*field, field->getTurnCount(), field->getFinalTurn());
+        /*
         minimum->setSize(field->getSize());
         minimum->update();
         minimum->repaint();
+        */
     }
 
 

@@ -51,9 +51,31 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
 
     };
 
+    auto drawRoute = [&]{
+        for(auto it = route.begin(), it2 = std::next(route.begin()); it2 != route.end(); ++it, ++it2){
+            painter.drawEllipse(horizontal_margin + grid_size * ((*it).first + 0.3), vertical_margin + grid_size * ((*it).second + 0.3),
+                                0.4 * grid_size, 0.4 * grid_size
+                                );
+            painter.drawLine(horizontal_margin + grid_size * ((*it).first + 0.5), vertical_margin + grid_size * ((*it).second + 0.5),
+                             horizontal_margin + grid_size * ((*it2).first + 0.5), vertical_margin + grid_size * ((*it2).second + 0.5)
+                             );
+        }
+
+        auto it = std::prev(route.end());
+        painter.drawEllipse(horizontal_margin + grid_size * ((*it).first + 0.3), vertical_margin + grid_size * ((*it).second + 0.3),
+                                0.4 * grid_size, 0.4 * grid_size
+                                );
+    };
+
     drawBackGround();
+    if(!route.empty())
+        drawRoute();
 }
 
 void MinimumVisualizer::setSize(std::pair<int,int> siz){
     size = siz;
+}
+
+void MinimumVisualizer::setRoute(std::list<std::pair<int,int>> rout){
+    route = rout;
 }

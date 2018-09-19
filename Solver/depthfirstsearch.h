@@ -3,6 +3,8 @@
 
 #include <unordered_map>
 #include <algorithm>
+#include <list>
+#include <minimumvisualizer.h>
 
 #include "algorithmwrapper.h"
 
@@ -26,6 +28,8 @@ private:
             return left == right;
         }
     };
+
+    std::shared_ptr<MinimumVisualizer> minimum;
 
 };
 

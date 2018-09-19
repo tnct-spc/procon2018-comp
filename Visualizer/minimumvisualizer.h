@@ -18,11 +18,14 @@ public:
     ~MinimumVisualizer();
 
     void setSize(std::pair<int,int> siz);
+    void setRoute(std::list<std::pair<int,int>> rout);
 
 private:
     std::pair<int,int> size;
     Ui::MinimumVisualizer *ui;
     void paintEvent(QPaintEvent *event);
+
+    std::list<std::pair<int,int>> route;
 };
 
 #endif // MINIMUMVISUALIZER_H
