@@ -52,11 +52,24 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
     }
 }
 
-int DepthFirstSearch::SearchNode::calcAdv(){
+int DepthFirstSearch::SearchNode::getAdvSum(){
+    if(advsum != -1000000007)
+        return advsum;
+
     int point = 0;
     for(auto ch : childs)
-        point = std::max(point, ch.second->calcAdv());
-    return point + adv;
+        point = std::max(point, ch.second->getAdvSum());
+
+    return advsum = point + adv;
+}
+
+std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
+    std::pair<int,int> maxmove(-10000000007, 0);
+    for(auto ch : childs)
+        if(maxmove.first < ch.second->getAdvSum())
+            maxmove = std::make_pair(ch.second->getAdvSum(), ch.first);
+
+    return maxmove;
 }
 
 

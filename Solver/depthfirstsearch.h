@@ -35,11 +35,13 @@ struct DepthFirstSearch::SearchNode{
     static const std::vector<int> dx, dy;
 
     int adv, depth;
+    int advsum = -1000000007;
     std::unordered_map<int, std::shared_ptr<SearchNode>> childs;
 
     SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const procon::Field& field, std::unordered_map<std::pair<int,int>, int, pairHash, pairEqual>& used);
 
-    int calcAdv();
+    int getAdvSum();
+    std::pair<int,int> getMaxAdvMove();
 };
 
 #endif // DEPTHFIRSTSEARCH_H
