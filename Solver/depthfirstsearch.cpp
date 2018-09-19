@@ -18,8 +18,15 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     dock->show();
     */
 
+    int move_1 = node_1->getMaxAdvMove().second;
+    int move_2 = node_2->getMaxAdvMove().second;
 
-    return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
+    std::vector<std::pair<int,int>> agent_pos(2);
+    for(int index = 0; index < 2; ++index)
+        agent_pos.at(index) = field.getAgent(side, index);
+
+    return std::make_pair(std::make_tuple((field.getState(agent_pos.at(0).first + SearchNode::dx.at(move_1), agent_pos.at(0).second + SearchNode::dy.at(move_1)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_1), SearchNode::dy.at(move_1)),
+                          std::make_tuple((field.getState(agent_pos.at(1).first + SearchNode::dx.at(move_2), agent_pos.at(1).second + SearchNode::dy.at(move_2)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_2), SearchNode::dy.at(move_2)));
 }
 
 std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int agent, int turn_max){
@@ -43,9 +50,11 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
         now_node = now_node->childs[value.second];
     }
 
+    /*
     minimum.emplace_back(std::make_shared<MinimumVisualizer>(field.getSize()));
     minimum.back()->setRoute(moves);
     minimum.back()->show();
+    */
 
     return node;
 }
@@ -70,6 +79,17 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
         return (count <= 0 ? 0 : state.second);
     };
 
+    auto is_move = [side, pos, field, &used](int move_index){
+        int x_pos = pos.first + dx.at(move_index);
+        int y_pos = pos.second + dy.at(move_index);
+
+        if(x_pos < 0 || y_pos < 0 || x_pos >= field.getSize().first || y_pos >= field.getSize().second)
+            return false;
+        std::pair<int,int> state = field.getState(x_pos, y_pos);
+        int count = (state.first == side + 1 ? 0 : (2 - !(state.first))) - used[std::make_pair(x_pos, y_pos)];
+        return (count == 0);
+    };
+
     std::vector<std::pair<int,int>> moves;
     for(int index = 0; index < 8; ++index)
         moves.emplace_back(state_data(index), index);
@@ -85,7 +105,7 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
     for(auto move : moves){
         std::pair<int,int> new_pos = std::make_pair(pos.first + dx.at(move.second), pos.second + dy.at(move.second));
         ++used[new_pos];
-        childs[move.second] = std::make_shared<SearchNode>(move.first, depth + 1, remain - 1, new_pos, side, field, used);
+        childs[move.second] = std::make_shared<SearchNode>(move.first, depth + 1, remain - 1, (is_move(move.second) ? new_pos : pos), side, field, used);
         --used[new_pos];
     }
 }
