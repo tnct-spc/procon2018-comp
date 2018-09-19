@@ -37,6 +37,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
     std::pair<int,int> now_pos = field.getAgent(side, agent);
     moves.emplace_back(now_pos);
     std::shared_ptr<SearchNode> now_node = node;
+    bool is_move = true;
     std::pair<int,int> value(0, 0);
 
     while(1){
@@ -44,17 +45,31 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
         if(value.first == -1000000007)
             break;
 
-        now_pos.first += SearchNode::dx.at(value.second);
-        now_pos.second += SearchNode::dy.at(value.second);
+        if(is_move){
+            now_pos.first += SearchNode::dx.at(value.second);
+            now_pos.second += SearchNode::dy.at(value.second);
+        }
         moves.emplace_back(now_pos);
-        now_node = now_node->childs[value.second];
+        is_move  = now_node->childs[value.second].second;
+        now_node = now_node->childs[value.second].first;
     }
 
-    /*
+    std::vector<std::vector<int>> values(field.getSize().first, std::vector<int>(field.getSize().second, 0));
+
+    node->dfsAdd(field.getAgent(side, agent), values);
+
+    int par_size = node->size;
+    for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
+        for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos)
+            par_size = std::max(par_size, values.at(x_pos).at(y_pos));
+
+    std::for_each(values.begin(), values.end(), [par_size](std::vector<int>& v){std::for_each(v.begin(), v.end(), [par_size](int& k){k = k * 255 / par_size;});});
+
     minimum.emplace_back(std::make_shared<MinimumVisualizer>(field.getSize()));
+
     minimum.back()->setRoute(moves);
+    minimum.back()->setValues(values);
     minimum.back()->show();
-    */
 
     return node;
 }
@@ -63,6 +78,8 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
     adv(adv),
     depth(depth)
 {
+    size = 1;
+
     // 末尾ノード
     if(!remain)
         return ;
@@ -102,11 +119,28 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
     if(moves.empty())
         return ;
 
+    size = 0;
+
     for(auto move : moves){
         std::pair<int,int> new_pos = std::make_pair(pos.first + dx.at(move.second), pos.second + dy.at(move.second));
         ++used[new_pos];
-        childs[move.second] = std::make_shared<SearchNode>(move.first, depth + 1, remain - 1, (is_move(move.second) ? new_pos : pos), side, field, used);
+        childs[move.second] = std::make_pair(std::make_shared<SearchNode>(move.first, depth + 1, remain - 1, (is_move(move.second) ? new_pos : pos), side, field, used), is_move(move.second));
+        size += childs[move.second].first->size;
         --used[new_pos];
+    }
+}
+
+void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<std::vector<int>>& vec){
+
+    vec.at(pos.first).at(pos.second) += size;
+
+    for(auto ch : childs){
+        std::pair<int,int> new_pos(pos);
+        if(ch.second.second){
+            new_pos.first += dx.at(ch.first);
+            new_pos.second += dy.at(ch.first);
+        }
+        ch.second.first->dfsAdd(new_pos, vec);
     }
 }
 
@@ -116,7 +150,7 @@ int DepthFirstSearch::SearchNode::getAdvSum(){
 
     int point = 0;
     for(auto ch : childs)
-        point = std::max(point, ch.second->getAdvSum());
+        point = std::max(point, ch.second.first->getAdvSum());
 
     return advsum = point + adv;
 }
@@ -124,8 +158,8 @@ int DepthFirstSearch::SearchNode::getAdvSum(){
 std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
     std::pair<int,int> maxmove(-1000000007, -1);
     for(auto ch : childs)
-        if(maxmove.first < ch.second->getAdvSum())
-            maxmove = std::make_pair(ch.second->getAdvSum(), ch.first);
+        if(maxmove.first < ch.second.first->getAdvSum())
+            maxmove = std::make_pair(ch.second.first->getAdvSum(), ch.first);
 
     return maxmove;
 }
