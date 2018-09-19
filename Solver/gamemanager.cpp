@@ -227,8 +227,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 //                team_1 = std::make_shared<LastForce>(*field, field->getFinalTurn(), 0);
 //            }
 
-            team_1_ans = team_1->agentAct(0);
-            team_2_ans = team_2->agentAct(1);
+            team_1_ans = team_1->agentAct(field->getTurnCount());
+            team_2_ans = team_2->agentAct(field->getTurnCount());
 
             std::vector<std::pair<std::pair<int,int>, std::pair<int,int>>> pruning_pos;
 
@@ -356,8 +356,8 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
         */
 
 
-        team_1_ans = team_1->agentAct(0);
-        team_2_ans = team_2->agentAct(1);
+        team_1_ans = team_1->agentAct(field->getTurnCount());
+        team_2_ans = team_2->agentAct(field->getTurnCount());
 
 
 
@@ -770,8 +770,8 @@ void GameManager::nextMoveForManualMode(){
 //    std::cout << agent.first << "," << agent.second << std::endl;
 
     std::vector<std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>>> candidate_move(2);
-    candidate_move.at(0) = team_1->agentAct(0);
-    candidate_move.at(1) = team_2->agentAct(1);
+    candidate_move.at(0) = team_1->agentAct(field->getTurnCount());
+    candidate_move.at(1) = team_2->agentAct(field->getTurnCount());
 
     /*
     std::vector<std::vector<procon::Cipher>> ciphers (2, std::vector<procon::Cipher>(1));
