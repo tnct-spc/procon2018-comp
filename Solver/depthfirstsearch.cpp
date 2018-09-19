@@ -1,9 +1,24 @@
 #include "depthfirstsearch.h"
 
+DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, bool side) :
+    AlgorithmWrapper(field, final_turn, side)
+{}
+
 const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearch::agentAct(int now_turn){
+
+    minimum.clear();
 
     std::shared_ptr<SearchNode> node_1 = depthSearch(0, std::min(final_turn - now_turn, maxval));
     std::shared_ptr<SearchNode> node_2 = depthSearch(1, std::min(final_turn - now_turn, maxval));
+
+    /*
+    dock = std::make_shared<MinimumVisualizerDock>(2);
+    for(int index = 0; index < 2; ++index)
+        dock->addVisualizer(minimum.at(index));
+    dock->show();
+    */
+
+
     return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
 }
 
@@ -28,9 +43,9 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
         now_node = now_node->childs[value.second];
     }
 
-    minimum = std::make_shared<MinimumVisualizer>(field.getSize());
-    minimum->setRoute(moves);
-    minimum->show();
+    minimum.emplace_back(std::make_shared<MinimumVisualizer>(field.getSize()));
+    minimum.back()->setRoute(moves);
+    minimum.back()->show();
 
     return node;
 }

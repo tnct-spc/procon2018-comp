@@ -4,14 +4,17 @@
 #include <unordered_map>
 #include <algorithm>
 #include <list>
-#include <minimumvisualizer.h>
+
+#include "minimumvisualizer.h"
+#include "minimumvisualizerdock.h"
 
 #include "algorithmwrapper.h"
 
 class DepthFirstSearch : public AlgorithmWrapper
 {
-    using AlgorithmWrapper::AlgorithmWrapper;
+    // using AlgorithmWrapper::AlgorithmWrapper;
 public:
+    DepthFirstSearch(const procon::Field& field, int final_turn, bool side);
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
 
 private:
@@ -29,7 +32,8 @@ private:
         }
     };
 
-    std::shared_ptr<MinimumVisualizer> minimum;
+    std::vector<std::shared_ptr<MinimumVisualizer>> minimum;
+    std::shared_ptr<MinimumVisualizerDock> dock;
 
 };
 

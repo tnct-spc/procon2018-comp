@@ -279,8 +279,10 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         // progresdock->show();
 
     }else{
+        /*
         ciphercard = std::make_shared<CipherCards>();
         ciphercard->show();
+        */
 
         nextMoveForManualMode();
 
@@ -759,7 +761,7 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
 
     visualizer->update();
 
-    ciphercard->updata(move_cipher);
+    // ciphercard->updata(move_cipher);
 
     if(field->getTurnCount() == field->getFinalTurn()){
 
@@ -798,7 +800,7 @@ void GameManager::nextMoveForManualMode(){
     ciphers.at(1).at(0) = procon::changeIntToCipher(std::get<1>(candidate_move.at(0).second) + 27);
     ciphers.at(1).at(1) = procon::changeIntToCipher(- std::get<2>(candidate_move.at(0).second) + 40);
 
-    ciphercard->drawCards(ciphers);
+    // ciphercard->drawCards(ciphers);
 
     std::vector<std::vector<std::pair<int,int>>> return_vec(2, std::vector<std::pair<int,int>>(2) );
 

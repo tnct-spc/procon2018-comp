@@ -1,7 +1,8 @@
 #include "minimumvisualizerdock.h"
 #include "ui_minimumvisualizerdock.h"
 
-MinimumVisualizerDock::MinimumVisualizerDock(QWidget *parent) :
+MinimumVisualizerDock::MinimumVisualizerDock(int width, QWidget *parent) :
+    width(width),
     QDialog(parent),
     ui(new Ui::MinimumVisualizerDock)
 {
@@ -14,7 +15,7 @@ MinimumVisualizerDock::~MinimumVisualizerDock()
 }
 
 void MinimumVisualizerDock::addVisualizer(std::shared_ptr<MinimumVisualizer> minimum){
-    minimum->setFixedSize(300, 300);
-    this->ui->container->addWidget(minimum.get(), count / 4, count % 4);
+    visualizers.emplace_back(minimum);
+    this->ui->container->addWidget(minimum.get(), count / width, count % width);
     ++count;
 }
