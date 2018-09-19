@@ -38,9 +38,8 @@ struct DepthFirstSearch::SearchNode{
     std::unordered_map<int, std::shared_ptr<SearchNode>> childs;
 
     SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const procon::Field& field, std::unordered_map<std::pair<int,int>, int, pairHash, pairEqual>& used);
-};
 
-const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1});
-const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1});
+    int calcAdv();
+};
 
 #endif // DEPTHFIRSTSEARCH_H

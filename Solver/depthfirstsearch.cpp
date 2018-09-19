@@ -52,7 +52,18 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
     }
 }
 
+int DepthFirstSearch::SearchNode::calcAdv(){
+    int point = 0;
+    for(auto ch : childs)
+        point = std::max(point, ch.second->calcAdv());
+    return point + adv;
+}
+
 
 size_t DepthFirstSearch::pairHash::operator()(const std::pair<int,int>& key) const{
     return (key.first << 5) + key.second;
 }
+
+
+const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1});
+const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1});
