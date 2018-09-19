@@ -35,21 +35,24 @@ SOURCES += \
     progresdock.cpp \
     operator.cpp \
     ciphercards.cpp \
-    minimumvisualizer.cpp
+    minimumvisualizer.cpp \
+    minimumvisualizerdock.cpp
 
 HEADERS += \
         visualizer.h \
     progresdock.h \
     operator.h \
     ciphercards.h \
-    minimumvisualizer.h
+    minimumvisualizer.h \
+    minimumvisualizerdock.h
 
 FORMS += \
         visualizer.ui \
     progresdock.ui \
     operator.ui \
     ciphercards.ui \
-    minimumvisualizer.ui
+    minimumvisualizer.ui \
+    minimumvisualizerdock.ui
 
 unix {
     target.path = /usr/lib
