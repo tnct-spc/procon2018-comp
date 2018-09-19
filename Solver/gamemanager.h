@@ -11,6 +11,7 @@
 #include "qrconverterfield.h"
 #include "operator.h"
 #include "ciphercards.h"
+#include "minimumvisualizer.h"
 
 #include <thread>
 #include "csvio.h"
@@ -97,6 +98,7 @@ private:
     std::shared_ptr<AlgorithmWrapper> team_2;
 
     std::shared_ptr<ProgresDock> progresdock;
+    std::shared_ptr<MinimumVisualizer> minimum;
 
 
     unsigned int now_field = 0;
