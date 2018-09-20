@@ -23,8 +23,10 @@ private:
 
     const int maxval = 10;
 
-    std::vector<std::shared_ptr<MinimumVisualizer>> minimum;
+    // std::vector<std::shared_ptr<MinimumVisualizer>> minimum;
     std::shared_ptr<MinimumVisualizerDock> dock;
+
+    const bool dock_show = true;
 
 };
 

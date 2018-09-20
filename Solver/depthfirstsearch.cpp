@@ -2,13 +2,17 @@
 
 DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, bool side) :
     AlgorithmWrapper(field, final_turn, side)
-{}
+{
+}
 
 const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearch::agentAct(int now_turn){
 
-    minimum.clear();
+    // minimum.clear();
 
-    dock = std::make_shared<MinimumVisualizerDock>(2);
+    if(dock_show){
+        dock = std::make_shared<MinimumVisualizerDock>(6);
+        dock->show();
+    }
 
     std::shared_ptr<SearchNode> node_1 = depthSearch(0, std::min(final_turn - now_turn, maxval));
     std::shared_ptr<SearchNode> node_2 = depthSearch(1, std::min(final_turn - now_turn, maxval));
@@ -75,7 +79,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
         for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos)
             after_values.at(x_pos).at(y_pos) = bef_state.at(x_pos).at(y_pos) - 1.0 * values.at(x_pos).at(y_pos) / par_size;
 
-    minimum.emplace_back(std::make_shared<MinimumVisualizer>(field.getSize()));
+    // minimum.emplace_back(std::make_shared<MinimumVisualizer>(field.getSize()));
 
     std::vector<std::vector<std::vector<int>>> colors(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
     for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
@@ -97,8 +101,8 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
     minimum.back()->show();
     */
 
-    dock->addVisualizer(field.getSize(), moves, colors);
-    dock->show();
+    if(dock_show)
+        dock->addVisualizer(field.getSize(), moves, colors);
 
     return node;
 }
