@@ -23,15 +23,6 @@ private:
 
     const int maxval = 10;
 
-    struct pairHash{
-        size_t operator()(const std::pair<int,int>& key) const;
-    };
-    struct pairEqual{
-        bool operator()(const std::pair<int,int>& left, const std::pair<int,int>& right) const{
-            return left == right;
-        }
-    };
-
     std::vector<std::shared_ptr<MinimumVisualizer>> minimum;
     std::shared_ptr<MinimumVisualizerDock> dock;
 
@@ -46,7 +37,7 @@ struct DepthFirstSearch::SearchNode{
     int advsum = -1000000007;
     std::unordered_map<int, std::pair<std::shared_ptr<SearchNode>, int>> childs;
 
-    SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const procon::Field& field, std::unordered_map<std::pair<int,int>, int, pairHash, pairEqual>& used);
+    SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state);
 
     void dfsAdd(std::pair<int,int> pos, std::vector<std::vector<int>>& vec);
 

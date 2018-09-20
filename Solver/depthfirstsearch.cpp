@@ -30,8 +30,20 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 }
 
 std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int agent, int turn_max){
-    std::unordered_map<std::pair<int,int>, int, pairHash, pairEqual> used;
-    std::shared_ptr<SearchNode> node = std::make_shared<SearchNode>(0, 0, turn_max, field.getAgent(side, agent), side, field, used);
+    int size_x, size_y;
+    std::tie(size_x, size_y) = field.getSize();
+
+    std::vector<std::vector<int>> state(size_x, std::vector<int>(size_y, 1));
+    const std::vector<std::vector<int>>& field_values = field.getValue();
+
+    for(int pos_x = 0; pos_x < size_x; ++pos_x)
+        for(int pos_y = 0; pos_y < size_y; ++pos_y){
+            int pos_state = field.getState(pos_x, pos_y).first;
+            if(pos_state)
+                state.at(pos_x).at(pos_y) = 2 * (pos_state != side + 1);
+        }
+
+    std::shared_ptr<SearchNode> node = std::make_shared<SearchNode>(0, 0, turn_max, field.getAgent(side, agent), side, field_values, state);
 
     std::list<std::pair<int,int>> moves;
     std::pair<int,int> now_pos = field.getAgent(side, agent);
@@ -74,7 +86,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
     return node;
 }
 
-DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const procon::Field& field, std::unordered_map<std::pair<int,int>, int, pairHash, pairEqual>& used) :
+DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state) :
     adv(adv),
     depth(depth)
 {
@@ -84,38 +96,26 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
     if(!remain)
         return ;
 
-    // 移動先の得点を返す(枯れている場合は適当に小さい値を返す)
-    auto state_data = [side, pos, field, &used](int move_index){
+    // {point,is_move}
+    auto state_data = [side, pos, value, state](int move_index){
         int x_pos = pos.first + dx.at(move_index);
         int y_pos = pos.second + dy.at(move_index);
 
-        if(x_pos < 0 || y_pos < 0 || x_pos >= field.getSize().first || y_pos >= field.getSize().second)
-            return -1000000007;
-        std::pair<int,int> state = field.getState(x_pos, y_pos);
-        int count = (state.first == side + 1 ? 0 : (2 - !(state.first))) - used[std::make_pair(x_pos, y_pos)];
-        return (count <= 0 ? 0 : state.second);
+        if(x_pos < 0 || y_pos < 0 || x_pos >= state.size() || y_pos >= state.at(0).size() || !state.at(x_pos).at(y_pos))
+            return std::make_pair(-1000000007, false);
+        return std::make_pair(value.at(x_pos).at(y_pos), state.at(x_pos).at(y_pos) != 2);
     };
 
-    auto is_move = [side, pos, field, &used](int move_index){
-        int x_pos = pos.first + dx.at(move_index);
-        int y_pos = pos.second + dy.at(move_index);
-
-        if(x_pos < 0 || y_pos < 0 || x_pos >= field.getSize().first || y_pos >= field.getSize().second)
-            return false;
-        std::pair<int,int> state = field.getState(x_pos, y_pos);
-        int count = (state.first == side + 1 ? 0 : (2 - !(state.first))) - used[std::make_pair(x_pos, y_pos)];
-        return (count == 0);
-    };
-
-    std::vector<std::pair<int,int>> moves;
+    // {{point, ismove}, dir}
+    std::vector<std::pair<std::pair<int, bool>, int>> moves;
     for(int index = 0; index < 8; ++index)
-        moves.emplace_back(state_data(index), index);
+        moves.emplace_back(std::make_pair(state_data(index), index));
 
     std::sort(moves.begin(), moves.end());
 
-    int bound_val = std::max(moves.at(8 - movecount).first, 0);
+    int bound_val = std::max(moves.at(8 - movecount).first.first, 0);
 
-    moves.erase(moves.begin(), std::lower_bound(moves.begin(), moves.end(), std::make_pair(bound_val, 0)));
+    moves.erase(moves.begin(), std::lower_bound(moves.begin(), moves.end(), std::make_pair(std::make_pair(bound_val, false), 0)));
     if(moves.empty())
         return ;
 
@@ -123,10 +123,13 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
 
     for(auto move : moves){
         std::pair<int,int> new_pos = std::make_pair(pos.first + dx.at(move.second), pos.second + dy.at(move.second));
-        ++used[new_pos];
-        childs[move.second] = std::make_pair(std::make_shared<SearchNode>(move.first, depth + 1, remain - 1, (is_move(move.second) ? new_pos : pos), side, field, used), is_move(move.second));
+        --state.at(new_pos.first).at(new_pos.second);
+
+        childs[move.second] = std::make_pair(std::make_shared<SearchNode>(move.first.first, depth + 1, remain - 1, (move.first.second ? new_pos : pos), side, value, state), move.first.second);
+
         size += childs[move.second].first->size;
-        --used[new_pos];
+
+        ++state.at(new_pos.first).at(new_pos.second);
     }
 }
 
@@ -163,12 +166,6 @@ std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
 
     return maxmove;
 }
-
-
-size_t DepthFirstSearch::pairHash::operator()(const std::pair<int,int>& key) const{
-    return (key.first << 5) + key.second;
-}
-
 
 const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1});
 const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1});
