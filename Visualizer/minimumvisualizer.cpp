@@ -4,7 +4,8 @@
 MinimumVisualizer::MinimumVisualizer(std::pair<int,int> size, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MinimumVisualizer),
-    size(size)
+    size(size),
+    values(4, std::vector<std::vector<int>>(size.first, std::vector<int>(size.second, 255)))
 {
     ui->setupUi(this);
 }
@@ -31,6 +32,10 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
     int horizontal_margin = (window_width - grid_size * size_x) / 2;
     int vertical_margin = (window_height - grid_size * size_y) / 2;
 
+    auto returnQColor = [&](int posx, int posy){
+        return QColor(values.at(0).at(posx).at(posy), values.at(1).at(posx).at(posy), values.at(2).at(posx).at(posy), values.at(3).at(posx).at(posy));
+    };
+
     auto drawBackGround = [&]{
 
         /*
@@ -54,7 +59,7 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
     auto drawRoute = [&]{
         for(auto it = route.begin(), it2 = std::next(route.begin()); it2 != route.end(); ++it, ++it2){
 
-            painter.setBrush(QBrush(QColor(255 - values.at((*it).first).at((*it).second), 255, 255)));
+            painter.setBrush(QBrush(returnQColor((*it).first, (*it).second)));
 
             if(it == route.begin())
                 painter.drawEllipse(horizontal_margin + grid_size * ((*it).first + 0.2), vertical_margin + grid_size * ((*it).second + 0.2),
@@ -70,6 +75,7 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
         }
 
         auto it = std::prev(route.end());
+        painter.setBrush(QBrush(returnQColor((*it).first, (*it).second)));
         painter.drawEllipse(horizontal_margin + grid_size * ((*it).first + 0.3), vertical_margin + grid_size * ((*it).second + 0.3),
                                 0.4 * grid_size, 0.4 * grid_size
                                 );
@@ -78,7 +84,7 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
     auto drawValues = [&]{
         for(unsigned int pos_x = 0; pos_x < size_x; ++pos_x)
             for(unsigned int pos_y = 0; pos_y < size_y; ++pos_y){
-                painter.setBrush(QBrush(QColor(255 - values.at(pos_x).at(pos_y), 255, 255)));
+                painter.setBrush(QBrush(returnQColor(pos_x, pos_y)));
                 painter.drawRect(horizontal_margin + grid_size * pos_x, vertical_margin + grid_size * pos_y, grid_size, grid_size);
             }
     };
@@ -101,6 +107,6 @@ void MinimumVisualizer::setRoute(std::list<std::pair<int,int>>& rout){
     route = rout;
 }
 
-void MinimumVisualizer::setValues(std::vector<std::vector<int>>& vec){
-    values = vec;
+void MinimumVisualizer::setValues(std::vector<std::vector<int>>& vec, int rgba){
+    values.at(rgba) = vec;
 }

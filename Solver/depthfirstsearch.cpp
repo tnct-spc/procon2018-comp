@@ -75,12 +75,12 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
         for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos)
             par_size = std::max(par_size, values.at(x_pos).at(y_pos));
 
-    std::for_each(values.begin(), values.end(), [par_size](std::vector<int>& v){std::for_each(v.begin(), v.end(), [par_size](int& k){k = k * 255 / par_size;});});
+    std::for_each(values.begin(), values.end(), [par_size](std::vector<int>& v){std::for_each(v.begin(), v.end(), [par_size](int& k){k = 255 - k * 255 / par_size;});});
 
     minimum.emplace_back(std::make_shared<MinimumVisualizer>(field.getSize()));
 
     minimum.back()->setRoute(moves);
-    minimum.back()->setValues(values);
+    minimum.back()->setValues(values, 0);
     minimum.back()->show();
 
     return node;
