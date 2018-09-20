@@ -43,6 +43,8 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
                 state.at(pos_x).at(pos_y) = 2 * (pos_state != side + 1);
         }
 
+    std::vector<std::vector<int>> bef_state = state;
+
     std::shared_ptr<SearchNode> node = std::make_shared<SearchNode>(0, 0, turn_max, field.getAgent(side, agent), side, field_values, state);
 
     std::list<std::pair<int,int>> moves;
@@ -67,20 +69,38 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
     }
 
     std::vector<std::vector<int>> values(field.getSize().first, std::vector<int>(field.getSize().second, 0));
+    std::vector<std::vector<double>> after_values(field.getSize().first, std::vector<double>(field.getSize().second));
 
     node->dfsAdd(field.getAgent(side, agent), values);
 
     int par_size = node->size;
-    for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
-        for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos)
-            par_size = std::max(par_size, values.at(x_pos).at(y_pos));
 
-    std::for_each(values.begin(), values.end(), [par_size](std::vector<int>& v){std::for_each(v.begin(), v.end(), [par_size](int& k){k = 255 - k * 255 / par_size;});});
+    values.at(field.getAgent(side, agent).first).at(field.getAgent(side, agent).second) = 0;
+
+    for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
+        for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
+            after_values.at(x_pos).at(y_pos) = bef_state.at(x_pos).at(y_pos) - 1.0 * values.at(x_pos).at(y_pos) / par_size;
+            std::cout << bef_state.at(x_pos).at(y_pos) << " , " << after_values.at(x_pos).at(y_pos) << std::endl;
+        }
 
     minimum.emplace_back(std::make_shared<MinimumVisualizer>(field.getSize()));
 
+    std::vector<std::vector<std::vector<int>>> colors(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
+    for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
+        for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
+            if(after_values.at(x_pos).at(y_pos) > 1){
+                colors.at(0).at(x_pos).at(y_pos) -= 255 * (after_values.at(x_pos).at(y_pos) - 1);
+                colors.at(1).at(x_pos).at(y_pos) -= 255 * (after_values.at(x_pos).at(y_pos) - 1);
+
+            }else if(after_values.at(x_pos).at(y_pos) < 1){
+                colors.at(1).at(x_pos).at(y_pos) -= 255 * (1 - after_values.at(x_pos).at(y_pos));
+                colors.at(2).at(x_pos).at(y_pos) -= 255 * (1 - after_values.at(x_pos).at(y_pos));
+            }
+        }
+
     minimum.back()->setRoute(moves);
-    minimum.back()->setValues(values, 0);
+    for(int index = 0; index < 2; ++index)
+        minimum.back()->setValues(colors.at(index), index);
     minimum.back()->show();
 
     return node;
