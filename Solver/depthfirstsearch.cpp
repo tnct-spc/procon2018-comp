@@ -8,15 +8,10 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 
     minimum.clear();
 
+    dock = std::make_shared<MinimumVisualizerDock>(2);
+
     std::shared_ptr<SearchNode> node_1 = depthSearch(0, std::min(final_turn - now_turn, maxval));
     std::shared_ptr<SearchNode> node_2 = depthSearch(1, std::min(final_turn - now_turn, maxval));
-
-    /*
-    dock = std::make_shared<MinimumVisualizerDock>(2);
-    for(int index = 0; index < 2; ++index)
-        dock->addVisualizer(minimum.at(index));
-    dock->show();
-    */
 
     int move_1 = node_1->getMaxAdvMove().second;
     int move_2 = node_2->getMaxAdvMove().second;
@@ -78,10 +73,8 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
     values.at(field.getAgent(side, agent).first).at(field.getAgent(side, agent).second) = 0;
 
     for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
-        for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
+        for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos)
             after_values.at(x_pos).at(y_pos) = bef_state.at(x_pos).at(y_pos) - 1.0 * values.at(x_pos).at(y_pos) / par_size;
-            std::cout << bef_state.at(x_pos).at(y_pos) << " , " << after_values.at(x_pos).at(y_pos) << std::endl;
-        }
 
     minimum.emplace_back(std::make_shared<MinimumVisualizer>(field.getSize()));
 
@@ -98,10 +91,15 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
             }
         }
 
+    /*
     minimum.back()->setRoute(moves);
     for(int index = 0; index < 2; ++index)
         minimum.back()->setValues(colors.at(index), index);
     minimum.back()->show();
+    */
+
+    dock->addVisualizer(field.getSize(), moves, colors);
+    dock->show();
 
     return node;
 }

@@ -14,8 +14,14 @@ MinimumVisualizerDock::~MinimumVisualizerDock()
     delete ui;
 }
 
-void MinimumVisualizerDock::addVisualizer(std::shared_ptr<MinimumVisualizer> minimum){
-    visualizers.emplace_back(minimum);
-    this->ui->container->addWidget(minimum.get(), count / width, count % width);
+
+void MinimumVisualizerDock::addVisualizer(std::pair<int,int> size, std::list<std::pair<int,int>> route, std::vector<std::vector<std::vector<int>>> color){
+
+    MinimumVisualizer* minimum = new MinimumVisualizer(size);
+    minimum->setRoute(route);
+    for(int index = 0; index < 3; ++index)
+        minimum->setValues(color.at(index), index);
+
+    this->ui->container->addWidget(minimum, count / width, count % width);
     ++count;
 }
