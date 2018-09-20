@@ -54,13 +54,14 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
         if(value.first == -1000000007)
             break;
 
+        is_move  = now_node->childs[value.second].second;
+        now_node = now_node->childs[value.second].first;
+
         if(is_move){
             now_pos.first += SearchNode::dx.at(value.second);
             now_pos.second += SearchNode::dy.at(value.second);
         }
         moves.emplace_back(now_pos);
-        is_move  = now_node->childs[value.second].second;
-        now_node = now_node->childs[value.second].first;
     }
 
     std::vector<std::vector<int>> values(field.getSize().first, std::vector<int>(field.getSize().second, 0));
@@ -69,8 +70,6 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
     node->dfsAdd(field.getAgent(side, agent), values);
 
     int par_size = node->size;
-
-    values.at(field.getAgent(side, agent).first).at(field.getAgent(side, agent).second) = 0;
 
     for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
         for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos)
@@ -141,6 +140,7 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
 
     for(auto move : moves){
         std::pair<int,int> new_pos = std::make_pair(pos.first + dx.at(move.second), pos.second + dy.at(move.second));
+
         --state.at(new_pos.first).at(new_pos.second);
 
         childs[move.second] = std::make_pair(std::make_shared<SearchNode>(move.first.first, depth + 1, remain - 1, (move.first.second ? new_pos : pos), side, value, state), move.first.second);
@@ -153,15 +153,13 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
 
 void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<std::vector<int>>& vec){
 
-    vec.at(pos.first).at(pos.second) += size;
-
     for(auto ch : childs){
         std::pair<int,int> new_pos(pos);
-        if(ch.second.second){
-            new_pos.first += dx.at(ch.first);
-            new_pos.second += dy.at(ch.first);
-        }
-        ch.second.first->dfsAdd(new_pos, vec);
+        new_pos.first += dx.at(ch.first);
+        new_pos.second += dy.at(ch.first);
+
+        vec.at(new_pos.first).at(new_pos.second) += ch.second.first->size;
+        ch.second.first->dfsAdd((ch.second.second ? new_pos : pos), vec);
     }
 }
 
