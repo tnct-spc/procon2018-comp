@@ -19,16 +19,21 @@ public:
 
 private:
     struct SearchNode;
-    std::tuple<std::shared_ptr<SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<int>>> depthSearch(int agent, int turn_max);
+    std::tuple<std::shared_ptr<SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<int>>> depthSearch(int agent, int turn_max, std::vector<std::vector<double>>& state);
+
+    bool randPer(double bound);
 
     const int maxval = 10;
 
     std::shared_ptr<MinimumVisualizer> minimum;
     std::shared_ptr<MinimumVisualizerDock> dock;
 
+    std::random_device rnd;
+    std::mt19937 mt;
+    std::uniform_real_distribution<> random;
+
     const bool dock_show = false;
     const bool vis_show = true;
-
 };
 
 struct DepthFirstSearch::SearchNode{
@@ -40,7 +45,7 @@ struct DepthFirstSearch::SearchNode{
     int advsum = -1000000007;
     std::unordered_map<int, std::pair<std::shared_ptr<SearchNode>, int>> childs;
 
-    SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state);
+    SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<double>>& state);
 
     void dfsAdd(std::pair<int,int> pos, std::vector<std::vector<int>>& vec);
 
