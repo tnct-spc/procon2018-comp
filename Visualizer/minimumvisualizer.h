@@ -18,7 +18,7 @@ public:
     ~MinimumVisualizer();
 
     void setSize(std::pair<int,int> siz);
-    void setRoute(std::list<std::pair<int,int>>& rout);
+    void setRoute(std::vector<std::list<std::pair<int,int>>>& rout);
     void setValues(std::vector<std::vector<int>>& vec, int rgba);
 
 private:
@@ -26,7 +26,7 @@ private:
     Ui::MinimumVisualizer *ui;
     void paintEvent(QPaintEvent *event);
 
-    std::list<std::pair<int,int>> route;
+    std::vector<std::list<std::pair<int,int>>> routes;
     std::vector<std::vector<std::vector<int>>> values;
 };
 

@@ -19,14 +19,15 @@ public:
 
 private:
     struct SearchNode;
-    std::shared_ptr<SearchNode> depthSearch(int agent, int turn_max);
+    std::tuple<std::shared_ptr<SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<int>>> depthSearch(int agent, int turn_max);
 
     const int maxval = 10;
 
-    // std::vector<std::shared_ptr<MinimumVisualizer>> minimum;
+    std::shared_ptr<MinimumVisualizer> minimum;
     std::shared_ptr<MinimumVisualizerDock> dock;
 
-    const bool dock_show = true;
+    const bool dock_show = false;
+    const bool vis_show = true;
 
 };
 

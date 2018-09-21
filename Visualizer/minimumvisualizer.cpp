@@ -56,7 +56,7 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
 
     };
 
-    auto drawRoute = [&]{
+    auto drawRoute = [&](std::list<std::pair<int,int>> route){
         for(auto it = route.begin(), it2 = std::next(route.begin()); it2 != route.end(); ++it, ++it2){
 
             painter.setBrush(QBrush(returnQColor((*it).first, (*it).second)));
@@ -94,8 +94,9 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
     if(!values.empty())
         drawValues();
 
-    if(!route.empty())
-        drawRoute();
+    if(!routes.empty())
+        for(auto route : routes)
+            drawRoute(route);
 
 }
 
@@ -103,8 +104,8 @@ void MinimumVisualizer::setSize(std::pair<int,int> siz){
     size = siz;
 }
 
-void MinimumVisualizer::setRoute(std::list<std::pair<int,int>>& rout){
-    route = rout;
+void MinimumVisualizer::setRoute(std::vector<std::list<std::pair<int,int>>>& rout){
+    routes = rout;
 }
 
 void MinimumVisualizer::setValues(std::vector<std::vector<int>>& vec, int rgba){

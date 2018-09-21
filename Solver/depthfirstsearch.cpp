@@ -3,19 +3,65 @@
 DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, bool side) :
     AlgorithmWrapper(field, final_turn, side)
 {
-}
-
-const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearch::agentAct(int now_turn){
-
-    // minimum.clear();
-
     if(dock_show){
         dock = std::make_shared<MinimumVisualizerDock>(6);
         dock->show();
     }
+}
 
-    std::shared_ptr<SearchNode> node_1 = depthSearch(0, std::min(final_turn - now_turn, maxval));
-    std::shared_ptr<SearchNode> node_2 = depthSearch(1, std::min(final_turn - now_turn, maxval));
+const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearch::agentAct(int now_turn){
+
+
+    std::shared_ptr<SearchNode> node_1, node_2;
+    std::list<std::pair<int,int>> moves_1, moves_2;
+    std::vector<std::vector<int>> states_1, states_2;
+    std::tie(node_1, moves_1, states_1) = depthSearch(0, std::min(final_turn - now_turn, maxval));
+    std::tie(node_2, moves_2, states_2) = depthSearch(1, std::min(final_turn - now_turn, maxval));
+
+    std::vector<std::vector<double>> after_values(field.getSize().first, std::vector<double>(field.getSize().second, 1.0));
+
+    for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
+        for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
+            int pos_state = field.getState(pos_x, pos_y).first;
+            if(pos_state)
+                after_values.at(pos_x).at(pos_y) = 2 * (pos_state != side + 1);
+
+            after_values.at(pos_x).at(pos_y) -= 1.0 * states_1.at(pos_x).at(pos_y) / node_1->size;
+            after_values.at(pos_x).at(pos_y) -= 1.0 * states_2.at(pos_x).at(pos_y) / node_2->size;
+
+            after_values.at(pos_x).at(pos_y) = std::max(0.0, after_values.at(pos_x).at(pos_y));
+        }
+
+    std::vector<std::vector<std::vector<int>>> colors(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
+    for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
+        for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
+            if(after_values.at(x_pos).at(y_pos) > 1){
+                colors.at(0).at(x_pos).at(y_pos) -= 255 * (after_values.at(x_pos).at(y_pos) - 1);
+                colors.at(1).at(x_pos).at(y_pos) -= 255 * (after_values.at(x_pos).at(y_pos) - 1);
+
+            }else if(after_values.at(x_pos).at(y_pos) < 1){
+                colors.at(1).at(x_pos).at(y_pos) -= 255 * (1 - after_values.at(x_pos).at(y_pos));
+                colors.at(2).at(x_pos).at(y_pos) -= 255 * (1 - after_values.at(x_pos).at(y_pos));
+            }
+
+            for(int index = 0; index < 3; ++index)
+                colors.at(index).at(x_pos).at(y_pos) = std::max(0, colors.at(index).at(x_pos).at(y_pos));
+        }
+
+    if(dock_show)
+        dock->addVisualizer(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_1, moves_2}), colors);
+
+    if(vis_show){
+        minimum = std::make_shared<MinimumVisualizer>(field.getSize());
+
+        std::vector<std::list<std::pair<int,int>>> use_vec = std::vector<std::list<std::pair<int,int>>>({moves_1, moves_2});
+        minimum->setRoute(use_vec);
+
+        for(int index = 0; index < 3; ++index)
+            minimum->setValues(colors.at(index), index);
+        minimum->show();
+    }
+
 
     int move_1 = node_1->getMaxAdvMove().second;
     int move_2 = node_2->getMaxAdvMove().second;
@@ -28,7 +74,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
                           std::make_tuple((field.getState(agent_pos.at(1).first + SearchNode::dx.at(move_2), agent_pos.at(1).second + SearchNode::dy.at(move_2)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_2), SearchNode::dy.at(move_2)));
 }
 
-std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int agent, int turn_max){
+std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<int>>> DepthFirstSearch::depthSearch(int agent, int turn_max){
     int size_x, size_y;
     std::tie(size_x, size_y) = field.getSize();
 
@@ -41,8 +87,6 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
             if(pos_state)
                 state.at(pos_x).at(pos_y) = 2 * (pos_state != side + 1);
         }
-
-    std::vector<std::vector<int>> bef_state = state;
 
     std::shared_ptr<SearchNode> node = std::make_shared<SearchNode>(0, 0, turn_max, field.getAgent(side, agent), side, field_values, state);
 
@@ -73,38 +117,8 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::depthSearch(int 
 
     node->dfsAdd(field.getAgent(side, agent), values);
 
-    int par_size = node->size;
 
-    for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
-        for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos)
-            after_values.at(x_pos).at(y_pos) = bef_state.at(x_pos).at(y_pos) - 1.0 * values.at(x_pos).at(y_pos) / par_size;
-
-    // minimum.emplace_back(std::make_shared<MinimumVisualizer>(field.getSize()));
-
-    std::vector<std::vector<std::vector<int>>> colors(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
-    for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
-        for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
-            if(after_values.at(x_pos).at(y_pos) > 1){
-                colors.at(0).at(x_pos).at(y_pos) -= 255 * (after_values.at(x_pos).at(y_pos) - 1);
-                colors.at(1).at(x_pos).at(y_pos) -= 255 * (after_values.at(x_pos).at(y_pos) - 1);
-
-            }else if(after_values.at(x_pos).at(y_pos) < 1){
-                colors.at(1).at(x_pos).at(y_pos) -= 255 * (1 - after_values.at(x_pos).at(y_pos));
-                colors.at(2).at(x_pos).at(y_pos) -= 255 * (1 - after_values.at(x_pos).at(y_pos));
-            }
-        }
-
-    /*
-    minimum.back()->setRoute(moves);
-    for(int index = 0; index < 2; ++index)
-        minimum.back()->setValues(colors.at(index), index);
-    minimum.back()->show();
-    */
-
-    if(dock_show)
-        dock->addVisualizer(field.getSize(), moves, colors);
-
-    return node;
+    return std::make_tuple(node, moves, values);
 }
 
 DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state) :

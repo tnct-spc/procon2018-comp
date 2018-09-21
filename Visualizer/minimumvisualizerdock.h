@@ -17,7 +17,7 @@ public:
     explicit MinimumVisualizerDock(int width, QWidget *parent = nullptr);
     ~MinimumVisualizerDock();
 
-    void addVisualizer(std::pair<int,int> size, std::list<std::pair<int,int>> route, std::vector<std::vector<std::vector<int>>> color);
+    void addVisualizer(std::pair<int,int> size, std::vector<std::list<std::pair<int,int>>> route, std::vector<std::vector<std::vector<int>>> color);
 
 private:
     int width;

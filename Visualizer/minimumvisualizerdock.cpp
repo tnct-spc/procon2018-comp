@@ -14,7 +14,7 @@ MinimumVisualizerDock::~MinimumVisualizerDock()
     delete ui;
 }
 
-void MinimumVisualizerDock::addVisualizer(std::pair<int,int> size, std::list<std::pair<int,int>> route, std::vector<std::vector<std::vector<int>>> color){
+void MinimumVisualizerDock::addVisualizer(std::pair<int,int> size, std::vector<std::list<std::pair<int,int>>> route, std::vector<std::vector<std::vector<int>>> color){
 
     MinimumVisualizer* minimum = new MinimumVisualizer(size);
     minimum->setRoute(route);
