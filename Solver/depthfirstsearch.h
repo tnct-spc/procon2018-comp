@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <list>
+#include <queue>
 
 #include "minimumvisualizer.h"
 #include "minimumvisualizerdock.h"
@@ -25,7 +26,7 @@ private:
 
     bool randPer(double bound);
 
-    static const int maxval;
+    int maxval = 10;
 
     std::shared_ptr<MinimumVisualizer> minimum;
     std::shared_ptr<MinimumVisualizerDock> dock;

@@ -13,6 +13,8 @@ DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, b
 
 const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearch::agentAct(int now_turn){
 
+    maxval = std::min(maxval, field.getFinalTurn() - now_turn);
+
     std::cout << "turn : " << now_turn << std::endl;
     std::shared_ptr<SearchNode> node_1, node_2;
     std::list<std::pair<int,int>> moves_1, moves_2;
@@ -139,6 +141,29 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
     std::vector<std::vector<std::vector<int>>> values(maxval, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 0)));
     std::vector<std::vector<double>> after_values(field.getSize().first, std::vector<double>(field.getSize().second));
 
+    std::vector<int> depth_size(maxval, 0);
+    auto size_bfs = [&]{
+        std::queue<std::shared_ptr<SearchNode>> que;
+
+        que.push(node);
+        while(!que.empty()){
+            std::shared_ptr<SearchNode> now_ptr = que.front();
+            int depth = now_ptr->depth;
+            if(depth)
+                depth_size.at(depth - 1) += now_ptr->size + 1;
+            for(auto ch : now_ptr->childs){
+                ch.second.first->size += now_ptr->size;
+                que.push(ch.second.first);
+            }
+            if(depth == maxval)
+                ++now_ptr->size;
+            else
+                now_ptr->size = 0;
+            que.pop();
+        }
+    };
+    size_bfs();
+
     node->dfsAdd(field.getAgent(side, agent), values);
 
 
@@ -222,22 +247,22 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
 
 void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<std::vector<std::vector<int>>>& vec){
 
-    int next_size = (is_back ? size + 1 : 0);
+    // int next_size = (is_back ? size + 1 : 0);
 
     for(auto ch : childs){
         std::pair<int,int> new_pos(pos);
         new_pos.first += dx.at(ch.first);
         new_pos.second += dy.at(ch.first);
 
-        ch.second.first->size += size;
+        // ch.second.first->size += size;
 
         ch.second.first->dfsAdd((ch.second.second ? new_pos : pos), vec);
 
-        next_size += ch.second.first->size;
+        size += ch.second.first->size;
         vec.at(depth).at(new_pos.first).at(new_pos.second) += ch.second.first->size;
     }
 
-    size = next_size;
+    // size = next_size;
 }
 
 int DepthFirstSearch::SearchNode::getAdvSum(){
@@ -262,5 +287,3 @@ std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
 
 const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1});
 const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1});
-
-const int DepthFirstSearch::maxval(10);
