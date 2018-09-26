@@ -29,12 +29,8 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     std::tie(node_1, moves_1, states_1) = depthSearch(0, std::min(final_turn - now_turn, maxval), after_values);
     std::tie(node_2, moves_2, states_2) = depthSearch(1, std::min(final_turn - now_turn, maxval), after_values);
 
-    double hogsum = 0.0;
     for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
         for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
-
-            hogsum += 1.0 * states_1.at(pos_x).at(pos_y) / node_1->size;
-            hogsum += 1.0 * states_2.at(pos_x).at(pos_y) / node_2->size;
 
             after_values.at(pos_x).at(pos_y) -= 1.0 * states_1.at(pos_x).at(pos_y) / node_1->size;
             after_values.at(pos_x).at(pos_y) -= 1.0 * states_2.at(pos_x).at(pos_y) / node_2->size;
@@ -42,9 +38,8 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
             after_values.at(pos_x).at(pos_y) = std::max(0.0, after_values.at(pos_x).at(pos_y));
         }
 
-    std::cout << "node_1 size : " << node_1->size << std::endl;
-    std::cout << "node_2 size : " << node_2->size << std::endl;
-    std::cout << "sum : " << hogsum << std::endl;
+    std::cout << "node_1 size : " << node_1->size << " , " << node_1->real_size << std::endl;
+    std::cout << "node_2 size : " << node_2->size << " , " << node_2->real_size << std::endl;
 
     std::vector<std::vector<std::vector<int>>> colors(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
     for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
@@ -138,7 +133,8 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
 DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<double>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs) :
     adv(adv),
     depth(depth),
-    size(0)
+    size(0),
+    real_size(1)
 {
     // 末尾ノード
     if(!remain){
@@ -171,6 +167,8 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
         return ;
     }
 
+    real_size = 0;
+
     for(auto move : moves){
         std::pair<int,int> new_pos = std::make_pair(pos.first + dx.at(move.second), pos.second + dy.at(move.second));
 
@@ -190,6 +188,8 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
         }
         else{
             childs[move.second] = std::make_pair(std::make_shared<SearchNode>(move.first.first, depth + 1, remain - 1, (move.first.second ? new_pos : pos), side, value, state, node_map, bs), move.first.second);
+
+            real_size += childs[move.second].first->real_size;
 
             node_map[bs] = childs[move.second].first;
 

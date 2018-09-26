@@ -54,7 +54,7 @@ struct DepthFirstSearch::SearchNode{
     static const int movecount = 3;
     static const std::vector<int> dx, dy;
 
-    int adv, depth, size;
+    int adv, depth, size, real_size;
     int advsum = -1000000007;
     bool is_back = false;
     std::unordered_map<int, std::pair<std::shared_ptr<SearchNode>, int>> childs;
