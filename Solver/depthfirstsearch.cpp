@@ -13,7 +13,7 @@ DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, b
 
 const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearch::agentAct(int now_turn){
 
-
+    std::cout << "turn : " << now_turn << std::endl;
     std::shared_ptr<SearchNode> node_1, node_2;
     std::list<std::pair<int,int>> moves_1, moves_2;
     std::vector<std::vector<int>> states_1, states_2;
@@ -71,9 +71,15 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
         minimum->show();
     }
 
+    if(node_1->size == 1 || node_2->size == 1){
+        procon::CsvIo::exportField(field, "./hogehogehoge.csv");
+    }
 
     int move_1 = node_1->getMaxAdvMove().second;
     int move_2 = node_2->getMaxAdvMove().second;
+
+    assert(move_1 >= 0);
+    assert(move_2 >= 0);
 
     std::vector<std::pair<int,int>> agent_pos(2);
     for(int index = 0; index < 2; ++index)
@@ -247,3 +253,5 @@ std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
 
 const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1});
 const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1});
+
+const int DepthFirstSearch::maxval(10);

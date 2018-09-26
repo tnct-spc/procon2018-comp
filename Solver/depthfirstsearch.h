@@ -10,6 +10,8 @@
 
 #include "algorithmwrapper.h"
 
+#include "csvio.h"
+
 class DepthFirstSearch : public AlgorithmWrapper
 {
     // using AlgorithmWrapper::AlgorithmWrapper;
@@ -23,7 +25,7 @@ private:
 
     bool randPer(double bound);
 
-    static const int maxval = 10;
+    static const int maxval;
 
     std::shared_ptr<MinimumVisualizer> minimum;
     std::shared_ptr<MinimumVisualizerDock> dock;
