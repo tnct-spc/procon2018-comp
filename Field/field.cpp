@@ -1206,3 +1206,13 @@ void procon::Field::createQRString(int side){
     std::cout<<ans<<std::endl;
     std::cout<<std::endl;
 }
+int procon::Field::getRegions(std::pair<int,int> pos){
+    int state = 0;
+    if(regions[pos.first + pos.second * 12]){
+        state += 1;
+    }
+    if(regions[pos.first + pos.second * 12 + 144]){
+        state += 2;
+    }
+    return state;
+}
