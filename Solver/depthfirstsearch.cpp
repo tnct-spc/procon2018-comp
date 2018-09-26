@@ -151,7 +151,7 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
         int x_pos = pos.first + dx.at(move_index);
         int y_pos = pos.second + dy.at(move_index);
 
-        if(x_pos < 0 || y_pos < 0 || x_pos >= state.size() || y_pos >= state.at(0).size() || !state.at(x_pos).at(y_pos))
+        if(x_pos < 0 || y_pos < 0 || x_pos >= static_cast<int>(state.size()) || y_pos >= static_cast<int>(state.at(0).size()) || !state.at(x_pos).at(y_pos))
             return std::make_pair(-1000000007, false);
         return std::make_pair(value.at(x_pos).at(y_pos), state.at(x_pos).at(y_pos) != 2);
     };
