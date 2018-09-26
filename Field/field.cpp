@@ -828,11 +828,19 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<s
     }
     return points;
 }
+std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<int,int> pos,int state){
+    std::bitset<288> ins =  field_data;
+    setState(pos.first, pos.second, state);
+    std::vector<std::pair<int,int>> ans = getPoints();
+    field_data = ins;
+    updatePoint();
+    return ans;
+}
 
 void procon::Field::setPoints(int side, std::pair<int, int> value){
     points.at(side) = value;
 }
-std::bitset<288> procon::Field::getRegion(){
+std::bitset<288> procon::Field::getRegions(){
     return regions;
 }
 
@@ -1205,4 +1213,14 @@ void procon::Field::createQRString(int side){
     ans.push_back(':');
     std::cout<<ans<<std::endl;
     std::cout<<std::endl;
+}
+int procon::Field::getRegion(std::pair<int,int> pos){
+    int state = 0;
+    if(regions[pos.first + pos.second * 12]){
+        state += 1;
+    }
+    if(regions[pos.first + pos.second * 12 + 144]){
+        state += 2;
+    }
+    return state;
 }

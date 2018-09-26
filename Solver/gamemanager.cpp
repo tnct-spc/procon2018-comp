@@ -207,6 +207,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
             //std::cout << "turn " << now_turn + 1 << " started" << std::endl << std::endl;
 
+
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
 
