@@ -72,7 +72,9 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     }
 
     if(node_1->size == 1 || node_2->size == 1){
-        procon::CsvIo::exportField(field, "./hogehogehoge.csv");
+        procon::CsvIo::exportField(field, "./error_case.csv");
+        std::cerr << "error_case\n";
+        return std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
     }
 
     int move_1 = node_1->getMaxAdvMove().second;
