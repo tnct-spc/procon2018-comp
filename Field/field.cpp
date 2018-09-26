@@ -520,7 +520,32 @@ bool procon::Field::canPut(const unsigned int side, const unsigned int move_1, c
     return ( check_outofrange(0) && check_outofrange(1) && check_conflict());
 }
 
-
+std::pair<std::pair<int,int>,int> procon::Field::ifBreakArea(int side){
+    int x = ;
+    int y = ;
+    int areax = ;
+    int areay = ;
+    if(abs(x-areax) < 4 && abs(y-areay) < 4){
+        int breakx, breaky;
+        if(y == areay){
+            breaky = areay;
+            breakx = areax+(x-areax);
+        }
+        if(areay > y){
+            breaky = areay-1;
+            breakx = areax;
+        }
+        else{
+            breaky = areay+1;
+            breakx = areax;
+        }
+        std::pair<std::pair<int,int>,int> answer;
+        answer.first.first = breakx;
+        answer.first.second = breaky;
+        answer.second = (breakx,breaky);
+        return answer;
+    }
+}
 
 
 void procon::Field::setSize(const std::pair<int, int> &grid){
