@@ -43,7 +43,7 @@ public:
     std::vector<std::pair<int,int>> getPoints(std::pair<std::pair<int,int>, std::pair<int, int>> pos, bool flag = true);     //引数にteam番号,移動or破壊(0 or 1),座標を持つ、第二引数には実際に得点を書き換えるか(書き換えるならtrue)
     std::vector<std::pair<int,int>> getPoints(std::vector<std::pair<std::pair<int,int>, std::pair<int, int>>> pos_vec, bool flag = true);//上と大体同じ
 
-    std::vector<std::pair<int,int>> getPoints(std::pair<int,int> pos,)
+    std::vector<std::pair<int,int>> getPoints(std::pair<int,int> pos,int state);
 
     void setPoints(int side, std::pair<int,int> value);
 

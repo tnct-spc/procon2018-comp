@@ -828,6 +828,14 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<s
     }
     return points;
 }
+std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<int,int> pos,int state){
+    std::bitset<288> ins =  field_data;
+    setState(pos.first, pos.second, state);
+    std::vector<std::pair<int,int>> ans = getPoints();
+    field_data = ins;
+    updatePoint();
+    return ans;
+}
 
 void procon::Field::setPoints(int side, std::pair<int, int> value){
     points.at(side) = value;
