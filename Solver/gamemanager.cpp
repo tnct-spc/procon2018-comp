@@ -857,5 +857,25 @@ void GameManager::getDataToOperator(const std::pair<int,int> grid, const bool ag
 
 void GameManager::getChangeOfData(const std::pair<int, int> data, const bool agent)
 {
-    emit sendDataToVisualizer(data, agent);
+    emit sendDataToVisualizer(field->getAgent(field->getTurnCount(), 0), true);
+}
+
+// agent => first : team, second : agent
+// pos => first : x, second : y
+void GameManager::changeAgentpos(std::pair<int, int> agent, std::pair<int, int> pos)
+{
+    field->setAgent(agent.first, agent.second, pos.first, pos.second);
+
+    visualizer->setAgentPos(agent, pos);
+    visualizer->update();
+}
+
+// grid => first : x, second : y
+// state => team
+void GameManager::changeGridState(std::pair<int, int> grid, int state)
+{
+    field->setState(grid.first, grid.second, state);
+
+    visualizer->setGridState(grid, state);
+    visualizer->update();
 }

@@ -33,6 +33,12 @@ public:
 
     void setChangeMode(bool value);
 
+    // エージェントの位置を書き換える
+    void setAgentPos(const std::pair<int, int> agent, const std::pair<int, int> pos);
+
+    // グリッドの状態を書き換える
+    void setGridState(const std::pair<int, int> grid, const int state);
+
 signals:
     void nextMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec, std::vector<std::vector<int>> is_delete);
     void selectChangeGrid(const std::pair<int, int> grid, const bool agent);
