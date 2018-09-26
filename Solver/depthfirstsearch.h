@@ -23,7 +23,7 @@ private:
 
     bool randPer(double bound);
 
-    static const int maxval;
+    static const int maxval = 10;
 
     std::shared_ptr<MinimumVisualizer> minimum;
     std::shared_ptr<MinimumVisualizerDock> dock;

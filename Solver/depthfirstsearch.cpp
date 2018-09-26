@@ -177,11 +177,11 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
         --state.at(new_pos.first).at(new_pos.second);
 
         // ここでbitsetを変更していい感じにする
-        bs &= ~255;
+        bs &= ~std::bitset<296>(255);
         bs |= (( (move.first.second ? new_pos.first : pos.first) << 4) | (move.first.second ? new_pos.second : pos.second));
         // state update suru
         int bit_index = 8 + (new_pos.first * 12 + new_pos.second) * 2;
-        int bit_count = (bs >> bit_index & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
+        int bit_count = ((bs >> bit_index) & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
         bs &= ~(std::bitset<296>(3) << bit_index);
         bs |= std::bitset<296>(bit_count + 1) << bit_index;
 
@@ -196,7 +196,7 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
         }
 
         // ここでbsを戻す
-        bs &= ~255;
+        bs &= ~std::bitset<296>(255);
         bs |= (( pos.first << 4) | pos.second);
         bs &= ~(std::bitset<296>(3) << bit_index);
         bs |= std::bitset<296>(bit_count) << bit_index;
@@ -247,4 +247,3 @@ std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
 
 const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1});
 const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1});
-const int DepthFirstSearch::maxval(10);
