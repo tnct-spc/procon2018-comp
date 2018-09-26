@@ -127,6 +127,8 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
 {
     size = 1;
 
+    agentPos = pos;
+
     // 末尾ノード
     if(!remain)
         return ;
@@ -169,6 +171,15 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
     }
 }
 
+std::pair<std::pair<int,int>, std::pair<int,int>> DepthFirstSearch::getMaxAdvMove(SearchNode age1, SearchNode age2){
+    std::vector<RoutesAndNode> routes1,routes2;
+
+}
+
+DepthFirstSearch::RoutesAndNode::RoutesAndNode(SearchNode now){
+
+}
+
 void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<std::vector<int>>& vec){
 
     for(auto ch : childs){
@@ -200,6 +211,7 @@ std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
 
     return maxmove;
 }
+
 
 const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1});
 const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1});
