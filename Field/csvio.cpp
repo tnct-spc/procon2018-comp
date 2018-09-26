@@ -45,8 +45,8 @@ procon::Field procon::CsvIo::importField(std::string path)
     std::getline(line_stream, data, ',');
     int grid_y = std::stoi(data);
     procon::Field fields(grid_x, grid_y);
-    fields.setTurnCount(now_turn);
     fields.setFinalTurn(final_turn);
+    fields.setTurnCount(now_turn);
 
     while(std::getline(input, line_buffer)) {
         //read mode
