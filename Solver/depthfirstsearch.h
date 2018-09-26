@@ -23,10 +23,22 @@ private:
 
     bool randPer(double bound);
 
-    const int maxval = 10;
+    static const int maxval;
 
     std::shared_ptr<MinimumVisualizer> minimum;
     std::shared_ptr<MinimumVisualizerDock> dock;
+
+    struct BitSetSorter{
+        bool operator()(const std::bitset<296>& x, const std::bitset<296>& y) const{
+            for(int count = 0; count < 5; ++count){
+                unsigned long long value_x = ((x >> (count * 64)) & std::bitset<296>(~0uLL)).to_ullong();
+                unsigned long long value_y = ((y >> (count * 64)) & std::bitset<296>(~0uLL)).to_ullong();
+                if(value_x != value_y)
+                    return value_x > value_y;
+            }
+            return false;
+        }
+    };
 
     std::random_device rnd;
     std::mt19937 mt;
@@ -34,6 +46,7 @@ private:
 
     const bool dock_show = false;
     const bool vis_show = true;
+
 };
 
 struct DepthFirstSearch::SearchNode{
@@ -43,9 +56,10 @@ struct DepthFirstSearch::SearchNode{
 
     int adv, depth, size;
     int advsum = -1000000007;
+    bool is_back = false;
     std::unordered_map<int, std::pair<std::shared_ptr<SearchNode>, int>> childs;
 
-    SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<double>>& state);
+    SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<double>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs);
 
     void dfsAdd(std::pair<int,int> pos, std::vector<std::vector<int>>& vec);
 

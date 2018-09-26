@@ -29,14 +29,22 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     std::tie(node_1, moves_1, states_1) = depthSearch(0, std::min(final_turn - now_turn, maxval), after_values);
     std::tie(node_2, moves_2, states_2) = depthSearch(1, std::min(final_turn - now_turn, maxval), after_values);
 
+    double hogsum = 0.0;
     for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
         for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
+
+            hogsum += 1.0 * states_1.at(pos_x).at(pos_y) / node_1->size;
+            hogsum += 1.0 * states_2.at(pos_x).at(pos_y) / node_2->size;
 
             after_values.at(pos_x).at(pos_y) -= 1.0 * states_1.at(pos_x).at(pos_y) / node_1->size;
             after_values.at(pos_x).at(pos_y) -= 1.0 * states_2.at(pos_x).at(pos_y) / node_2->size;
 
             after_values.at(pos_x).at(pos_y) = std::max(0.0, after_values.at(pos_x).at(pos_y));
         }
+
+    std::cout << "node_1 size : " << node_1->size << std::endl;
+    std::cout << "node_2 size : " << node_2->size << std::endl;
+    std::cout << "sum : " << hogsum << std::endl;
 
     std::vector<std::vector<std::vector<int>>> colors(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
     for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
@@ -90,7 +98,11 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
 
     const std::vector<std::vector<int>>& field_values = field.getValue();
 
-    std::shared_ptr<SearchNode> node = std::make_shared<SearchNode>(0, 0, turn_max, field.getAgent(side, agent), side, field_values, state);
+    std::pair<int,int> agent_pos = field.getAgent(side, agent);
+    std::bitset<296> bs((agent_pos.first << 4) + agent_pos.second);
+
+    std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter> node_map;
+    std::shared_ptr<SearchNode> node = std::make_shared<SearchNode>(0, 0, turn_max, agent_pos, side, field_values, state, node_map, bs);
 
     std::list<std::pair<int,int>> moves;
     std::pair<int,int> now_pos = field.getAgent(side, agent);
@@ -123,15 +135,16 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
     return std::make_tuple(node, moves, values);
 }
 
-DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<double>>& state) :
+DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<double>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs) :
     adv(adv),
-    depth(depth)
+    depth(depth),
+    size(0)
 {
-    size = 1;
-
     // 末尾ノード
-    if(!remain)
+    if(!remain){
+        is_back = true;
         return ;
+    }
 
     // {point,is_move}
     auto state_data = [side, pos, value, state](int move_index){
@@ -153,19 +166,40 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
     int bound_val = std::max(moves.at(8 - movecount).first.first, 0);
 
     moves.erase(moves.begin(), std::lower_bound(moves.begin(), moves.end(), std::make_pair(std::make_pair(bound_val, false), 0)));
-    if(moves.empty())
+    if(moves.empty()){
+        is_back = true;
         return ;
-
-    size = 0;
+    }
 
     for(auto move : moves){
         std::pair<int,int> new_pos = std::make_pair(pos.first + dx.at(move.second), pos.second + dy.at(move.second));
 
         --state.at(new_pos.first).at(new_pos.second);
 
-        childs[move.second] = std::make_pair(std::make_shared<SearchNode>(move.first.first, depth + 1, remain - 1, (move.first.second ? new_pos : pos), side, value, state), move.first.second);
+        // ここでbitsetを変更していい感じにする
+        bs &= ~255;
+        bs |= (( (move.first.second ? new_pos.first : pos.first) << 4) | (move.first.second ? new_pos.second : pos.second));
+        // state update suru
+        int bit_index = 8 + (new_pos.first * 12 + new_pos.second) * 2;
+        int bit_count = (bs >> bit_index & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
+        bs &= ~(std::bitset<296>(3) << bit_index);
+        bs |= std::bitset<296>(bit_count + 1) << bit_index;
 
-        size += childs[move.second].first->size;
+        if(node_map.count(bs)){
+            ++node_map[bs]->size;
+        }
+        else{
+            childs[move.second] = std::make_pair(std::make_shared<SearchNode>(move.first.first, depth + 1, remain - 1, (move.first.second ? new_pos : pos), side, value, state, node_map, bs), move.first.second);
+
+            node_map[bs] = childs[move.second].first;
+
+        }
+
+        // ここでbsを戻す
+        bs &= ~255;
+        bs |= (( pos.first << 4) | pos.second);
+        bs &= ~(std::bitset<296>(3) << bit_index);
+        bs |= std::bitset<296>(bit_count) << bit_index;
 
         ++state.at(new_pos.first).at(new_pos.second);
     }
@@ -173,14 +207,22 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
 
 void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<std::vector<int>>& vec){
 
+    int next_size = (is_back ? size + 1 : 0);
+
     for(auto ch : childs){
         std::pair<int,int> new_pos(pos);
         new_pos.first += dx.at(ch.first);
         new_pos.second += dy.at(ch.first);
 
-        vec.at(new_pos.first).at(new_pos.second) += ch.second.first->size;
+        ch.second.first->size += size;
+
         ch.second.first->dfsAdd((ch.second.second ? new_pos : pos), vec);
+
+        next_size += ch.second.first->size;
+        vec.at(new_pos.first).at(new_pos.second) += ch.second.first->size;
     }
+
+    size = next_size;
 }
 
 int DepthFirstSearch::SearchNode::getAdvSum(){
@@ -205,3 +247,4 @@ std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
 
 const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1});
 const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1});
+const int DepthFirstSearch::maxval(10);
