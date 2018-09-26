@@ -47,8 +47,8 @@ public:
 
     void setPoints(int side, std::pair<int,int> value);
 
-    int getTurnCount();
-    int getFinalTurn();
+    int getTurnCount() const;
+    int getFinalTurn() const;
     void setTurnCount(int turn_count);
     void setFinalTurn(int turn_count);
 
@@ -69,7 +69,7 @@ public:
 
     void resetState(const procon::Field& inp_field);
 
-    std::bitset<288>& getField();
+    const std::bitset<288>& getField() const;
     void setField(std::bitset<288>& input);
 
     std::pair<int,int> getSize() const;

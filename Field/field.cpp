@@ -384,11 +384,11 @@ std::vector<std::vector<int>> procon::Field::createField(int x_size, int y_size,
     return out_vector;
 }
 
-int procon::Field::getTurnCount(){
+int procon::Field::getTurnCount() const{
     return now_turn;
 }
 
-int procon::Field::getFinalTurn(){
+int procon::Field::getFinalTurn() const{
     return final_turn;
 }
 
@@ -413,7 +413,7 @@ std::pair<int,int> procon::Field::getSize() const{
     return std::make_pair(grid_x, grid_y);
 }
 
-std::bitset<288>& procon::Field::getField(){
+const std::bitset<288>& procon::Field::getField() const{
     return field_data;
 }
 
