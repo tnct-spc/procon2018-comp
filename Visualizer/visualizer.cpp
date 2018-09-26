@@ -293,7 +293,7 @@ void Visualizer::paintEvent(QPaintEvent *event){
         Red_team_color.setAlpha(100);
         Blue_team_color.setAlpha(100);
 
-        std::bitset<288> region = field.getRegion();
+        std::bitset<288> region = field.getRegions();
 
         for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
             for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
