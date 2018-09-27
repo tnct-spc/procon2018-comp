@@ -127,7 +127,6 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
 {
     size = 1;
 
-    agentPos = pos;
 
     // 末尾ノード
     if(!remain)
@@ -171,13 +170,59 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
     }
 }
 
-std::pair<std::pair<int,int>, std::pair<int,int>> DepthFirstSearch::getMaxAdvMove(SearchNode age1, SearchNode age2){
-    std::vector<RoutesAndNode> routes1,routes2;
+std::pair<std::pair<int,int>, std::pair<int,int>> DepthFirstSearch::getMaxAdvMove(std::shared_ptr<SearchNode> age1, std::shared_ptr<SearchNode> age2){
 
+    long long rearch = 1;
+    for(int a = 0;a < age1->depth;a++)rearch *= age1->movecount;
+
+    rearch *= ratio;
+
+    std::vector<RoutesAndNode> routes1,routes2;
+    for(int index = 0;index < rearch;index++){
+        RoutesAndNode ins;
+        ins.CollectIndex(age1);
+        ins.CollectPos(side, 0, field);
+        routes1.push_back(ins);
+    }
+
+    for(int index = 0;index < rearch;index++){
+        RoutesAndNode ins;
+        ins.CollectIndex(age2);
+        ins.CollectPos(side, 1, field);
+        routes2.push_back(ins);
+    }
+
+    auto check = [&](int index1, int index2){
+        RoutesAndNode ro1 = routes1.at(index1);
+        RoutesAndNode ro2 = routes2.at(index2);
+
+    };
+
+    for(int a = 0;a < rearch;a++){
+        for(int b = 0;b < rearch;b++){
+
+        }
+    }
 }
 
-DepthFirstSearch::RoutesAndNode::RoutesAndNode(SearchNode now){
+void DepthFirstSearch::RoutesAndNode::CollectIndex(std::shared_ptr<SearchNode> now){
 
+    std::shared_ptr<SearchNode> ins;
+    int way;
+    int mi = -1e9;
+    for(auto ch : now->childs){
+        if(mi <= ch.second.first->getAdvSum() && ch.second.first->flag){
+            ins = ch.second.first;
+            mi = ch.second.first->getAdvSum();
+            way = ch.first;
+        }
+    }
+    if(mi != -1e9){
+       indexs.push_back(way);
+       RoutesAndNode(ins);
+    }else{
+        now->flag = false;
+    }
 }
 
 void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<std::vector<int>>& vec){
@@ -215,3 +260,13 @@ std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
 
 const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1});
 const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1});
+
+void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Field field){
+    std::pair<int,int> pos = field.getAgent(side, agent);
+    route_pos.push_back(pos);
+    for(int a = 0;a < indexs.size();a++){
+        pos.first += SearchNode::dx.at(indexs.at(a));
+        pos.second += SearchNode::dy.at(indexs.at(a));
+        route_pos.push_back(pos);
+    }
+}

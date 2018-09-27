@@ -29,7 +29,9 @@ private:
     const bool dock_show = false;
     const bool vis_show = true;
 
-    std::pair<std::pair<int,int>, std::pair<int,int>> getMaxAdvMove(SearchNode age1, SearchNode sge2);
+    std::pair<std::pair<int,int>, std::pair<int,int>> getMaxAdvMove(std::shared_ptr<SearchNode> age1, std::shared_ptr<SearchNode> sge2);
+
+    const double ratio = 0.3;
 
     struct RoutesAndNode;
 
@@ -37,9 +39,12 @@ private:
 };
 
 struct DepthFirstSearch::RoutesAndNode{
-    std::vector<int> indexs;  //深さごとのchildsのindex
-    int adv;
-    RoutesAndNode(SearchNode now);
+
+    std::vector<int> indexs;  //深さごとのchildsのindexs
+    void CollectIndex(std::shared_ptr<SearchNode> ins);
+    std::vector<std::pair<int,int>> route_pos;
+    void CollectPos(int side, int agent, procon::Field field);
+
 };
 
 struct DepthFirstSearch::SearchNode{
@@ -56,7 +61,6 @@ struct DepthFirstSearch::SearchNode{
 
     SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state);
 
-    std::pair<int,int> agentPos;
 
     void dfsAdd(std::pair<int,int> pos, std::vector<std::vector<int>>& vec);
 
