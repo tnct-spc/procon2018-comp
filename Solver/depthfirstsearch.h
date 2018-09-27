@@ -20,11 +20,13 @@ public:
     DepthFirstSearch(const procon::Field& field, int final_turn, bool side);
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
 
+    std::vector<std::vector<std::vector<std::vector<double>>>> getMovePer();
+
 private:
     struct SearchNode;
     std::tuple<std::shared_ptr<SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>, std::vector<int>, std::vector<std::vector<std::vector<int>>>> depthSearch(int agent, int turn_max, std::vector<std::vector<int>>& state);
 
-    bool randPer(double bound);
+    // bool randPer(double bound);
 
     int maxval = 10;
 
@@ -43,9 +45,11 @@ private:
         }
     };
 
+    /*
     std::random_device rnd;
     std::mt19937 mt;
     std::uniform_real_distribution<> random;
+    */
 
     const bool dock_show = false;
     const bool vis_show = true;

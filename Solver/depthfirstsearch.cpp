@@ -3,8 +3,10 @@
 DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, bool side) :
     AlgorithmWrapper(field, final_turn, side)
 {
+    /*
     mt = std::mt19937(rnd());
     random = std::uniform_real_distribution<> (0.0, 1.0);
+    */
     if(dock_show){
         dock = std::make_shared<MinimumVisualizerDock>(6);
         dock->show();
@@ -13,7 +15,7 @@ DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, b
 
 const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearch::agentAct(int now_turn){
 
-    maxval = std::min(maxval, field.getFinalTurn() - now_turn);
+    maxval = std::min(maxval, final_turn - now_turn);
 
     std::cout << "turn : " << now_turn << std::endl;
     std::shared_ptr<SearchNode> node_1, node_2;
@@ -48,8 +50,8 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
         for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
 
-            after_values.at(pos_x).at(pos_y) -= 1.0 * states_1.at(depth_index).at(pos_x).at(pos_y) ;
-            after_values.at(pos_x).at(pos_y) -= 1.0 * states_2.at(depth_index).at(pos_x).at(pos_y) ;
+            after_values.at(pos_x).at(pos_y) -= states_1.at(depth_index).at(pos_x).at(pos_y);
+            after_values.at(pos_x).at(pos_y) -= states_2.at(depth_index).at(pos_x).at(pos_y);
 
             after_values.at(pos_x).at(pos_y) = std::max(0.0, after_values.at(pos_x).at(pos_y));
         }
@@ -110,9 +112,11 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
                           std::make_tuple((field.getState(agent_pos.at(1).first + SearchNode::dx.at(move_2), agent_pos.at(1).second + SearchNode::dy.at(move_2)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_2), SearchNode::dy.at(move_2)));
 }
 
+/*
 bool DepthFirstSearch::randPer(double bound){
     return bound <= random(mt);
 }
+*/
 
 std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>, std::vector<int>, std::vector<std::vector<std::vector<int>>>> DepthFirstSearch::depthSearch(int agent, int turn_max, std::vector<std::vector<int>>& state){
     int size_x, size_y;
@@ -190,6 +194,34 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
     }
 
     return std::make_tuple(node, moves, values, depth_size, agent_values);
+}
+
+std::vector<std::vector<std::vector<std::vector<double>>>> DepthFirstSearch::getMovePer(){
+
+    int now_turn = field.getTurnCount();
+    maxval = std::min(maxval, final_turn - now_turn);
+
+    std::vector<std::vector<std::vector<double>>> states_1, states_2;
+
+    std::vector<std::vector<int>> states(field.getSize().first, std::vector<int>(field.getSize().second, 1));
+    for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
+        for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
+            int pos_state = field.getState(pos_x, pos_y).first;
+            if(pos_state)
+                states.at(pos_x).at(pos_y) = 2 * (pos_state != side + 1);
+        }
+
+    std::tie(std::ignore, std::ignore, states_1, std::ignore, std::ignore) = depthSearch(0, std::min(final_turn - now_turn, maxval), states);
+    std::tie(std::ignore, std::ignore, states_2, std::ignore, std::ignore) = depthSearch(1, std::min(final_turn - now_turn, maxval), states);
+
+    for(int depth = 0; depth < maxval - 1; ++depth)
+        for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
+            for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
+                states_1.at(depth + 1).at(pos_x).at(pos_y) += states_1.at(depth).at(pos_x).at(pos_y);
+                states_2.at(depth + 1).at(pos_x).at(pos_y) += states_2.at(depth).at(pos_x).at(pos_y);
+            }
+
+    return std::vector<std::vector<std::vector<std::vector<double>>>>({states_1, states_2});
 }
 
 DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs) :
