@@ -48,13 +48,11 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
         for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
 
-            after_values.at(pos_x).at(pos_y) -= 1.0 * states_1.at(depth_index).at(pos_x).at(pos_y) ;/// sizes_1.at(depth_index);
-            after_values.at(pos_x).at(pos_y) -= 1.0 * states_2.at(depth_index).at(pos_x).at(pos_y) ;/// sizes_2.at(depth_index);
+            after_values.at(pos_x).at(pos_y) -= 1.0 * states_1.at(depth_index).at(pos_x).at(pos_y) ;
+            after_values.at(pos_x).at(pos_y) -= 1.0 * states_2.at(depth_index).at(pos_x).at(pos_y) ;
 
             after_values.at(pos_x).at(pos_y) = std::max(0.0, after_values.at(pos_x).at(pos_y));
         }
-
-    std::cout << "now_siz = " << sizes_1.at(depth_index) << std::endl;
 
     std::cout << "node_1 size : " << node_1->size << " , " << node_1->real_size << std::endl;
     std::cout << "node_2 size : " << node_2->size << " , " << node_2->real_size << std::endl;
@@ -241,7 +239,7 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
         // ここでbitsetを変更していい感じにする
         bs &= ~std::bitset<296>(255);
         bs |= (( (move.first.second ? new_pos.first : pos.first) << 4) | (move.first.second ? new_pos.second : pos.second));
-        // state update suru
+
         int bit_index = 8 + (new_pos.first * 12 + new_pos.second) * 2;
         int bit_count = ((bs >> bit_index) & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
         bs &= ~(std::bitset<296>(3) << bit_index);
@@ -271,14 +269,10 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
 
 void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<std::vector<std::vector<double>>>& vec, std::vector<std::vector<std::vector<int>>>& agent_vec){
 
-    // int next_size = (is_back ? size + 1 : 0);
-
     for(auto ch : childs){
         std::pair<int,int> new_pos(pos);
         new_pos.first += dx.at(ch.first);
         new_pos.second += dy.at(ch.first);
-
-        // ch.second.first->size += size;
 
         std::pair<int,int> agent_pos(ch.second.second ? new_pos : pos);
 
@@ -289,10 +283,8 @@ void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<st
         agent_vec.at(depth).at(agent_pos.first).at(agent_pos.second) += ch.second.first->size;
 
         vec.at(depth).at(new_pos.first).at(new_pos.second) += ch.second.first->leaf_size;
-        // vec.at(depth).at(new_pos.first).at(new_pos.second) += ch.second.first->size;
     }
 
-    // size = next_size;
 }
 
 int DepthFirstSearch::SearchNode::getAdvSum(){
