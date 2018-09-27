@@ -22,7 +22,7 @@ public:
 
 private:
     struct SearchNode;
-    std::tuple<std::shared_ptr<SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<int>>>, std::vector<int>, std::vector<std::vector<std::vector<int>>>> depthSearch(int agent, int turn_max, std::vector<std::vector<double>>& state);
+    std::tuple<std::shared_ptr<SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<int>>>, std::vector<int>, std::vector<std::vector<std::vector<int>>>> depthSearch(int agent, int turn_max, std::vector<std::vector<int>>& state);
 
     bool randPer(double bound);
 
@@ -62,7 +62,7 @@ struct DepthFirstSearch::SearchNode{
     bool is_back = false;
     std::unordered_map<int, std::pair<std::shared_ptr<SearchNode>, int>> childs;
 
-    SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<double>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs);
+    SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs);
 
     void dfsAdd(std::pair<int,int> pos, std::vector<std::vector<std::vector<int>>>& vec, std::vector<std::vector<std::vector<int>>>& agent_vec);
 

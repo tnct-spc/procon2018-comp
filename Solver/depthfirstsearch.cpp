@@ -21,16 +21,19 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     std::vector<std::vector<std::vector<int>>> states_1, states_2, agent_states_1, agent_states_2;
     std::vector<int> sizes_1, sizes_2;
 
-    std::vector<std::vector<double>> after_values(field.getSize().first, std::vector<double>(field.getSize().second, 1.0));
+    std::vector<std::vector<double>> after_values(field.getSize().first, std::vector<double>(field.getSize().second, 1));
+    std::vector<std::vector<int>> states(field.getSize().first, std::vector<int>(field.getSize().second, 1));
     for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
         for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
             int pos_state = field.getState(pos_x, pos_y).first;
-            if(pos_state)
+            if(pos_state){
+                states.at(pos_x).at(pos_y) = 2 * (pos_state != side + 1);
                 after_values.at(pos_x).at(pos_y) = 2 * (pos_state != side + 1);
+            }
         }
 
-    std::tie(node_1, moves_1, states_1, sizes_1, agent_states_1) = depthSearch(0, std::min(final_turn - now_turn, maxval), after_values);
-    std::tie(node_2, moves_2, states_2, sizes_2, agent_states_2) = depthSearch(1, std::min(final_turn - now_turn, maxval), after_values);
+    std::tie(node_1, moves_1, states_1, sizes_1, agent_states_1) = depthSearch(0, std::min(final_turn - now_turn, maxval), states);
+    std::tie(node_2, moves_2, states_2, sizes_2, agent_states_2) = depthSearch(1, std::min(final_turn - now_turn, maxval), states);
 
     for(int depth = 0; depth < maxval - 1; ++depth)
         for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
@@ -108,7 +111,7 @@ bool DepthFirstSearch::randPer(double bound){
     return bound <= random(mt);
 }
 
-std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<int>>>, std::vector<int>, std::vector<std::vector<std::vector<int>>>> DepthFirstSearch::depthSearch(int agent, int turn_max, std::vector<std::vector<double>>& state){
+std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<int>>>, std::vector<int>, std::vector<std::vector<std::vector<int>>>> DepthFirstSearch::depthSearch(int agent, int turn_max, std::vector<std::vector<int>>& state){
     int size_x, size_y;
     std::tie(size_x, size_y) = field.getSize();
 
@@ -176,7 +179,7 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
     return std::make_tuple(node, moves, values, depth_size, agent_values);
 }
 
-DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<double>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs) :
+DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs) :
     adv(adv),
     depth(depth),
     size(0),
