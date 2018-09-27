@@ -90,8 +90,11 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     int move_1 = node_1->getMaxAdvMove().second;
     int move_2 = node_2->getMaxAdvMove().second;
 
-    assert(move_1 >= 0);
-    assert(move_2 >= 0);
+    if(move_1 < 0 || move_2 < 0){
+        procon::CsvIo::exportField(field, "./error_case.csv");
+        std::cerr << "error_case\n";
+        return std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
+    }
 
     std::vector<std::pair<int,int>> agent_pos(2);
     for(int index = 0; index < 2; ++index)
