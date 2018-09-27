@@ -19,12 +19,12 @@ class DepthFirstSearch : public AlgorithmWrapper
 public:
     DepthFirstSearch(const procon::Field& field, int final_turn, bool side);
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
-
-    std::vector<std::vector<std::vector<std::vector<double>>>> getMovePer();
+    std::vector<std::vector<std::vector<std::vector<double>>>> getEnemyMove();
 
 private:
     struct SearchNode;
     std::tuple<std::shared_ptr<SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>, std::vector<int>, std::vector<std::vector<std::vector<int>>>> depthSearch(int agent, int turn_max, std::vector<std::vector<int>>& state);
+    std::vector<std::vector<std::vector<std::vector<double>>>> getMovePer();
 
     // bool randPer(double bound);
 

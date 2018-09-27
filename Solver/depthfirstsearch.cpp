@@ -47,6 +47,21 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 
     int depth_index = std::max(maxval - 1, 0);
 
+    std::vector<std::vector<std::vector<std::vector<double>>>> enemy = getEnemyMove();
+    states_1 = enemy.at(0);
+    states_2 = enemy.at(1);
+    auto rev = [](std::vector<std::vector<std::vector<double>>>& v){
+        std::for_each(v.begin(), v.end(), [](std::vector<std::vector<double>>& v2){
+            std::for_each(v2.begin(), v2.end(), [](std::vector<double>& v3){
+                std::for_each(v3.begin(), v3.end(), [](double& v4){
+                    v4*=-1;
+                });
+            });
+        });
+    };
+    rev(states_1);
+    rev(states_2);
+
     for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
         for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
 
@@ -194,6 +209,11 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
     }
 
     return std::make_tuple(node, moves, values, depth_size, agent_values);
+}
+
+std::vector<std::vector<std::vector<std::vector<double>>>> DepthFirstSearch::getEnemyMove(){
+    DepthFirstSearch enemy(field, final_turn, side ^ 1);
+    return enemy.getMovePer();
 }
 
 std::vector<std::vector<std::vector<std::vector<double>>>> DepthFirstSearch::getMovePer(){
