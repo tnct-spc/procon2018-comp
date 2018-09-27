@@ -217,7 +217,6 @@ void Visualizer::paintEvent(QPaintEvent *event){
         }
 
     };
-
     auto drawPoints = [&]{
 
         //とても汚いコピペコードで申し訳NASA
