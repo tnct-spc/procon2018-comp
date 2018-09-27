@@ -78,6 +78,12 @@ public slots:
     // ChangeModeを終了
     void endChangeMode(const std::pair<int, int> turns);
 
+    // agentの位置の変更を反映
+    void changeAgentpos(std::pair<int, int> agent, std::pair<int, int> pos);
+
+    // グリッドの状態の変更を反映
+    void changeGridState(std::pair<int, int> grid, int state);
+
     // ChangeModeのときクリックされたGridを受け取る
     void getDataToOperator(const std::pair<int,int> grid, const bool agent);
 

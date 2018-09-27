@@ -585,3 +585,13 @@ void Visualizer::setTurns(const std::pair<int, int> turns)
     max_turn = turns.second;
     field.setFinalTurn(max_turn);
 }
+
+void Visualizer::setAgentPos(const std::pair<int, int> agent, const std::pair<int, int> pos)
+{
+    field.setAgent(agent.first, agent.second, pos.first, pos.second);
+}
+
+void Visualizer::setGridState(const std::pair<int, int> grid, const int state)
+{
+    field.setState(grid.first, grid.second, state);
+}
