@@ -66,6 +66,11 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     int move_1 = node_1->getMaxAdvMove().second;
     int move_2 = node_2->getMaxAdvMove().second;
 
+    std::pair<std::pair<int,int>,int> ins = getMaxAdvMove(node_1, node_2);
+
+    move_1 = ins.first.first;
+    move_2 = ins.first.second;
+
     std::vector<std::pair<int,int>> agent_pos(2);
     for(int index = 0; index < 2; ++index)
         agent_pos.at(index) = field.getAgent(side, index);
@@ -170,12 +175,16 @@ DepthFirstSearch::SearchNode::SearchNode(int adv, int depth, int remain, std::pa
     }
 }
 
-std::pair<std::pair<int,int>, std::pair<int,int>> DepthFirstSearch::getMaxAdvMove(std::shared_ptr<SearchNode> age1, std::shared_ptr<SearchNode> age2){
+std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_ptr<SearchNode> age1, std::shared_ptr<SearchNode> age2){
+
+
 
     long long rearch = 1;
     for(int a = 0;a < age1->depth;a++)rearch *= age1->movecount;
 
     rearch *= ratio;
+
+    rearch = 10;
 
     std::vector<RoutesAndNode> routes1,routes2;
     for(int index = 0;index < rearch;index++){
@@ -185,24 +194,48 @@ std::pair<std::pair<int,int>, std::pair<int,int>> DepthFirstSearch::getMaxAdvMov
         routes1.push_back(ins);
     }
 
+    //std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
+    //route1 zero ここバグ
+
     for(int index = 0;index < rearch;index++){
         RoutesAndNode ins;
         ins.CollectIndex(age2);
         ins.CollectPos(side, 1, field);
         routes2.push_back(ins);
     }
+    //std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
+
 
     auto check = [&](int index1, int index2){
         RoutesAndNode ro1 = routes1.at(index1);
         RoutesAndNode ro2 = routes2.at(index2);
 
+        int count = 0;
+
+        for(int a = 0;a < ro1.route_pos.size();a++){
+            for(int b = 0;b < ro2.route_pos.size();b++){
+                if(ro1.route_pos.at(a) == ro2.route_pos.at(b))
+                    count++;
+            }
+        }
+        return threshold >= count;
     };
+    std::pair<std::pair<int,int>,int> ans = std::make_pair(std::make_pair(0,0),-1e9);
 
-    for(int a = 0;a < rearch;a++){
-        for(int b = 0;b < rearch;b++){
-
+   // std::cout<<routes2.front().indexs.size()<<std::endl;
+    for(int a = 0;a < routes1.size();a++){
+        for(int b = 0;b < routes2.size();b++){
+            std::cout<<routes1.size() << " "<<routes2.size()<<std::endl;
+            if(check(a,b)){
+                if(ans.second <= routes1.at(a).adv + routes2.at(b).adv){
+                    ans.second = routes1.at(a).adv + routes2.at(b).adv;
+                    ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
+                }
+            }
         }
     }
+    //std::cout<<ans.first.first<<" "<<ans.first.second<<" "<<ans.second<<std::endl;
+    return ans;
 }
 
 void DepthFirstSearch::RoutesAndNode::CollectIndex(std::shared_ptr<SearchNode> now){
@@ -219,7 +252,8 @@ void DepthFirstSearch::RoutesAndNode::CollectIndex(std::shared_ptr<SearchNode> n
     }
     if(mi != -1e9){
        indexs.push_back(way);
-       RoutesAndNode(ins);
+       CollectIndex(ins);
+       adv = mi;
     }else{
         now->flag = false;
     }
@@ -243,7 +277,7 @@ int DepthFirstSearch::SearchNode::getAdvSum(){
 
     int point = 0;
     for(auto ch : childs)
-        point = std::max(point, ch.second.first->getAdvSum());
+        if(ch.second.first->flag) point = std::max(point, ch.second.first->getAdvSum());
 
     return advsum = point + adv;
 }
