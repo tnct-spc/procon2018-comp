@@ -47,8 +47,8 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 
     int depth_index = std::max(maxval - 1, 0);
 
-    states_1 = getEnemyMove(0);
-    states_2 = getEnemyMove(1);
+    states_1 = getAgentMove(1, 0);
+    states_2 = getAgentMove(1, 1);
 
     for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
         for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
@@ -199,12 +199,26 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
     return std::make_tuple(node, moves, values, depth_size, agent_values);
 }
 
-std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getEnemyMove(int agent){
-    DepthFirstSearch enemy(field, final_turn, side ^ 1);
-    return enemy.getMovePer(agent);
+std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getAgentMove(bool inp_side, bool agent){
+    DepthFirstSearch enemy(field, final_turn, inp_side);
+    std::vector<std::vector<std::vector<double>>> ret_val = enemy.getMovePer(inp_side, agent);
+
+    auto rev = [](std::vector<std::vector<std::vector<double>>>& v){
+        std::for_each(v.begin(), v.end(), [](std::vector<std::vector<double>>& v2){
+            std::for_each(v2.begin(), v2.end(), [](std::vector<double>& v3){
+                std::for_each(v3.begin(), v3.end(), [](double& v4){
+                    v4 *= -1;
+                });
+            });
+        });
+    };
+    if(side ^ inp_side)
+        rev(ret_val);
+
+    return ret_val;
 }
 
-std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(int agent){
+std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool inp_side, bool agent){
 
     int now_turn = field.getTurnCount();
     maxval = std::min(maxval, final_turn - now_turn);
@@ -216,7 +230,7 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(int a
         for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
             int pos_state = field.getState(pos_x, pos_y).first;
             if(pos_state)
-                states.at(pos_x).at(pos_y) = 2 * (pos_state != side + 1);
+                states.at(pos_x).at(pos_y) = 2 * (pos_state != inp_side + 1);
         }
 
     std::tie(std::ignore, std::ignore, ret_states, std::ignore, std::ignore) = depthSearch(agent, std::min(final_turn - now_turn, maxval), states);
@@ -225,17 +239,6 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(int a
         for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
             for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y)
                 ret_states.at(depth + 1).at(pos_x).at(pos_y) += ret_states.at(depth).at(pos_x).at(pos_y);
-
-    auto rev = [](std::vector<std::vector<std::vector<double>>>& v){
-        std::for_each(v.begin(), v.end(), [](std::vector<std::vector<double>>& v2){
-            std::for_each(v2.begin(), v2.end(), [](std::vector<double>& v3){
-                std::for_each(v3.begin(), v3.end(), [](double& v4){
-                    v4 *= -1;
-                });
-            });
-        });
-    };
-    rev(ret_states);
 
     return ret_states;
 }
