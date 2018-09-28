@@ -16,12 +16,14 @@ SOURCES += \
         main.cpp \
         testagentparam.cpp \
         testevaluatespeed.cpp \
-        testconvertfield.cpp
+        testconvertfield.cpp \
+        testalgorithmplayout.cpp
 
 HEADERS += \
         testagentparam.h \
         testevaluatespeed.h \
-        testconvertfield.h
+        testconvertfield.h \
+        testalgorithmplayout.h
 
 LIBS += -L/usr/lib `pkg-config --libs opencv`
 LIBS += -L/usr/lib64 -lzbar

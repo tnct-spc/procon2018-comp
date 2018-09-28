@@ -384,11 +384,11 @@ std::vector<std::vector<int>> procon::Field::createField(int x_size, int y_size,
     return out_vector;
 }
 
-int procon::Field::getTurnCount(){
+int procon::Field::getTurnCount() const{
     return now_turn;
 }
 
-int procon::Field::getFinalTurn(){
+int procon::Field::getFinalTurn() const{
     return final_turn;
 }
 
@@ -413,7 +413,7 @@ std::pair<int,int> procon::Field::getSize() const{
     return std::make_pair(grid_x, grid_y);
 }
 
-std::bitset<288>& procon::Field::getField(){
+const std::bitset<288>& procon::Field::getField() const{
     return field_data;
 }
 
@@ -431,7 +431,7 @@ std::pair<int,int> procon::Field::getAgent(const unsigned int side, const unsign
 
 
 //pair<タイル状況,評価値>を返す
-std::pair<int,int> procon::Field::getState(const unsigned int x, const unsigned int y) const{
+std::pair<int,int> procon::Field::getState(const int x, const int y) const{
     if(!(0 <= x && x <= grid_x - 1 && 0 <= y && y <= grid_y - 1)){
         std::cerr<<"ERROR : getStateにて盤面外を指定しています!!"<<std::endl;
         std::abort();
@@ -861,11 +861,19 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<s
     }
     return points;
 }
+std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<int,int> pos,int state){
+    std::bitset<288> ins =  field_data;
+    setState(pos.first, pos.second, state);
+    std::vector<std::pair<int,int>> ans = getPoints();
+    field_data = ins;
+    updatePoint();
+    return ans;
+}
 
 void procon::Field::setPoints(int side, std::pair<int, int> value){
     points.at(side) = value;
 }
-std::bitset<288> procon::Field::getRegion(){
+std::bitset<288> procon::Field::getRegions(){
     return regions;
 }
 
@@ -1210,4 +1218,42 @@ std::vector<double> procon::Field::calcSituationFeature(std::pair<std::tuple<int
     std::cout<<std::endl;
     */
     return ans;
+}
+void procon::Field::createQRString(int side){
+    std::string ans;
+    ans += std::to_string(grid_y);
+    ans.push_back(' ');
+    ans += std::to_string(grid_x);
+    ans.push_back(':');
+    for(int y = 0;y < grid_y;y++){
+        for(int x = 0;x < grid_x;x++){
+            if(x == 0){
+                ans += std::to_string(getState(x,y).second);
+            }else{
+                ans.push_back(' ');
+                ans += std::to_string(getState(x,y).second);
+            }
+        }
+        ans.push_back(':');
+    }
+    ans += std::to_string(1+agents.at(side).at(0).second);
+    ans.push_back(' ');
+    ans += std::to_string(1+agents.at(side).at(0).first);
+    ans.push_back(':');
+    ans += std::to_string(1+agents.at(side).at(1).second);
+    ans.push_back(' ');
+    ans += std::to_string(1+agents.at(side).at(1).first);
+    ans.push_back(':');
+    std::cout<<ans<<std::endl;
+    std::cout<<std::endl;
+}
+int procon::Field::getRegion(std::pair<int,int> pos){
+    int state = 0;
+    if(regions[pos.first + pos.second * 12]){
+        state += 1;
+    }
+    if(regions[pos.first + pos.second * 12 + 144]){
+        state += 2;
+    }
+    return state;
 }

@@ -3,6 +3,7 @@
 
 CipherCards::CipherCards(QWidget *parent) :
     QWidget(parent),
+    images(2),
     ui(new Ui::CipherCards)
 {
     ui->setupUi(this);
@@ -20,10 +21,8 @@ void CipherCards::resizeEvent(QResizeEvent *event)
     // 画像をresize
 
     // agent1
-    // ラベルの数。layoutの文は引く
-    int num = ui->agent1Widget->children().size() - 1;
 
-    for (int i = 0; i < num; i++) {
+    for (int i = 0; i < images.at(0).size(); i++) {
         // 保存していた画像を貼り直す
         QPixmap pix = QPixmap(images.at(0).at(i));
 
@@ -32,23 +31,21 @@ void CipherCards::resizeEvent(QResizeEvent *event)
         QLabel *label = ui->agent1Widget->findChild<QLabel *>(object_name);
 
         // Widgetの横幅に合わせる
-        label->setPixmap(pix.scaledToWidth(ui->agent1Widget->width() / num - 5));
+        label->setPixmap(pix.scaledToWidth(ui->agent1Widget->width() / images.at(0).size() - 5));
     }
 
     // agent2
-    // ラベルの数。layoutの文は引く
-    num = ui->agent2Widget->children().size() - 1;
 
-    for (int i = 0; i < num; i++) {
+    for (int i = 0; i < images.at(1).size(); i++) {
         // 保存していた画像を貼り直す
-        QPixmap pix = QPixmap(images.at(0).at(i));
+        QPixmap pix = QPixmap(images.at(1).at(i));
 
         // objectNameからLabelを探す
         QString object_name = "image1_" + QString::number(i);
         QLabel *label = ui->agent2Widget->findChild<QLabel *>(object_name);
 
         // Widgetの横幅に合わせる
-        label->setPixmap(pix.scaledToWidth(ui->agent2Widget->width() / num - 5));
+        label->setPixmap(pix.scaledToWidth(ui->agent2Widget->width() / images.at(1).size() - 5));
     }
 }
 
@@ -91,6 +88,7 @@ void CipherCards::setCipher(unsigned long int agent, unsigned long int pos, proc
 
 void CipherCards::drawCards(std::vector<std::vector<procon::Cipher>> cards)
 {
+
     for (unsigned int agent = 0; agent < 2; agent++) {
         // そのエージェントのカード数を取得
         unsigned int card_num = cards.at(agent).size();
@@ -105,6 +103,7 @@ void CipherCards::drawCards(std::vector<std::vector<procon::Cipher>> cards)
         std::vector<QString> paths;
 
         // 各WidgetはQGridLayoutを使用
+        delete wid->layout();
         QGridLayout *layout = new QGridLayout(wid);
 
         // marginをなくす
@@ -112,6 +111,7 @@ void CipherCards::drawCards(std::vector<std::vector<procon::Cipher>> cards)
         layout->setSpacing(0);
 
         for (unsigned int num = 0; num < card_num; num++) {
+
             // Pathを作成
             QString path = makePath(cards.at(agent).at(num));
             paths.push_back(path);
@@ -132,7 +132,7 @@ void CipherCards::drawCards(std::vector<std::vector<procon::Cipher>> cards)
         }
 
         // エージェントのカードのPathを保存
-        images.push_back(paths);
+        images.at(agent) = paths;
     }
 }
 

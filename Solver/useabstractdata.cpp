@@ -1,5 +1,18 @@
 #include "useabstractdata.h"
 
+UseAbstractData::UseAbstractData(const procon::Field& field, int final_turn, bool side, const GeneticAgent& agent) :
+    AlgorithmWrapper(field, final_turn, side),
+    agent_data(agent)
+{
+    std::vector<double> value = agent_data.getData();
+    for(int index = 0; index < 9; ++index){
+        // [10, -10]
+        const_values.at(index) = value.at(index) * 20 - 10;
+    }
+    // [3, 0]
+    diagonal_move = value.at(9) * 3;
+}
+
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractData::agentAct(int now_turn){
 
     std::vector<std::vector<std::vector<int>>> abst_values(2);
@@ -75,7 +88,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 
         value /= cnt;
 
-        if(state == side + 1)
+        if(cnt > 1)
             value *= diagonal_move;
 
         calc_value_func(value, state == side + 1, field.getState(pos.at(0), pos.at(1)).second);
@@ -117,9 +130,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
 
 
         if(aft_pos.at(0) != aft_pos.at(1)){
+            /*
             std::cout << move_pair.first << "   :   ";
             std::cout << "( " << is_delete.at(0) + 1 << " , " << x_list.at(move_index.at(0)) << " , " << y_list.at(move_index.at(0)) << " )   "
                       << "( " << is_delete.at(1) + 1 << " , " << x_list.at(move_index.at(1)) << " , " << y_list.at(move_index.at(1)) << " )\n";
+            */
             return std::make_pair(std::make_tuple(is_delete.at(0) + 1, x_list.at(move_index.at(0)), y_list.at(move_index.at(0))),
                                   std::make_tuple(is_delete.at(1) + 1, x_list.at(move_index.at(1)), y_list.at(move_index.at(1))));
         }
@@ -172,4 +187,14 @@ std::vector<std::vector<int>> UseAbstractData::getAbstractBasedAgent(bool eval_s
            add_value(std::vector<int>({field.getAgent(count >> 1, count & 1).first, field.getAgent(count >> 1, count & 1).second}), 7 + (eval_side ^ (count >> 1)), 1);
 
     return return_values;
+}
+
+void UseAbstractData::setParameters(std::vector<double>& values, double diagonal, std::function<void(double&, bool, int)>& tile_value_func, std::function<double(double, double)>& eval_sum_func){
+
+    /*
+    diagonal_move = diagonal;
+    const_values = values;
+    */
+    calc_value_func = tile_value_func;
+    calc_eval_sum = eval_sum_func;
 }

@@ -9,7 +9,9 @@
 #include "geneticalgo/simplealgorithm.h"
 #include "doubleagent/agentmanager.h"
 #include "useabstractdata.h"
+#include "simplemontecarlo/useabstmontecarlo.h"
 #include "LastForce/lastforce.h"
+#include "majorityrulewithabstdata.h"
 
 GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
     : QObject(parent),
@@ -30,6 +32,8 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show
     field->setFinalTurn(turn_max);
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
+
+
 
     if(vis_show){
         visualizer = std::make_shared<Visualizer>(*field);
@@ -66,6 +70,8 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
         is_auto = true;//この場合は自動進行
     }
 
+
+
     field->updatePoint();
 
 }
@@ -79,7 +85,6 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
 }
 
 void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod) {
-
     if (QString::compare("GenerateField", InputMethod) == 0) {
         int x_size = field->getSize().first;
         int y_size = field->getSize().second;
@@ -120,6 +125,9 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     }
     //field->guessAgents(1);
 
+    // field->createQRString(0);
+    // field->createQRString(1);
+
     if (QString::compare("DummyAlgorithm", my_algo) == 0) {
         team_1 = std::make_shared<DummyAlgorithm>(*field, field->getFinalTurn(), 0);
     } else if (QString::compare("GeneticAlgo", my_algo) == 0) {
@@ -142,6 +150,10 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 1);
     } else if (QString::compare("UseAbstractData", my_algo) == 0) {
         team_1 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 0);
+    } else if (QString::compare("UseAbstMonteCarlo", my_algo) == 0) {
+        team_1 = std::make_shared<UseAbstMonteCarlo>(*field, field->getFinalTurn(), 0);
+    } else if (QString::compare("MajorityRuleWithAbstData", my_algo) == 0) {
+        team_1 = std::make_shared<MajorityRuleWithAbstData>(*field, field->getFinalTurn(), 0);
     }
 
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
@@ -166,7 +178,11 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 1);
     } else if (QString::compare("UseAbstractData", opponent_algo) == 0) {
         team_2 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 1);
+    } else if (QString::compare("MajorityRuleWithAbstData", opponent_algo) == 0) {
+        team_2 = std::make_shared<MajorityRuleWithAbstData>(*field, field->getFinalTurn(), 1);
     }
+
+
 
 
     // progressdockは一旦表示しない事にします(使う事があまりないため)
@@ -190,6 +206,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
 
             //std::cout << "turn " << now_turn + 1 << " started" << std::endl << std::endl;
+
 
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
@@ -310,6 +327,10 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
     if(algo_number == 3){
         team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 0, &agent_1, &agent_2);
         team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 0, &agent_3, &agent_4);
+    }
+    if(algo_number == 4){
+        team_1 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 0, agent_1);
+        team_2 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 1, agent_2);
     }
 
 
@@ -748,12 +769,21 @@ void GameManager::nextMoveForManualMode(){
     candidate_move.at(0) = team_1->agentAct(0);
     candidate_move.at(1) = team_2->agentAct(1);
 
-    std::vector<std::vector<procon::Cipher>> Ciphers (2, std::vector<procon::Cipher>(1));
-    Ciphers.at(0).at(0) = procon::changeIntToCipher(field->translateMoveToInt(0,candidate_move.at(0).first));
-    Ciphers.at(1).at(0) = procon::changeIntToCipher(field->translateMoveToInt(1,candidate_move.at(1).first));
-    Ciphers.at(0).at(0) = procon::changeIntToCipher(field->translateMoveToInt(0,candidate_move.at(0).second));
-    Ciphers.at(1).at(0) = procon::changeIntToCipher(field->translateMoveToInt(1,candidate_move.at(1).second));
-    ciphercard->drawCards(Ciphers);
+    /*
+    std::vector<std::vector<procon::Cipher>> ciphers (2, std::vector<procon::Cipher>(1));
+    int move_0 = field->translateMoveToInt(0, candidate_move.at(0).first);
+    int move_1 = 26 + field->translateMoveToInt(0, candidate_move.at(0).second);
+    ciphers.at(0).at(0) = procon::changeIntToCipher(move_0);
+    ciphers.at(1).at(0) = procon::changeIntToCipher(move_1);
+    */
+
+    std::vector<std::vector<procon::Cipher>> ciphers(2, std::vector<procon::Cipher>(2));
+    ciphers.at(0).at(0) = procon::changeIntToCipher(std::get<1>(candidate_move.at(0).first) + 1);
+    ciphers.at(0).at(1) = procon::changeIntToCipher(- std::get<2>(candidate_move.at(0).first) + 14);
+    ciphers.at(1).at(0) = procon::changeIntToCipher(std::get<1>(candidate_move.at(0).second) + 27);
+    ciphers.at(1).at(1) = procon::changeIntToCipher(- std::get<2>(candidate_move.at(0).second) + 40);
+
+    ciphercard->drawCards(ciphers);
 
     std::vector<std::vector<std::pair<int,int>>> return_vec(2, std::vector<std::pair<int,int>>(2) );
 

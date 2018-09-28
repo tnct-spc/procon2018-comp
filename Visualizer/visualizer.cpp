@@ -20,6 +20,7 @@ Visualizer::~Visualizer()
 }
 
 void Visualizer::setField(const procon::Field& inp_field, int now_turn, int max_t){
+    candidate = std::vector<std::vector<std::pair<int, int>>>(2, std::vector<std::pair<int,int>>(2, std::make_pair(-1, -1)));
     field = inp_field;
     turn = now_turn;
     max_turn = max_t;
@@ -106,12 +107,18 @@ void Visualizer::paintEvent(QPaintEvent *event){
                            : team_color_b);
                 paint_color.setAlpha(128);
 
+                if(index)
+                    paint_color.setGreen(128);
+
                 painter.setBrush(QBrush(paint_color));
 
                 int pos_x = field.getAgents().at(team).at(index).first;
                 int pos_y = field.getAgents().at(team).at(index).second;
 
+                QString text = QString::fromStdString("agent" + std::to_string(index + 1));
+                painter.setFont(QFont("Decorative", grid_size * 0.2, QFont::Thin)); // text font
                 painter.drawEllipse(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size);
+                painter.drawText(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.2 + pos_y), text);
 
             }
         }
@@ -286,7 +293,7 @@ void Visualizer::paintEvent(QPaintEvent *event){
         Red_team_color.setAlpha(100);
         Blue_team_color.setAlpha(100);
 
-        std::bitset<288> region = field.getRegion();
+        std::bitset<288> region = field.getRegions();
 
         for(unsigned int x_pos = 0; x_pos < grid_x; ++x_pos)
             for(unsigned int y_pos = 0; y_pos < grid_y; ++y_pos){
@@ -553,7 +560,6 @@ void Visualizer::getData(const std::pair<int, int> data, const bool agent) {
             field.setState(clicked_grid_change.first, clicked_grid_change.second, selected_agent.first + 1);
 
 //            std::pair<int, int> agent = field.getAgent(0,0);
-//            std::cout << agent.first << "," << agent.second << std::endl;
 
             selected = false;
         }
