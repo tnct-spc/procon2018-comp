@@ -521,10 +521,18 @@ bool procon::Field::canPut(const unsigned int side, const unsigned int move_1, c
 }
 
 std::pair<std::pair<int,int>,int> procon::Field::ifBreakArea(int side){
+    int areax;
+    int areay;
     int x = ;
     int y = ;
-    int areax = ;
-    int areay = ;
+    for(int i = -2;i < 3;i++){
+        for(int j = -2;j < 3;j++){
+            if(x - i >= 0 && y - j >= 0 && ){
+                areax = x - i;
+                areay = y - j;
+            }
+        }
+    }
     if(abs(x-areax) < 4 && abs(y-areay) < 4){
         int breakx, breaky;
         if(y == areay){
