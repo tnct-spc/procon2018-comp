@@ -37,10 +37,14 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
             }
         }
 
-    updatePredictData(side, 0);
-    updatePredictData(side, 1);
-    updatePredictData(side ^ 1, 0);
-    updatePredictData(side ^ 1, 1);
+    bool flag = true;
+    while(flag){
+        flag = false;
+        flag |= updatePredictData(side, 0);
+        flag |= updatePredictData(side, 1);
+        flag |= updatePredictData(side ^ 1, 0);
+        flag |= updatePredictData(side ^ 1, 1);
+    }
 
     std::vector<std::vector<std::vector<double>>> pred(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0)));
     for(int index = 0; index < 4; ++index)
@@ -220,7 +224,7 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
     return std::make_tuple(node, moves, values, depth_size, agent_values);
 }
 
-void DepthFirstSearch::updatePredictData(bool inp_side, bool agent){
+bool DepthFirstSearch::updatePredictData(bool inp_side, bool agent){
 
     getMovePer(inp_side, agent);
     std::vector<std::vector<std::vector<double>>> ret_val = getMovePer(inp_side, agent);
@@ -238,8 +242,15 @@ void DepthFirstSearch::updatePredictData(bool inp_side, bool agent){
     if(side ^ inp_side)
         rev(ret_val);
     */
+    std::vector<std::vector<std::vector<double>>> before_vec = predict_per.at(inp_side * 2 + agent);
+    double diff = 0.0;
+    for(int dep = 0; dep < maxval; ++dep)
+        for(int x_index = 0; x_index < field.getSize().first; ++x_index)
+            for(int y_index = 0; y_index < field.getSize().second; ++y_index)
+                diff += std::abs(before_vec.at(dep).at(x_index).at(y_index) - ret_val.at(dep).at(x_index).at(y_index));
 
     predict_per.at(inp_side * 2 + agent) = std::move(ret_val);
+    return diff;
 }
 
 std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool inp_side, bool agent){

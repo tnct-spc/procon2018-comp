@@ -23,7 +23,7 @@ public:
 private:
     struct SearchNode;
     std::tuple<std::shared_ptr<SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>, std::vector<int>, std::vector<std::vector<std::vector<int>>>> depthSearch(int agent, int turn_max, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
-    void updatePredictData(bool inp_side, bool agent);
+    bool updatePredictData(bool inp_side, bool agent);
     std::vector<std::vector<std::vector<double>>> getMovePer(bool inp_side, bool agent);
 
     // bool randPer(double bound);
