@@ -273,6 +273,7 @@ bool DepthFirstSearch::updatePredictData(bool inp_side, bool agent){
                 diff += std::abs(before_vec.at(dep).at(x_index).at(y_index) - ret_val.at(dep).at(x_index).at(y_index));
 
     predict_per.at(inp_side * 2 + agent) = std::move(ret_val);
+    std::cout << "diff : " << diff << std::endl;
     return diff;
 }
 
