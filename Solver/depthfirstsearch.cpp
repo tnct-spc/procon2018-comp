@@ -15,9 +15,11 @@ DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, b
 
 const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearch::agentAct(int now_turn){
 
-    maxval = std::min(maxval, final_turn - now_turn);
-
     std::cout << "turn : " << now_turn << std::endl;
+
+    maxval = std::min(maxval, final_turn - now_turn);
+    predict_per.resize(4, std::vector<std::vector<std::vector<double>>>(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0))));
+
     std::shared_ptr<SearchNode> node_1, node_2;
     std::list<std::pair<int,int>> moves_1, moves_2;
     std::vector<std::vector<std::vector<double>>> states_1, states_2;
@@ -35,17 +37,32 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
             }
         }
 
-    states_1 = getAgentMove(side ^ 1, 0);
-    states_2 = getAgentMove(side ^ 1, 1);
-    std::vector<std::vector<std::vector<double>>> enemy_states(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second)));
+    updatePredictData(side, 0);
+    updatePredictData(side, 1);
+    updatePredictData(side ^ 1, 0);
+    updatePredictData(side ^ 1, 1);
 
-    for(int depth = 0; depth < maxval; ++depth)
-        for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
-            for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y)
-                enemy_states.at(depth).at(pos_x).at(pos_y) = states_1.at(depth).at(pos_x).at(pos_y) + states_2.at(depth).at(pos_x).at(pos_y);
+    std::vector<std::vector<std::vector<double>>> pred(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0)));
+    for(int index = 0; index < 4; ++index)
+        if(index != side * 2)
+            for(int depth = 0; depth < maxval; ++depth)
+                for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
+                    for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y)
+                        pred.at(depth).at(pos_x).at(pos_y) += (index / 2 == side ? 1 : -1) * predict_per.at(index).at(depth).at(pos_x).at(pos_y);
 
-    std::tie(node_1, moves_1, states_1, sizes_1, agent_states_1) = depthSearch(0, std::min(final_turn - now_turn, maxval), states, enemy_states);
-    std::tie(node_2, moves_2, states_2, sizes_2, agent_states_2) = depthSearch(1, std::min(final_turn - now_turn, maxval), states, enemy_states);
+    std::tie(node_1, moves_1, states_1, sizes_1, agent_states_1) = depthSearch(0, std::min(final_turn - now_turn, maxval), states, pred);
+
+    pred.resize(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0)));
+
+    for(int index = 0; index < 4; ++index)
+        if(index != side * 2 + 1)
+            for(int depth = 0; depth < maxval; ++depth)
+                for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
+                    for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y)
+                        pred.at(depth).at(pos_x).at(pos_y) += (index / 2 == side ? 1 : -1) * predict_per.at(index).at(depth).at(pos_x).at(pos_y);
+
+
+    std::tie(node_2, moves_2, states_2, sizes_2, agent_states_2) = depthSearch(1, std::min(final_turn - now_turn, maxval), states, pred);
 
     for(int depth = 0; depth < maxval - 1; ++depth)
         for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
@@ -203,10 +220,12 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
     return std::make_tuple(node, moves, values, depth_size, agent_values);
 }
 
-std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getAgentMove(bool inp_side, bool agent){
-    DepthFirstSearch enemy(field, final_turn, inp_side);
-    std::vector<std::vector<std::vector<double>>> ret_val = enemy.getMovePer(agent);
+void DepthFirstSearch::updatePredictData(bool inp_side, bool agent){
 
+    getMovePer(inp_side, agent);
+    std::vector<std::vector<std::vector<double>>> ret_val = getMovePer(inp_side, agent);
+
+    /*
     auto rev = [](std::vector<std::vector<std::vector<double>>>& v){
         std::for_each(v.begin(), v.end(), [](std::vector<std::vector<double>>& v2){
             std::for_each(v2.begin(), v2.end(), [](std::vector<double>& v3){
@@ -218,11 +237,12 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getAgentMove(boo
     };
     if(side ^ inp_side)
         rev(ret_val);
+    */
 
-    return ret_val;
+    predict_per.at(inp_side * 2 + agent) = std::move(ret_val);
 }
 
-std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool agent){
+std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool inp_side, bool agent){
 
     int now_turn = field.getTurnCount();
     maxval = std::min(maxval, final_turn - now_turn);
@@ -234,11 +254,18 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool 
         for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
             int pos_state = field.getState(pos_x, pos_y).first;
             if(pos_state)
-                states.at(pos_x).at(pos_y) = 2 * (pos_state != side + 1);
+                states.at(pos_x).at(pos_y) = 2 * (pos_state != inp_side + 1);
         }
 
     std::vector<std::vector<std::vector<double>>> pred(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0)));
-    std::tie(std::ignore, std::ignore, ret_states, std::ignore, std::ignore) = depthSearch(agent, std::min(final_turn - now_turn, maxval), states, pred);
+    for(int index = 0; index < 4; ++index)
+        if(index != inp_side * 2 + agent)
+            for(int depth = 0; depth < maxval; ++depth)
+                for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
+                    for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y)
+                        pred.at(depth).at(pos_x).at(pos_y) += (index / 2 == inp_side ? 1 : -1) * predict_per.at(index).at(depth).at(pos_x).at(pos_y);
+
+    std::tie(std::ignore, std::ignore, ret_states, std::ignore, std::ignore) = depthSearch(agent, maxval, states, pred);
 
     for(int depth = 0; depth < maxval - 1; ++depth)
         for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)

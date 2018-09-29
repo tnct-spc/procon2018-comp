@@ -19,12 +19,12 @@ class DepthFirstSearch : public AlgorithmWrapper
 public:
     DepthFirstSearch(const procon::Field& field, int final_turn, bool side);
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
-    std::vector<std::vector<std::vector<double>>> getAgentMove(bool inp_side, bool agent);
 
 private:
     struct SearchNode;
     std::tuple<std::shared_ptr<SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>, std::vector<int>, std::vector<std::vector<std::vector<int>>>> depthSearch(int agent, int turn_max, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
-    std::vector<std::vector<std::vector<double>>> getMovePer(bool agent);
+    void updatePredictData(bool inp_side, bool agent);
+    std::vector<std::vector<std::vector<double>>> getMovePer(bool inp_side, bool agent);
 
     // bool randPer(double bound);
 
@@ -32,6 +32,8 @@ private:
 
     std::shared_ptr<MinimumVisualizer> minimum;
     std::shared_ptr<MinimumVisualizerDock> dock;
+
+    std::vector<std::vector<std::vector<std::vector<double>>>> predict_per;
 
     struct BitSetSorter{
         bool operator()(const std::bitset<296>& x, const std::bitset<296>& y) const{
