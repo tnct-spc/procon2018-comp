@@ -89,6 +89,25 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     std::cout << "node_1 size : " << node_1->size << " , " << node_1->real_size << std::endl;
     std::cout << "node_2 size : " << node_2->size << " , " << node_2->real_size << std::endl;
 
+    /*
+    std::vector<std::vector<std::vector<int>>> col(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
+        for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
+            for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
+                double val = 0.0;
+
+                for(int index = 0; index < 4; ++index)
+                    val += (index / 2 ? 1 : -1) * predict_per.at(index).at(maxval - 1).at(x_pos).at(y_pos);
+
+                if(val > 0){
+                    col.at(0).at(x_pos).at(y_pos) -= val * 255;
+                    col.at(1).at(x_pos).at(y_pos) -= val * 255;
+                }else{
+                    col.at(1).at(x_pos).at(y_pos) += val * 255;
+                    col.at(2).at(x_pos).at(y_pos) += val * 255;
+                }
+            }
+    */
+
     std::vector<std::vector<std::vector<int>>> colors(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
     for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
         for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
@@ -116,6 +135,10 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 
         for(int index = 0; index < 3; ++index)
             minimum->setValues(colors.at(index), index);
+        /*
+        for(int index = 0; index < 3; ++index)
+            minimum->setValues(col.at(index), index);
+        */
         minimum->show();
     }
 
