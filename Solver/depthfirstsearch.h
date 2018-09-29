@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <list>
 #include <queue>
+#include <future>
 
 #include "minimumvisualizer.h"
 #include "minimumvisualizerdock.h"

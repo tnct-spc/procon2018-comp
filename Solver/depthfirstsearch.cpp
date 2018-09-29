@@ -40,10 +40,18 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     bool flag = true;
     while(flag){
         flag = false;
+        std::vector<std::future<bool>> async_vec;
+        for(int index = 0; index < 4; ++index)
+            async_vec.push_back(std::async([&](int arg){return updatePredictData(arg & 2, arg & 1);}, index));
+
+        for(int index = 0; index < 4; ++index)
+            flag |= async_vec.at(index).get();
+        /*
         flag |= updatePredictData(side, 0);
         flag |= updatePredictData(side, 1);
         flag |= updatePredictData(side ^ 1, 0);
         flag |= updatePredictData(side ^ 1, 1);
+        */
     }
 
     std::vector<std::vector<std::vector<double>>> pred(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0)));
