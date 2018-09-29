@@ -41,13 +41,8 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 
     for(int depth = 0; depth < maxval; ++depth)
         for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
-            for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
+            for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y)
                 enemy_states.at(depth).at(pos_x).at(pos_y) = states_1.at(depth).at(pos_x).at(pos_y) + states_2.at(depth).at(pos_x).at(pos_y);
-                if(std::isnan(enemy_states.at(depth).at(pos_x).at(pos_y))){
-                    std::cout << states_1.at(depth).at(pos_x).at(pos_y) << " : " <<
-                                 states_2.at(depth).at(pos_x).at(pos_y) << std::endl;
-                }
-            }
 
     std::tie(node_1, moves_1, states_1, sizes_1, agent_states_1) = depthSearch(0, std::min(final_turn - now_turn, maxval), states, enemy_states);
     std::tie(node_2, moves_2, states_2, sizes_2, agent_states_2) = depthSearch(1, std::min(final_turn - now_turn, maxval), states, enemy_states);
