@@ -76,8 +76,8 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
         agent_pos.at(index) = field.getAgent(side, index);
 
 
-    std::cout<<agent_pos.at(0).first + SearchNode::dx.at(move_1)<<" "<<agent_pos.at(0).second + SearchNode::dy.at(move_1)<<" "<<agent_pos.at(1).first + SearchNode::dx.at(move_2)<<" "<<agent_pos.at(1).second + SearchNode::dy.at(move_2)<<std::endl;
-    std::cout<<" "<<std::endl;
+   // std::cout<<agent_pos.at(0).first + SearchNode::dx.at(move_1)<<" "<<agent_pos.at(0).second + SearchNode::dy.at(move_1)<<" "<<agent_pos.at(1).first + SearchNode::dx.at(move_2)<<" "<<agent_pos.at(1).second + SearchNode::dy.at(move_2)<<std::endl;
+   // std::cout<<" "<<std::endl;
 
     return std::make_pair(std::make_tuple((field.getState(agent_pos.at(0).first + SearchNode::dx.at(move_1), agent_pos.at(0).second + SearchNode::dy.at(move_1)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_1), SearchNode::dy.at(move_1)),
                           std::make_tuple((field.getState(agent_pos.at(1).first + SearchNode::dx.at(move_2), agent_pos.at(1).second + SearchNode::dy.at(move_2)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_2), SearchNode::dy.at(move_2)));
@@ -193,22 +193,24 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     //rearch = 3;
 
     std::vector<RoutesAndNode> routes1,routes2;
-    /*
+
     for(auto ch : age1->childs){
         RoutesAndNode ins;
+        ins.indexs.push_back(ch.first);
         ins.CollectIndex(ch.second.first);
         ins.CollectPos(side, 0, field);
         routes1.push_back(ins);
     }
-   // std::cout<<routes1.size()<<std::endl;
+    // std::cout<<routes1.size()<<std::endl;
 
     for(auto ch :  age2->childs){
         RoutesAndNode ins;
+        ins.indexs.push_back(ch.first);
         ins.CollectIndex(ch.second.first);
         ins.CollectPos(side, 1, field);
         routes2.push_back(ins);
     }
-    */
+
     for(int index = 0;index < rearch;index++){
         RoutesAndNode ins;
         ins.CollectIndex(age1);
