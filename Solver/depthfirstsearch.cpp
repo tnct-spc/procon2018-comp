@@ -186,6 +186,9 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     long long rearch = 1;
     for(int a = 0;a < maxval;a++)rearch *= age1->movecount;
 
+    std::cout<<std::endl;
+    std::cout<<field.getAgent(side,0).first<<" "<<field.getAgent(side,0).second<<std::endl;
+    std::cout<<"HOGEHOGE"<<std::endl;
     rearch *= ratio;
     //std::cout<<rearch<<std::endl;
     rearch = 3;
@@ -276,6 +279,7 @@ void DepthFirstSearch::RoutesAndNode::CollectIndex(std::shared_ptr<SearchNode> n
         }
     }
     if(mi != -1e9){
+      //  std::cout<<way<<std::endl;
        indexs.push_back(way);
        adv = mi;
        CollectIndex(ins);
@@ -323,10 +327,9 @@ const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0,
 const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1, 0});
 
 void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Field field){
-   for(int a = 0;a < indexs.size();a++)std::cout<<" "<<indexs.at(a);
-   std::cout<<std::endl;
+    for(int a = 0;a < indexs.size();a++)std::cout<<" "<<indexs.at(a);
+    std::cout<<std::endl;
     std::pair<int,int> pos = field.getAgent(side, agent);
-    std::cout<<pos.first<<" "<<pos.second<<std::endl;
     route_pos.push_back(pos);
     std::vector<std::vector<int>> flag(12, std::vector<int>(12, 0));
     for(int x = 0;x < field.getSize().first; x++){
