@@ -31,11 +31,11 @@ private:
 
     std::pair<std::pair<int,int>, int> getMaxAdvMove(std::shared_ptr<SearchNode> age1, std::shared_ptr<SearchNode> sge2);
 
-    const double ratio = 0.3;
+    const double ratio = 0.03;
 
     struct RoutesAndNode;
 
-    const int threshold = 4;
+    int threshold = 4;
 
 
 };
@@ -48,6 +48,8 @@ struct DepthFirstSearch::RoutesAndNode{
     void CollectPos(int side, int agent, procon::Field field);
 
     int adv = -1e9;
+
+    std::pair<int,int> next_pos;
 
 };
 
