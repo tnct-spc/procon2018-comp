@@ -21,7 +21,6 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     std::list<std::pair<int,int>> moves_1, moves_2;
     std::vector<std::vector<std::vector<double>>> states_1, states_2;
     std::vector<std::vector<std::vector<int>>> agent_states_1, agent_states_2;
-    std::vector<int> sizes_1, sizes_2;
 
     std::vector<std::vector<double>> after_values(field.getSize().first, std::vector<double>(field.getSize().second, 1));
     std::vector<std::vector<int>> states(field.getSize().first, std::vector<int>(field.getSize().second, 1));
@@ -51,7 +50,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
                     for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y)
                         pred.at(depth).at(pos_x).at(pos_y) += (index / 2 == side ? ally_weight : -1) * predict_per.at(index).at(depth).at(pos_x).at(pos_y);
 
-    std::tie(node_1, moves_1, states_1, sizes_1, agent_states_1) = depthSearch(side, 0, std::min(final_turn - now_turn, maxval), states, pred);
+    std::tie(node_1, moves_1, states_1) = depthSearch(side, 0, states, pred);
 
     pred.resize(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0)));
 
@@ -63,7 +62,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
                         pred.at(depth).at(pos_x).at(pos_y) += (index / 2 == side ? ally_weight : -1) * predict_per.at(index).at(depth).at(pos_x).at(pos_y);
 
 
-    std::tie(node_2, moves_2, states_2, sizes_2, agent_states_2) = depthSearch(side, 1, std::min(final_turn - now_turn, maxval), states, pred);
+    std::tie(node_2, moves_2, states_2) = depthSearch(side, 1, states, pred);
 
     for(int depth = 0; depth < maxval - 1; ++depth)
         for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
@@ -143,7 +142,11 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
                           std::make_tuple((field.getState(agent_pos.at(1).first + SearchNode::dx.at(move_2), agent_pos.at(1).second + SearchNode::dy.at(move_2)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_2), SearchNode::dy.at(move_2)));
 }
 
-std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>, std::vector<int>, std::vector<std::vector<std::vector<int>>>> DepthFirstSearch::depthSearch(bool inp_side, int agent, int turn_max, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
+std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> DepthFirstSearch::beamSearch(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
+
+}
+
+std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> DepthFirstSearch::depthSearch(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
     int size_x, size_y;
     std::tie(size_x, size_y) = field.getSize();
 
@@ -153,7 +156,7 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
     std::bitset<296> bs((agent_pos.first << 4) + agent_pos.second);
 
     std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter> node_map;
-    std::shared_ptr<SearchNode> node = std::make_shared<SearchNode>(0, 0, turn_max, agent_pos, inp_side, field_values, state, node_map, bs, predict);
+    std::shared_ptr<SearchNode> node = std::make_shared<SearchNode>(0, 0, maxval, agent_pos, inp_side, field_values, state, node_map, bs, predict);
 
     std::list<std::pair<int,int>> moves;
     std::pair<int,int> now_pos = field.getAgent(inp_side, agent);
@@ -178,7 +181,6 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
     }
 
     std::vector<std::vector<std::vector<double>>> values(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0)));
-    std::vector<std::vector<std::vector<int>>> agent_values(maxval, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 0)));
 
     std::vector<std::vector<double>> after_values(field.getSize().first, std::vector<double>(field.getSize().second));
 
@@ -208,7 +210,7 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
     };
     size_bfs();
 
-    node->dfsAdd(field.getAgent(inp_side, agent), values, agent_values);
+    node->dfsAdd(field.getAgent(inp_side, agent), values);
 
     for(int dep = 0; dep < maxval; ++dep){
         std::vector<std::vector<double>>& vec = values.at(dep);
@@ -216,7 +218,7 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
         std::for_each(vec.begin(), vec.end(), [siz](std::vector<double>& v){std::for_each(v.begin(), v.end(), [siz](double& val){if(val && siz)val /= siz;});});
     }
 
-    return std::make_tuple(node, moves, values, depth_size, agent_values);
+    return std::make_tuple(node, moves, values);
 }
 
 bool DepthFirstSearch::updatePredictData(bool inp_side, bool agent){
@@ -262,7 +264,7 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool 
                     for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y)
                         pred.at(depth).at(pos_x).at(pos_y) += (index / 2 == inp_side ? ally_weight : -1) * predict_per.at(index).at(depth).at(pos_x).at(pos_y);
 
-    std::tie(std::ignore, std::ignore, ret_states, std::ignore, std::ignore) = depthSearch(inp_side, agent, maxval, states, pred);
+    std::tie(std::ignore, std::ignore, ret_states) = depthSearch(inp_side, agent, states, pred);
 
     for(int depth = 0; depth < maxval - 1; ++depth)
         for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
@@ -333,6 +335,7 @@ DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std:
         }
         else{
             childs[move.second] = std::make_pair(std::make_shared<SearchNode>(move.first.first, depth + 1, remain - 1, (move.first.second ? new_pos : pos), side, value, state, node_map, bs, predict), move.first.second);
+            // childs[move.second].first->parent = shared_from_this();
 
             real_size += childs[move.second].first->real_size;
 
@@ -350,7 +353,16 @@ DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std:
     }
 }
 
-void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<std::vector<std::vector<double>>>& vec, std::vector<std::vector<std::vector<int>>>& agent_vec){
+DepthFirstSearch::SearchNode::SearchNode(double adv, int depth) :
+    depth(depth),
+    size(0),
+    real_size(1),
+    adv(adv)
+{
+
+}
+
+void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<std::vector<std::vector<double>>>& vec){
 
     for(auto ch : childs){
         std::pair<int,int> new_pos(pos);
@@ -359,11 +371,9 @@ void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<st
 
         std::pair<int,int> agent_pos(ch.second.second ? new_pos : pos);
 
-        ch.second.first->dfsAdd(agent_pos, vec, agent_vec);
+        ch.second.first->dfsAdd(agent_pos, vec);
 
         size += ch.second.first->size;
-
-        agent_vec.at(depth).at(agent_pos.first).at(agent_pos.second) += ch.second.first->size;
 
         vec.at(depth).at(new_pos.first).at(new_pos.second) += ch.second.first->leaf_size;
     }
