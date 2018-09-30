@@ -59,6 +59,9 @@ private:
 
     static const int loop_count = 4;
 
+    // 味方の行動にかける倍率(敵の行動にかける倍率を1としている)
+    static constexpr double ally_weight = 1.0;
+
     static const bool do_output = false;
 
 };

@@ -62,7 +62,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
             for(int depth = 0; depth < maxval; ++depth)
                 for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
                     for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y)
-                        pred.at(depth).at(pos_x).at(pos_y) += (index / 2 == side ? 1 : -1) * predict_per.at(index).at(depth).at(pos_x).at(pos_y);
+                        pred.at(depth).at(pos_x).at(pos_y) += (index / 2 == side ? ally_weight : -1) * predict_per.at(index).at(depth).at(pos_x).at(pos_y);
 
     std::tie(node_1, moves_1, states_1, sizes_1, agent_states_1) = depthSearch(0, std::min(final_turn - now_turn, maxval), states, pred);
 
@@ -73,7 +73,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
             for(int depth = 0; depth < maxval; ++depth)
                 for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
                     for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y)
-                        pred.at(depth).at(pos_x).at(pos_y) += (index / 2 == side ? 1 : -1) * predict_per.at(index).at(depth).at(pos_x).at(pos_y);
+                        pred.at(depth).at(pos_x).at(pos_y) += (index / 2 == side ? ally_weight : -1) * predict_per.at(index).at(depth).at(pos_x).at(pos_y);
 
 
     std::tie(node_2, moves_2, states_2, sizes_2, agent_states_2) = depthSearch(1, std::min(final_turn - now_turn, maxval), states, pred);
@@ -101,24 +101,6 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
         std::cout << "node_2 size : " << node_2->size << " , " << node_2->real_size << std::endl;
     }
 
-    /*
-    std::vector<std::vector<std::vector<int>>> col(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
-        for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
-            for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
-                double val = 0.0;
-
-                for(int index = 0; index < 4; ++index)
-                    val += (index / 2 ? 1 : -1) * predict_per.at(index).at(maxval - 1).at(x_pos).at(y_pos);
-
-                if(val > 0){
-                    col.at(0).at(x_pos).at(y_pos) -= val * 255;
-                    col.at(1).at(x_pos).at(y_pos) -= val * 255;
-                }else{
-                    col.at(1).at(x_pos).at(y_pos) += val * 255;
-                    col.at(2).at(x_pos).at(y_pos) += val * 255;
-                }
-            }
-    */
 
     std::vector<std::vector<std::vector<int>>> colors(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
     for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
@@ -313,7 +295,7 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool 
             for(int depth = 0; depth < maxval; ++depth)
                 for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
                     for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y)
-                        pred.at(depth).at(pos_x).at(pos_y) += (index / 2 == inp_side ? 1 : -1) * predict_per.at(index).at(depth).at(pos_x).at(pos_y);
+                        pred.at(depth).at(pos_x).at(pos_y) += (index / 2 == inp_side ? ally_weight : -1) * predict_per.at(index).at(depth).at(pos_x).at(pos_y);
 
     std::tie(std::ignore, std::ignore, ret_states, std::ignore, std::ignore) = depthSearch(agent, maxval, states, pred);
 
