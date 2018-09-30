@@ -246,7 +246,7 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
                 if(check(a,b) && routes1.at(a).next_pos != routes2.at(b).next_pos){
                     if(ans.second <= routes1.at(a).adv + routes2.at(b).adv){
                         ans.second = routes1.at(a).adv + routes2.at(b).adv;
-                        std::cout<<routes1.at(a).indexs.size()<<" "<<routes2.at(b).indexs.size()<<std::endl;
+                  //      std::cout<<routes1.at(a).indexs.size()<<" "<<routes2.at(b).indexs.size()<<std::endl;
                         ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
                     }
                 }
@@ -279,9 +279,11 @@ void DepthFirstSearch::RoutesAndNode::CollectIndex(std::shared_ptr<SearchNode> n
        indexs.push_back(way);
        adv = mi;
        CollectIndex(ins);
+       ins->adv = -1000000007;
     }else{
         if(indexs.empty())indexs.push_back(8);
         now->flag = false;
+        ins->adv = -1000000007;
     }
 }
 
