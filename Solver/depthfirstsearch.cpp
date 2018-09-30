@@ -186,14 +186,14 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     long long rearch = 1;
     for(int a = 0;a < maxval;a++)rearch *= age1->movecount;
 
-    std::cout<<std::endl;
-    std::cout<<field.getAgent(side,0).first<<" "<<field.getAgent(side,0).second<<std::endl;
-    std::cout<<"HOGEHOGE"<<std::endl;
-    rearch *= ratio;
+
+
+     rearch *= ratio;
     //std::cout<<rearch<<std::endl;
-    rearch = 3;
+    //rearch = 3;
 
     std::vector<RoutesAndNode> routes1,routes2;
+    /*
     for(auto ch : age1->childs){
         RoutesAndNode ins;
         ins.CollectIndex(ch.second.first);
@@ -208,7 +208,7 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         ins.CollectPos(side, 1, field);
         routes2.push_back(ins);
     }
-
+    */
     for(int index = 0;index < rearch;index++){
         RoutesAndNode ins;
         ins.CollectIndex(age1);
@@ -216,7 +216,7 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         routes1.push_back(ins);
     }
 
-    std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
+   // std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
 
     for(int index = 0;index < rearch;index++){
         RoutesAndNode ins;
@@ -224,7 +224,7 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         ins.CollectPos(side, 1, field);
         routes2.push_back(ins);
     }
-    std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
+    //std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
 
 
     auto check = [&](int index1, int index2){
@@ -257,8 +257,8 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
             }
 
         }
-        sikiiti--;
-    }while(ans.second == -1e9 && sikiiti != 0);
+        sikiiti++;
+    }while(ans.second == -1e9);
 
 
   //  std::cout<<ans.first.first<<" "<<ans.first.second<<" "<<ans.second<<std::endl;
@@ -270,11 +270,11 @@ void DepthFirstSearch::RoutesAndNode::CollectIndex(std::shared_ptr<SearchNode> n
 
     std::shared_ptr<SearchNode> ins;
     int way = 8;
-    int mi = -1e9;
+    long long mi = -1e9;
     for(auto ch : now->childs){
         if(mi <= ch.second.first->getAdvSum() && ch.second.first->flag){
             ins = ch.second.first;
-            mi = ch.second.first->getAdvSum();
+            mi =  ch.second.first->getAdvSum();
             way = ch.first;
         }
     }
@@ -327,8 +327,8 @@ const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0,
 const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1, 0});
 
 void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Field field){
-    for(int a = 0;a < indexs.size();a++)std::cout<<" "<<indexs.at(a);
-    std::cout<<std::endl;
+  //  for(int a = 0;a < indexs.size();a++)std::cout<<" "<<indexs.at(a);
+  //  std::cout<<std::endl;
     std::pair<int,int> pos = field.getAgent(side, agent);
     route_pos.push_back(pos);
     std::vector<std::vector<int>> flag(12, std::vector<int>(12, 0));
@@ -339,7 +339,7 @@ void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Fi
     }
 
     auto moveAfter = [&](int move){
-        std::cout<<SearchNode::dx.at(move) + pos.first<<" "<<SearchNode::dy.at(move) + pos.second<<std::endl;
+       // std::cout<<SearchNode::dx.at(move) + pos.first<<" "<<SearchNode::dy.at(move) + pos.second<<std::endl;
         if(flag.at(SearchNode::dx.at(move) + pos.first).at(SearchNode::dy.at(move) + pos.second) != side + 1 && flag.at(SearchNode::dx.at(move) + pos.first).at(SearchNode::dy.at(move) + pos.second) != 0){
             flag.at(SearchNode::dx.at(move) + pos.first).at(SearchNode::dy.at(move) + pos.second) = 0;
             return pos;
@@ -347,6 +347,7 @@ void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Fi
             return std::make_pair(SearchNode::dx.at(move) + pos.first, SearchNode::dy.at(move) + pos.second);
         }
     };
+
 
     for(int a = 0;a < indexs.size();a++){
         pos = moveAfter(indexs.at(a));
