@@ -38,7 +38,8 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
         }
 
     bool flag = true;
-    while(flag){
+    // while(flag){
+    for(int cou = 0; cou < loop_count; ++cou){
         flag = false;
         std::vector<std::future<bool>> async_vec;
         for(int index = 0; index < 4; ++index)

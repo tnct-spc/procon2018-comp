@@ -54,8 +54,10 @@ private:
     std::uniform_real_distribution<> random;
     */
 
-    const bool dock_show = false;
-    const bool vis_show = true;
+    static const bool dock_show = false;
+    static const bool vis_show = true;
+
+    static const int loop_count = 4;
 
 };
 
