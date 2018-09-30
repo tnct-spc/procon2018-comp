@@ -15,7 +15,8 @@ DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, b
 
 const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearch::agentAct(int now_turn){
 
-    std::cout << "turn : " << now_turn << std::endl;
+    if(do_output)
+        std::cout << "turn : " << now_turn << std::endl;
 
     maxval = std::min(maxval, final_turn - now_turn);
     predict_per.resize(4, std::vector<std::vector<std::vector<double>>>(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0))));
@@ -95,8 +96,10 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
             after_values.at(pos_x).at(pos_y) = std::max(0.0, after_values.at(pos_x).at(pos_y));
         }
 
-    std::cout << "node_1 size : " << node_1->size << " , " << node_1->real_size << std::endl;
-    std::cout << "node_2 size : " << node_2->size << " , " << node_2->real_size << std::endl;
+    if(do_output){
+        std::cout << "node_1 size : " << node_1->size << " , " << node_1->real_size << std::endl;
+        std::cout << "node_2 size : " << node_2->size << " , " << node_2->real_size << std::endl;
+    }
 
     /*
     std::vector<std::vector<std::vector<int>>> col(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
@@ -282,7 +285,10 @@ bool DepthFirstSearch::updatePredictData(bool inp_side, bool agent){
                 diff += std::abs(before_vec.at(dep).at(x_index).at(y_index) - ret_val.at(dep).at(x_index).at(y_index));
 
     predict_per.at(inp_side * 2 + agent) = std::move(ret_val);
-    std::cout << "diff : " << diff << std::endl;
+
+    if(do_output)
+        std::cout << "diff : " << diff << std::endl;
+
     return diff;
 }
 
