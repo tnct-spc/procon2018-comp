@@ -14,7 +14,7 @@
 #include "majorityrulewithabstdata.h"
 #include "depthfirstsearch.h"
 
-GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, const int turn_max, QObject *parent)
+GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, int turn_max, QObject *parent)
     : QObject(parent),
     vis_show(vis_show)
 {
@@ -27,6 +27,8 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show
         std::uniform_int_distribution<> rand_size(8, 12);
         x_size = rand_size(mt);
         y_size = rand_size(mt);
+        std::uniform_int_distribution<> rand_turn(40,80);
+        turn_max = rand_turn(mt);
     }
 
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val, use_random_field);
@@ -96,15 +98,18 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         int x_size = field->getSize().first;
         int y_size = field->getSize().second;
 
+        int final_turn = field->getFinalTurn();
+
         if(use_random_field){
             std::random_device rnd;
             std::mt19937 mt(rnd());
             std::uniform_int_distribution<> rand_size(8, 12);
             x_size = rand_size(mt);
             y_size = rand_size(mt);
+            std::uniform_int_distribution<> rand_turn(40,80);
+            final_turn = rand_turn(mt);
         }
 
-        int final_turn = field->getFinalTurn();
         field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val, use_random_field);
         field->setFinalTurn(final_turn);
         field_vec.clear();

@@ -30,7 +30,7 @@ class GameManager : public QObject
     //Q_DISABLE_COPY(GameManager)
 
 public:
-    explicit GameManager(unsigned int x_size, unsigned int y_size, bool vis_show = true, const int turn_max = 60, QObject *parent = 0);
+    explicit GameManager(unsigned int x_size, unsigned int y_size, bool vis_show = true, int turn_max = 60, QObject *parent = 0);
 
 
     void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
@@ -113,7 +113,7 @@ private:
     //これがtrueなら自動進行
     bool is_auto = true;
 
-    bool use_random_field;
+    bool use_random_field = true;
 
     //行動を保存しておく
     //1:移動 移動方向をintで設定する
