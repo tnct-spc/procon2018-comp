@@ -187,16 +187,21 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     for(int a = 0;a < maxval;a++)rearch *= age1->movecount;
 
     rearch *= ratio;
-  //  std::cout<<rearch<<std::endl;
+    //std::cout<<rearch<<std::endl;
     rearch = 3;
 
     std::vector<RoutesAndNode> routes1,routes2;
     for(auto ch : age1->childs){
+        std::cout<<"A"<<std::endl;;
         RoutesAndNode ins;
+        std::cout<<"HOGE"<<std::endl;
         ins.CollectIndex(ch.second.first);
+        std::cout<<"KS"<<std::endl;
         ins.CollectPos(side, 0, field);
+        std::cout<<"HOE"<<std::endl;
         routes1.push_back(ins);
     }
+   // std::cout<<routes1.size()<<std::endl;
 
     for(auto ch :  age2->childs){
         RoutesAndNode ins;
@@ -212,7 +217,7 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         routes1.push_back(ins);
     }
 
-    //std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
+    std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
 
     for(int index = 0;index < rearch;index++){
         RoutesAndNode ins;
@@ -220,7 +225,7 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         ins.CollectPos(side, 1, field);
         routes2.push_back(ins);
     }
-    //std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
+    std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
 
 
     auto check = [&](int index1, int index2){
@@ -283,7 +288,6 @@ void DepthFirstSearch::RoutesAndNode::CollectIndex(std::shared_ptr<SearchNode> n
     }else{
         if(indexs.empty())indexs.push_back(8);
         now->flag = false;
-        ins->adv = -1000000007;
     }
 }
 
