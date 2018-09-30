@@ -236,7 +236,6 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         }
         return sikiiti >= count;
     };
-    //std::cout<<"MOKE"<<std::endl;
     std::pair<std::pair<int,int>,int> ans = std::make_pair(std::make_pair(8,8),-1e9);
 
 
@@ -244,14 +243,11 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     std::cout<<routes2.front().indexs.size()<<std::endl;
         for(int a = 0;a < routes1.size();a++){
             for(int b = 0;b < routes2.size();b++){
-                std::cout<<"uni"<<std::endl;
                 if(check(a,b) && routes1.at(a).next_pos != routes2.at(b).next_pos){
                     if(ans.second <= routes1.at(a).adv + routes2.at(b).adv){
-                        std::cout<<"MM"<<std::endl;
                         ans.second = routes1.at(a).adv + routes2.at(b).adv;
                         std::cout<<routes1.at(a).indexs.size()<<" "<<routes2.at(b).indexs.size()<<std::endl;
                         ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
-                        std::cout<<"AAa"<<std::endl;
                     }
                 }
                   std::cout<<"ELE"<<std::endl;
@@ -337,12 +333,21 @@ void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Fi
         }
     }
 
-    for(int a = 0;a < indexs.size();a++){
-        if(a == 0){
-            next_pos = std::make_pair(pos.first + SearchNode::dx.at(indexs.at(a)), pos.second + SearchNode::dy.at(indexs.at(a)));
+    auto moveAfter = [&](int move){
+        std::cout<<SearchNode::dx.at(move) + pos.first<<" "<<SearchNode::dy.at(move) + pos.second<<std::endl;
+        if(flag.at(SearchNode::dx.at(move) + pos.first).at(SearchNode::dy.at(move) + pos.second) == side + 1 && flag.at(SearchNode::dx.at(move) + pos.first).at(SearchNode::dy.at(move) + pos.second) == 0){
+            flag.at(SearchNode::dx.at(move) + pos.first).at(SearchNode::dy.at(move)) = 0;
+            return pos;
+        }else{
+            return std::make_pair(SearchNode::dx.at(move) + pos.first, SearchNode::dy.at(move) + pos.second);
         }
-        pos.first += SearchNode::dx.at(indexs.at(a));
-        pos.second += SearchNode::dy.at(indexs.at(a));
+    };
+
+    for(int a = 0;a < indexs.size();a++){
+        pos = moveAfter(indexs.at(a));
         route_pos.push_back(pos);
+        if(a == 0){
+            next_pos = pos;
+        }
     }
 }
