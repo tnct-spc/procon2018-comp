@@ -3,10 +3,6 @@
 DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, bool side) :
     AlgorithmWrapper(field, final_turn, side)
 {
-    /*
-    mt = std::mt19937(rnd());
-    random = std::uniform_real_distribution<> (0.0, 1.0);
-    */
     if(dock_show){
         dock = std::make_shared<MinimumVisualizerDock>(6);
         dock->show();
@@ -38,22 +34,13 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
             }
         }
 
-    bool flag = true;
-    // while(flag){
     for(int cou = 0; cou < loop_count; ++cou){
-        flag = false;
         std::vector<std::future<bool>> async_vec;
         for(int index = 0; index < 4; ++index)
             async_vec.push_back(std::async([&](int arg){return updatePredictData(arg & 2, arg & 1);}, index));
 
         for(int index = 0; index < 4; ++index)
-            flag |= async_vec.at(index).get();
-        /*
-        flag |= updatePredictData(side, 0);
-        flag |= updatePredictData(side, 1);
-        flag |= updatePredictData(side ^ 1, 0);
-        flag |= updatePredictData(side ^ 1, 1);
-        */
+            async_vec.at(index).get();
     }
 
     std::vector<std::vector<std::vector<double>>> pred(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0)));
@@ -129,10 +116,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 
         for(int index = 0; index < 3; ++index)
             minimum->setValues(colors.at(index), index);
-        /*
-        for(int index = 0; index < 3; ++index)
-            minimum->setValues(col.at(index), index);
-        */
+
         minimum->show();
     }
 
@@ -158,12 +142,6 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     return std::make_pair(std::make_tuple((field.getState(agent_pos.at(0).first + SearchNode::dx.at(move_1), agent_pos.at(0).second + SearchNode::dy.at(move_1)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_1), SearchNode::dy.at(move_1)),
                           std::make_tuple((field.getState(agent_pos.at(1).first + SearchNode::dx.at(move_2), agent_pos.at(1).second + SearchNode::dy.at(move_2)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_2), SearchNode::dy.at(move_2)));
 }
-
-/*
-bool DepthFirstSearch::randPer(double bound){
-    return bound <= random(mt);
-}
-*/
 
 std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>, std::vector<int>, std::vector<std::vector<std::vector<int>>>> DepthFirstSearch::depthSearch(int agent, int turn_max, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
     int size_x, size_y;
@@ -246,19 +224,6 @@ bool DepthFirstSearch::updatePredictData(bool inp_side, bool agent){
     getMovePer(inp_side, agent);
     std::vector<std::vector<std::vector<double>>> ret_val = getMovePer(inp_side, agent);
 
-    /*
-    auto rev = [](std::vector<std::vector<std::vector<double>>>& v){
-        std::for_each(v.begin(), v.end(), [](std::vector<std::vector<double>>& v2){
-            std::for_each(v2.begin(), v2.end(), [](std::vector<double>& v3){
-                std::for_each(v3.begin(), v3.end(), [](double& v4){
-                    v4 *= -1;
-                });
-            });
-        });
-    };
-    if(side ^ inp_side)
-        rev(ret_val);
-    */
     std::vector<std::vector<std::vector<double>>> before_vec = predict_per.at(inp_side * 2 + agent);
     double diff = 0.0;
     for(int dep = 0; dep < maxval; ++dep)

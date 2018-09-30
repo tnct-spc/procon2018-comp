@@ -48,12 +48,6 @@ private:
         }
     };
 
-    /*
-    std::random_device rnd;
-    std::mt19937 mt;
-    std::uniform_real_distribution<> random;
-    */
-
     static const bool dock_show = false;
     static const bool vis_show = false;
 
