@@ -262,8 +262,11 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
 
 std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> DepthFirstSearch::calcMove(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
 
-    std::shared_ptr<SearchNode> node = createNodeWithBeamSearch(inp_side, agent, state, predict);
-    // std::shared_ptr<SearchNode> node = createNodeWithDepthSearch(inp_side, agent, state, predict);
+    std::shared_ptr<SearchNode> node;
+    if(use_beamsearch)
+        node = createNodeWithBeamSearch(inp_side, agent, state, predict);
+    else
+        node = createNodeWithDepthSearch(inp_side, agent, state, predict);
 
     std::list<std::pair<int,int>> moves;
     std::pair<int,int> now_pos = field.getAgent(inp_side, agent);
