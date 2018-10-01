@@ -12,6 +12,7 @@
 #include "simplemontecarlo/useabstmontecarlo.h"
 #include "LastForce/lastforce.h"
 #include "majorityrulewithabstdata.h"
+#include "depthfirstsearch.h"
 
 GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, int turn_max, QObject *parent)
     : QObject(parent),
@@ -46,6 +47,11 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show
         connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
         connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
 
+        /*
+        minimum = std::make_shared<MinimumVisualizer>(std::make_pair(x_size, y_size));
+        minimum->show();
+        */
+
     }else{
         is_auto = true;//この場合は自動進行
     }
@@ -68,6 +74,7 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
         connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
         connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
 
+        // minimum = std::make_shared<MinimumVisualizer>(std::make_pair(x_size, y_size));
     }else{
         is_auto = true;//この場合は自動進行
     }
@@ -159,6 +166,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_1 = std::make_shared<UseAbstMonteCarlo>(*field, field->getFinalTurn(), 0);
     } else if (QString::compare("MajorityRuleWithAbstData", my_algo) == 0) {
         team_1 = std::make_shared<MajorityRuleWithAbstData>(*field, field->getFinalTurn(), 0);
+    } else if (QString::compare("DepthFirstSearch", my_algo) == 0) {
+        team_1 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 0);
     }
 
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
@@ -185,6 +194,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_2 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 1);
     } else if (QString::compare("MajorityRuleWithAbstData", opponent_algo) == 0) {
         team_2 = std::make_shared<MajorityRuleWithAbstData>(*field, field->getFinalTurn(), 1);
+    } else if (QString::compare("DepthFirstSearch", opponent_algo) == 0) {
+        team_2 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 1);
     }
 
 
@@ -200,6 +211,11 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     if(vis_show){
         visualizer->update();
         visualizer->setField(*field, field->getTurnCount(), field->getFinalTurn());
+        /*
+        minimum->setSize(field->getSize());
+        minimum->update();
+        minimum->repaint();
+        */
     }
 
 
@@ -228,8 +244,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 //                team_1 = std::make_shared<LastForce>(*field, field->getFinalTurn(), 0);
 //            }
 
-            team_1_ans = team_1->agentAct(0);
-            team_2_ans = team_2->agentAct(1);
+            team_1_ans = team_1->agentAct(field->getTurnCount());
+            team_2_ans = team_2->agentAct(field->getTurnCount());
 
             std::vector<std::pair<std::pair<int,int>, std::pair<int,int>>> pruning_pos;
 
@@ -269,8 +285,10 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         // progresdock->show();
 
     }else{
+        /*
         ciphercard = std::make_shared<CipherCards>();
         ciphercard->show();
+        */
 
         nextMoveForManualMode();
 
@@ -357,8 +375,8 @@ int GameManager::simulationGenetic(const GeneticAgent &agent_1, const GeneticAge
         */
 
 
-        team_1_ans = team_1->agentAct(0);
-        team_2_ans = team_2->agentAct(1);
+        team_1_ans = team_1->agentAct(field->getTurnCount());
+        team_2_ans = team_2->agentAct(field->getTurnCount());
 
 
 
@@ -749,7 +767,7 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
 
     visualizer->update();
 
-    ciphercard->updata(move_cipher);
+    // ciphercard->updata(move_cipher);
 
     if(field->getTurnCount() == field->getFinalTurn()){
 
@@ -771,8 +789,8 @@ void GameManager::nextMoveForManualMode(){
 //    std::cout << agent.first << "," << agent.second << std::endl;
 
     std::vector<std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>>> candidate_move(2);
-    candidate_move.at(0) = team_1->agentAct(0);
-    candidate_move.at(1) = team_2->agentAct(1);
+    candidate_move.at(0) = team_1->agentAct(field->getTurnCount());
+    candidate_move.at(1) = team_2->agentAct(field->getTurnCount());
 
     /*
     std::vector<std::vector<procon::Cipher>> ciphers (2, std::vector<procon::Cipher>(1));
@@ -788,7 +806,7 @@ void GameManager::nextMoveForManualMode(){
     ciphers.at(1).at(0) = procon::changeIntToCipher(std::get<1>(candidate_move.at(0).second) + 27);
     ciphers.at(1).at(1) = procon::changeIntToCipher(- std::get<2>(candidate_move.at(0).second) + 40);
 
-    ciphercard->drawCards(ciphers);
+    // ciphercard->drawCards(ciphers);
 
     std::vector<std::vector<std::pair<int,int>>> return_vec(2, std::vector<std::pair<int,int>>(2) );
 
