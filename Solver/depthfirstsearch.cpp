@@ -34,12 +34,12 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
         }
 
     for(int cou = 0; cou < loop_count; ++cou){
-        std::vector<std::future<bool>> async_vec;
+        std::vector<std::thread> threads;
         for(int index = 0; index < 4; ++index)
-            async_vec.push_back(std::async([&](int arg){return updatePredictData(arg & 2, arg & 1);}, index));
+            threads.push_back(std::thread([&](int arg){updatePredictData(arg & 2, arg & 1);}, index));
 
         for(int index = 0; index < 4; ++index)
-            async_vec.at(index).get();
+            threads.at(index).join();
     }
 
     std::vector<std::vector<std::vector<double>>> pred(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0)));
@@ -328,24 +328,25 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
     return std::make_tuple(node, moves, values);
 }
 
-bool DepthFirstSearch::updatePredictData(bool inp_side, bool agent){
+void DepthFirstSearch::updatePredictData(bool inp_side, bool agent){
 
     getMovePer(inp_side, agent);
-    std::vector<std::vector<std::vector<double>>> ret_val = getMovePer(inp_side, agent);
+    if(do_output){
 
-    std::vector<std::vector<std::vector<double>>> before_vec = predict_per.at(inp_side * 2 + agent);
-    double diff = 0.0;
-    for(int dep = 0; dep < maxval; ++dep)
+        std::vector<std::vector<std::vector<double>>> ret_val = getMovePer(inp_side, agent);
+
+        std::vector<std::vector<std::vector<double>>> before_vec = predict_per.at(inp_side * 2 + agent);
+        double diff = 0.0;
+        for(int dep = 0; dep < maxval; ++dep)
         for(int x_index = 0; x_index < field.getSize().first; ++x_index)
             for(int y_index = 0; y_index < field.getSize().second; ++y_index)
-                diff += std::abs(before_vec.at(dep).at(x_index).at(y_index) - ret_val.at(dep).at(x_index).at(y_index));
+            diff += std::abs(before_vec.at(dep).at(x_index).at(y_index) - ret_val.at(dep).at(x_index).at(y_index));
 
-    predict_per.at(inp_side * 2 + agent) = std::move(ret_val);
+        predict_per.at(inp_side * 2 + agent) = std::move(ret_val);
 
-    if(do_output)
-        std::cout << "diff : " << diff << std::endl;
-
-    return diff;
+        if(do_output)
+            std::cout << "diff : " << diff << std::endl;
+    }
 }
 
 std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool inp_side, bool agent){

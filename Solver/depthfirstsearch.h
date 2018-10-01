@@ -33,7 +33,7 @@ private:
     std::shared_ptr<SearchNode> createNodeWithDepthSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
     std::shared_ptr<SearchNode> createNodeWithBeamSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
 
-    bool updatePredictData(bool inp_side, bool agent);
+    void updatePredictData(bool inp_side, bool agent);
     std::vector<std::vector<std::vector<double>>> getMovePer(bool inp_side, bool agent);
 
     int maxval = 10;
@@ -58,9 +58,9 @@ private:
     static const bool dock_show = false;
     static const bool vis_show = false;
 
-    static const int loop_count = 0;
+    static const int loop_count = 4;
 
-    static const int beam_width = 100;
+    static const int beam_width = 1000;
 
     // 味方の行動にかける倍率(敵の行動にかける倍率を1としている)
     static constexpr double ally_weight = 1.0;
