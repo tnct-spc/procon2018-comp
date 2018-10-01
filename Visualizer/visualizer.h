@@ -8,6 +8,8 @@
 #include <QWidget>
 #include <QPaintEvent>
 #include <QMouseEvent>
+#include <QKeyEvent>
+
 
 #include <memory>
 #include <iostream>
@@ -56,6 +58,8 @@ private:
 
     void mousePressEvent(QMouseEvent *event);
 
+    void keyPressEvent(QKeyEvent *event);
+
     void checkClickedAgent(std::pair<int, int> mass);
 
     void checkClickGrid(std::pair<int, int> mass, bool right_flag);
@@ -81,6 +85,8 @@ private:
     bool change_mode = false;
 
     bool clicked = false;
+
+    bool is_change_field_mode = false;
 
     unsigned int confirm_count = 0;
 

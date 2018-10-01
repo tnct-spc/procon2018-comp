@@ -595,3 +595,16 @@ void Visualizer::setGridState(const std::pair<int, int> grid, const int state)
 {
     field.setState(grid.first, grid.second, state);
 }
+
+void Visualizer::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_C){
+        if(is_change_field_mode){
+            is_change_field_mode = false;
+            std::cout << "mode: PlayGame" << std::endl;
+        }else{
+            is_change_field_mode = true;
+            std::cout << "mode: ChangeField" << std::endl;
+        }
+    }
+}
