@@ -127,6 +127,9 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     int move_1 = node_1->getMaxAdvMove().second;
     int move_2 = node_2->getMaxAdvMove().second;
 
+    node_1.reset();
+    node_2.reset();
+
     if(move_1 < 0 || move_2 < 0){
         procon::CsvIo::exportField(field, "./error_case.csv");
         std::cerr << "error_case\n";
@@ -154,32 +157,34 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithDe
 
 std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBeamSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
 
-    std::vector<Treap> treap_vec(2, Treap());
+    std::vector<std::shared_ptr<Treap>> treap_vec;
+    for(int count = 0; count < 2; ++count)
+        treap_vec.emplace_back(std::make_shared<Treap>());
 
     std::shared_ptr<SearchNode> parent = std::make_shared<SearchNode>(0.0, 0);
-    treap_vec.at(0).insert(std::make_pair(0.0, parent));
+    treap_vec.at(0)->insert(std::make_pair(0.0, parent));
 
     const std::vector<std::vector<int>>& value = field.getValue();
 
     std::pair<int,int> old_pos = field.getAgent(inp_side, agent);
     for(int dep = 0; dep < maxval + 1; ++dep){
 
-        Treap& before = treap_vec.at(dep % 2);
-        Treap& after = treap_vec.at((dep + 1) % 2);
+        std::shared_ptr<Treap> before = treap_vec.at(dep % 2);
+        std::shared_ptr<Treap> after = treap_vec.at((dep + 1) % 2);
 
         std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter> node_map;
-        while(before.size()){
-            std::pair<double, std::shared_ptr<SearchNode>> element = before.get(0);
+        while(before->size()){
+            std::pair<double, std::shared_ptr<SearchNode>> element = before->get(0);
             double now_adv = element.first;
             std::shared_ptr<SearchNode> node = element.second;
-            before.erase(0);
+            before->erase(0);
 
             if(dep == maxval){
                 node->is_back = true;
                 continue;
             }
 
-            std::shared_ptr<SearchNode> now_node = node;
+            SearchNode* now_node = node.get();
             std::pair<int,int> pos(old_pos);
 
             std::vector<std::pair<int,int>> rev_move;
@@ -228,9 +233,9 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                         ++node_map[bs]->size;
                     }else{
                         node->childs[index] = std::make_pair(std::make_shared<SearchNode>(point, dep + 1), is_move);
-                        node->childs[index].first->parent = std::make_pair(node, index);
+                        node->childs[index].first->parent = std::make_pair(node.get(), index);
                         node_map[bs] = node->childs[index].first;
-                        after.insert(std::make_pair(now_adv + point, node->childs[index].first));
+                        after->insert(std::make_pair(now_adv + point, node->childs[index].first));
                     }
 
                     bs &= ~(std::bitset<296>(3) << bit_index);
@@ -252,10 +257,11 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
             if(node->childs.empty())
                 node->is_back = true;
 
-            if(after.size() > beam_width)
-                after.erase_back(beam_width);
+            if(after->size() > beam_width)
+                after->erase_back(beam_width);
         }
     }
+    treap_vec.clear();
 
     return parent;
 }
@@ -471,7 +477,6 @@ DepthFirstSearch::SearchNode::SearchNode(double adv, int depth) :
     real_size(1),
     adv(adv)
 {
-
 }
 
 void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<std::vector<std::vector<double>>>& vec){
@@ -514,7 +519,7 @@ std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
 
 DepthFirstSearch::Treap::Treap() : root(TreapNode::nil){}
 
-DepthFirstSearch::Treap::Treap(value_type val) : root(new TreapNode (val)){}
+DepthFirstSearch::Treap::Treap(value_type val) : root(std::make_shared<TreapNode>(val)){}
 
 // イテレータが指す[st,en)の範囲で初期化する
 DepthFirstSearch::Treap::Treap(std::vector<value_type>::iterator st, std::vector<value_type>::iterator en) : root(TreapNode::nil){

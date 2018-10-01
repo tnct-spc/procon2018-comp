@@ -60,7 +60,7 @@ private:
 
     static const int loop_count = 0;
 
-    static const bool use_beamsearch = false;
+    static const bool use_beamsearch = true;
     static const int beam_width = 1000;
 
     // 味方の行動にかける倍率(敵の行動にかける倍率を1としている)
@@ -80,7 +80,7 @@ struct DepthFirstSearch::SearchNode : public std::enable_shared_from_this<Search
     double adv, advsum = -10007.0;
     bool is_back = false;
     std::unordered_map<int, std::pair<std::shared_ptr<SearchNode>, int>> childs;
-    std::pair<std::shared_ptr<SearchNode>, int> parent;
+    std::pair<SearchNode*, int> parent;
 
     SearchNode(double adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs, const std::vector<std::vector<std::vector<double>>>& predict);
     SearchNode(double adv, int depth);
@@ -104,6 +104,8 @@ struct DepthFirstSearch::TreapNode{
     int size;
     np l = nil;
     np r = nil;
+
+    static int k;
 
     TreapNode() : val(), pri(rndpri()), size(1), l(nil), r(nil){}
     TreapNode(value_type v) : val(v), pri(rndpri()), size(1), l(nil), r(nil){}
