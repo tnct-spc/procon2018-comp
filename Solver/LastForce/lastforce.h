@@ -3,7 +3,6 @@
 #include "gamemanager.h"
 #include "algorithmwrapper.h"
 #include "field.h"
-#include "precompile.h"
 
 
 /*LastForce仕様 LastForceは残りの手を効率的に探索し、勝利が確定しているかどうか調べるアルゴリズムです。

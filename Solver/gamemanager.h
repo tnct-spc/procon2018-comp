@@ -11,6 +11,7 @@
 #include "qrconverterfield.h"
 #include "operator.h"
 #include "ciphercards.h"
+#include "minimumvisualizer.h"
 
 #include <thread>
 #include "csvio.h"
@@ -29,7 +30,7 @@ class GameManager : public QObject
     //Q_DISABLE_COPY(GameManager)
 
 public:
-    explicit GameManager(unsigned int x_size, unsigned int y_size, bool vis_show = true, const int turn_max = 60, QObject *parent = 0);
+    explicit GameManager(unsigned int x_size, unsigned int y_size, bool vis_show = true, int turn_max = 60, QObject *parent = 0);
 
 
     void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
@@ -97,6 +98,7 @@ private:
     std::shared_ptr<AlgorithmWrapper> team_2;
 
     std::shared_ptr<ProgresDock> progresdock;
+    std::shared_ptr<MinimumVisualizer> minimum;
 
 
     unsigned int now_field = 0;
@@ -111,7 +113,7 @@ private:
     //これがtrueなら自動進行
     bool is_auto = true;
 
-    bool use_random_field;
+    bool use_random_field = true;
 
     //行動を保存しておく
     //1:移動 移動方向をintで設定する
