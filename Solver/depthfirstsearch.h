@@ -56,7 +56,7 @@ private:
     };
 
     static const bool dock_show = false;
-    static const bool vis_show  = false;
+    static const bool vis_show  = true;
 
     static const int loop_count = 0;
 

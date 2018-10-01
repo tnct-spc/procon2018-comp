@@ -89,6 +89,12 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
             }
     };
 
+    auto drawVal = [&]{
+        painter.setPen(Qt::blue);
+        painter.setFont(QFont("Arial",20));
+        painter.drawText(rect(),Qt::AlignCenter,"TEST");
+    };
+
     drawBackGround();
 
     if(!values.empty())
@@ -98,6 +104,7 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
         for(auto route : routes)
             drawRoute(route);
 
+    drawVal();
 }
 
 void MinimumVisualizer::setSize(std::pair<int,int> siz){
