@@ -155,7 +155,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithDe
 
 std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBeamSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
 
-    std::vector<Treap> treap_vec;
+    std::vector<Treap> treap_vec(2, Treap());
 
     std::shared_ptr<SearchNode> parent = std::make_shared<SearchNode>(0.0, 0);
     treap_vec.at(0).insert(std::make_pair(0.0, parent));
@@ -222,13 +222,22 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
 
                     ret_pair = std::make_pair(point, state.at(x_pos).at(y_pos) != 2);
 
+                    int bit_index = 8 + ((pos.first + SearchNode::dx.at(index)) * 12 + (pos.second + SearchNode::dy.at(index))) * 2;
+                    int bit_count = ((bs >> bit_index) & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
+
+                    bs &= ~(std::bitset<296>(3) << bit_index);
+                    bs |= std::bitset<296>(bit_count + 1) << bit_index;
+
                     if(node_map.count(bs)){
                         ++node_map[bs]->size;
                     }else{
                         node->childs[index] = std::make_pair(std::make_shared<SearchNode>(ret_pair.first, dep + 1), ret_pair.second);
-
+                        node->childs[index].first->parent = std::make_pair(node, index);
                         after.insert(std::make_pair(now_adv + ret_pair.first, node->childs[index].first));
                     }
+
+                    bs &= ~(std::bitset<296>(3) << bit_index);
+                    bs |= std::bitset<296>(bit_count) << bit_index;
                 }
             }
 
@@ -253,7 +262,8 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
 
 std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> DepthFirstSearch::calcMove(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
 
-    std::shared_ptr<SearchNode> node = createNodeWithDepthSearch(inp_side, agent, state, predict);
+    std::shared_ptr<SearchNode> node = createNodeWithBeamSearch(inp_side, agent, state, predict);
+    // std::shared_ptr<SearchNode> node = createNodeWithDepthSearch(inp_side, agent, state, predict);
 
     std::list<std::pair<int,int>> moves;
     std::pair<int,int> now_pos = field.getAgent(inp_side, agent);

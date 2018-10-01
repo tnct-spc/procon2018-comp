@@ -58,7 +58,7 @@ private:
     static const bool dock_show = false;
     static const bool vis_show = false;
 
-    static const int loop_count = 4;
+    static const int loop_count = 0;
 
     static const int beam_width = 100;
 
