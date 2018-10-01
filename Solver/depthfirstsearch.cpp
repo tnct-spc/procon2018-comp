@@ -154,7 +154,9 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
         Treap& after = treap_vec.at((dep ^ 1) & 1);
         while(before.size()){
             std::pair<double, std::shared_ptr<SearchNode>> element = before.get(0);
+            std::shared_ptr<SearchNode> node = element.second;
             before.erase(0);
+
             if(after.size() > beam_width)
                 after.erase_back(beam_width);
         }

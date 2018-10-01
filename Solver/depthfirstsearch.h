@@ -93,17 +93,15 @@ using value_type = std::pair<double, std::shared_ptr<DepthFirstSearch::SearchNod
 
 using np = DepthFirstSearch::TreapNode*;
 
-class DepthFirstSearch::TreapNode{
-public:
+struct DepthFirstSearch::TreapNode{
 
     static np nil;
 
     value_type val;
     uint32_t pri;
+    int size;
     np l = nil;
     np r = nil;
-
-    int size;
 
     TreapNode() : val(), pri(rndpri()), size(1), l(nil), r(nil){}
     TreapNode(value_type v) : val(v), pri(rndpri()), size(1), l(nil), r(nil){}
