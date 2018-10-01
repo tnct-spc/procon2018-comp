@@ -29,7 +29,9 @@ private:
 
     // {node, moves, values, depth_size, agent_values};
     std::tuple<std::shared_ptr<SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> depthSearch(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
-    std::tuple<std::shared_ptr<SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> beamSearch(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
+
+    std::shared_ptr<SearchNode> createNodeWithDepthSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
+    std::shared_ptr<SearchNode> createNodeWithBeamSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
 
     bool updatePredictData(bool inp_side, bool agent);
     std::vector<std::vector<std::vector<double>>> getMovePer(bool inp_side, bool agent);
@@ -78,7 +80,7 @@ struct DepthFirstSearch::SearchNode : public std::enable_shared_from_this<Search
     double adv, advsum = -10007.0;
     bool is_back = false;
     std::unordered_map<int, std::pair<std::shared_ptr<SearchNode>, int>> childs;
-    std::shared_ptr<SearchNode> parent;
+    std::pair<std::shared_ptr<SearchNode>, int> parent;
 
     SearchNode(double adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs, const std::vector<std::vector<std::vector<double>>>& predict);
     SearchNode(double adv, int depth);

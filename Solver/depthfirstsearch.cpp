@@ -142,38 +142,118 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
                           std::make_tuple((field.getState(agent_pos.at(1).first + SearchNode::dx.at(move_2), agent_pos.at(1).second + SearchNode::dy.at(move_2)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_2), SearchNode::dy.at(move_2)));
 }
 
-std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> DepthFirstSearch::beamSearch(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
-
-    std::vector<Treap> treap_vec;
-
-    treap_vec.at(0).insert(std::make_pair(0.0, std::make_shared<SearchNode>(0.0, 0)));
-
-    for(int dep = 0; dep < maxval; ++dep){
-
-        Treap& before = treap_vec.at(dep & 1);
-        Treap& after = treap_vec.at((dep ^ 1) & 1);
-        while(before.size()){
-            std::pair<double, std::shared_ptr<SearchNode>> element = before.get(0);
-            std::shared_ptr<SearchNode> node = element.second;
-            before.erase(0);
-
-            if(after.size() > beam_width)
-                after.erase_back(beam_width);
-        }
-    }
-}
-
-std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> DepthFirstSearch::depthSearch(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
-    int size_x, size_y;
-    std::tie(size_x, size_y) = field.getSize();
-
+std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithDepthSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
     const std::vector<std::vector<int>>& field_values = field.getValue();
 
     std::pair<int,int> agent_pos = field.getAgent(inp_side, agent);
     std::bitset<296> bs((agent_pos.first << 4) + agent_pos.second);
 
     std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter> node_map;
-    std::shared_ptr<SearchNode> node = std::make_shared<SearchNode>(0, 0, maxval, agent_pos, inp_side, field_values, state, node_map, bs, predict);
+    return std::make_shared<SearchNode>(0, 0, maxval, agent_pos, inp_side, field_values, state, node_map, bs, predict);
+
+}
+
+std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBeamSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
+
+    std::vector<Treap> treap_vec;
+
+    std::shared_ptr<SearchNode> parent = std::make_shared<SearchNode>(0.0, 0);
+    treap_vec.at(0).insert(std::make_pair(0.0, parent));
+
+    const std::vector<std::vector<int>>& value = field.getValue();
+
+    for(int dep = 0; dep < maxval + 1; ++dep){
+
+        Treap& before = treap_vec.at(dep & 1);
+        Treap& after = treap_vec.at((dep ^ 1) & 1);
+
+        std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter> node_map;
+
+        while(before.size()){
+            std::pair<double, std::shared_ptr<SearchNode>> element = before.get(0);
+            double now_adv = element.first;
+            std::shared_ptr<SearchNode> node = element.second;
+            before.erase(0);
+
+            if(dep == maxval){
+                node->is_back = true;
+                continue;
+            }
+
+            std::shared_ptr<SearchNode> now_node = node;
+            std::pair<int,int> old_pos = field.getAgent(inp_side, agent);
+            std::pair<int,int> pos(old_pos);
+
+            std::vector<std::pair<int,int>> rev_move;
+            while(now_node->parent.first){
+                rev_move.emplace_back(now_node->parent.second, now_node->parent.first->childs[now_node->parent.second].second);
+                now_node = now_node->parent.first;
+            }
+
+            std::bitset<296> bs;
+
+            for(int index = rev_move.size() - 1; index >= 0; --index){
+                int move_index = rev_move.at(index).first;
+                int is_move = rev_move.at(index).second;
+                --state.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index));
+
+                int bit_index = 8 + ((pos.first + SearchNode::dx.at(move_index)) * 12 + (pos.second + SearchNode::dy.at(move_index))) * 2;
+                int bit_count = ((bs >> bit_index) & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
+                bs &= ~(std::bitset<296>(3) << bit_index);
+                bs |= std::bitset<296>(bit_count + 1) << bit_index;
+
+                if(is_move){
+                    pos.first += SearchNode::dx.at(move_index);
+                    pos.second += SearchNode::dy.at(move_index);
+                }
+            }
+
+            bs &= ~std::bitset<296>(255);
+            bs |= ((pos.first << 4) | pos.second);
+
+            for(int index = 0; index < 8; ++index){
+                std::pair<double, bool> ret_pair(-10007.0, false);
+                int x_pos = pos.first + SearchNode::dx.at(index);
+                int y_pos = pos.second + SearchNode::dy.at(index);
+
+                if(!(x_pos < 0 || y_pos < 0 || x_pos >= static_cast<int>(state.size()) || y_pos >= static_cast<int>(state.at(0).size()) || !state.at(x_pos).at(y_pos))){
+
+                    double point = value.at(x_pos).at(y_pos) * (1.0 - SearchNode::predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0));
+
+                    ret_pair = std::make_pair(point, state.at(x_pos).at(y_pos) != 2);
+
+                    if(node_map.count(bs)){
+                        ++node_map[bs]->size;
+                    }else{
+                        node->childs[index] = std::make_pair(std::make_shared<SearchNode>(ret_pair.first, dep + 1), ret_pair.second);
+
+                        after.insert(std::make_pair(now_adv + ret_pair.first, node->childs[index].first));
+                    }
+                }
+            }
+
+            pos = old_pos;
+            for(int index = rev_move.size() - 1; index >= 0; --index){
+                int move_index = rev_move.at(index).first;
+                int is_move = rev_move.at(index).second;
+                ++state.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index));
+                if(is_move){
+                    pos.first += SearchNode::dx.at(move_index);
+                    pos.second += SearchNode::dy.at(move_index);
+                }
+            }
+
+            if(after.size() > beam_width)
+                after.erase_back(beam_width);
+        }
+    }
+
+    return parent;
+}
+
+std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> DepthFirstSearch::depthSearch(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
+
+    std::shared_ptr<SearchNode> node = createNodeWithDepthSearch(inp_side, agent, state, predict);
 
     std::list<std::pair<int,int>> moves;
     std::pair<int,int> now_pos = field.getAgent(inp_side, agent);
@@ -307,7 +387,7 @@ DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std:
     std::vector<std::pair<std::pair<double, bool>, int>> moves;
     for(int index = 0; index < 8; ++index){
 
-        std::pair<double, bool>ret_pair(-10007.0, false);
+        std::pair<double, bool> ret_pair(-10007.0, false);
         int x_pos = pos.first + dx.at(index);
         int y_pos = pos.second + dy.at(index);
 
@@ -352,7 +432,7 @@ DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std:
         }
         else{
             childs[move.second] = std::make_pair(std::make_shared<SearchNode>(move.first.first, depth + 1, remain - 1, (move.first.second ? new_pos : pos), side, value, state, node_map, bs, predict), move.first.second);
-            // childs[move.second].first->parent = shared_from_this();
+            // childs[move.second].first->parent = std::make_pair(shared_from_this(), move.second);
 
             real_size += childs[move.second].first->real_size;
 
