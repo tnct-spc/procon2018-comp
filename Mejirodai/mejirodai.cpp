@@ -21,6 +21,9 @@ Mejirodai::Mejirodai(QWidget *parent) :
     connect(ui->selectOpponentAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->opponent_stackedWidget, SLOT(setCurrentIndex(int)));
     connect(ui->changeButton, &QPushButton::clicked, this, &Mejirodai::runOperatorWindow);
     connect(ui->ExportFieldBinary, &QPushButton::clicked,this , &Mejirodai::exportFieldtoBinary);
+
+    ui->selectMyAlgorithmBox->currentIndexChanged(0);
+    ui->selectOpponentAlgorithmBox->currentIndexChanged(0);
 }
 
 Mejirodai::~Mejirodai()
