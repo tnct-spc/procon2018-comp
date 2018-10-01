@@ -22,16 +22,16 @@ public:
     DepthFirstSearch(const procon::Field& field, int final_turn, bool side);
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
 
-    struct SearchNode;
-    class Treap;
+    class  Treap;
     struct TreapNode;
+    struct SearchNode;
 private:
 
     // {node, moves, values, depth_size, agent_values};
     std::tuple<std::shared_ptr<SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> calcMove(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
 
     std::shared_ptr<SearchNode> createNodeWithDepthSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
-    std::shared_ptr<SearchNode> createNodeWithBeamSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
+    std::shared_ptr<SearchNode> createNodeWithBeamSearch (bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
 
     void updatePredictData(bool inp_side, bool agent);
     std::vector<std::vector<std::vector<double>>> getMovePer(bool inp_side, bool agent);
@@ -56,9 +56,9 @@ private:
     };
 
     static const bool dock_show = false;
-    static const bool vis_show = false;
+    static const bool vis_show  = false;
 
-    static const int loop_count = 4;
+    static const int loop_count = 0;
 
     static const bool use_beamsearch = false;
     static const int beam_width = 1000;
@@ -93,7 +93,7 @@ struct DepthFirstSearch::SearchNode : public std::enable_shared_from_this<Search
 
 using value_type = std::pair<double, std::shared_ptr<DepthFirstSearch::SearchNode>>;
 
-using np = DepthFirstSearch::TreapNode*;
+using np = std::shared_ptr<DepthFirstSearch::TreapNode>;
 
 struct DepthFirstSearch::TreapNode{
 
@@ -164,7 +164,5 @@ public:
     // k番目以降の要素削除
     void erase_back(int k);
 };
-
-
 
 #endif // DEPTHFIRSTSEARCH_H

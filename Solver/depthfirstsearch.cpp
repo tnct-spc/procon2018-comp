@@ -87,7 +87,6 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
         std::cout << "node_2 size : " << node_2->size << " , " << node_2->real_size << std::endl;
     }
 
-
     std::vector<std::vector<std::vector<int>>> colors(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
     for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
         for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
@@ -162,13 +161,13 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
 
     const std::vector<std::vector<int>>& value = field.getValue();
 
+    std::pair<int,int> old_pos = field.getAgent(inp_side, agent);
     for(int dep = 0; dep < maxval + 1; ++dep){
 
-        Treap& before = treap_vec.at(dep & 1);
-        Treap& after = treap_vec.at((dep ^ 1) & 1);
+        Treap& before = treap_vec.at(dep % 2);
+        Treap& after = treap_vec.at((dep + 1) % 2);
 
         std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter> node_map;
-
         while(before.size()){
             std::pair<double, std::shared_ptr<SearchNode>> element = before.get(0);
             double now_adv = element.first;
@@ -181,7 +180,6 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
             }
 
             std::shared_ptr<SearchNode> now_node = node;
-            std::pair<int,int> old_pos = field.getAgent(inp_side, agent);
             std::pair<int,int> pos(old_pos);
 
             std::vector<std::pair<int,int>> rev_move;
@@ -212,15 +210,13 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
             bs |= ((pos.first << 4) | pos.second);
 
             for(int index = 0; index < 8; ++index){
-                std::pair<double, bool> ret_pair(-10007.0, false);
                 int x_pos = pos.first + SearchNode::dx.at(index);
                 int y_pos = pos.second + SearchNode::dy.at(index);
-
-                if(!(x_pos < 0 || y_pos < 0 || x_pos >= static_cast<int>(state.size()) || y_pos >= static_cast<int>(state.at(0).size()) || !state.at(x_pos).at(y_pos))){
+                if(!(x_pos < 0 || y_pos < 0 || x_pos >= static_cast<int>(state.size()) || y_pos >= static_cast<int>(state.at(0).size()) || 0 >= state.at(x_pos).at(y_pos))){
 
                     double point = value.at(x_pos).at(y_pos) * (1.0 - SearchNode::predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0));
 
-                    ret_pair = std::make_pair(point, state.at(x_pos).at(y_pos) != 2);
+                    bool is_move = (state.at(x_pos).at(y_pos) != 2);
 
                     int bit_index = 8 + ((pos.first + SearchNode::dx.at(index)) * 12 + (pos.second + SearchNode::dy.at(index))) * 2;
                     int bit_count = ((bs >> bit_index) & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
@@ -231,9 +227,10 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                     if(node_map.count(bs)){
                         ++node_map[bs]->size;
                     }else{
-                        node->childs[index] = std::make_pair(std::make_shared<SearchNode>(ret_pair.first, dep + 1), ret_pair.second);
+                        node->childs[index] = std::make_pair(std::make_shared<SearchNode>(point, dep + 1), is_move);
                         node->childs[index].first->parent = std::make_pair(node, index);
-                        after.insert(std::make_pair(now_adv + ret_pair.first, node->childs[index].first));
+                        node_map[bs] = node->childs[index].first;
+                        after.insert(std::make_pair(now_adv + point, node->childs[index].first));
                     }
 
                     bs &= ~(std::bitset<296>(3) << bit_index);
@@ -251,6 +248,9 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                     pos.second += SearchNode::dy.at(move_index);
                 }
             }
+
+            if(node->childs.empty())
+                node->is_back = true;
 
             if(after.size() > beam_width)
                 after.erase_back(beam_width);
@@ -386,6 +386,7 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool 
 }
 
 DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs, const std::vector<std::vector<std::vector<double>>>& predict) :
+
     depth(depth),
     size(0),
     real_size(1),
@@ -518,7 +519,7 @@ DepthFirstSearch::Treap::Treap(value_type val) : root(new TreapNode (val)){}
 // イテレータが指す[st,en)の範囲で初期化する
 DepthFirstSearch::Treap::Treap(std::vector<value_type>::iterator st, std::vector<value_type>::iterator en) : root(TreapNode::nil){
     while(st != en){
-        root = _merge(root, new TreapNode(*st));
+        root = _merge(root, std::make_shared<TreapNode>(*st));
         ++st;
     }
 }
@@ -526,9 +527,8 @@ DepthFirstSearch::Treap::Treap(std::vector<value_type>::iterator st, std::vector
 // 配列で初期化する
 DepthFirstSearch::Treap::Treap(std::vector<value_type> v) : root(TreapNode::nil){
     for(auto& xx : v)
-        root = _merge(root, new TreapNode(xx));
+        root = _merge(root, std::make_shared<TreapNode>(xx));
 }
-
 
 int DepthFirstSearch::Treap::_size(np x){
     return x == TreapNode::nil ? 0 : x->size;
@@ -571,7 +571,7 @@ std::pair<np,np> DepthFirstSearch::Treap::_split(np x, int k){
 np DepthFirstSearch::Treap::_insert(np x, int k, value_type val){
     np l,r;
     std::tie(l, r) = _split(x, k);
-    return _merge(_merge(l, new TreapNode(val)), r);
+    return _merge(_merge(l, std::make_shared<TreapNode>(val)), r);
 }
 
 np DepthFirstSearch::Treap::_erase(np x, int k){
@@ -619,11 +619,11 @@ np DepthFirstSearch::Treap::_insert(np x, value_type val){
 }
 
 void DepthFirstSearch::Treap::push_front(value_type val){
-    root = _merge(new TreapNode(val), root);
+    root = _merge(std::make_shared<TreapNode>(val), root);
 }
 
 void DepthFirstSearch::Treap::push_back(value_type val){
-    root = _merge(root, new TreapNode(val));
+    root = _merge(root, std::make_shared<TreapNode>(val));
 }
 
 void DepthFirstSearch::Treap::pop_front(){
@@ -666,6 +666,6 @@ void DepthFirstSearch::Treap::erase_back(int k){
     root = _erase_back(root, k);
 }
 
-np DepthFirstSearch::TreapNode::nil = new DepthFirstSearch::TreapNode(value_type(), 0);
+np DepthFirstSearch::TreapNode::nil = std::make_shared<DepthFirstSearch::TreapNode>(value_type(), 0);
 const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1});
 const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1});
