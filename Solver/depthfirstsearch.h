@@ -22,8 +22,10 @@ public:
     DepthFirstSearch(const procon::Field& field, int final_turn, bool side);
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
 
-private:
     struct SearchNode;
+    class Treap;
+    struct TreapNode;
+private:
 
     // {node, moves, values, depth_size, agent_values};
     std::tuple<std::shared_ptr<SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> depthSearch(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
@@ -57,6 +59,8 @@ private:
 
     static const int loop_count = 4;
 
+    static const int beam_width = 100;
+
     // 味方の行動にかける倍率(敵の行動にかける倍率を1としている)
     static constexpr double ally_weight = 1.0;
 
@@ -84,5 +88,83 @@ struct DepthFirstSearch::SearchNode : public std::enable_shared_from_this<Search
     double getAdvSum();
     std::pair<int,int> getMaxAdvMove();
 };
+
+using value_type = std::pair<double, std::shared_ptr<DepthFirstSearch::SearchNode>>;
+
+using np = DepthFirstSearch::TreapNode*;
+
+class DepthFirstSearch::TreapNode{
+public:
+
+    static np nil;
+
+    value_type val;
+    uint32_t pri;
+    np l = nil;
+    np r = nil;
+
+    int size;
+
+    TreapNode() : val(), pri(rndpri()), size(1), l(nil), r(nil){}
+    TreapNode(value_type v) : val(v), pri(rndpri()), size(1), l(nil), r(nil){}
+    TreapNode(value_type v, uint32_t p) : val(v), pri(p), size(1), l(nil), r(nil){}
+
+    static uint32_t rndpri() {
+        static uint32_t x = 123456789, y = 362436069, z = 521288629, w = time(0);
+        uint32_t t = x ^ (x << 11);
+        x = y;
+        y = z;
+        z = w;
+        w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
+        return std::max<uint32_t>(1, w & 0x3FFFFFFF);
+    }
+};
+
+class DepthFirstSearch::Treap{
+public:
+    np root;
+    Treap();
+    Treap(value_type val);
+    Treap(std::vector<value_type>::iterator st, std::vector<value_type>::iterator en);
+    Treap(std::vector<value_type> v);
+
+protected:
+    int _size(np x);
+    np _update(np x);
+    np _merge(np l, np r);
+    std::pair<np,np> _split(np x, int k);
+    np _insert(np x, int k, value_type val);
+    np _erase(np x, int k);
+    np _erase_back(np x, int k);
+    void _set(np x, int k, value_type val);
+    value_type _get(np x, int k);
+    int _lowerbound(np x, value_type val);
+    np _insert(np x, value_type val);
+
+public:
+    void push_front(value_type val);
+    void push_back(value_type val);
+    void pop_front();
+    void pop_back();
+
+    // rootを含めたサイズの出力
+    int size();
+    // k番目への代入
+    void set(int k, value_type val);
+    // k番目の取得
+    value_type get(int k);
+    // k番目への挿入
+    void insert(int k, value_type val);
+    // 適切な位置への挿入
+    void insert(value_type val);
+    // val <= get(k) となるような最小のk
+    int lowerbound(value_type val);
+    // k番目の要素削除
+    void erase(int k);
+    // k番目以降の要素削除
+    void erase_back(int k);
+};
+
+
 
 #endif // DEPTHFIRSTSEARCH_H

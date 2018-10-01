@@ -144,6 +144,21 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 
 std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> DepthFirstSearch::beamSearch(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
 
+    std::vector<Treap> treap_vec;
+
+    treap_vec.at(0).insert(std::make_pair(0.0, std::make_shared<SearchNode>(0.0, 0)));
+
+    for(int dep = 0; dep < maxval; ++dep){
+
+        Treap& before = treap_vec.at(dep & 1);
+        Treap& after = treap_vec.at((dep ^ 1) & 1);
+        while(before.size()){
+            std::pair<double, std::shared_ptr<SearchNode>> element = before.get(0);
+            before.erase(0);
+            if(after.size() > beam_width)
+                after.erase_back(beam_width);
+        }
+    }
 }
 
 std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> DepthFirstSearch::depthSearch(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
@@ -400,5 +415,161 @@ std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
     return maxmove;
 }
 
+DepthFirstSearch::Treap::Treap() : root(TreapNode::nil){}
+
+DepthFirstSearch::Treap::Treap(value_type val) : root(new TreapNode (val)){}
+
+// イテレータが指す[st,en)の範囲で初期化する
+DepthFirstSearch::Treap::Treap(std::vector<value_type>::iterator st, std::vector<value_type>::iterator en) : root(TreapNode::nil){
+    while(st != en){
+        root = _merge(root, new TreapNode(*st));
+        ++st;
+    }
+}
+
+// 配列で初期化する
+DepthFirstSearch::Treap::Treap(std::vector<value_type> v) : root(TreapNode::nil){
+    for(auto& xx : v)
+        root = _merge(root, new TreapNode(xx));
+}
+
+
+int DepthFirstSearch::Treap::_size(np x){
+    return x == TreapNode::nil ? 0 : x->size;
+}
+
+np DepthFirstSearch::Treap::_update(np x){
+    x->size = _size(x->l) + _size(x->r) + 1;
+    return x;
+}
+
+np DepthFirstSearch::Treap::_merge(np l, np r){
+    if(l == TreapNode::nil || r == TreapNode::nil)
+        return l == TreapNode::nil ? r : l;
+
+    if(l->pri > r->pri){
+        l->r = _merge(l->r, r);
+        return _update(l);
+    }else{
+        r->l = _merge(l, r->l);
+        return _update(r);
+    }
+}
+
+std::pair<np,np> DepthFirstSearch::Treap::_split(np x, int k){
+    if(x == TreapNode::nil)
+        return std::make_pair(TreapNode::nil, TreapNode::nil);
+
+    if(k <= _size(x->l)){
+        std::pair<np,np> s = _split(x->l, k);
+        x->l = s.second;
+        return std::make_pair(s.first, _update(x));
+
+    }else{
+        std::pair<np,np> s = _split(x->r, k - _size(x->l) - 1);
+        x->r = s.first;
+        return std::make_pair(_update(x), s.second);
+    }
+}
+
+np DepthFirstSearch::Treap::_insert(np x, int k, value_type val){
+    np l,r;
+    std::tie(l, r) = _split(x, k);
+    return _merge(_merge(l, new TreapNode(val)), r);
+}
+
+np DepthFirstSearch::Treap::_erase(np x, int k){
+    np l,r,m;
+    std::tie(l, r) = _split(x, k);
+    std::tie(m, r) = _split(r, 1);
+    return _merge(l, r);
+}
+
+np DepthFirstSearch::Treap::_erase_back(np x, int k){
+    return _split(x, k).first;
+}
+
+void DepthFirstSearch::Treap::_set(np x, int k, value_type val){
+    if(k < _size(x->l))
+        _set(x->l, k, val);
+    else if(_size(x->l) == k)
+        x->val = val;
+    else
+        _set(x->r, k - _size(x->l) - 1, val);
+
+    _update(x);
+}
+
+value_type DepthFirstSearch::Treap::_get(np x, int k){
+    if(k < _size(x->l))
+        return _get(x->l, k);
+    else if(_size(x->l) == k)
+        return x->val;
+    else
+        return _get(x->r, k - _size(x->l) - 1);
+}
+
+int DepthFirstSearch::Treap::_lowerbound(np x, value_type val){
+    if(x == TreapNode::nil)
+        return 0;
+    if(val >= x->val)
+        return _lowerbound(x->l, val);
+    else
+        return _lowerbound(x->r,val) + _size(x->l) + 1;
+}
+
+np DepthFirstSearch::Treap::_insert(np x, value_type val){
+    return _insert(x, _lowerbound(x, val), val);
+}
+
+void DepthFirstSearch::Treap::push_front(value_type val){
+    root = _merge(new TreapNode(val), root);
+}
+
+void DepthFirstSearch::Treap::push_back(value_type val){
+    root = _merge(root, new TreapNode(val));
+}
+
+void DepthFirstSearch::Treap::pop_front(){
+    root = _split(root, 1).second;
+}
+
+void DepthFirstSearch::Treap::pop_back(){
+    root = _split(root, _size(root) - 1).first;
+}
+
+int DepthFirstSearch::Treap::size(){
+    return root == TreapNode::nil ? 0 : root->size;
+}
+
+void DepthFirstSearch::Treap::set(int k, value_type val){
+    return _set(root, k, val);
+}
+
+value_type DepthFirstSearch::Treap::get(int k){
+    return _get(root, k);
+}
+
+void DepthFirstSearch::Treap::insert(int k, value_type val){
+    root = _insert(root, k, val);
+}
+
+void DepthFirstSearch::Treap::insert(value_type val){
+    root = _insert(root, val);
+}
+
+int DepthFirstSearch::Treap::lowerbound(value_type val){
+    return _lowerbound(root, val);
+}
+
+void DepthFirstSearch::Treap::erase(int k){
+    root = _erase(root, k);
+}
+
+void DepthFirstSearch::Treap::erase_back(int k){
+    root = _erase_back(root, k);
+}
+
+np DepthFirstSearch::TreapNode::nil = new DepthFirstSearch::TreapNode(value_type(), 0);
 const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1});
 const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1});
