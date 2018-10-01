@@ -45,6 +45,10 @@ signals:
     void nextMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec, std::vector<std::vector<int>> is_delete);
     void selectChangeGrid(const std::pair<int, int> grid, const bool agent);
 
+    // Gamemanagerに変更を反映させる
+    void sendAgentPos(const std::pair<int, int> agent, const std::pair<int, int> pos);
+    void sendGridState(const std::pair<int, int> grid, const int state);
+
 public slots:
     void slotAutoMode(bool value);
     void candidateMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec);

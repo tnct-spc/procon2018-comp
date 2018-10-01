@@ -43,6 +43,8 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show
         connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
         connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
         connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
+        connect(visualizer.get(), &Visualizer::sendAgentPos, this, &GameManager::changeAgentpos);
+        connect(visualizer.get(), &Visualizer::sendGridState, this, &GameManager::changeGridState);
 
     }else{
         is_auto = true;//この場合は自動進行
@@ -65,6 +67,8 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
         connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
         connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
         connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
+        connect(visualizer.get(), &Visualizer::sendAgentPos, this, &GameManager::changeAgentpos);
+        connect(visualizer.get(), &Visualizer::sendGridState, this, &GameManager::changeGridState);
 
     }else{
         is_auto = true;//この場合は自動進行
@@ -857,7 +861,7 @@ void GameManager::getDataToOperator(const std::pair<int,int> grid, const bool ag
 
 void GameManager::getChangeOfData(const std::pair<int, int> data, const bool agent)
 {
-    emit sendDataToVisualizer(field->getAgent(field->getTurnCount(), 0), true);
+    emit sendDataToVisualizer(data, agent);
 }
 
 // agent => first : team, second : agent
@@ -865,9 +869,6 @@ void GameManager::getChangeOfData(const std::pair<int, int> data, const bool age
 void GameManager::changeAgentpos(std::pair<int, int> agent, std::pair<int, int> pos)
 {
     field->setAgent(agent.first, agent.second, pos.first, pos.second);
-
-    visualizer->setAgentPos(agent, pos);
-    visualizer->update();
 }
 
 // grid => first : x, second : y
@@ -875,7 +876,4 @@ void GameManager::changeAgentpos(std::pair<int, int> agent, std::pair<int, int> 
 void GameManager::changeGridState(std::pair<int, int> grid, int state)
 {
     field->setState(grid.first, grid.second, state);
-
-    visualizer->setGridState(grid, state);
-    visualizer->update();
 }

@@ -589,11 +589,17 @@ void Visualizer::setTurns(const std::pair<int, int> turns)
 void Visualizer::setAgentPos(const std::pair<int, int> agent, const std::pair<int, int> pos)
 {
     field.setAgent(agent.first, agent.second, pos.first, pos.second);
+    update();
+
+    emit sendAgentPos(agent, pos);
 }
 
 void Visualizer::setGridState(const std::pair<int, int> grid, const int state)
 {
     field.setState(grid.first, grid.second, state);
+    update();
+
+    emit sendGridState(grid, state);
 }
 
 void Visualizer::keyPressEvent(QKeyEvent *event)
