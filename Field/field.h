@@ -35,16 +35,20 @@ public:
 
     const std::vector<std::vector<int>>& getValue() const;
 
-    std::bitset<288> getRegion();
+    std::bitset<288> getRegions();
+
+    int getRegion(std::pair<int,int> pos);
 
     std::vector<std::pair<int,int>> getPoints(bool flag = true); //UpdatePointを呼ぶか
     std::vector<std::pair<int,int>> getPoints(std::pair<std::pair<int,int>, std::pair<int, int>> pos, bool flag = true);     //引数にteam番号,移動or破壊(0 or 1),座標を持つ、第二引数には実際に得点を書き換えるか(書き換えるならtrue)
     std::vector<std::pair<int,int>> getPoints(std::vector<std::pair<std::pair<int,int>, std::pair<int, int>>> pos_vec, bool flag = true);//上と大体同じ
 
+    std::vector<std::pair<int,int>> getPoints(std::pair<int,int> pos,int state);
+
     void setPoints(int side, std::pair<int,int> value);
 
-    int getTurnCount();
-    int getFinalTurn();
+    int getTurnCount() const;
+    int getFinalTurn() const;
     void setTurnCount(int turn_count);
     void setFinalTurn(int turn_count);
 
@@ -65,7 +69,7 @@ public:
 
     void resetState(const procon::Field& inp_field);
 
-    std::bitset<288>& getField();
+    const std::bitset<288>& getField() const;
     void setField(std::bitset<288>& input);
 
     std::pair<int,int> getSize() const;
