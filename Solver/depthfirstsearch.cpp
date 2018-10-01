@@ -488,13 +488,14 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     int sikiiti = threshold;
 
     long long rearch = 1;
-    for(int a = 0;a < maxval;a++)rearch *= age1->movecount;
+    for(int a = 0;a < std::min(maxval ,field.getFinalTurn() - field.getTurnCount());a++)rearch *= age1->movecount;
 
 
 
      rearch *= ratio;
     //std::cout<<rearch<<std::endl;
     //rearch = 3;
+     if(rearch == 0)rearch = 3;
 
     std::vector<RoutesAndNode> routes1,routes2;
 
