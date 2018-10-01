@@ -488,7 +488,9 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     int sikiiti = threshold;
 
     long long rearch = 1;
-    for(int a = 0;a < std::min(maxval ,field.getFinalTurn() - field.getTurnCount());a++)rearch *= age1->movecount;
+    for(int a = 0; a < maxval-1; a++)rearch *= age1->movecount;
+
+//    std::cout<<"YES"<<std::endl;
 
 
 
@@ -499,25 +501,10 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
 
     std::vector<RoutesAndNode> routes1,routes2;
 
-    for(auto ch : age1->childs){
-        RoutesAndNode ins;
-        ins.indexs.push_back(ch.first);
-        ins.CollectIndex(ch.second.first);
-        ins.CollectPos(side, 0, field);
-        routes1.push_back(ins);
-    }
-    // std::cout<<routes1.size()<<std::endl;
-
-    for(auto ch :  age2->childs){
-        RoutesAndNode ins;
-        ins.indexs.push_back(ch.first);
-        ins.CollectIndex(ch.second.first);
-        ins.CollectPos(side, 1, field);
-        routes2.push_back(ins);
-    }
 
     for(int index = 0;index < rearch;index++){
         RoutesAndNode ins;
+        if(!age1->flag)continue;
         ins.CollectIndex(age1);
         ins.CollectPos(side, 0, field);
         routes1.push_back(ins);
@@ -527,12 +514,35 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
 
     for(int index = 0;index < rearch;index++){
         RoutesAndNode ins;
+        if(!age2->flag)continue;
         ins.CollectIndex(age2);
         ins.CollectPos(side, 1, field);
         routes2.push_back(ins);
     }
+
+    for(auto ch : age1->childs){
+        RoutesAndNode ins;
+        if(!ch.second.first->flag)continue;
+        ins.indexs.push_back(ch.first);
+        ins.CollectIndex(ch.second.first);
+        ins.CollectPos(side, 0, field);
+        routes1.push_back(ins);
+    }
+    // std::cout<<routes1.size()<<std::endl;
+
+    for(auto ch :  age2->childs){  
+        RoutesAndNode ins;
+        if(!ch.second.first->flag)continue;
+        ins.indexs.push_back(ch.first);
+        ins.CollectIndex(ch.second.first);
+        ins.CollectPos(side, 1, field);
+        routes2.push_back(ins);
+    }
+
+
     //std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
 
+ //   std::cout<<"HOGHOGE"<<std::endl;
 
     auto check = [&](int index1, int index2){
         RoutesAndNode ro1 = routes1.at(index1);
@@ -547,8 +557,11 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         }
         return sikiiti >= count;
     };
-    std::pair<std::pair<int,int>,int> ans = std::make_pair(std::make_pair(8,8),-1e9);
+    std::pair<std::pair<int,int>,int> ans = std::make_pair(std::make_pair(8,8),-1e9-7);
 
+//    std::cout<<"HOGE"<<std::endl;
+
+    //std::cout<<age1->childs.size()<<" "<<age2->childs.size()<<std::endl;
 
     do{
     //std::cout<<routes2.front().indexs.size()<<std::endl;
@@ -565,7 +578,9 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
 
         }
         sikiiti++;
-    }while(ans.second == -1e9);
+    }while(ans.second == -1e9-7);
+
+   // std::cout<<"NNN"<<std::endl;
 
 
   //  std::cout<<ans.first.first<<" "<<ans.first.second<<" "<<ans.second<<std::endl;

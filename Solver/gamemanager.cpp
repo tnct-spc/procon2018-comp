@@ -244,6 +244,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 //                team_1 = std::make_shared<LastForce>(*field, field->getFinalTurn(), 0);
 //            }
 
+
             team_1_ans = team_1->agentAct(field->getTurnCount());
             team_2_ans = team_2->agentAct(field->getTurnCount());
 
