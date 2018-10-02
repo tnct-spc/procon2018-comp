@@ -485,8 +485,7 @@ DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std:
 
 std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_ptr<SearchNode> age1, std::shared_ptr<SearchNode> age2){
 
-    long long rearch = 1;
-    for(int a = 0; a < maxval-1; a++)rearch *= age1->movecount;
+    long long rearch = std::min(age1->size, age2->size);
 
 //    std::cout<<"YES"<<std::endl;
 
