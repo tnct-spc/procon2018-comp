@@ -57,6 +57,7 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
     };
 
     auto drawRoute = [&](std::list<std::pair<int,int>> route){
+        painter.setPen(Qt::black);
         for(auto it = route.begin(), it2 = std::next(route.begin()); it2 != route.end(); ++it, ++it2){
 
             painter.setBrush(QBrush(returnQColor((*it).first, (*it).second)));
@@ -91,8 +92,15 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
 
     auto drawVal = [&]{
         painter.setPen(Qt::blue);
-        painter.setFont(QFont("Arial",20));
-        painter.drawText(rect(),Qt::AlignCenter,"TEST");
+        painter.setFont(QFont("Arial",grid_size*0.3));
+        std::vector<std::vector<double>>testvvd(size_x,std::vector<double>(size_y,18.1445));
+        //setVal(testvvd);
+       for(unsigned int x_pos = 0; x_pos < testvvd.size(); ++x_pos)
+           for(unsigned int y_pos = 0; y_pos < testvvd.front().size(); ++y_pos){
+
+               QString text = QString::number(testvvd[x_pos][y_pos],'f',2);
+                painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.1), vertical_margin + grid_size * y_pos + ( grid_size * 0.7 ) , text);
+            }
     };
 
     drawBackGround();
@@ -100,11 +108,12 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
     if(!values.empty())
         drawValues();
 
+
+    drawVal();
+
     if(!routes.empty())
         for(auto route : routes)
             drawRoute(route);
-
-    drawVal();
 }
 
 void MinimumVisualizer::setSize(std::pair<int,int> siz){
@@ -117,4 +126,11 @@ void MinimumVisualizer::setRoute(std::vector<std::list<std::pair<int,int>>>& rou
 
 void MinimumVisualizer::setValues(std::vector<std::vector<int>>& vec, int rgba){
     values.at(rgba) = vec;
+}
+
+void MinimumVisualizer::setVal(std::vector<std::vector<double>> dval){
+    for(int posx=0;posx<dval.size();posx++)
+        for(int posy=0;posy<dval.front().size();posy++){
+            val[posx][posy]=dval[posx][posy];
+        }
 }
