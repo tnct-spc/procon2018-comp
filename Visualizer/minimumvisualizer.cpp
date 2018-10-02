@@ -94,8 +94,8 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
     auto drawVal = [&]{
         painter.setPen(Qt::blue);
         painter.setFont(QFont("Arial",grid_size*0.3));
-        std::vector<std::vector<double>>testvvd(size_x,std::vector<double>(size_y,18.1445));
-        setVal(testvvd);
+        //std::vector<std::vector<double>>testvvd(size_x,std::vector<double>(size_y,18.1445));
+        //setVal(testvvd);
        for(unsigned int x_pos = 0; x_pos < val.size()-(val.size()-size_x); ++x_pos)
            for(unsigned int y_pos = 0; y_pos < val.front().size()-(val.front().size()-size_y); ++y_pos){
 
