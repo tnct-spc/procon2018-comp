@@ -485,8 +485,6 @@ DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std:
 
 std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_ptr<SearchNode> age1, std::shared_ptr<SearchNode> age2){
 
-    int sikiiti = threshold;
-
     long long rearch = 1;
     for(int a = 0; a < maxval-1; a++)rearch *= age1->movecount;
 
@@ -543,19 +541,18 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     //std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
 
  //   std::cout<<"HOGHOGE"<<std::endl;
-
+    std::vector<long long> penaRatio = {1,2,4,8,16,32,64,128,256,512,1024,2048,4096};
     auto check = [&](int index1, int index2){
         RoutesAndNode ro1 = routes1.at(index1);
         RoutesAndNode ro2 = routes2.at(index2);
 
         int count = 0;
-        for(int index_a = 0;index_a < ro1.route_pos.size();index_a++){
-            for(int index_b = 0;index_b < ro2.route_pos.size();index_b++){
-                if(ro1.route_pos.at(index_a) == ro2.route_pos.at(index_b))
-                    count++;
+        for(int index = 0;index < std::min(ro1.route_pos.size(),ro2.route_pos.size());index++){
+            if(ro1.route_pos.at(index) == ro2.route_pos.at(index)){
+                return 1.0*(ro1.adv + ro2.adv) / penaRatio.at(index);
             }
         }
-        return sikiiti >= count;
+        return 0.0;
     };
     std::pair<std::pair<int,int>,int> ans = std::make_pair(std::make_pair(8,8),-1e9-7);
 
@@ -563,22 +560,19 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
 
     //std::cout<<age1->childs.size()<<" "<<age2->childs.size()<<std::endl;
 
-    do{
+
+
     //std::cout<<routes2.front().indexs.size()<<std::endl;
+
         for(int a = 0;a < routes1.size();a++){
             for(int b = 0;b < routes2.size();b++){
-                if(check(a,b) && routes1.at(a).next_pos != routes2.at(b).next_pos){
-                    if(ans.second <= routes1.at(a).adv + routes2.at(b).adv){
-                        ans.second = routes1.at(a).adv + routes2.at(b).adv;
-                  //      std::cout<<routes1.at(a).indexs.size()<<" "<<routes2.at(b).indexs.size()<<std::endl;
-                        ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
-                    }
+                double pena = check(a,b);
+                if(ans.second < routes1.at(a).adv + routes2.at(b).adv - pena){
+                    ans.second = routes1.at(a).adv + routes2.at(b).adv - pena;
+                    ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
                 }
             }
-
         }
-        sikiiti++;
-    }while(ans.second == -1e9-7);
 
    // std::cout<<"NNN"<<std::endl;
 

@@ -74,7 +74,6 @@ private:
 
     struct RoutesAndNode;
 
-    int threshold = 1;
 
 
 };
