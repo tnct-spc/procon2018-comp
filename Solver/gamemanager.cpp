@@ -205,7 +205,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     /*
     progresdock = std::make_shared<ProgresDock>();
     field_vec.push_back(std::make_shared<procon::Field>(*field));
-    progresdock->addAnswer(*(field_vec.back()));
+    progresdock->addVisuAnswer(*(field_vec.back()));
     */
 
     if(vis_show){
@@ -275,7 +275,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
             field_vec.push_back(std::make_shared<procon::Field>(*field));
 
-//            progresdock->addAnswer(*(field_vec.back()));
+//            progresdock->addVisuAnswer(*(field_vec.back()));
 
 
             setFieldCount(field_vec.size() - 1);
@@ -760,7 +760,7 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
 
     field_vec.push_back(std::make_shared<procon::Field>(*field));
 
-//     progresdock->addAnswer(*(field_vec.back()));
+//     progresdock->addVisuAnswer(*(field_vec.back()));
 
 
 

@@ -247,7 +247,7 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
         QPoint side_1_point;
         side_1_point.setX(window_width - horizontal_margin - grid_size * 5);
-        side_1_point.setY(window_height  - vertical_margin + grid_size * 0.7);
+        side_1_point.setY(window_height  - vertical_margin + grid_size * 0.7 + grid_size);
 
         painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
 
