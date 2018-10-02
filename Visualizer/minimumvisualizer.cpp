@@ -5,7 +5,8 @@ MinimumVisualizer::MinimumVisualizer(std::pair<int,int> size, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MinimumVisualizer),
     size(size),
-    values(4, std::vector<std::vector<int>>(size.first, std::vector<int>(size.second, 255)))
+    values(4, std::vector<std::vector<int>>(size.first, std::vector<int>(size.second, 255))),
+    val(13,std::vector<double>(13,0))
 {
     ui->setupUi(this);
 }
@@ -94,11 +95,11 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
         painter.setPen(Qt::blue);
         painter.setFont(QFont("Arial",grid_size*0.3));
         std::vector<std::vector<double>>testvvd(size_x,std::vector<double>(size_y,18.1445));
-        //setVal(testvvd);
-       for(unsigned int x_pos = 0; x_pos < testvvd.size(); ++x_pos)
-           for(unsigned int y_pos = 0; y_pos < testvvd.front().size(); ++y_pos){
+        setVal(testvvd);
+       for(unsigned int x_pos = 0; x_pos < val.size()-(val.size()-size_x); ++x_pos)
+           for(unsigned int y_pos = 0; y_pos < val.front().size()-(val.front().size()-size_y); ++y_pos){
 
-               QString text = QString::number(testvvd[x_pos][y_pos],'f',2);
+               QString text = QString::number(val[x_pos][y_pos],'f',2);
                 painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.1), vertical_margin + grid_size * y_pos + ( grid_size * 0.7 ) , text);
             }
     };
@@ -129,8 +130,9 @@ void MinimumVisualizer::setValues(std::vector<std::vector<int>>& vec, int rgba){
 }
 
 void MinimumVisualizer::setVal(std::vector<std::vector<double>> dval){
-    for(int posx=0;posx<dval.size();posx++)
+    for(int posx=0;posx<dval.size();posx++){
         for(int posy=0;posy<dval.front().size();posy++){
             val[posx][posy]=dval[posx][posy];
         }
+    }
 }
