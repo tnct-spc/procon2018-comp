@@ -127,8 +127,15 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     int move_1 = node_1->getMaxAdvMove().second;
     int move_2 = node_2->getMaxAdvMove().second;
 
+
+    std::pair<std::pair<int,int>,int> ins = getMaxAdvMove(node_1, node_2);
+
+    move_1 = ins.first.first;
+    move_2 = ins.first.second;
+
     node_1.reset();
     node_2.reset();
+
 
     if(move_1 < 0 || move_2 < 0){
         procon::CsvIo::exportField(field, "./error_case.csv");
@@ -139,6 +146,10 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     std::vector<std::pair<int,int>> agent_pos(2);
     for(int index = 0; index < 2; ++index)
         agent_pos.at(index) = field.getAgent(side, index);
+
+
+   //std::cout<<agent_pos.at(0).first + SearchNode::dx.at(move_1)<<" "<<agent_pos.at(0).second + SearchNode::dy.at(move_1)<<" "<<agent_pos.at(1).first + SearchNode::dx.at(move_2)<<" "<<agent_pos.at(1).second + SearchNode::dy.at(move_2)<<std::endl;
+   // std::cout<<" "<<std::endl;
 
     return std::make_pair(std::make_tuple((field.getState(agent_pos.at(0).first + SearchNode::dx.at(move_1), agent_pos.at(0).second + SearchNode::dy.at(move_1)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_1), SearchNode::dy.at(move_1)),
                           std::make_tuple((field.getState(agent_pos.at(1).first + SearchNode::dx.at(move_2), agent_pos.at(1).second + SearchNode::dy.at(move_2)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_2), SearchNode::dy.at(move_2)));
@@ -471,6 +482,130 @@ DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std:
     }
 }
 
+
+std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_ptr<SearchNode> age1, std::shared_ptr<SearchNode> age2){
+
+    long long rearch = std::min(age1->size, age2->size);
+
+//    std::cout<<"YES"<<std::endl;
+
+
+
+     rearch *= ratio;
+    //std::cout<<rearch<<std::endl;
+    //rearch = 3;
+     if(rearch == 0)rearch = 3;
+
+    std::vector<RoutesAndNode> routes1,routes2;
+
+
+    for(int index = 0;index < rearch;index++){
+        RoutesAndNode ins;
+        if(!age1->flag)continue;
+        ins.CollectIndex(age1);
+        ins.CollectPos(side, 0, field);
+        routes1.push_back(ins);
+    }
+
+   // std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
+
+    for(int index = 0;index < rearch;index++){
+        RoutesAndNode ins;
+        if(!age2->flag)continue;
+        ins.CollectIndex(age2);
+        ins.CollectPos(side, 1, field);
+        routes2.push_back(ins);
+    }
+
+    for(auto ch : age1->childs){
+        RoutesAndNode ins;
+        if(!ch.second.first->flag)continue;
+        ins.indexs.push_back(ch.first);
+        ins.CollectIndex(ch.second.first);
+        ins.CollectPos(side, 0, field);
+        routes1.push_back(ins);
+    }
+    // std::cout<<routes1.size()<<std::endl;
+
+    for(auto ch :  age2->childs){  
+        RoutesAndNode ins;
+        if(!ch.second.first->flag)continue;
+        ins.indexs.push_back(ch.first);
+        ins.CollectIndex(ch.second.first);
+        ins.CollectPos(side, 1, field);
+        routes2.push_back(ins);
+    }
+
+
+    //std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
+
+ //   std::cout<<"HOGHOGE"<<std::endl;
+    std::vector<long long> penaRatio = {1,2,4,8,16,32,64,128,256,512,1024,2048,4096};
+    auto check = [&](int index1, int index2){
+        RoutesAndNode ro1 = routes1.at(index1);
+        RoutesAndNode ro2 = routes2.at(index2);
+
+        int count = 0;
+        for(int index = 0;index < std::min(ro1.route_pos.size(),ro2.route_pos.size());index++){
+            if(ro1.route_pos.at(index) == ro2.route_pos.at(index)){
+                return 1.0*(ro1.adv + ro2.adv) / penaRatio.at(index);
+            }
+        }
+        return 0.0;
+    };
+    std::pair<std::pair<int,int>,int> ans = std::make_pair(std::make_pair(8,8),-1e9-7);
+
+//    std::cout<<"HOGE"<<std::endl;
+
+    //std::cout<<age1->childs.size()<<" "<<age2->childs.size()<<std::endl;
+
+
+
+    //std::cout<<routes2.front().indexs.size()<<std::endl;
+
+        for(int a = 0;a < routes1.size();a++){
+            for(int b = 0;b < routes2.size();b++){
+                double pena = check(a,b);
+                if(ans.second < routes1.at(a).adv + routes2.at(b).adv - pena && routes1.at(a).next_pos != routes2.at(b).next_pos){
+                    ans.second = routes1.at(a).adv + routes2.at(b).adv - pena;
+                    ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
+                }
+            }
+        }
+
+   // std::cout<<"NNN"<<std::endl;
+
+
+  //  std::cout<<ans.first.first<<" "<<ans.first.second<<" "<<ans.second<<std::endl;
+
+    return ans;
+}
+
+void DepthFirstSearch::RoutesAndNode::CollectIndex(std::shared_ptr<SearchNode> now){
+
+    std::shared_ptr<SearchNode> ins;
+    int way = 8;
+    long long mi = -1e9;
+    for(auto ch : now->childs){
+        if(mi <= ch.second.first->getAdvSum() && ch.second.first->flag){
+            ins = ch.second.first;
+            mi =  ch.second.first->getAdvSum();
+            way = ch.first;
+        }
+    }
+    if(mi != -1e9){
+      //  std::cout<<way<<std::endl;
+       indexs.push_back(way);
+       adv = mi;
+       CollectIndex(ins);
+       ins->advsum = SearchNode::advinit;
+    }else{
+        if(indexs.empty())indexs.push_back(8);
+        now->flag = false;
+    }
+}
+
+
 DepthFirstSearch::SearchNode::SearchNode(double adv, int depth) :
     depth(depth),
     size(0),
@@ -480,6 +615,7 @@ DepthFirstSearch::SearchNode::SearchNode(double adv, int depth) :
 }
 
 void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<std::vector<std::vector<double>>>& vec){
+
 
     for(auto ch : childs){
         std::pair<int,int> new_pos(pos);
@@ -498,18 +634,18 @@ void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<st
 }
 
 double DepthFirstSearch::SearchNode::getAdvSum(){
-    if(advsum != -10007.0)
+    if(advsum != advinit)
         return advsum;
 
     double point = 0.0;
     for(auto ch : childs)
-        point = std::max(point, ch.second.first->getAdvSum());
+        if(ch.second.first->flag) point = std::max(point, ch.second.first->getAdvSum());
 
     return advsum = point + adv;
 }
 
 std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
-    std::pair<int,int> maxmove(-10007.0, -1);
+    std::pair<int,int> maxmove(advinit, -1);
     for(auto ch : childs)
         if(maxmove.first < ch.second.first->getAdvSum())
             maxmove = std::make_pair(ch.second.first->getAdvSum(), ch.first);
@@ -517,6 +653,42 @@ std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
     return maxmove;
 }
 
+
+
+const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1, 0});
+const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1, 0});
+
+void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Field field){
+  //  for(int a = 0;a < indexs.size();a++)std::cout<<" "<<indexs.at(a);
+  //  std::cout<<std::endl;
+    std::pair<int,int> pos = field.getAgent(side, agent);
+    route_pos.push_back(pos);
+    std::vector<std::vector<int>> flag(12, std::vector<int>(12, 0));
+    for(int x = 0;x < field.getSize().first; x++){
+        for(int y = 0;y < field.getSize().second; y++){
+            flag.at(x).at(y) = field.getState(x, y).first;
+        }
+    }
+
+    auto moveAfter = [&](int move){
+       // std::cout<<SearchNode::dx.at(move) + pos.first<<" "<<SearchNode::dy.at(move) + pos.second<<std::endl;
+        if(flag.at(SearchNode::dx.at(move) + pos.first).at(SearchNode::dy.at(move) + pos.second) != side + 1 && flag.at(SearchNode::dx.at(move) + pos.first).at(SearchNode::dy.at(move) + pos.second) != 0){
+            flag.at(SearchNode::dx.at(move) + pos.first).at(SearchNode::dy.at(move) + pos.second) = 0;
+            return pos;
+        }else{
+            return std::make_pair(SearchNode::dx.at(move) + pos.first, SearchNode::dy.at(move) + pos.second);
+        }
+    };
+
+
+    for(int a = 0;a < indexs.size();a++){
+        pos = moveAfter(indexs.at(a));
+        route_pos.push_back(pos);
+        if(a == 0){
+            next_pos = pos;
+        }
+    }
+}
 DepthFirstSearch::Treap::Treap() : root(TreapNode::nil){}
 
 DepthFirstSearch::Treap::Treap(value_type val) : root(std::make_shared<TreapNode>(val)){}
@@ -672,5 +844,3 @@ void DepthFirstSearch::Treap::erase_back(int k){
 }
 
 np DepthFirstSearch::TreapNode::nil = std::make_shared<DepthFirstSearch::TreapNode>(value_type(), 0);
-const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1});
-const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1});
