@@ -566,7 +566,7 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         for(int a = 0;a < routes1.size();a++){
             for(int b = 0;b < routes2.size();b++){
                 double pena = check(a,b);
-                if(ans.second < routes1.at(a).adv + routes2.at(b).adv - pena){
+                if(ans.second < routes1.at(a).adv + routes2.at(b).adv - pena && routes1.at(a).next_pos != routes2.at(b).next_pos){
                     ans.second = routes1.at(a).adv + routes2.at(b).adv - pena;
                     ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
                 }
