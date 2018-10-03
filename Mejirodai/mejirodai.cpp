@@ -13,6 +13,7 @@ Mejirodai::Mejirodai(QWidget *parent) :
     visualizer->show();
     */
 
+    //TODO: bottleneck?
     connect(ui->runButton, &QPushButton::clicked, this, &Mejirodai::RunManagerSimulation);
     connect(ui->goNext, &QPushButton::clicked, this, &Mejirodai::goNextState);
     connect(ui->goPrev, &QPushButton::clicked, this, &Mejirodai::goPrevState);
@@ -41,8 +42,11 @@ void Mejirodai::RunManagerSimulation(){
     // AutoModeの設定
     manager->setAutoMode(ui->autoMode->isChecked());
 
+    //TODO: bottleneck?
 //    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
 //    manager->startSimulation(my, opponnent, InputMethod);
+    //TODO: this is not good countermeasure I think:)
+    //TODO: make a thread kill button, and UI can kill the agentAct() thread??
     manager->startThread(my, opponnent, InputMethod);
     std::cout << "untiii!!!" << std::endl;
 }

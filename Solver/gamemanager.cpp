@@ -767,6 +767,8 @@ void GameManager::nextMoveForManualMode(){
 //    std::cout << agent.first << "," << agent.second << std::endl;
 
     std::vector<std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>>> candidate_move(2);
+
+    //TODO: true bottleneck!
     candidate_move.at(0) = team_1->agentAct(0);
     candidate_move.at(1) = team_2->agentAct(1);
 

@@ -12,6 +12,7 @@
 #include <QComboBox>
 #include <QStackedWidget>
 #include <QCheckBox>
+#include <QThread>
 
 namespace Ui {
 class Mejirodai;
