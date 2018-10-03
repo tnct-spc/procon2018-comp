@@ -5,8 +5,7 @@ MinimumVisualizer::MinimumVisualizer(std::pair<int,int> size, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MinimumVisualizer),
     size(size),
-    values(4, std::vector<std::vector<int>>(size.first, std::vector<int>(size.second, 255))),
-    val(13,std::vector<double>(13,0))
+    values(4, std::vector<std::vector<int>>(size.first, std::vector<int>(size.second, 255)))
 {
     ui->setupUi(this);
 }
@@ -27,6 +26,9 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
     int window_height = this->height();
 
     double margin = 1.5;
+
+    //std::vector<std::vector<double>>testvvd(size_x,std::vector<double>(size_y,18.1445));
+    //setVal(testvvd);
 
     int grid_size = std::min(1.0 * window_width / ( (margin * 2) + size_x), 1.0 * window_height / ( (margin * 2) + size_y));
 
@@ -92,15 +94,13 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
     };
 
     auto drawVal = [&]{
-        painter.setPen(Qt::blue);
+        painter.setPen(QColor(0,180,0,170));
         painter.setFont(QFont("Arial",grid_size*0.3));
-        //std::vector<std::vector<double>>testvvd(size_x,std::vector<double>(size_y,18.1445));
-        //setVal(testvvd);
        for(unsigned int x_pos = 0; x_pos < val.size()-(val.size()-size_x); ++x_pos)
            for(unsigned int y_pos = 0; y_pos < val.front().size()-(val.front().size()-size_y); ++y_pos){
 
                QString text = QString::number(val[x_pos][y_pos],'f',2);
-                painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.1), vertical_margin + grid_size * y_pos + ( grid_size * 0.7 ) , text);
+                painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.05), vertical_margin + grid_size * y_pos + ( grid_size * 0.7 ) , text);
             }
     };
 
@@ -109,12 +109,12 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
     if(!values.empty())
         drawValues();
 
-
-    drawVal();
-
     if(!routes.empty())
         for(auto route : routes)
             drawRoute(route);
+
+    if(!val.empty())
+        drawVal();
 }
 
 void MinimumVisualizer::setSize(std::pair<int,int> siz){
@@ -130,9 +130,5 @@ void MinimumVisualizer::setValues(std::vector<std::vector<int>>& vec, int rgba){
 }
 
 void MinimumVisualizer::setVal(std::vector<std::vector<double>> dval){
-    for(int posx=0;posx<dval.size();posx++){
-        for(int posy=0;posy<dval.front().size();posy++){
-            val[posx][posy]=dval[posx][posy];
-        }
-    }
+    val = std::move(dval);
 }
