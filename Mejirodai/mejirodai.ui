@@ -239,6 +239,11 @@
       </item>
       <item>
        <property name="text">
+        <string>DepthFirstSearch</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>MajorityRuleWithAbstData</string>
        </property>
       </item>
@@ -310,6 +315,11 @@
       <item>
        <property name="text">
         <string>GeneticAlgo</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>DepthFirstSearch</string>
        </property>
       </item>
       <item>
