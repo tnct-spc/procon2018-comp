@@ -14,6 +14,7 @@
 #include "algorithmwrapper.h"
 
 #include "csvio.h"
+#include "progresdock.h"
 
 class DepthFirstSearch : public AlgorithmWrapper
 {
@@ -39,7 +40,7 @@ private:
     int maxval = 10;
 
     std::shared_ptr<MinimumVisualizer> minimum;
-    std::shared_ptr<MinimumVisualizerDock> dock;
+    std::shared_ptr<ProgresDock> dock;
 
     std::vector<std::vector<std::vector<std::vector<double>>>> predict_per;
 
@@ -58,7 +59,7 @@ private:
     static const bool dock_show = false;
     static const bool vis_show  = false;
 
-    static const int loop_count = 0;
+    static const int loop_count = 4;
 
     static const bool use_beamsearch = false;
     static const int beam_width = 1000;
@@ -68,19 +69,41 @@ private:
 
     static const bool do_output = false;
 
+    std::pair<std::pair<int,int>, int> getMaxAdvMove(std::shared_ptr<SearchNode> age1, std::shared_ptr<SearchNode> sge2);
+
+    const double ratio = 0.03;
+
+    struct RoutesAndNode;
+
+
+
+};
+
+struct DepthFirstSearch::RoutesAndNode{
+
+    std::vector<int> indexs;  //深さごとのchildsのindexs
+    void CollectIndex(std::shared_ptr<SearchNode> ins);
+    std::vector<std::pair<int,int>> route_pos;
+    void CollectPos(int side, int agent, procon::Field field);
+
+    int adv = -1e9;
+
+    std::pair<int,int> next_pos;
+
 };
 
 struct DepthFirstSearch::SearchNode : public std::enable_shared_from_this<SearchNode>{
-
+    static const int advinit = -10007.0;
     static const int movecount = 3;
     static constexpr double predict_weight = 0.3;
     static const std::vector<int> dx, dy;
 
+    bool flag = true;    //最後の探索用
     int depth, size, real_size, leaf_size;
-    double adv, advsum = -10007.0;
+    double adv, advsum = advinit;
     bool is_back = false;
     std::unordered_map<int, std::pair<std::shared_ptr<SearchNode>, int>> childs;
-    std::pair<std::shared_ptr<SearchNode>, int> parent;
+    std::pair<SearchNode*, int> parent;
 
     SearchNode(double adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs, const std::vector<std::vector<std::vector<double>>>& predict);
     SearchNode(double adv, int depth);
@@ -104,6 +127,8 @@ struct DepthFirstSearch::TreapNode{
     int size;
     np l = nil;
     np r = nil;
+
+    static int k;
 
     TreapNode() : val(), pri(rndpri()), size(1), l(nil), r(nil){}
     TreapNode(value_type v) : val(v), pri(rndpri()), size(1), l(nil), r(nil){}
