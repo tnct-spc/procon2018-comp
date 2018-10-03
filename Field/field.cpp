@@ -520,39 +520,94 @@ bool procon::Field::canPut(const unsigned int side, const unsigned int move_1, c
     return ( check_outofrange(0) && check_outofrange(1) && check_conflict());
 }
 
-std::pair<std::pair<int,int>,int> procon::Field::ifBreakArea(int side){
-    int areax;
-    int areay;
-    int x = ;
-    int y = ;
+std::vector<std::pair<std::pair<int,int>,int>> procon::Field::ifBreakArea(unsigned long side, unsigned long number){
+    int areaCount = 0;
+    int x = agents[side][number].first;
+    int y = agents[side][number].second;
+    std::vector<std::pair<int,int>> areaPos;
+    std::vector<std::pair<std::pair<int,int>,int>> answer;
     for(int i = -2;i < 3;i++){
         for(int j = -2;j < 3;j++){
-            if(x - i >= 0 && y - j >= 0 && ){
-                areax = x - i;
-                areay = y - j;
+            std::pair<int,int> pos;
+            pos.first = i;
+            pos.second = j;
+            if(x + i >= 0 && y + j >= 0 && getRegion(pos) == int(side + 1)){
+                pos.first = x-i;
+                pos.second = y-j;
+                areaPos.push_back(pos);
+                areaCount++;
             }
         }
     }
-    if(abs(x-areax) < 4 && abs(y-areay) < 4){
-        int breakx, breaky;
-        if(y == areay){
-            breaky = areay;
-            breakx = areax+(x-areax);
+    if(side == 0){
+        for(int i = 0;i < areaCount;i++){
+            areaPos.at(i).second -= 1;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).second < getPoints().at(0).second){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).second;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).second += 2;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).second < getPoints().at(0).second){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).second;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).second -= 1;
+            areaPos.at(i).first -= 1;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).second < getPoints().at(0).second){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).second;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).first += 2;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).second < getPoints().at(0).second){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).second;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).first -= 1;
         }
-        if(areay > y){
-            breaky = areay-1;
-            breakx = areax;
-        }
-        else{
-            breaky = areay+1;
-            breakx = areax;
-        }
-        std::pair<std::pair<int,int>,int> answer;
-        answer.first.first = breakx;
-        answer.first.second = breaky;
-        answer.second = (breakx,breaky);
-        return answer;
     }
+    else{
+        for(int i = 0;i < areaCount;i++){
+            areaPos.at(i).second -= 1;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).first < getPoints().at(0).first){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).first;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).second += 2;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).first < getPoints().at(0).first){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).first;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).second -= 1;
+            areaPos.at(i).first -= 1;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).first < getPoints().at(0).first){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).first;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).first += 2;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).first < getPoints().at(0).first){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).first;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).first -= 1;
+        }
+    }
+    return answer;
 }
 
 
