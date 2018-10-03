@@ -128,12 +128,12 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     int move_2 = node_2->getMaxAdvMove().second;
 
 
-    /*
+
     std::pair<std::pair<int,int>,int> ins = getMaxAdvMove(node_1, node_2);
 
     move_1 = ins.first.first;
     move_2 = ins.first.second;
-    */
+
 
     node_1.reset();
     node_2.reset();
