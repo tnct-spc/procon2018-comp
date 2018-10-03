@@ -61,7 +61,7 @@ private:
 
     static const int loop_count = 4;
 
-    static const bool use_beamsearch = false;
+    static const bool use_beamsearch = true;
     static const int beam_width = 1000;
 
     // 味方の行動にかける倍率(敵の行動にかける倍率を1としている)
