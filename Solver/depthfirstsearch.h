@@ -14,6 +14,7 @@
 #include "algorithmwrapper.h"
 
 #include "csvio.h"
+#include "progresdock.h"
 
 class DepthFirstSearch : public AlgorithmWrapper
 {
@@ -39,7 +40,7 @@ private:
     int maxval = 10;
 
     std::shared_ptr<MinimumVisualizer> minimum;
-    std::shared_ptr<MinimumVisualizerDock> dock;
+    std::shared_ptr<ProgresDock> dock;
 
     std::vector<std::vector<std::vector<std::vector<double>>>> predict_per;
 

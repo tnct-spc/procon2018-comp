@@ -4,7 +4,7 @@ DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, b
     AlgorithmWrapper(field, final_turn, side)
 {
     if(dock_show){
-        dock = std::make_shared<MinimumVisualizerDock>(6);
+        dock = std::make_shared<ProgresDock>();
         dock->show();
     }
 }
@@ -104,7 +104,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
         }
 
     if(dock_show)
-        dock->addVisualizer(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_1, moves_2}), colors);
+        dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_1, moves_2}), colors);
 
     if(vis_show){
         minimum = std::make_shared<MinimumVisualizer>(field.getSize());
