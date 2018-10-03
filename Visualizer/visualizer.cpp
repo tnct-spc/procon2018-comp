@@ -217,6 +217,17 @@ void Visualizer::paintEvent(QPaintEvent *event){
         }
 
     };
+
+    auto drawClickedGridWhenChangingMode = [&]{
+
+       QColor paint_color = selected_grid_color;
+       painter.setBrush(QBrush(paint_color));
+       int draw_x = selected_to_change_grid.first;
+       int draw_y = selected_to_change_grid.second;
+       painter.drawRect(horizontal_margin + draw_x * grid_size, vertical_margin + draw_y * grid_size, grid_size, grid_size);
+
+    };
+
     auto drawPoints = [&]{
 
         //とても汚いコピペコードで申し訳NASA
@@ -351,11 +362,15 @@ void Visualizer::paintEvent(QPaintEvent *event){
     drawBackGround();
     drawTiles();
 
+
+    if(is_change_field_mode && is_selected_grid) drawClickedGridWhenChangingMode();
+
     // AutoModeでなくかつChaneModeではないとき
+
     if((auto_mode == false) && (change_mode == false)){
         drawAgentMove();
         drawCandidateMove();
-        if (selected) drawAroundAgent();
+        if (selected && !is_change_field_mode) drawAroundAgent();
     }
 
     if (clicked) {
@@ -407,6 +422,9 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         // ChangeModeのときは機能しない
         //std::cout << clicked_grid.first << " " << clicked_grid.second << "" << std::endl;
 
+        selected_to_change_grid = clicked_grid;
+        is_selected_grid = true;
+        if(is_change_field_mode) this->update();
 
         if (!change_mode && selected && !is_change_field_mode) {
 
@@ -451,14 +469,11 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         }
         if(!is_moving_agent && is_change_field_mode){
             is_changing_field_grid = true;
-            selected_to_change_grid = clicked_grid;
 
         }
         is_moving_agent = false;
 
     }
-
-
 
 }
 
@@ -621,6 +636,7 @@ void Visualizer::setTurns(const std::pair<int, int> turns)
 void Visualizer::setAgentPos(const std::pair<int, int> agent, const std::pair<int, int> pos)
 {
     field.setAgent(agent.first, agent.second, pos.first, pos.second);
+    is_selected_grid = false;
     update();
 
     emit sendAgentPos(agent, pos);
@@ -629,6 +645,7 @@ void Visualizer::setAgentPos(const std::pair<int, int> agent, const std::pair<in
 void Visualizer::setGridState(const std::pair<int, int> grid, const int state)
 {
     field.setState(grid.first, grid.second, state);
+    is_selected_grid = false;
     update();
 
     emit sendGridState(grid, state);
@@ -640,9 +657,12 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
         if(is_change_field_mode){
             is_change_field_mode = false;
             std::cout << "mode: PlayGame" << std::endl;
+            is_selected_grid = false;
+            update();
         }else{
             is_change_field_mode = true;
             std::cout << "mode: ChangeField" << std::endl;
+            update();
         }
     }
 

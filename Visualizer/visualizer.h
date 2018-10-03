@@ -98,6 +98,8 @@ private:
 
     bool is_moving_agent = false;
 
+    bool is_selected_grid = false;
+
     std::pair<int, int> selected_to_change_grid;
 
 
@@ -131,6 +133,7 @@ private:
     const QColor team_color_b = QColor(0,0,255);
     const QColor checked_color_a = QColor(255,120,0);
     const QColor checked_color_b = QColor(0,120,255);
+    const QColor selected_grid_color = QColor(0, 0, 0, 50);
 
 };
 
