@@ -367,13 +367,13 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     // AutoModeでなくかつChaneModeではないとき
 
-    if((auto_mode == false) && (change_mode == false)){
+    if((auto_mode == false) && (change_mode == false) && !is_change_field_mode){
         drawAgentMove();
         drawCandidateMove();
-        if (selected && !is_change_field_mode) drawAroundAgent();
+        if (selected) drawAroundAgent();
     }
 
-    if (clicked) {
+    if (clicked && !is_change_field_mode) {
         // クリックされたグリッド
         if (change_mode) drawClickedGrid();
 
@@ -422,9 +422,11 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         // ChangeModeのときは機能しない
         //std::cout << clicked_grid.first << " " << clicked_grid.second << "" << std::endl;
 
-        selected_to_change_grid = clicked_grid;
-        is_selected_grid = true;
-        if(is_change_field_mode) this->update();
+        if(is_change_field_mode){
+            selected_to_change_grid = clicked_grid;
+            is_selected_grid = true;
+            this->update();
+        }
 
         if (!change_mode && selected && !is_change_field_mode) {
 
@@ -666,11 +668,11 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
         }
     }
 
-    if(event->key() == Qt::Key_0 && is_changing_field_grid){
+    if(event->key() == Qt::Key_0 && is_changing_field_grid && !is_moving_agent){
         setGridState(selected_to_change_grid, 0);
-    }else if(event->key() == Qt::Key_1 && is_changing_field_grid){
+    }else if(event->key() == Qt::Key_1 && is_changing_field_grid &&	!is_moving_agent){
         setGridState(selected_to_change_grid, 1);
-    }else if(event->key() == Qt::Key_2 && is_changing_field_grid){
+    }else if(event->key() == Qt::Key_2 && is_changing_field_grid && !is_moving_agent){
         setGridState(selected_to_change_grid, 2);
     }
 
