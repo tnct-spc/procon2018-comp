@@ -94,13 +94,13 @@ void MinimumVisualizer::paintEvent(QPaintEvent *event){
     };
 
     auto drawVal = [&]{
-        painter.setPen(QColor(0,180,0,170));
-        painter.setFont(QFont("Arial",grid_size*0.3));
+        painter.setPen(QColor(60,220,60,180));
+        painter.setFont(QFont("Arial",grid_size*0.25));
        for(unsigned int x_pos = 0; x_pos < val.size()-(val.size()-size_x); ++x_pos)
            for(unsigned int y_pos = 0; y_pos < val.front().size()-(val.front().size()-size_y); ++y_pos){
 
                QString text = QString::number(val[x_pos][y_pos],'f',2);
-                painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.05), vertical_margin + grid_size * y_pos + ( grid_size * 0.7 ) , text);
+                painter.drawText(horizontal_margin + grid_size * x_pos + (grid_size * 0.38), vertical_margin + grid_size * y_pos + ( grid_size * 0.97 ) , text);
             }
     };
 
