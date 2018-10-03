@@ -90,7 +90,16 @@ private:
 
     bool clicked = false;
 
+    //フィールドの編集モード/プレイモードの判定
     bool is_change_field_mode = false;
+
+    //編集モードでグリッドが選択されているかの判定
+    bool is_changing_field_grid = false;
+
+    bool is_moving_agent = false;
+
+    std::pair<int, int> selected_to_change_grid;
+
 
     unsigned int confirm_count = 0;
 

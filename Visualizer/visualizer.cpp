@@ -387,7 +387,7 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
 
         // マスの範囲外をクリックしたら何もしない
         if ((point.x() < horizontal_margin) || (point.x() > window_width - horizontal_margin)
-            || (point.y() < vertical_margin) || (point.y() > window_height - vertical_margin)) {
+                        || (point.y() < vertical_margin) || (point.y() > window_height - vertical_margin)) {
             return;
         }
 
@@ -405,12 +405,34 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
 
         // 移動をを入力するエージェントが選ばれているか
         // ChangeModeのときは機能しない
-        if (!change_mode && selected) {
+        //std::cout << clicked_grid.first << " " << clicked_grid.second << "" << std::endl;
+
+
+        if (!change_mode && selected && !is_change_field_mode) {
 
             // グリッドはエージェントの移動先に含まれているか
             checkClickGrid(clicked_grid, right_flag);
 
-        } else {
+        }else if(selected && is_change_field_mode){
+            //すでにagentがいたら早期return
+            std::vector<std::vector<std::pair<int, int>>> agents = field.getAgents();
+            for (int team = 0; team < 2; team++) {
+                for (int agent = 0; agent < 2; agent++) {
+
+                    // クリックされたマスとエージェントの位置が一致したら、チームとエージェントの番号を返す
+                    if (clicked_grid == agents.at(team).at(agent)) {
+                        std::cout << "agent alredy here" << std::endl;
+                        return;
+                    }
+                }
+            }
+
+            setGridState(clicked_grid, selected_agent.first + 1);
+            setAgentPos(selected_agent, clicked_grid);
+            selected = false;
+            is_moving_agent = true;
+
+        }else {
 
             // クリックされたエージェントまたはマスを照合
             checkClickedAgent(clicked_grid);
@@ -427,7 +449,16 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
             emit selectChangeGrid(clicked_grid, selected);
 
         }
+        if(!is_moving_agent && is_change_field_mode){
+            is_changing_field_grid = true;
+            selected_to_change_grid = clicked_grid;
+
+        }
+        is_moving_agent = false;
+
     }
+
+
 
 }
 
@@ -455,6 +486,7 @@ void Visualizer::checkClickedAgent(std::pair<int, int> mass)
 
                 // エージェントが選択されたことを記録
                 selected = true;
+                is_moving_agent = true;
 
                 // 選択されたエージェントの移動可能範囲を表示
                 this->update();
@@ -613,4 +645,14 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
             std::cout << "mode: ChangeField" << std::endl;
         }
     }
+
+    if(event->key() == Qt::Key_0 && is_changing_field_grid){
+        setGridState(selected_to_change_grid, 0);
+    }else if(event->key() == Qt::Key_1 && is_changing_field_grid){
+        setGridState(selected_to_change_grid, 1);
+    }else if(event->key() == Qt::Key_2 && is_changing_field_grid){
+        setGridState(selected_to_change_grid, 2);
+    }
+
+
 }
