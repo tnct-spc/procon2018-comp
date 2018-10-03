@@ -100,7 +100,7 @@ void Mejirodai::RunManagerSimulation(){
     }
 
 //    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
-    manager->startSimulation(my, opponnent, InputMethod);
+    manager->startSimulation(my, opponnent, InputMethod, my_params, opponent_params);
 }
 
 void Mejirodai::goNextState(){
