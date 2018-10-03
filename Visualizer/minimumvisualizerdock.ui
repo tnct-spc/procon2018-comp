@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ProgresDock</class>
- <widget class="QWidget" name="ProgresDock">
+ <class>MinimumVisualizerDock</class>
+ <widget class="QDialog" name="MinimumVisualizerDock">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1479</width>
-    <height>827</height>
+    <width>1920</width>
+    <height>1080</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Dialog</string>
   </property>
   <widget class="QScrollArea" name="scrollArea">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1531</width>
-     <height>861</height>
+     <width>1800</width>
+     <height>1080</height>
     </rect>
    </property>
    <property name="widgetResizable">
@@ -30,15 +30,21 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>1529</width>
-      <height>859</height>
+      <width>1798</width>
+      <height>1078</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
-      <layout class="QGridLayout" name="board_continer"/>
-     </item>
-    </layout>
+    <widget class="QWidget" name="gridLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>-1</y>
+       <width>401</width>
+       <height>301</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="container"/>
+    </widget>
    </widget>
   </widget>
  </widget>

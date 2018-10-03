@@ -12,7 +12,7 @@ namespace procon{
     namespace CsvIo{
 
         procon::Field importField(std::string path);
-        void exportField(procon::Field& data, std::string path);
+        void exportField(const procon::Field& data, std::string path);
 
         const int FUJISAN = 0;
         const int TAKAOSAN = 1;
