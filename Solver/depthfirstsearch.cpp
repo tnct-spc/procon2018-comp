@@ -153,12 +153,12 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     int move_2 = node_2->getMaxAdvMove().second;
 
 
-    /*
+
     std::pair<std::pair<int,int>,int> ins = getMaxAdvMove(node_1, node_2);
 
     move_1 = ins.first.first;
     move_2 = ins.first.second;
-    */
+
 
     node_1.reset();
     node_2.reset();
@@ -627,7 +627,7 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         }
         return 0.0;
     };
-    std::pair<std::pair<int,int>,int> ans = std::make_pair(std::make_pair(8,8),-1e9-7);
+    std::pair<std::pair<int,int>,long long> ans = std::make_pair(std::make_pair(8,8),-1e18);
 
 //    std::cout<<"HOGE"<<std::endl;
 
@@ -636,21 +636,17 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
 
 
     //std::cout<<routes2.front().indexs.size()<<std::endl;
-
-        for(int a = 0;a < routes1.size();a++){
-            for(int b = 0;b < routes2.size();b++){
-                double pena = check(a,b);
-                if(ans.second < routes1.at(a).adv + routes2.at(b).adv - pena && routes1.at(a).next_pos != routes2.at(b).next_pos){
-                    ans.second = routes1.at(a).adv + routes2.at(b).adv - pena;
-                    ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
-                }
+    for(int a = 0;a < routes1.size();a++){
+        for(int b = 0;b < routes2.size();b++){
+            double pena = check(a,b);
+            if(ans.second < routes1.at(a).adv + routes2.at(b).adv - pena && routes1.at(a).next_pos != routes2.at(b).next_pos){
+                ans.second = routes1.at(a).adv + routes2.at(b).adv - pena;
+                ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
             }
         }
-
-   // std::cout<<"NNN"<<std::endl;
-
-
-  //  std::cout<<ans.first.first<<" "<<ans.first.second<<" "<<ans.second<<std::endl;
+    }
+    // std::cout<<"NNN"<<std::endl;
+    //  std::cout<<field.getTurnCount()<<"ターン目: "<<ans.first.first<<" "<<ans.first.second<<std::endl;
 
     return ans;
 }
@@ -754,13 +750,12 @@ void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Fi
         }
     };
 
+    if(!indexs.empty())next_pos = std::make_pair(pos.first + SearchNode::dx.at(indexs.front()), pos.second + SearchNode::dy.at(indexs.front()));
+    else next_pos = pos;
 
     for(int a = 0;a < indexs.size();a++){
         pos = moveAfter(indexs.at(a));
         route_pos.push_back(pos);
-        if(a == 0){
-            next_pos = pos;
-        }
     }
 }
 DepthFirstSearch::Treap::Treap() : root(TreapNode::nil){}
