@@ -572,7 +572,7 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         }
     }
     // std::cout<<"NNN"<<std::endl;
-      std::cout<<field.getTurnCount()<<"ターン目: "<<ans.first.first<<" "<<ans.first.second<<std::endl;
+    //  std::cout<<field.getTurnCount()<<"ターン目: "<<ans.first.first<<" "<<ans.first.second<<std::endl;
 
     return ans;
 }
