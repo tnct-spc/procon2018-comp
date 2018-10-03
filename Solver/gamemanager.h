@@ -13,6 +13,7 @@
 #include "ciphercards.h"
 
 #include <thread>
+#include <mutex>
 #include "csvio.h"
 #include <vector>
 #include <memory>
@@ -27,6 +28,7 @@ class GameManager : public QObject
 {
     Q_OBJECT
     //Q_DISABLE_COPY(GameManager)
+    std::mutex mtx_;
 
 public:
     explicit GameManager(unsigned int x_size, unsigned int y_size, bool vis_show = true, const int turn_max = 60, QObject *parent = 0);
