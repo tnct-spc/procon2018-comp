@@ -36,7 +36,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     for(int cou = 0; cou < loop_count; ++cou){
         std::vector<std::thread> threads;
         for(int index = 0; index < 4; ++index)
-            threads.push_back(std::thread([&](int arg){updatePredictData(arg & 2, arg & 1);}, index));
+            threads.push_back(std::thread([&](int arg){updatePredictData(arg & 2, arg & 1, dock_show && (side != (arg & 2)) && (cou == loop_count - 1));}, index));
 
         for(int index = 0; index < 4; ++index)
             threads.at(index).join();
@@ -103,8 +103,33 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
                 colors.at(index).at(x_pos).at(y_pos) = std::max(0, colors.at(index).at(x_pos).at(y_pos));
         }
 
-    if(dock_show)
-        dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_1, moves_2}), colors);
+
+    std::vector<std::vector<std::vector<int>>> colors_1(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
+    std::vector<std::vector<std::vector<int>>> colors_2(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
+
+    for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
+        for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
+
+            colors_1.at(1).at(x_pos).at(y_pos) -= 255 * states_1.at(maxval - 1).at(x_pos).at(y_pos);
+            colors_1.at(2).at(x_pos).at(y_pos) -= 255 * states_1.at(maxval - 1).at(x_pos).at(y_pos);
+            colors_1.at(1).at(x_pos).at(y_pos) = std::max(0, colors_1.at(1).at(x_pos).at(y_pos));
+            colors_1.at(2).at(x_pos).at(y_pos) = std::max(0, colors_1.at(2).at(x_pos).at(y_pos));
+
+            colors_2.at(1).at(x_pos).at(y_pos) -= 255 * states_2.at(maxval - 1).at(x_pos).at(y_pos);
+            colors_2.at(2).at(x_pos).at(y_pos) -= 255 * states_2.at(maxval - 1).at(x_pos).at(y_pos);
+            colors_2.at(1).at(x_pos).at(y_pos) = std::max(0, colors_2.at(1).at(x_pos).at(y_pos));
+            colors_2.at(2).at(x_pos).at(y_pos) = std::max(0, colors_2.at(2).at(x_pos).at(y_pos));
+        }
+
+    if(dock_show){
+        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_2}), colors_2);
+        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_1}), colors_1);
+
+        while(!dock_stack.empty()){
+            dock->addMinumuVisu(std::get<0>(dock_stack.top()), std::get<1>(dock_stack.top()), std::get<2>(dock_stack.top()));
+            dock_stack.pop();
+        }
+    }
 
     if(vis_show){
         minimum = std::make_shared<MinimumVisualizer>(field.getSize());
@@ -348,12 +373,12 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
     return std::make_tuple(node, moves, values);
 }
 
-void DepthFirstSearch::updatePredictData(bool inp_side, bool agent){
+void DepthFirstSearch::updatePredictData(bool inp_side, bool agent, bool is_adddock){
 
-    getMovePer(inp_side, agent);
+    getMovePer(inp_side, agent, is_adddock);
     if(do_output){
 
-        std::vector<std::vector<std::vector<double>>> ret_val = getMovePer(inp_side, agent);
+        std::vector<std::vector<std::vector<double>>> ret_val = getMovePer(inp_side, agent, is_adddock);
 
         std::vector<std::vector<std::vector<double>>> before_vec = predict_per.at(inp_side * 2 + agent);
         double diff = 0.0;
@@ -369,7 +394,7 @@ void DepthFirstSearch::updatePredictData(bool inp_side, bool agent){
     }
 }
 
-std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool inp_side, bool agent){
+std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool inp_side, bool agent, bool is_adddock){
 
     int now_turn = field.getTurnCount();
     maxval = std::min(maxval, final_turn - now_turn);
@@ -392,7 +417,32 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool 
                     for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y)
                         pred.at(depth).at(pos_x).at(pos_y) += (index / 2 == inp_side ? ally_weight : -1) * predict_per.at(index).at(depth).at(pos_x).at(pos_y);
 
-    std::tie(std::ignore, std::ignore, ret_states) = calcMove(inp_side, agent, states, pred);
+    if(is_adddock){
+        std::list<std::pair<int,int>> moves;
+        std::tie(std::ignore, moves, ret_states) = calcMove(inp_side, agent, states, pred);
+        std::vector<std::vector<std::vector<int>>> colors(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
+
+        double hog = 0.0;
+
+        for(int dep = 0; dep < maxval; ++dep)
+            for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
+                for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
+
+                    if(inp_side)
+                        colors.at(0).at(x_pos).at(y_pos) -= 255 * ret_states.at(dep).at(x_pos).at(y_pos);
+                    else
+                        colors.at(2).at(x_pos).at(y_pos) -= 255 * ret_states.at(dep).at(x_pos).at(y_pos);
+
+                    colors.at(1).at(x_pos).at(y_pos) -= 255 * ret_states.at(dep).at(x_pos).at(y_pos);
+
+                    for(int index = 0; index < 3; ++index)
+                        colors.at(index).at(x_pos).at(y_pos) = std::max(0, colors.at(index).at(x_pos).at(y_pos));
+                }
+
+        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves}), colors);
+
+    }else
+        std::tie(std::ignore, std::ignore, ret_states) = calcMove(inp_side, agent, states, pred);
 
     for(int depth = 0; depth < maxval - 1; ++depth)
         for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
@@ -400,6 +450,10 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool 
                 ret_states.at(depth + 1).at(pos_x).at(pos_y) += ret_states.at(depth).at(pos_x).at(pos_y);
 
     return ret_states;
+}
+
+void DepthFirstSearch::addVisualizerToDock(const std::pair<int,int>& size, const std::vector<std::list<std::pair<int,int>>>& route, const std::vector<std::vector<std::vector<int>>>& color){
+    dock_stack.emplace(size, route, color);
 }
 
 DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs, const std::vector<std::vector<std::vector<double>>>& predict) :
