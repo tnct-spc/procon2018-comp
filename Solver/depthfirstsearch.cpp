@@ -313,7 +313,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
 
                     if(!is_replace)
                         point = 0;
-                    if(is_conflict && is_move)
+                    if(is_conflict)
                         point *= conflict_atk_per;
                     if(is_defence && !is_move)
                         point *= conflict_def_per;
