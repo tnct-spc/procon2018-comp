@@ -9,18 +9,6 @@ DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, b
     }
 }
 
-// static関数の宣言
-// 汚い.どうにしたいところ
-bool DepthFirstSearch::dock_show = false;
-bool DepthFirstSearch::vis_show = false;
-int DepthFirstSearch::loop_count = 4;
-bool DepthFirstSearch::use_beamsearch = false;
-int DepthFirstSearch::beam_width = 1000;
-double DepthFirstSearch::ally_weight = 1.0;
-double DepthFirstSearch::ratio = 0.03;
-int DepthFirstSearch::movecount = 3;
-double DepthFirstSearch::predict_weight = 0.3;
-
 const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearch::agentAct(int now_turn){
 
     if(do_output)
@@ -48,7 +36,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     for(int cou = 0; cou < loop_count; ++cou){
         std::vector<std::thread> threads;
         for(int index = 0; index < 4; ++index)
-            threads.push_back(std::thread([&](int arg){updatePredictData(arg & 2, arg & 1);}, index));
+            threads.push_back(std::thread([&](int arg){updatePredictData(arg & 2, arg & 1, dock_show && (side != (arg & 2)) && (cou == loop_count - 1));}, index));
 
         for(int index = 0; index < 4; ++index)
             threads.at(index).join();
@@ -115,8 +103,36 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
                 colors.at(index).at(x_pos).at(y_pos) = std::max(0, colors.at(index).at(x_pos).at(y_pos));
         }
 
-    if(dock_show)
-        dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_1, moves_2}), colors);
+
+    std::vector<std::vector<std::vector<int>>> colors_1(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
+    std::vector<std::vector<std::vector<int>>> colors_2(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
+
+    for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
+        for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
+
+            colors_1.at(1).at(x_pos).at(y_pos) -= 255 * states_1.at(maxval - 1).at(x_pos).at(y_pos);
+            colors_1.at(2).at(x_pos).at(y_pos) -= 255 * states_1.at(maxval - 1).at(x_pos).at(y_pos);
+            colors_1.at(1).at(x_pos).at(y_pos) = std::max(0, colors_1.at(1).at(x_pos).at(y_pos));
+            colors_1.at(2).at(x_pos).at(y_pos) = std::max(0, colors_1.at(2).at(x_pos).at(y_pos));
+
+            colors_2.at(1).at(x_pos).at(y_pos) -= 255 * states_2.at(maxval - 1).at(x_pos).at(y_pos);
+            colors_2.at(2).at(x_pos).at(y_pos) -= 255 * states_2.at(maxval - 1).at(x_pos).at(y_pos);
+            colors_2.at(1).at(x_pos).at(y_pos) = std::max(0, colors_2.at(1).at(x_pos).at(y_pos));
+            colors_2.at(2).at(x_pos).at(y_pos) = std::max(0, colors_2.at(2).at(x_pos).at(y_pos));
+        }
+
+    if(dock_show){
+        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_2}), colors_2, states_1.at(maxval - 1));
+        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_1}), colors_1, states_2.at(maxval - 1));
+
+        while(!dock_stack.empty()){
+            dock->addMinumuVisu(std::get<0>(dock_stack.top()), std::get<1>(dock_stack.top()), std::get<2>(dock_stack.top()));
+            std::vector<std::vector<double>> values = std::move(std::get<3>(dock_stack.top()));
+            if(!values.empty())
+                dock->setValuesToBack(values);
+            dock_stack.pop();
+        }
+    }
 
     if(vis_show){
         minimum = std::make_shared<MinimumVisualizer>(field.getSize());
@@ -140,10 +156,12 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     int move_2 = node_2->getMaxAdvMove().second;
 
 
+
     std::pair<std::pair<int,int>,int> ins = getMaxAdvMove(node_1, node_2);
 
     move_1 = ins.first.first;
     move_2 = ins.first.second;
+
 
     node_1.reset();
     node_2.reset();
@@ -253,13 +271,17 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
 
             for(int index = rev_move.size() - 1; index >= 0; --index){
                 int move_index = rev_move.at(index).first;
-                int is_move = rev_move.at(index).second;
-                --state.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index));
+                bool is_move = rev_move.at(index).second & 1;
+                bool is_replace = rev_move.at(index).second & 2;
 
-                int bit_index = 8 + ((pos.first + SearchNode::dx.at(move_index)) * 12 + (pos.second + SearchNode::dy.at(move_index))) * 2;
-                int bit_count = ((bs >> bit_index) & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
-                bs &= ~(std::bitset<296>(3) << bit_index);
-                bs |= std::bitset<296>(bit_count + 1) << bit_index;
+                if(is_replace){
+                    --state.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index));
+
+                    int bit_index = 8 + ((pos.first + SearchNode::dx.at(move_index)) * 12 + (pos.second + SearchNode::dy.at(move_index))) * 2;
+                    int bit_count = ((bs >> bit_index) & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
+                    bs &= ~(std::bitset<296>(3) << bit_index);
+                    bs |= std::bitset<296>(bit_count + 1) << bit_index;
+                }
 
                 if(is_move){
                     pos.first += SearchNode::dx.at(move_index);
@@ -273,37 +295,45 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
             for(int index = 0; index < 8; ++index){
                 int x_pos = pos.first + SearchNode::dx.at(index);
                 int y_pos = pos.second + SearchNode::dy.at(index);
-                if(!(x_pos < 0 || y_pos < 0 || x_pos >= static_cast<int>(state.size()) || y_pos >= static_cast<int>(state.at(0).size()) || 0 >= state.at(x_pos).at(y_pos))){
+                if(!(x_pos < 0 || y_pos < 0 || x_pos >= static_cast<int>(state.size()) || y_pos >= static_cast<int>(state.at(0).size()))){
 
-                    double point = value.at(x_pos).at(y_pos) * (1.0 - predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0));
+                    bool is_replace = state.at(x_pos).at(y_pos);
+
+                    double point = (is_replace ? value.at(x_pos).at(y_pos) * (1.0 - predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0)) : 0);
 
                     bool is_move = (state.at(x_pos).at(y_pos) != 2);
 
                     int bit_index = 8 + ((pos.first + SearchNode::dx.at(index)) * 12 + (pos.second + SearchNode::dy.at(index))) * 2;
                     int bit_count = ((bs >> bit_index) & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
 
-                    bs &= ~(std::bitset<296>(3) << bit_index);
-                    bs |= std::bitset<296>(bit_count + 1) << bit_index;
+                    if(is_replace){
+                        bs &= ~(std::bitset<296>(3) << bit_index);
+                        bs |= std::bitset<296>(bit_count + 1) << bit_index;
+                    }
 
                     if(node_map.count(bs)){
                         ++node_map[bs]->size;
                     }else{
-                        node->childs[index] = std::make_pair(std::make_shared<SearchNode>(point, dep + 1), is_move);
+                        node->childs[index] = std::make_pair(std::make_shared<SearchNode>(point, dep + 1), static_cast<int>(is_move) | (static_cast<int>(is_replace) << 1));
                         node->childs[index].first->parent = std::make_pair(node.get(), index);
                         node_map[bs] = node->childs[index].first;
                         after->insert(std::make_pair(now_adv + point, node->childs[index].first));
                     }
 
-                    bs &= ~(std::bitset<296>(3) << bit_index);
-                    bs |= std::bitset<296>(bit_count) << bit_index;
+                    if(is_replace){
+                        bs &= ~(std::bitset<296>(3) << bit_index);
+                        bs |= std::bitset<296>(bit_count) << bit_index;
+                    }
                 }
             }
 
             pos = old_pos;
             for(int index = rev_move.size() - 1; index >= 0; --index){
                 int move_index = rev_move.at(index).first;
-                int is_move = rev_move.at(index).second;
-                ++state.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index));
+                bool is_move = rev_move.at(index).second & 1;
+                bool is_replace = rev_move.at(index).second & 2;
+                if(is_replace)
+                    ++state.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index));
                 if(is_move){
                     pos.first += SearchNode::dx.at(move_index);
                     pos.second += SearchNode::dy.at(move_index);
@@ -334,7 +364,7 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
     std::pair<int,int> now_pos = field.getAgent(inp_side, agent);
     moves.emplace_back(now_pos);
     std::shared_ptr<SearchNode> now_node = node;
-    bool is_move = true;
+    bool is_move;
     std::pair<int,int> value(0, 0);
 
     while(1){
@@ -342,7 +372,7 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
         if(value.first == -10007)
             break;
 
-        is_move  = now_node->childs[value.second].second;
+        is_move  = now_node->childs[value.second].second & 1;
         now_node = now_node->childs[value.second].first;
 
         if(is_move){
@@ -393,12 +423,12 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
     return std::make_tuple(node, moves, values);
 }
 
-void DepthFirstSearch::updatePredictData(bool inp_side, bool agent){
+void DepthFirstSearch::updatePredictData(bool inp_side, bool agent, bool is_adddock){
 
-    getMovePer(inp_side, agent);
+    getMovePer(inp_side, agent, is_adddock);
     if(do_output){
 
-        std::vector<std::vector<std::vector<double>>> ret_val = getMovePer(inp_side, agent);
+        std::vector<std::vector<std::vector<double>>> ret_val = getMovePer(inp_side, agent, is_adddock);
 
         std::vector<std::vector<std::vector<double>>> before_vec = predict_per.at(inp_side * 2 + agent);
         double diff = 0.0;
@@ -414,7 +444,7 @@ void DepthFirstSearch::updatePredictData(bool inp_side, bool agent){
     }
 }
 
-std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool inp_side, bool agent){
+std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool inp_side, bool agent, bool is_adddock){
 
     int now_turn = field.getTurnCount();
     maxval = std::min(maxval, final_turn - now_turn);
@@ -437,7 +467,32 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool 
                     for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y)
                         pred.at(depth).at(pos_x).at(pos_y) += (index / 2 == inp_side ? ally_weight : -1) * predict_per.at(index).at(depth).at(pos_x).at(pos_y);
 
-    std::tie(std::ignore, std::ignore, ret_states) = calcMove(inp_side, agent, states, pred);
+    if(is_adddock){
+        std::list<std::pair<int,int>> moves;
+        std::tie(std::ignore, moves, ret_states) = calcMove(inp_side, agent, states, pred);
+        std::vector<std::vector<std::vector<int>>> colors(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
+
+        double hog = 0.0;
+
+        for(int dep = 0; dep < maxval; ++dep)
+            for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
+                for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
+
+                    if(inp_side)
+                        colors.at(0).at(x_pos).at(y_pos) -= 255 * ret_states.at(dep).at(x_pos).at(y_pos);
+                    else
+                        colors.at(2).at(x_pos).at(y_pos) -= 255 * ret_states.at(dep).at(x_pos).at(y_pos);
+
+                    colors.at(1).at(x_pos).at(y_pos) -= 255 * ret_states.at(dep).at(x_pos).at(y_pos);
+
+                    for(int index = 0; index < 3; ++index)
+                        colors.at(index).at(x_pos).at(y_pos) = std::max(0, colors.at(index).at(x_pos).at(y_pos));
+                }
+
+        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves}), colors);
+
+    }else
+        std::tie(std::ignore, std::ignore, ret_states) = calcMove(inp_side, agent, states, pred);
 
     for(int depth = 0; depth < maxval - 1; ++depth)
         for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
@@ -445,6 +500,10 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool 
                 ret_states.at(depth + 1).at(pos_x).at(pos_y) += ret_states.at(depth).at(pos_x).at(pos_y);
 
     return ret_states;
+}
+
+void DepthFirstSearch::addVisualizerToDock(const std::pair<int,int>& size, const std::vector<std::list<std::pair<int,int>>>& route, const std::vector<std::vector<std::vector<int>>>& color, const std::vector<std::vector<double>>& values){
+    dock_stack.emplace(size, route, color, values);
 }
 
 DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs, const std::vector<std::vector<std::vector<double>>>& predict) :
@@ -461,18 +520,18 @@ DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std:
     }
 
     // {{point, ismove}, dir}
-    std::vector<std::pair<std::pair<double, bool>, int>> moves;
+    std::vector<std::pair<std::pair<double, int>, int>> moves;
     for(int index = 0; index < 8; ++index){
 
-        std::pair<double, bool> ret_pair(-10007.0, false);
+        std::pair<double, int> ret_pair(-10007.0, false);
         int x_pos = pos.first + dx.at(index);
         int y_pos = pos.second + dy.at(index);
 
-        if(!(x_pos < 0 || y_pos < 0 || x_pos >= static_cast<int>(state.size()) || y_pos >= static_cast<int>(state.at(0).size()) || !state.at(x_pos).at(y_pos))){
+        if(!(x_pos < 0 || y_pos < 0 || x_pos >= static_cast<int>(state.size()) || y_pos >= static_cast<int>(state.at(0).size()))){
 
-            double point = value.at(x_pos).at(y_pos) * (1.0 - predict_weight * predict.at(depth).at(x_pos).at(y_pos));
+            double point = (state.at(x_pos).at(y_pos) ? value.at(x_pos).at(y_pos) * (1.0 - predict_weight * predict.at(depth).at(x_pos).at(y_pos)) : 0.0);
 
-            ret_pair = std::make_pair(point, state.at(x_pos).at(y_pos) != 2);
+            ret_pair = std::make_pair(point, static_cast<int>(state.at(x_pos).at(y_pos) != 2) | (static_cast<int>(state.at(x_pos).at(y_pos) != 0) << 1));
         }
 
         moves.emplace_back(std::make_pair(std::move(ret_pair), index));
@@ -482,7 +541,7 @@ DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std:
 
     double bound_val = std::max(moves.at(8 - movecount).first.first, 0.0);
 
-    moves.erase(moves.begin(), std::lower_bound(moves.begin(), moves.end(), std::make_pair(std::make_pair(bound_val, false), 0)));
+    moves.erase(moves.begin(), std::lower_bound(moves.begin(), moves.end(), std::make_pair(std::make_pair(bound_val, 0), 0)));
     if(moves.empty()){
         is_back = true;
         return ;
@@ -493,22 +552,27 @@ DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std:
     for(auto move : moves){
         std::pair<int,int> new_pos = std::make_pair(pos.first + dx.at(move.second), pos.second + dy.at(move.second));
 
-        --state.at(new_pos.first).at(new_pos.second);
-
-        // ここでbitsetを変更していい感じにする
-        bs &= ~std::bitset<296>(255);
-        bs |= (( (move.first.second ? new_pos.first : pos.first) << 4) | (move.first.second ? new_pos.second : pos.second));
+        bool is_move = move.first.second & 1;
+        bool is_replace = move.first.second & 2;
 
         int bit_index = 8 + (new_pos.first * 12 + new_pos.second) * 2;
         int bit_count = ((bs >> bit_index) & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
-        bs &= ~(std::bitset<296>(3) << bit_index);
-        bs |= std::bitset<296>(bit_count + 1) << bit_index;
+
+        // ここでbitsetを変更していい感じにする
+        bs &= ~std::bitset<296>(255);
+        bs |= (( (is_move ? new_pos.first : pos.first) << 4) | (is_move ? new_pos.second : pos.second));
+
+        if(is_replace){
+            --state.at(new_pos.first).at(new_pos.second);
+            bs &= ~(std::bitset<296>(3) << bit_index);
+            bs |= std::bitset<296>(bit_count + 1) << bit_index;
+        }
 
         if(node_map.count(bs)){
             ++node_map[bs]->size;
         }
         else{
-            childs[move.second] = std::make_pair(std::make_shared<SearchNode>(move.first.first, depth + 1, remain - 1, (move.first.second ? new_pos : pos), side, value, state, node_map, bs, predict), move.first.second);
+            childs[move.second] = std::make_pair(std::make_shared<SearchNode>(move.first.first, depth + 1, remain - 1, (is_move ? new_pos : pos), side, value, state, node_map, bs, predict), move.first.second);
             // childs[move.second].first->parent = std::make_pair(shared_from_this(), move.second);
 
             real_size += childs[move.second].first->real_size;
@@ -520,10 +584,13 @@ DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std:
         // ここでbsを戻す
         bs &= ~std::bitset<296>(255);
         bs |= (( pos.first << 4) | pos.second);
-        bs &= ~(std::bitset<296>(3) << bit_index);
-        bs |= std::bitset<296>(bit_count) << bit_index;
 
-        ++state.at(new_pos.first).at(new_pos.second);
+        if(is_replace){
+            bs &= ~(std::bitset<296>(3) << bit_index);
+            bs |= std::bitset<296>(bit_count) << bit_index;
+
+            ++state.at(new_pos.first).at(new_pos.second);
+        }
     }
 }
 
@@ -533,8 +600,6 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     long long rearch = std::min(age1->size, age2->size);
 
 //    std::cout<<"YES"<<std::endl;
-
-
 
      rearch *= ratio;
     //std::cout<<rearch<<std::endl;
@@ -598,7 +663,7 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         }
         return 0.0;
     };
-    std::pair<std::pair<int,int>,int> ans = std::make_pair(std::make_pair(8,8),-1e9-7);
+    std::pair<std::pair<int,int>,long long> ans = std::make_pair(std::make_pair(8,8),-1e18);
 
 //    std::cout<<"HOGE"<<std::endl;
 
@@ -607,21 +672,17 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
 
 
     //std::cout<<routes2.front().indexs.size()<<std::endl;
-
-        for(int a = 0;a < routes1.size();a++){
-            for(int b = 0;b < routes2.size();b++){
-                double pena = check(a,b);
-                if(ans.second < routes1.at(a).adv + routes2.at(b).adv - pena && routes1.at(a).next_pos != routes2.at(b).next_pos){
-                    ans.second = routes1.at(a).adv + routes2.at(b).adv - pena;
-                    ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
-                }
+    for(int a = 0;a < routes1.size();a++){
+        for(int b = 0;b < routes2.size();b++){
+            double pena = check(a,b);
+            if(ans.second < routes1.at(a).adv + routes2.at(b).adv - pena && routes1.at(a).next_pos != routes2.at(b).next_pos){
+                ans.second = routes1.at(a).adv + routes2.at(b).adv - pena;
+                ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
             }
         }
-
-   // std::cout<<"NNN"<<std::endl;
-
-
-  //  std::cout<<ans.first.first<<" "<<ans.first.second<<" "<<ans.second<<std::endl;
+    }
+    // std::cout<<"NNN"<<std::endl;
+    //  std::cout<<field.getTurnCount()<<"ターン目: "<<ans.first.first<<" "<<ans.first.second<<std::endl;
 
     return ans;
 }
@@ -667,7 +728,7 @@ void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<st
         new_pos.first += dx.at(ch.first);
         new_pos.second += dy.at(ch.first);
 
-        std::pair<int,int> agent_pos(ch.second.second ? new_pos : pos);
+        std::pair<int,int> agent_pos(ch.second.second & 1 ? new_pos : pos);
 
         ch.second.first->dfsAdd(agent_pos, vec);
 
@@ -698,11 +759,6 @@ std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
     return maxmove;
 }
 
-
-
-const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1, 0});
-const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1, 0});
-
 void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Field field){
   //  for(int a = 0;a < indexs.size();a++)std::cout<<" "<<indexs.at(a);
   //  std::cout<<std::endl;
@@ -725,15 +781,28 @@ void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Fi
         }
     };
 
+    if(!indexs.empty())next_pos = std::make_pair(pos.first + SearchNode::dx.at(indexs.front()), pos.second + SearchNode::dy.at(indexs.front()));
+    else next_pos = pos;
 
     for(int a = 0;a < indexs.size();a++){
         pos = moveAfter(indexs.at(a));
         route_pos.push_back(pos);
-        if(a == 0){
-            next_pos = pos;
-        }
     }
 }
+
+const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1, 0});
+const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1, 0});
+
+bool DepthFirstSearch::dock_show = false;
+bool DepthFirstSearch::vis_show = false;
+int DepthFirstSearch::loop_count = 4;
+bool DepthFirstSearch::use_beamsearch = false;
+int DepthFirstSearch::beam_width = 1000;
+double DepthFirstSearch::ally_weight = 1.0;
+double DepthFirstSearch::ratio = 0.03;
+int DepthFirstSearch::movecount = 3;
+double DepthFirstSearch::predict_weight = 0.3;
+
 DepthFirstSearch::Treap::Treap() : root(TreapNode::nil){}
 
 DepthFirstSearch::Treap::Treap(value_type val) : root(std::make_shared<TreapNode>(val)){}

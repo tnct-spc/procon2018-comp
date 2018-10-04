@@ -35,13 +35,17 @@ private:
     std::shared_ptr<SearchNode> createNodeWithDepthSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
     std::shared_ptr<SearchNode> createNodeWithBeamSearch (bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
 
-    void updatePredictData(bool inp_side, bool agent);
-    std::vector<std::vector<std::vector<double>>> getMovePer(bool inp_side, bool agent);
+    void updatePredictData(bool inp_side, bool agent, bool is_adddock);
+    std::vector<std::vector<std::vector<double>>> getMovePer(bool inp_side, bool agent, bool is_adddock);
+
+    void addVisualizerToDock(const std::pair<int,int>& size, const std::vector<std::list<std::pair<int,int>>>& route, const std::vector<std::vector<std::vector<int>>>& color, const std::vector<std::vector<double>>& values = std::vector<std::vector<double>>(0));
 
     int maxval = 10;
 
     std::shared_ptr<MinimumVisualizer> minimum;
     std::shared_ptr<ProgresDock> dock;
+
+    std::stack<std::tuple<std::pair<int,int>, std::vector<std::list<std::pair<int,int>>>, std::vector<std::vector<std::vector<int>>>, std::vector<std::vector<double>>>> dock_stack;
 
     std::vector<std::vector<std::vector<std::vector<double>>>> predict_per;
 

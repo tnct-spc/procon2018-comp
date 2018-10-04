@@ -21,9 +21,11 @@ void ProgresDock::addVisuAnswer(procon::Field& field){
     this->ui->board_continer->addWidget(Visu,field_count/4,field_count%4);
     field_count++;
 }
+
 void ProgresDock::addMinumuVisu(std::pair<int,int> size, std::vector<std::list<std::pair<int,int>>> route, std::vector<std::vector<std::vector<int>>> color){
 
     MinimumVisualizer* minimum = new MinimumVisualizer(size);
+    dock_back = minimum;
     minimum->setRoute(route);
     for(int index = 0; index < 3; ++index)
         minimum->setValues(color.at(index), index);
@@ -32,4 +34,8 @@ void ProgresDock::addMinumuVisu(std::pair<int,int> size, std::vector<std::list<s
 
     this->ui->board_continer->addWidget(minimum,field_count/4,field_count%4);
     field_count++;
+}
+
+void ProgresDock::setValuesToBack(const std::vector<std::vector<double>>& values){
+    dock_back->setVal(values);
 }
