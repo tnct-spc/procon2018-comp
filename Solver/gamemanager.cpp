@@ -93,7 +93,7 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
     field->setFinalTurn(max_t);
 }
 
-void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod) {
+void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod, std::vector<std::pair<QString, double>> my_params, std::vector<std::pair<QString, double>> opp_params) {
     if (QString::compare("GenerateField", InputMethod) == 0) {
         int x_size = field->getSize().first;
         int y_size = field->getSize().second;
@@ -170,6 +170,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_1 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 0);
     }
 
+    team_1->setParams(my_params);
+
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
         team_2 = std::make_shared<DummyAlgorithm>(*field, field->getFinalTurn(), 1);
     } else if (QString::compare("GeneticAlgo", opponent_algo) == 0) {
@@ -198,7 +200,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_2 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 1);
     }
 
-
+    team_2->setParams(opp_params);
 
 
     // progressdockは一旦表示しない事にします(使う事があまりないため)

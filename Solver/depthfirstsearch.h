@@ -22,6 +22,7 @@ class DepthFirstSearch : public AlgorithmWrapper
 public:
     DepthFirstSearch(const procon::Field& field, int final_turn, bool side);
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
+    void setParams(std::vector<std::pair<QString, double>> params);
 
     class  Treap;
     struct TreapNode;
@@ -60,26 +61,27 @@ private:
         }
     };
 
-    static const bool dock_show = false;
-    static const bool vis_show  = false;
+    static bool dock_show;
+    static bool vis_show;
 
-    static const int loop_count = 4;
+    static int loop_count;
 
-    static const bool use_beamsearch = true;
-    static const int beam_width = 1000;
+    static bool use_beamsearch;
+    static int beam_width;
 
     // 味方の行動にかける倍率(敵の行動にかける倍率を1としている)
-    static constexpr double ally_weight = 1.0;
+    static double ally_weight;
 
     static const bool do_output = false;
 
     std::pair<std::pair<int,int>, int> getMaxAdvMove(std::shared_ptr<SearchNode> age1, std::shared_ptr<SearchNode> sge2);
 
-    const double ratio = 0.03;
+    static double ratio;
 
     struct RoutesAndNode;
 
-
+    static int movecount;
+    static double predict_weight;
 
 };
 
@@ -98,8 +100,8 @@ struct DepthFirstSearch::RoutesAndNode{
 
 struct DepthFirstSearch::SearchNode : public std::enable_shared_from_this<SearchNode>{
     static const int advinit = -10007.0;
-    static const int movecount = 3;
-    static constexpr double predict_weight = 0.3;
+//    static const int movecount = 3;
+//    static constexpr double predict_weight = 0.3;
     static const std::vector<int> dx, dy;
 
     bool flag = true;    //最後の探索用

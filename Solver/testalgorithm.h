@@ -17,5 +17,6 @@ class TestAlgorithm : public AlgorithmWrapper
     using AlgorithmWrapper::AlgorithmWrapper;
 public:
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
+    void setParams(std::vector<std::pair<QString, double>> params);
 };
 #endif // TESTALGORITHM_H

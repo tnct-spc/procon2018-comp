@@ -103,6 +103,11 @@ bool LastForce::calc(procon::Field ins_field,int depth,int x,int y){
     return result_hoge;
 }
 
+void LastForce::setParams(std::vector<std::pair<QString, double>> params)
+{
+
+}
+
 procon::Field LastForce::moveAgent(procon::Field field, std::vector<int> act){
 
     std::vector<int> x_list = {1, 1, 1, 0,  0, -1, -1, -1, 0};

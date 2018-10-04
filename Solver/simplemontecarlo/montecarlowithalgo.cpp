@@ -229,3 +229,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
     return std::make_pair(agent_1_tuple, agent_2_tuple);
 
 }
+
+void MontecarloWithAlgo::setParams(std::vector<std::pair<QString, double>> params)
+{
+
+}
