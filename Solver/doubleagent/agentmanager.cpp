@@ -44,6 +44,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> AgentManager::
 
 }
 
+void AgentManager::setParams(std::vector<std::pair<QString, double>> params)
+{
+
+}
+
 std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> AgentManager::simpleCalc(int now_turn){
 
     std::vector<std::pair<double,std::tuple<int,int,int>>> move_1 = agents.at(0)->agentMove(now_turn);

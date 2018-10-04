@@ -4,6 +4,7 @@
 
 #include "algorithmwrapper.h"
 #include "useabstractdata.h"
+#include "QString"
 
 class MajorityRuleWithAbstData : public AlgorithmWrapper
 {
@@ -11,6 +12,7 @@ class MajorityRuleWithAbstData : public AlgorithmWrapper
 public:
     MajorityRuleWithAbstData(const procon::Field& field, int final_turn, bool side);
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
+    void setParams(std::vector<std::pair<QString, double>> params);
 
 private:
 

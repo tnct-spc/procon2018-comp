@@ -22,6 +22,9 @@ Mejirodai::Mejirodai(QWidget *parent) :
     connect(ui->selectOpponentAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->opponent_stackedWidget, SLOT(setCurrentIndex(int)));
     connect(ui->changeButton, &QPushButton::clicked, this, &Mejirodai::runOperatorWindow);
     connect(ui->ExportFieldBinary, &QPushButton::clicked,this , &Mejirodai::exportFieldtoBinary);
+
+    ui->selectMyAlgorithmBox->currentIndexChanged(0);
+    ui->selectOpponentAlgorithmBox->currentIndexChanged(0);
 }
 
 Mejirodai::~Mejirodai()
@@ -42,13 +45,56 @@ void Mejirodai::RunManagerSimulation(){
     // AutoModeの設定
     manager->setAutoMode(ui->autoMode->isChecked());
 
-    //TODO: bottleneck?
+    auto getParams = [&](QObjectList objects) {
+        // childの数
+        unsigned int count = 0;
+
+        // 自チームのパラメータを取得
+        if (!objects.empty()) {
+            count = objects.size();
+        }
+
+        // パラメータ取得用配列
+        std::vector<std::pair<QString, double>> params;
+
+        for (unsigned int i = 0; i < count; i++) {
+            // childの型
+            QString classname = objects.at(i)->metaObject()->className();
+
+            // 各型ごとにparamsにpush
+            if (QString::compare(classname, QString("QDoubleSpinBox")) == 0) {
+                QDoubleSpinBox *obj = qobject_cast<QDoubleSpinBox *>(objects.at(i));
+                params.push_back(std::make_pair(obj->objectName(), (double)obj->value()));
+            } else if (QString::compare(classname, QString("QSpinBox")) == 0) {
+                QSpinBox *obj = qobject_cast<QSpinBox *>(objects.at(i));
+                params.push_back(std::make_pair(obj->objectName(), (double)obj->value()));
+            } else if (QString::compare(classname, QString("QCheckBox")) == 0) {
+                QCheckBox *obj = qobject_cast<QCheckBox *>(objects.at(i));
+                params.push_back(std::make_pair(obj->objectName(), (double)obj->isChecked()));
+            }
+        }
+
+        return params;
+    };
+
+    // 自チームのアルゴリズム用パラメータ
+    std::vector<std::pair<QString, double>> my_params;
+
+    // childern
+    QObjectList objects = ui->my_stackedWidget->widget(ui->selectMyAlgorithmBox->currentIndex())->children();
+
+    my_params = getParams(objects);
+
+    // 相手チームのアルゴリズム用パラメータ
+    std::vector<std::pair<QString, double>> opponent_params;
+
+    objects = ui->opponent_stackedWidget->widget(ui->selectOpponentAlgorithmBox->currentIndex())->children();
+
+    opponent_params = getParams(objects);
+
 //    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
-    manager->startSimulation(my, opponnent, InputMethod);
-    //TODO: this is not good countermeasure I think:)
-    //TODO: make a thread kill button, and UI can kill the agentAct() thread??
-//    manager->startThread(my, opponnent, InputMethod);
-    std::cout << "untiii!!!" << std::endl;
+    //TODO: bottleneck
+    manager->startSimulation(my, opponnent, InputMethod, my_params, opponent_params);
 }
 
 void Mejirodai::goNextState(){

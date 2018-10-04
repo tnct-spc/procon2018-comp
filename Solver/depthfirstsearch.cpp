@@ -122,11 +122,14 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
         }
 
     if(dock_show){
-        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_2}), colors_2);
-        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_1}), colors_1);
+        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_2}), colors_2, states_1.at(maxval - 1));
+        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_1}), colors_1, states_2.at(maxval - 1));
 
         while(!dock_stack.empty()){
             dock->addMinumuVisu(std::get<0>(dock_stack.top()), std::get<1>(dock_stack.top()), std::get<2>(dock_stack.top()));
+            std::vector<std::vector<double>> values = std::move(std::get<3>(dock_stack.top()));
+            if(!values.empty())
+                dock->setValuesToBack(values);
             dock_stack.pop();
         }
     }
@@ -180,6 +183,39 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 
     return std::make_pair(std::make_tuple((field.getState(agent_pos.at(0).first + SearchNode::dx.at(move_1), agent_pos.at(0).second + SearchNode::dy.at(move_1)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_1), SearchNode::dy.at(move_1)),
                           std::make_tuple((field.getState(agent_pos.at(1).first + SearchNode::dx.at(move_2), agent_pos.at(1).second + SearchNode::dy.at(move_2)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_2), SearchNode::dy.at(move_2)));
+}
+
+void DepthFirstSearch::setParams(std::vector<std::pair<QString, double>> params)
+{
+    // 渡されたvectorから該当のパラメータを検索
+    // param : 検索するパラメータ名
+    auto search = [&](std::string param_name) {
+        // 渡されたvectorのすべての要素を検索する
+        int count = params.size();
+
+        for (int i = 0; i < count; i++) {
+
+            // vector内のQStringにパラメータ名が含まれていないか確認
+            if (params.at(i).first.toStdString().find(param_name) != std::string::npos) {
+                // 該当するものがあったら数値を返す
+                return params.at(i).second;
+            }
+        }
+        // 見つからなかったらdoubleの最大値を返す
+        return std::numeric_limits<double>::max();
+    };
+
+    // 自チームのパラメータを設定
+    dock_show = (bool)search("dock_show");
+    vis_show = (bool)search("vis_show");
+    maxval = (int)search("maxval");
+    loop_count = (int)search("loop_count");
+    use_beamsearch = (bool)search("use_beamsearch");
+    beam_width = (int)search("beam_width");
+    ally_weight = search("ally_weight");
+    movecount = (int)search("movecount");
+    predict_weight = search("predict_weight");
+    ratio = search("ratio");
 }
 
 std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithDepthSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
@@ -263,7 +299,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
 
                     bool is_replace = state.at(x_pos).at(y_pos);
 
-                    double point = (is_replace ? value.at(x_pos).at(y_pos) * (1.0 - SearchNode::predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0)) : 0);
+                    double point = (is_replace ? value.at(x_pos).at(y_pos) * (1.0 - predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0)) : 0);
 
                     bool is_move = (state.at(x_pos).at(y_pos) != 2);
 
@@ -336,7 +372,7 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
         if(value.first == -10007)
             break;
 
-        is_move  = now_node->childs[value.second].second & 2;
+        is_move  = now_node->childs[value.second].second & 1;
         now_node = now_node->childs[value.second].first;
 
         if(is_move){
@@ -466,8 +502,8 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool 
     return ret_states;
 }
 
-void DepthFirstSearch::addVisualizerToDock(const std::pair<int,int>& size, const std::vector<std::list<std::pair<int,int>>>& route, const std::vector<std::vector<std::vector<int>>>& color){
-    dock_stack.emplace(size, route, color);
+void DepthFirstSearch::addVisualizerToDock(const std::pair<int,int>& size, const std::vector<std::list<std::pair<int,int>>>& route, const std::vector<std::vector<std::vector<int>>>& color, const std::vector<std::vector<double>>& values){
+    dock_stack.emplace(size, route, color, values);
 }
 
 DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs, const std::vector<std::vector<std::vector<double>>>& predict) :
@@ -723,11 +759,6 @@ std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
     return maxmove;
 }
 
-
-
-const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1, 0});
-const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1, 0});
-
 void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Field field){
   //  for(int a = 0;a < indexs.size();a++)std::cout<<" "<<indexs.at(a);
   //  std::cout<<std::endl;
@@ -758,6 +789,20 @@ void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Fi
         route_pos.push_back(pos);
     }
 }
+
+const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1, 0});
+const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1, 0});
+
+bool DepthFirstSearch::dock_show;
+bool DepthFirstSearch::vis_show;
+int DepthFirstSearch::loop_count;
+bool DepthFirstSearch::use_beamsearch;
+int DepthFirstSearch::beam_width;
+double DepthFirstSearch::ally_weight;
+double DepthFirstSearch::ratio;
+int DepthFirstSearch::movecount;
+double DepthFirstSearch::predict_weight;
+
 DepthFirstSearch::Treap::Treap() : root(TreapNode::nil){}
 
 DepthFirstSearch::Treap::Treap(value_type val) : root(std::make_shared<TreapNode>(val)){}

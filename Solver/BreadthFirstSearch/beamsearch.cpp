@@ -227,6 +227,12 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> beamsearch::age
     std::cout<<count<<std::endl;
     return ans;
 }
+
+void beamsearch::setParams(std::vector<std::pair<QString, double>> params)
+{
+
+}
+
 procon::Field beamsearch::agentmove(procon::Field ins_field, std::vector<std::vector<std::pair<int,std::pair<int,int>>>> pos)
 {
     procon::Field field = ins_field;

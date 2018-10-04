@@ -31,3 +31,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MajorityRuleWi
     std::uniform_int_distribution<> rand(0, elements.size() - 1);
     return elements.at(rand(mt));
 }
+
+void MajorityRuleWithAbstData::setParams(std::vector<std::pair<QString, double>> params)
+{
+
+}
