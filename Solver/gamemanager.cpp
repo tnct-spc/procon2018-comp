@@ -894,18 +894,18 @@ void GameManager::getChangeOfData(const std::pair<int, int> data, const bool age
     emit sendDataToVisualizer(data, agent);
 }
 
-void GameManager::startThread(QString my_algo, QString opponent_algo, QString InputMethod)
-{
-    std::thread search_thread(&GameManager::startSimulation, this, my_algo, opponent_algo, InputMethod);
-    std::thread test_thread([&](){
-        mtx_.lock();
-        std::cout << "test thread id: " << std::this_thread::get_id() << std::endl;
-        mtx_.unlock();
-    });
-    std::thread::id main_tid = std::this_thread::get_id();
-    mtx_.lock();
-    std::cout << "main thread id: " << main_tid << std::endl;
-    mtx_.unlock();
-    search_thread.join();
-    test_thread.join();
-}
+//void GameManager::startThread(QString my_algo, QString opponent_algo, QString InputMethod)
+//{
+//    std::thread search_thread(&GameManager::startSimulation, this, my_algo, opponent_algo, InputMethod);
+//    std::thread test_thread([&](){
+//        mtx_.lock();
+//        std::cout << "test thread id: " << std::this_thread::get_id() << std::endl;
+//        mtx_.unlock();
+//    });
+//    std::thread::id main_tid = std::this_thread::get_id();
+//    mtx_.lock();
+//    std::cout << "main thread id: " << main_tid << std::endl;
+//    mtx_.unlock();
+//    search_thread.join();
+//    test_thread.join();
+//}

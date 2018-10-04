@@ -30,7 +30,6 @@ class GameManager : public QObject
 {
     Q_OBJECT
     //Q_DISABLE_COPY(GameManager)
-    std::mutex mtx_;
 
 public:
     explicit GameManager(unsigned int x_size, unsigned int y_size, bool vis_show = true, int turn_max = 60, QObject *parent = 0);
@@ -64,7 +63,7 @@ public:
     // ChangeModeを開始
     void startupChangeMode();
 
-    void startThread(QString my_algo, QString opponent_algo, QString InputMethod);
+    //void startThread(QString my_algo, QString opponent_algo, QString InputMethod);
 
 
 
