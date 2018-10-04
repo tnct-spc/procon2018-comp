@@ -384,11 +384,11 @@ std::vector<std::vector<int>> procon::Field::createField(int x_size, int y_size,
     return out_vector;
 }
 
-int procon::Field::getTurnCount(){
+int procon::Field::getTurnCount() const{
     return now_turn;
 }
 
-int procon::Field::getFinalTurn(){
+int procon::Field::getFinalTurn() const{
     return final_turn;
 }
 
@@ -413,7 +413,7 @@ std::pair<int,int> procon::Field::getSize() const{
     return std::make_pair(grid_x, grid_y);
 }
 
-std::bitset<288>& procon::Field::getField(){
+const std::bitset<288>& procon::Field::getField() const{
     return field_data;
 }
 
@@ -828,11 +828,19 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<s
     }
     return points;
 }
+std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<int,int> pos,int state){
+    std::bitset<288> ins =  field_data;
+    setState(pos.first, pos.second, state);
+    std::vector<std::pair<int,int>> ans = getPoints();
+    field_data = ins;
+    updatePoint();
+    return ans;
+}
 
 void procon::Field::setPoints(int side, std::pair<int, int> value){
     points.at(side) = value;
 }
-std::bitset<288> procon::Field::getRegion(){
+std::bitset<288> procon::Field::getRegions(){
     return regions;
 }
 
@@ -1205,4 +1213,14 @@ void procon::Field::createQRString(int side){
     ans.push_back(':');
     std::cout<<ans<<std::endl;
     std::cout<<std::endl;
+}
+int procon::Field::getRegion(std::pair<int,int> pos){
+    int state = 0;
+    if(regions[pos.first + pos.second * 12]){
+        state += 1;
+    }
+    if(regions[pos.first + pos.second * 12 + 144]){
+        state += 2;
+    }
+    return state;
 }
