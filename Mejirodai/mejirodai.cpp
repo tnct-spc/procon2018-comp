@@ -44,7 +44,7 @@ void Mejirodai::RunManagerSimulation(){
 
     //TODO: bottleneck?
 //    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
-//    manager->startSimulation(my, opponnent, InputMethod);
+    manager->startSimulation(my, opponnent, InputMethod);
     //TODO: this is not good countermeasure I think:)
     //TODO: make a thread kill button, and UI can kill the agentAct() thread??
     manager->startThread(my, opponnent, InputMethod);
