@@ -14,7 +14,6 @@
 #include "minimumvisualizer.h"
 
 #include <thread>
-#include <mutex>
 #include "csvio.h"
 #include <vector>
 #include <memory>
@@ -62,8 +61,6 @@ public:
 
     // ChangeModeを開始
     void startupChangeMode();
-
-    //void startThread(QString my_algo, QString opponent_algo, QString InputMethod);
 
 
 
