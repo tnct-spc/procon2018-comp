@@ -22,6 +22,7 @@
 #include <functional>
 #include <string>
 #include <QFileDialog>
+#include <QThread>
 
 class AlgorithmWrapper;
 
@@ -126,8 +127,6 @@ private:
 
 
     void nextMoveForManualMode();
-
-
 };
 #endif // GAMEMANAGER_H
 

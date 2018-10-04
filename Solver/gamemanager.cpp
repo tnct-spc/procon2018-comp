@@ -797,8 +797,13 @@ void GameManager::nextMoveForManualMode(){
     std::vector<std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>>> candidate_move(2);
 
     //TODO: true bottleneck!
-    candidate_move.at(0) = team_1->agentAct(field->getTurnCount());
-    candidate_move.at(1) = team_2->agentAct(field->getTurnCount());
+    QThread *agentActThread_1 = QThread::create([&]{ candidate_move.at(0) =  team_1->agentAct(field->getTurnCount()); });
+    QThread *agentActThread_2 = QThread::create([&]{ candidate_move.at(1) =  team_2->agentAct(field->getTurnCount()); });
+    agentActThread_1->start();
+    agentActThread_2->start();
+
+//    candidate_move.at(0) = team_1->agentAct(field->getTurnCount());
+//    candidate_move.at(1) = team_2->agentAct(field->getTurnCount());
 
     /*
     std::vector<std::vector<procon::Cipher>> ciphers (2, std::vector<procon::Cipher>(1));

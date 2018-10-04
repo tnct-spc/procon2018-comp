@@ -47,7 +47,7 @@ void Mejirodai::RunManagerSimulation(){
     manager->startSimulation(my, opponnent, InputMethod);
     //TODO: this is not good countermeasure I think:)
     //TODO: make a thread kill button, and UI can kill the agentAct() thread??
-    manager->startThread(my, opponnent, InputMethod);
+//    manager->startThread(my, opponnent, InputMethod);
     std::cout << "untiii!!!" << std::endl;
 }
 
