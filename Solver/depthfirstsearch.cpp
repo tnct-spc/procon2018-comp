@@ -122,11 +122,14 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
         }
 
     if(dock_show){
-        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_2}), colors_2);
-        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_1}), colors_1);
+        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_2}), colors_2, states_1.at(maxval - 1));
+        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_1}), colors_1, states_2.at(maxval - 1));
 
         while(!dock_stack.empty()){
             dock->addMinumuVisu(std::get<0>(dock_stack.top()), std::get<1>(dock_stack.top()), std::get<2>(dock_stack.top()));
+            std::vector<std::vector<double>> values = std::move(std::get<3>(dock_stack.top()));
+            if(!values.empty())
+                dock->setValuesToBack(values);
             dock_stack.pop();
         }
     }
@@ -336,7 +339,7 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
         if(value.first == -10007)
             break;
 
-        is_move  = now_node->childs[value.second].second & 2;
+        is_move  = now_node->childs[value.second].second & 1;
         now_node = now_node->childs[value.second].first;
 
         if(is_move){
@@ -466,8 +469,8 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool 
     return ret_states;
 }
 
-void DepthFirstSearch::addVisualizerToDock(const std::pair<int,int>& size, const std::vector<std::list<std::pair<int,int>>>& route, const std::vector<std::vector<std::vector<int>>>& color){
-    dock_stack.emplace(size, route, color);
+void DepthFirstSearch::addVisualizerToDock(const std::pair<int,int>& size, const std::vector<std::list<std::pair<int,int>>>& route, const std::vector<std::vector<std::vector<int>>>& color, const std::vector<std::vector<double>>& values){
+    dock_stack.emplace(size, route, color, values);
 }
 
 DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs, const std::vector<std::vector<std::vector<double>>>& predict) :
