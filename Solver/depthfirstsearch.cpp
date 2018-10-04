@@ -793,15 +793,15 @@ void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Fi
 const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1, 0});
 const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1, 0});
 
-bool DepthFirstSearch::dock_show = false;
-bool DepthFirstSearch::vis_show = false;
-int DepthFirstSearch::loop_count = 4;
-bool DepthFirstSearch::use_beamsearch = false;
-int DepthFirstSearch::beam_width = 1000;
-double DepthFirstSearch::ally_weight = 1.0;
-double DepthFirstSearch::ratio = 0.03;
-int DepthFirstSearch::movecount = 3;
-double DepthFirstSearch::predict_weight = 0.3;
+bool DepthFirstSearch::dock_show;
+bool DepthFirstSearch::vis_show;
+int DepthFirstSearch::loop_count;
+bool DepthFirstSearch::use_beamsearch;
+int DepthFirstSearch::beam_width;
+double DepthFirstSearch::ally_weight;
+double DepthFirstSearch::ratio;
+int DepthFirstSearch::movecount;
+double DepthFirstSearch::predict_weight;
 
 DepthFirstSearch::Treap::Treap() : root(TreapNode::nil){}
 
