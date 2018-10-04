@@ -40,6 +40,9 @@ private:
 
     void addVisualizerToDock(const std::pair<int,int>& size, const std::vector<std::list<std::pair<int,int>>>& route, const std::vector<std::vector<std::vector<int>>>& color, const std::vector<std::vector<double>>& values = std::vector<std::vector<double>>(0));
 
+    std::pair<std::pair<int,int>, int> getMaxAdvMove(std::shared_ptr<SearchNode> age1, std::shared_ptr<SearchNode> age2);
+
+
     int maxval = 10;
 
     std::shared_ptr<MinimumVisualizer> minimum;
@@ -61,27 +64,27 @@ private:
         }
     };
 
-    static bool dock_show;
-    static bool vis_show;
+    bool dock_show = false;
+    bool vis_show;
 
-    static int loop_count;
+    int loop_count;
 
-    static bool use_beamsearch;
-    static int beam_width;
+    bool use_beamsearch;
+    int beam_width;
 
     // 味方の行動にかける倍率(敵の行動にかける倍率を1としている)
-    static double ally_weight;
+    double ally_weight;
+
+    double ratio;
+
+    int movecount;
+
+    double predict_weight;
+
 
     static const bool do_output = false;
 
-    std::pair<std::pair<int,int>, int> getMaxAdvMove(std::shared_ptr<SearchNode> age1, std::shared_ptr<SearchNode> sge2);
-
-    static double ratio;
-
     struct RoutesAndNode;
-
-    static int movecount;
-    static double predict_weight;
 
 };
 
@@ -107,12 +110,16 @@ struct DepthFirstSearch::SearchNode : public std::enable_shared_from_this<Search
     bool flag = true;    //最後の探索用
     int depth, size, real_size, leaf_size;
     double adv, advsum = advinit;
+
+    double predict_weight;
+    int movecount;
+
     bool is_back = false;
     std::unordered_map<int, std::pair<std::shared_ptr<SearchNode>, int>> childs;
     std::pair<SearchNode*, int> parent;
 
-    SearchNode(double adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs, const std::vector<std::vector<std::vector<double>>>& predict);
-    SearchNode(double adv, int depth);
+    SearchNode(double adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs, const std::vector<std::vector<std::vector<double>>>& predict, double predict_weight, int movecount);
+    SearchNode(double adv, int depth, double predict_weight, int movecount);
 
     void dfsAdd(std::pair<int,int> pos, std::vector<std::vector<std::vector<double>>>& vec);
 
