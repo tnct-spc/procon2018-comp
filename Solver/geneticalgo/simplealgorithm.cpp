@@ -52,6 +52,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> SimpleAlgorith
     return tup;
 }
 
+void SimpleAlgorithm::setParams(std::vector<std::pair<QString, double>> params)
+{
+
+}
+
 double SimpleAlgorithm::evaluateMove(int side, std::pair<int, int> move){
 
     //ここについて大幅にコードを変更します

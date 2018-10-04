@@ -143,6 +143,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> UseAbstractDat
     return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
 }
 
+void UseAbstractData::setParams(std::vector<std::pair<QString, double>> params)
+{
+
+}
+
 // 4方向(右上右下…)の{マスの数,各色タイルの{数,得点の総和},エージェントの存在(0,1)}
 // {マス数,数0,数1,数2,総和0,総和1,総和2,存在0,存在1} size:9
 std::vector<std::vector<int>> UseAbstractData::getAbstractBasedAgent(bool eval_side, bool agent){

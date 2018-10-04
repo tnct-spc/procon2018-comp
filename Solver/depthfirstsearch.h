@@ -57,35 +57,26 @@ private:
         }
     };
 
-    // false
     static bool dock_show;
-    // false
     static bool vis_show;
 
-    // 4
     static int loop_count;
 
-    // false
     static bool use_beamsearch;
-    // 1000
     static int beam_width;
 
     // 味方の行動にかける倍率(敵の行動にかける倍率を1としている)
-    // 1.0
     static double ally_weight;
 
     static const bool do_output = false;
 
     std::pair<std::pair<int,int>, int> getMaxAdvMove(std::shared_ptr<SearchNode> age1, std::shared_ptr<SearchNode> sge2);
 
-    // 0.03
     static double ratio;
 
     struct RoutesAndNode;
 
-    // 3
     static int movecount;
-    // 0.3
     static double predict_weight;
 
 };

@@ -9,6 +9,18 @@ DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, b
     }
 }
 
+// static関数の宣言
+// 汚い.どうにしたいところ
+bool DepthFirstSearch::dock_show = false;
+bool DepthFirstSearch::vis_show = false;
+int DepthFirstSearch::loop_count = 4;
+bool DepthFirstSearch::use_beamsearch = false;
+int DepthFirstSearch::beam_width = 1000;
+double DepthFirstSearch::ally_weight = 1.0;
+double DepthFirstSearch::ratio = 0.03;
+int DepthFirstSearch::movecount = 3;
+double DepthFirstSearch::predict_weight = 0.3;
+
 const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearch::agentAct(int now_turn){
 
     if(do_output)
@@ -166,7 +178,7 @@ void DepthFirstSearch::setParams(std::vector<std::pair<QString, double>> params)
         for (int i = 0; i < count; i++) {
 
             // vector内のQStringにパラメータ名が含まれていないか確認
-            if (params.at(i).first.toStdString().find(param_name) != 0) {
+            if (params.at(i).first.toStdString().find(param_name) != std::string::npos) {
                 // 該当するものがあったら数値を返す
                 return params.at(i).second;
             }
@@ -178,7 +190,7 @@ void DepthFirstSearch::setParams(std::vector<std::pair<QString, double>> params)
     // 自チームのパラメータを設定
     dock_show = (bool)search("dock_show");
     vis_show = (bool)search("vis_show");
-    maxval = (int)search("max_val");
+    maxval = (int)search("maxval");
     loop_count = (int)search("loop_count");
     use_beamsearch = (bool)search("use_beamsearch");
     beam_width = (int)search("beam_width");

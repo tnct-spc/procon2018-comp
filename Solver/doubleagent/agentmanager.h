@@ -17,6 +17,7 @@ public:
     AgentManager(const procon::Field& field, int turn_max, bool side, int algorithm_number = 0, const GeneticAgent* agent_data_1 = nullptr, const GeneticAgent* agent_data_2 = nullptr);
 
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
+    void setParams(std::vector<std::pair<QString, double>> params);
 
     void setAgentData(const GeneticAgent& agent_data, int agent_number);
 

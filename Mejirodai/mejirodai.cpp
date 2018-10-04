@@ -44,60 +44,52 @@ void Mejirodai::RunManagerSimulation(){
     // AutoModeの設定
     manager->setAutoMode(ui->autoMode->isChecked());
 
+    auto getParams = [&](QObjectList objects) {
+        // childの数
+        unsigned int count = 0;
+
+        // 自チームのパラメータを取得
+        if (!objects.empty()) {
+            count = objects.size();
+        }
+
+        // パラメータ取得用配列
+        std::vector<std::pair<QString, double>> params;
+
+        for (unsigned int i = 0; i < count; i++) {
+            // childの型
+            QString classname = objects.at(i)->metaObject()->className();
+
+            // 各型ごとにparamsにpush
+            if (QString::compare(classname, QString("QDoubleSpinBox")) == 0) {
+                QDoubleSpinBox *obj = qobject_cast<QDoubleSpinBox *>(objects.at(i));
+                params.push_back(std::make_pair(obj->objectName(), (double)obj->value()));
+            } else if (QString::compare(classname, QString("QSpinBox")) == 0) {
+                QSpinBox *obj = qobject_cast<QSpinBox *>(objects.at(i));
+                params.push_back(std::make_pair(obj->objectName(), (double)obj->value()));
+            } else if (QString::compare(classname, QString("QCheckBox")) == 0) {
+                QCheckBox *obj = qobject_cast<QCheckBox *>(objects.at(i));
+                params.push_back(std::make_pair(obj->objectName(), (double)obj->isChecked()));
+            }
+        }
+
+        return params;
+    };
+
     // 自チームのアルゴリズム用パラメータ
     std::vector<std::pair<QString, double>> my_params;
 
-    // childの数
-    unsigned int count;
+    // childern
+    QObjectList objects = ui->my_stackedWidget->widget(ui->selectMyAlgorithmBox->currentIndex())->children();
 
-    // 自チームのパラメータを取得
-    if (ui->my_stackedWidget->widget(ui->selectMyAlgorithmBox->currentIndex())->layout()) {
-        count = ui->my_stackedWidget->widget(ui->selectMyAlgorithmBox->currentIndex())->layout()->count();
-    } else {
-        count = 0;
-    }
-
-    for (unsigned int i = 0; i < count; i++) {
-        // 各childを取得
-        QWidget *widget = ui->my_stackedWidget->widget(ui->selectMyAlgorithmBox->currentIndex())->layout()->itemAt(i)->widget();
-
-        // childの型
-        QString classname = widget->metaObject()->className();
-
-        if (QString::compare(classname, QString("QDoubleSpinBox")) == 0) {
-            my_params.push_back(std::make_pair(widget->objectName(), widget->property("value").toDouble()));
-        } else if (QString::compare(classname, QString("QSpinBox")) == 0) {
-            my_params.push_back(std::make_pair(widget->objectName(), widget->property("value").toDouble()));
-        } else if (QString::compare(classname, QString("QCheckBox")) == 0) {
-            my_params.push_back(std::make_pair(widget->objectName(), widget->property("tristate").toDouble()));
-        }
-    }
+    my_params = getParams(objects);
 
     // 相手チームのアルゴリズム用パラメータ
     std::vector<std::pair<QString, double>> opponent_params;
 
-    // 相手チームのパラメータを取得
-    if (ui->opponent_stackedWidget->widget(ui->selectOpponentAlgorithmBox->currentIndex())->layout()) {
-        count = ui->opponent_stackedWidget->widget(ui->selectOpponentAlgorithmBox->currentIndex())->layout()->count();
-    } else {
-        count = 0;
-    }
+    objects = ui->opponent_stackedWidget->widget(ui->selectOpponentAlgorithmBox->currentIndex())->children();
 
-    for (unsigned int i = 0; i < count; i++) {
-        // 各childを取得
-        QWidget *widget = ui->opponent_stackedWidget->widget(ui->selectOpponentAlgorithmBox->currentIndex())->layout()->itemAt(i)->widget();
-
-        // childの型
-        QString classname = widget->metaObject()->className();
-
-        if (QString::compare(classname, QString("QDoubleSpinBox")) == 0) {
-            opponent_params.push_back(std::make_pair(widget->objectName(), widget->property("value").toDouble()));
-        } else if (QString::compare(classname, QString("QSpinBox")) == 0) {
-            opponent_params.push_back(std::make_pair(widget->objectName(), widget->property("value").toDouble()));
-        } else if (QString::compare(classname, QString("QCheckBox")) == 0) {
-            opponent_params.push_back(std::make_pair(widget->objectName(), widget->property("tristate").toDouble()));
-        }
-    }
+    opponent_params = getParams(objects);
 
 //    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
     manager->startSimulation(my, opponnent, InputMethod, my_params, opponent_params);

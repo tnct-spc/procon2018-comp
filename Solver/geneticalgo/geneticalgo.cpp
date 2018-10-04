@@ -128,3 +128,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> GeneticAlgo::a
 
 
 }
+
+void GeneticAlgo::setParams(std::vector<std::pair<QString, double>> params)
+{
+
+}
