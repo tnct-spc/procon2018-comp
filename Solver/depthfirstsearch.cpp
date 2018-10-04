@@ -399,13 +399,11 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
 
             now_ptr->leaf_size = now_ptr->size + 1;
 
-            if(depth)
-                depth_size.at(depth - 1) += now_ptr->size + 1;
             for(auto ch : now_ptr->childs){
                 ch.second.first->size += now_ptr->size;
                 que.push(ch.second.first);
             }
-            if(now_ptr->childs.empty())
+            if(depth == maxval)
                 ++now_ptr->size;
             else
                 now_ptr->size = 0;
@@ -416,17 +414,18 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
 
     node->dfsAdd(field.getAgent(inp_side, agent), values);
 
-    if(use_beamsearch | 1){
-        //values.resize(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0)));
-        std::stack<std::shared_ptr<SearchNode>> st;
-        st.push(node);
-        while(!st.empty()){
-            std::shared_ptr<SearchNode> now_node = st.top();
-            st.pop();
-            for(auto ch : now_node->childs)
-                st.push(ch.second.first);
-            std::cout << now_node->size << std::endl;
-        }
+    std::queue<std::shared_ptr<SearchNode>> que;
+
+    que.push(node);
+    while(!que.empty()){
+        std::shared_ptr<SearchNode> now_ptr = que.front();
+
+        for(auto ch : now_ptr->childs)
+            que.push(ch.second.first);
+
+        if(now_ptr->depth)
+            depth_size.at(now_ptr->depth - 1) += now_ptr->size;
+        que.pop();
     }
 
     for(int dep = 0; dep < maxval; ++dep){
@@ -753,7 +752,7 @@ void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<st
 
         size += ch.second.first->size;
 
-        vec.at(depth).at(new_pos.first).at(new_pos.second) += ch.second.first->leaf_size;
+        vec.at(depth).at(new_pos.first).at(new_pos.second) += ch.second.first->size;
     }
 
 }
