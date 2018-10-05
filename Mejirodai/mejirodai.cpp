@@ -13,7 +13,6 @@ Mejirodai::Mejirodai(QWidget *parent) :
     visualizer->show();
     */
 
-    //TODO: bottleneck?
     connect(ui->runButton, &QPushButton::clicked, this, &Mejirodai::RunManagerSimulation);
     connect(ui->goNext, &QPushButton::clicked, this, &Mejirodai::goNextState);
     connect(ui->goPrev, &QPushButton::clicked, this, &Mejirodai::goPrevState);
@@ -94,7 +93,6 @@ void Mejirodai::RunManagerSimulation(){
     opponent_params = getParams(objects);
 
 //    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
-    //TODO: bottleneck
     manager->startSimulation(my, opponnent, InputMethod, my_params, opponent_params);
 }
 

@@ -789,8 +789,6 @@ void GameManager::nextMoveForManualMode(){
 //    std::pair<int, int> agent = field->getAgent(0,0);
 //    std::cout << agent.first << "," << agent.second << std::endl;
 
-    //TODO: true bottleneck!
-    //TODO: Subsstitution is delayed!!
     agentActThread_1 = QThread::create([&]{
         candidate_move[0] = team_1->agentAct(field->getTurnCount());
     });
