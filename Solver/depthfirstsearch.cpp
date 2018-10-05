@@ -612,7 +612,7 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     for(int index = 0;index < rearch;index++){
         RoutesAndNode ins;
         if(!age1->flag)continue;
-        ins.CollectIndex(age1);
+        ins.CollectIndex(age1, true);
         ins.CollectPos(side, 0, field);
         routes1.push_back(ins);
     }
@@ -622,7 +622,7 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     for(int index = 0;index < rearch;index++){
         RoutesAndNode ins;
         if(!age2->flag)continue;
-        ins.CollectIndex(age2);
+        ins.CollectIndex(age2, true);
         ins.CollectPos(side, 1, field);
         routes2.push_back(ins);
     }
@@ -631,7 +631,7 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         RoutesAndNode ins;
         if(!ch.second.first->flag)continue;
         ins.indexs.push_back(ch.first);
-        ins.CollectIndex(ch.second.first);
+        ins.CollectIndex(ch.second.first, true);
         ins.CollectPos(side, 0, field);
         routes1.push_back(ins);
     }
@@ -641,7 +641,7 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         RoutesAndNode ins;
         if(!ch.second.first->flag)continue;
         ins.indexs.push_back(ch.first);
-        ins.CollectIndex(ch.second.first);
+        ins.CollectIndex(ch.second.first, true);
         ins.CollectPos(side, 1, field);
         routes2.push_back(ins);
     }
@@ -687,24 +687,28 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     return ans;
 }
 
-void DepthFirstSearch::RoutesAndNode::CollectIndex(std::shared_ptr<SearchNode> now){
+void DepthFirstSearch::RoutesAndNode::CollectIndex(std::shared_ptr<SearchNode> now, bool flag){
+
 
     std::shared_ptr<SearchNode> ins;
     int way = 8;
     long long mi = -1e9;
     for(auto ch : now->childs){
-        if(mi <= ch.second.first->getAdvSum() && ch.second.first->flag){
+        ch.second.first->advsum = SearchNode::advinit;
+        int ins_adv = ch.second.first->getAdvSum();
+        if(mi <= ins_adv && ch.second.first->flag){
             ins = ch.second.first;
-            mi =  ch.second.first->getAdvSum();
+            mi =  ins_adv;
             way = ch.first;
         }
     }
     if(mi != -1e9){
       //  std::cout<<way<<std::endl;
        indexs.push_back(way);
-       adv = mi;
-       CollectIndex(ins);
-       ins->advsum = SearchNode::advinit;
+       CollectIndex(ins, false);
+       if(flag){
+           adv = now->getAdvSum();
+       }
     }else{
         if(indexs.empty())indexs.push_back(8);
         now->flag = false;
