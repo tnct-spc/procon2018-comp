@@ -98,7 +98,7 @@ private:
 struct DepthFirstSearch::RoutesAndNode{
 
     std::vector<int> indexs;  //深さごとのchildsのindexs
-    void CollectIndex(std::shared_ptr<SearchNode> ins);
+    void CollectIndex(std::shared_ptr<SearchNode> ins, bool flag);
     std::vector<std::pair<int,int>> route_pos;
     void CollectPos(int side, int agent, procon::Field field);
 
