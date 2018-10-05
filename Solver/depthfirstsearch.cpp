@@ -238,7 +238,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
         treap_vec.emplace_back(std::make_shared<Treap>());
 
     std::shared_ptr<SearchNode> parent = std::make_shared<SearchNode>(0.0, 0, predict_weight, movecount);
-    treap_vec.at(0)->insert(std::make_pair(0.0, parent));
+    treap_vec.at(0)->insert(std::make_pair(0.0, std::make_pair(0.0, parent)));
 
     const std::vector<std::vector<int>>& value = field.getValue();
 
@@ -253,9 +253,11 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
         std::shared_ptr<Treap> before = treap_vec.at(dep % 2);
         std::shared_ptr<Treap> after = treap_vec.at((dep + 1) % 2);
 
+        std::vector<std::vector<int>> put_tile_count(field.getSize().first, std::vector<int>(field.getSize().second, 0));
+
         std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter> node_map;
         while(before->size()){
-            std::pair<double, std::shared_ptr<SearchNode>> element = before->get(0);
+            std::pair<double, std::shared_ptr<SearchNode>> element = before->get(0).second;
             double now_adv = element.first;
             std::shared_ptr<SearchNode> node = element.second;
             before->erase(0);
@@ -290,6 +292,8 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                     bs |= std::bitset<296>(bit_count + 1) << bit_index;
                 }
 
+                ++put_tile_count.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index));
+
                 if(is_move){
                     pos.first += SearchNode::dx.at(move_index);
                     pos.second += SearchNode::dy.at(move_index);
@@ -315,6 +319,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                                       ((std::abs(enemy_agents.at(1).first - x_pos) <= 1) && (std::abs(enemy_agents.at(1).second - y_pos) <= 1));
 
                     double point = depth_weight.at(dep) * value.at(x_pos).at(y_pos) * (1.0 - predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0));
+                    // double point = value.at(x_pos).at(y_pos) * (1.0 - predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0));
 
                     if(!is_replace)
                         point = 0;
@@ -322,6 +327,8 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                         point *= conflict_atk_per;
                     if(is_defence && !is_move)
                         point *= conflict_def_per;
+
+                    double priority = now_adv + point;
 
 
                     int bit_index = 8 + ((pos.first + SearchNode::dx.at(index)) * 12 + (pos.second + SearchNode::dy.at(index))) * 2;
@@ -338,7 +345,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                         node->childs[index] = std::make_pair(std::make_shared<SearchNode>(point, dep + 1, predict_weight, movecount), static_cast<int>(is_move) | (static_cast<int>(is_replace) << 1));
                         node->childs[index].first->parent = std::make_pair(node.get(), index);
                         node_map[bs] = node->childs[index].first;
-                        after->insert(std::make_pair(now_adv + point, node->childs[index].first));
+                        after->insert(std::make_pair(priority, std::make_pair(now_adv + point, node->childs[index].first)));
                     }
 
                     if(is_replace){
@@ -458,23 +465,20 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
 
 void DepthFirstSearch::updatePredictData(bool inp_side, bool agent, bool is_adddock){
 
-    getMovePer(inp_side, agent, is_adddock);
+    std::vector<std::vector<std::vector<double>>> ret_val = getMovePer(inp_side, agent, is_adddock);
+
     if(do_output){
-
-        std::vector<std::vector<std::vector<double>>> ret_val = getMovePer(inp_side, agent, is_adddock);
-
         std::vector<std::vector<std::vector<double>>> before_vec = predict_per.at(inp_side * 2 + agent);
         double diff = 0.0;
         for(int dep = 0; dep < maxval; ++dep)
-        for(int x_index = 0; x_index < field.getSize().first; ++x_index)
-            for(int y_index = 0; y_index < field.getSize().second; ++y_index)
-            diff += std::abs(before_vec.at(dep).at(x_index).at(y_index) - ret_val.at(dep).at(x_index).at(y_index));
-
-        predict_per.at(inp_side * 2 + agent) = std::move(ret_val);
-
-        if(do_output)
-            std::cout << "diff : " << diff << std::endl;
+            for(int x_index = 0; x_index < field.getSize().first; ++x_index)
+                for(int y_index = 0; y_index < field.getSize().second; ++y_index)
+                    diff += std::abs(before_vec.at(dep).at(x_index).at(y_index) - ret_val.at(dep).at(x_index).at(y_index));
+        std::cout << "diff : " << diff << std::endl;
     }
+
+    predict_per.at(inp_side * 2 + agent) = std::move(ret_val);
+
 }
 
 std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool inp_side, bool agent, bool is_adddock){
