@@ -709,19 +709,39 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     //std::cout<<age1->childs.size()<<" "<<age2->childs.size()<<std::endl;
 
 
+    std::list<std::pair<int,int>> moves_1, moves_2;
 
     //std::cout<<routes2.front().indexs.size()<<std::endl;
     for(int a = 0;a < routes1.size();a++){
         for(int b = 0;b < routes2.size();b++){
             double pena = check(a,b);
             if(ans.second < routes1.at(a).adv + routes2.at(b).adv - pena && routes1.at(a).next_pos != routes2.at(b).next_pos){
+                moves_1.clear();
+                moves_2.clear();
                 ans.second = routes1.at(a).adv + routes2.at(b).adv - pena;
                 ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
+                for(auto pos : routes1.at(a).route_pos){
+                    moves_1.push_back(pos);
+                }
+                for(auto pos : routes2.at(b).route_pos){
+                    moves_2.push_back(pos);
+                }
             }
         }
     }
     // std::cout<<"NNN"<<std::endl;
-    //  std::cout<<field.getTurnCount()<<"ターン目: "<<ans.first.first<<" "<<ans.first.second<<std::endl;
+
+    std::vector<std::list<std::pair<int,int>>> use_vec = std::vector<std::list<std::pair<int,int>>>({moves_1, moves_2});
+
+    conflict_minumum = std::make_shared<MinimumVisualizer>(field.getSize());
+
+
+    conflict_minumum->setRoute(use_vec);
+
+    //for(int index = 0; index < 3; ++index)
+    //    conflict_minumum->setValues(colors.at(index), index);
+
+    conflict_minumum->show();
 
     return ans;
 }
@@ -801,6 +821,7 @@ std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
 }
 
 void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Field field){
+    route_pos.clear();
   //  for(int a = 0;a < indexs.size();a++)std::cout<<" "<<indexs.at(a);
   //  std::cout<<std::endl;
     std::pair<int,int> pos = field.getAgent(side, agent);
@@ -822,13 +843,17 @@ void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Fi
         }
     };
 
-    if(!indexs.empty())next_pos = std::make_pair(pos.first + SearchNode::dx.at(indexs.front()), pos.second + SearchNode::dy.at(indexs.front()));
-    else next_pos = pos;
+    if(!indexs.empty()){
+        next_pos = std::make_pair(pos.first + SearchNode::dx.at(indexs.front()), pos.second + SearchNode::dy.at(indexs.front()));
+    }else{
+        next_pos = pos;
+    }
 
     for(int a = 0;a < indexs.size();a++){
         pos = moveAfter(indexs.at(a));
         route_pos.push_back(pos);
     }
+    //std::cout<<route_pos.size()<<std::endl;
 }
 
 const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1, 0});

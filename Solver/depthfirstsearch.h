@@ -47,6 +47,7 @@ private:
 
     std::shared_ptr<MinimumVisualizer> minimum;
     std::shared_ptr<ProgresDock> dock;
+    std::shared_ptr<MinimumVisualizer> conflict_minumum;
 
     std::stack<std::tuple<std::pair<int,int>, std::vector<std::list<std::pair<int,int>>>, std::vector<std::vector<std::vector<int>>>, std::vector<std::vector<double>>>> dock_stack;
 
