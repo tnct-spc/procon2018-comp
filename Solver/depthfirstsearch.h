@@ -86,7 +86,7 @@ private:
 
     const double conflict_def_per = 1.4;
 
-    const double put_tile_per = 0.01;
+    const double deverse_per = 0.5;
 
 
     static const bool do_output = false;

@@ -256,6 +256,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
         std::shared_ptr<Treap> after = treap_vec.at((dep + 1) % 2);
 
         std::vector<std::vector<int>> put_tile_count(field.getSize().first, std::vector<int>(field.getSize().second, 0));
+        int put_tile_sum = 0;
 
         std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter> node_map;
         while(before->size()){
@@ -280,6 +281,8 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
 
             std::bitset<296> bs;
 
+            double conflict_value = 0.0;
+
             for(int index = rev_move.size() - 1; index >= 0; --index){
                 int move_index = rev_move.at(index).first;
                 bool is_move = rev_move.at(index).second & 1;
@@ -294,7 +297,12 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                     bs |= std::bitset<296>(bit_count + 1) << bit_index;
                 }
 
+
+                if(put_tile_sum)
+                    conflict_value += 1.0 * put_tile_count.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index)) / put_tile_sum;
+
                 ++put_tile_count.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index));
+                ++put_tile_sum;
 
                 if(is_move){
                     pos.first += SearchNode::dx.at(move_index);
@@ -321,7 +329,6 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                                       ((std::abs(enemy_agents.at(1).first - x_pos) <= 1) && (std::abs(enemy_agents.at(1).second - y_pos) <= 1));
 
                     double point = depth_weight.at(dep) * value.at(x_pos).at(y_pos) * (1.0 - predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0));
-                    // double point = value.at(x_pos).at(y_pos) * (1.0 - predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0));
 
                     if(!is_replace)
                         point = 0;
@@ -330,8 +337,12 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                     if(is_defence && !is_move)
                         point *= conflict_def_per;
 
-                    double priority = now_adv + point;
+                    double conf_pri =  conflict_value + 1.0 * put_tile_count.at(pos.first + SearchNode::dx.at(index)).at(pos.second + SearchNode::dy.at(index)) / put_tile_sum;
 
+                    ++put_tile_count.at(pos.first + SearchNode::dx.at(index)).at(pos.second + SearchNode::dy.at(index));
+                    ++put_tile_sum;
+
+                    double priority = now_adv + point * (1 - conf_pri * deverse_per);
 
                     int bit_index = 8 + ((pos.first + SearchNode::dx.at(index)) * 12 + (pos.second + SearchNode::dy.at(index))) * 2;
                     int bit_count = ((bs >> bit_index) & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
@@ -707,28 +718,28 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     std::pair<std::pair<int,int>,long long> ans = std::make_pair(std::make_pair(8,8),-1e18);
 
 
-    if(vis_show){
-        std::list<std::pair<int,int>> moves_1, moves_2;
+    std::list<std::pair<int,int>> moves_1, moves_2;
 
-        for(int a = 0;a < routes1.size();a++){
-            for(int b = 0;b < routes2.size();b++){
-                double pena = check(a,b);
+    for(int a = 0;a < routes1.size();a++){
+        for(int b = 0;b < routes2.size();b++){
+            double pena = check(a,b);
 
-                if(ans.second < routes1.at(a).adv + routes2.at(b).adv - pena && routes1.at(a).next_pos != routes2.at(b).next_pos){
-                    moves_1.clear();
-                    moves_2.clear();
-                    ans.second = routes1.at(a).adv + routes2.at(b).adv - pena;
-                    ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
+            if(ans.second < routes1.at(a).adv + routes2.at(b).adv - pena && routes1.at(a).next_pos != routes2.at(b).next_pos){
+                moves_1.clear();
+                moves_2.clear();
+                ans.second = routes1.at(a).adv + routes2.at(b).adv - pena;
+                ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
 
-                    for(auto pos : routes1.at(a).route_pos){
-                        moves_1.push_back(pos);
-                    }
-                    for(auto pos : routes2.at(b).route_pos){
-                        moves_2.push_back(pos);
-                    }
+                for(auto pos : routes1.at(a).route_pos){
+                    moves_1.push_back(pos);
+                }
+                for(auto pos : routes2.at(b).route_pos){
+                    moves_2.push_back(pos);
                 }
             }
         }
+    }
+    if(vis_show){
 
         std::vector<std::list<std::pair<int,int>>> use_vec = std::vector<std::list<std::pair<int,int>>>({moves_1, moves_2});
 
