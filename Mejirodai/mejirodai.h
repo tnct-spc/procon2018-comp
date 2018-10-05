@@ -38,6 +38,7 @@ private:
     void exportFieldtoCSV();
     void runOperatorWindow();
     void exportFieldtoBinary();
+    void searchThreadTerminator();
 
     const unsigned int x_size = -1;
     const unsigned int y_size = 8;

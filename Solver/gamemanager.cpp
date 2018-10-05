@@ -791,10 +791,10 @@ void GameManager::nextMoveForManualMode(){
 
     //TODO: true bottleneck!
     //TODO: Subsstitution is delayed!!
-    QThread *agentActThread_1 = QThread::create([&]{
+    agentActThread_1 = QThread::create([&]{
         candidate_move[0] = team_1->agentAct(field->getTurnCount());
     });
-    QThread *agentActThread_2 = QThread::create([&]{
+    agentActThread_2 = QThread::create([&]{
         candidate_move[1] = team_2->agentAct(field->getTurnCount());
     });
     connect(agentActThread_1, SIGNAL(finished()), this, SLOT(twoThreadWaiter()));
@@ -839,6 +839,12 @@ void GameManager::completeProgressForManualMode()
             return_vec.at(side).at(agent).second += field->getAgent(side, agent).second;
         }
     emit setCandidateMove(return_vec);
+}
+
+void GameManager::threadTerminator()
+{
+//    agentActThread_1->terminate();
+//    agentActThread_2->terminate();
 }
 
 void GameManager::startupChangeMode()

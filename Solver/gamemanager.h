@@ -62,6 +62,8 @@ public:
     // ChangeModeを開始
     void startupChangeMode();
 
+    void threadTerminator();
+
 
 
 signals:
@@ -117,6 +119,9 @@ private:
     bool is_auto = true;
 
     bool use_random_field = true;
+
+    QThread *agentActThread_1;
+    QThread *agentActThread_2;
 
     //行動を保存しておく
     //1:移動 移動方向をintで設定する
