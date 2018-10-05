@@ -529,11 +529,9 @@ std::vector<std::pair<std::pair<int,int>,int>> procon::Field::ifBreakArea(unsign
     for(int i = -2;i < 3;i++){
         for(int j = -2;j < 3;j++){
             std::pair<int,int> pos;
-            pos.first = i;
-            pos.second = j;
+            pos.first = i + x;
+            pos.second = j + y;
             if(x + i >= 0 && y + j >= 0 && getRegion(pos) == int(side + 1)){
-                pos.first = x-i;
-                pos.second = y-j;
                 areaPos.push_back(pos);
                 areaCount++;
             }
