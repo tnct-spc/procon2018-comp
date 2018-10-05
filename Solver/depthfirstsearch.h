@@ -82,11 +82,11 @@ private:
 
     double predict_weight;
 
-    const double conflict_atk_per = 0.3;
+    double conflict_atk_per = 0.3;
 
-    const double conflict_def_per = 1.4;
+    double conflict_def_per = 1.4;
 
-    const double deverse_per = 0.5;
+    double deverse_per = 0.5;
 
 
     static const bool do_output = false;
