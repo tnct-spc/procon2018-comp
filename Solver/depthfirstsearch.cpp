@@ -134,8 +134,10 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     if(vis_show){
         minimum = std::make_shared<MinimumVisualizer>(field.getSize());
 
+        /*
         std::vector<std::list<std::pair<int,int>>> use_vec = std::vector<std::list<std::pair<int,int>>>({moves_1, moves_2});
         minimum->setRoute(use_vec);
+        */
 
         for(int index = 0; index < 3; ++index)
             minimum->setValues(colors.at(index), index);
@@ -704,44 +706,34 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     };
     std::pair<std::pair<int,int>,long long> ans = std::make_pair(std::make_pair(8,8),-1e18);
 
-//    std::cout<<"HOGE"<<std::endl;
 
-    //std::cout<<age1->childs.size()<<" "<<age2->childs.size()<<std::endl;
+    if(vis_show){
+        std::list<std::pair<int,int>> moves_1, moves_2;
 
+        for(int a = 0;a < routes1.size();a++){
+            for(int b = 0;b < routes2.size();b++){
+                double pena = check(a,b);
 
-    std::list<std::pair<int,int>> moves_1, moves_2;
+                if(ans.second < routes1.at(a).adv + routes2.at(b).adv - pena && routes1.at(a).next_pos != routes2.at(b).next_pos){
+                    moves_1.clear();
+                    moves_2.clear();
+                    ans.second = routes1.at(a).adv + routes2.at(b).adv - pena;
+                    ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
 
-    //std::cout<<routes2.front().indexs.size()<<std::endl;
-    for(int a = 0;a < routes1.size();a++){
-        for(int b = 0;b < routes2.size();b++){
-            double pena = check(a,b);
-            if(ans.second < routes1.at(a).adv + routes2.at(b).adv - pena && routes1.at(a).next_pos != routes2.at(b).next_pos){
-                moves_1.clear();
-                moves_2.clear();
-                ans.second = routes1.at(a).adv + routes2.at(b).adv - pena;
-                ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
-                for(auto pos : routes1.at(a).route_pos){
-                    moves_1.push_back(pos);
-                }
-                for(auto pos : routes2.at(b).route_pos){
-                    moves_2.push_back(pos);
+                    for(auto pos : routes1.at(a).route_pos){
+                        moves_1.push_back(pos);
+                    }
+                    for(auto pos : routes2.at(b).route_pos){
+                        moves_2.push_back(pos);
+                    }
                 }
             }
         }
+
+        std::vector<std::list<std::pair<int,int>>> use_vec = std::vector<std::list<std::pair<int,int>>>({moves_1, moves_2});
+
+        minimum->setRoute(use_vec);
     }
-    // std::cout<<"NNN"<<std::endl;
-
-    std::vector<std::list<std::pair<int,int>>> use_vec = std::vector<std::list<std::pair<int,int>>>({moves_1, moves_2});
-
-    conflict_minumum = std::make_shared<MinimumVisualizer>(field.getSize());
-
-
-    conflict_minumum->setRoute(use_vec);
-
-    //for(int index = 0; index < 3; ++index)
-    //    conflict_minumum->setValues(colors.at(index), index);
-
-    conflict_minumum->show();
 
     return ans;
 }
