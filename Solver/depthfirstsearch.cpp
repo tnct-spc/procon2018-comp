@@ -3,10 +3,7 @@
 DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, bool side) :
     AlgorithmWrapper(field, final_turn, side)
 {
-    if(dock_show){
-        dock = std::make_shared<ProgresDock>();
-        dock->show();
-    }
+    dock = std::make_shared<ProgresDock>();
 }
 
 const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearch::agentAct(int now_turn){
@@ -36,7 +33,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     for(int cou = 0; cou < loop_count; ++cou){
         std::vector<std::thread> threads;
         for(int index = 0; index < 4; ++index)
-            threads.push_back(std::thread([&](int arg){updatePredictData(arg & 2, arg & 1, dock_show && (side != (arg & 2)) && (cou == loop_count - 1));}, index));
+            threads.push_back(std::thread([&](int arg){updatePredictData(arg & 2, arg & 1, dock_show && (side != ((arg & 2) >> 1)) && (cou == loop_count - 1));}, index));
 
         for(int index = 0; index < 4; ++index)
             threads.at(index).join();
@@ -111,14 +108,14 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
         for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
 
             colors_1.at(1).at(x_pos).at(y_pos) -= 255 * states_1.at(maxval - 1).at(x_pos).at(y_pos);
-            colors_1.at(2).at(x_pos).at(y_pos) -= 255 * states_1.at(maxval - 1).at(x_pos).at(y_pos);
             colors_1.at(1).at(x_pos).at(y_pos) = std::max(0, colors_1.at(1).at(x_pos).at(y_pos));
-            colors_1.at(2).at(x_pos).at(y_pos) = std::max(0, colors_1.at(2).at(x_pos).at(y_pos));
-
             colors_2.at(1).at(x_pos).at(y_pos) -= 255 * states_2.at(maxval - 1).at(x_pos).at(y_pos);
-            colors_2.at(2).at(x_pos).at(y_pos) -= 255 * states_2.at(maxval - 1).at(x_pos).at(y_pos);
             colors_2.at(1).at(x_pos).at(y_pos) = std::max(0, colors_2.at(1).at(x_pos).at(y_pos));
-            colors_2.at(2).at(x_pos).at(y_pos) = std::max(0, colors_2.at(2).at(x_pos).at(y_pos));
+
+            colors_1.at(2 - 2 * side).at(x_pos).at(y_pos) -= 255 * states_1.at(maxval - 1).at(x_pos).at(y_pos);
+            colors_1.at(2 - 2 * side).at(x_pos).at(y_pos) = std::max(0, colors_1.at(2 - 2 * side).at(x_pos).at(y_pos));
+            colors_2.at(2 - 2 * side).at(x_pos).at(y_pos) -= 255 * states_2.at(maxval - 1).at(x_pos).at(y_pos);
+            colors_2.at(2 - 2 * side).at(x_pos).at(y_pos) = std::max(0, colors_2.at(2 - 2 * side).at(x_pos).at(y_pos));
         }
 
     if(dock_show){
@@ -205,6 +202,8 @@ void DepthFirstSearch::setParams(std::vector<std::pair<QString, double>> params)
         return std::numeric_limits<double>::max();
     };
 
+    bool dockshow_before = dock_show;
+
     // 自チームのパラメータを設定
     dock_show = (bool)search("dock_show");
     vis_show = (bool)search("vis_show");
@@ -216,6 +215,9 @@ void DepthFirstSearch::setParams(std::vector<std::pair<QString, double>> params)
     movecount = (int)search("movecount");
     predict_weight = search("predict_weight");
     ratio = search("ratio");
+
+    if(!dockshow_before && dock_show)
+        dock->show();
 }
 
 std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithDepthSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
@@ -225,7 +227,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithDe
     std::bitset<296> bs((agent_pos.first << 4) + agent_pos.second);
 
     std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter> node_map;
-    return std::make_shared<SearchNode>(0, 0, maxval, agent_pos, inp_side, field_values, state, node_map, bs, predict);
+    return std::make_shared<SearchNode>(0, 0, maxval, agent_pos, inp_side, field_values, state, node_map, bs, predict, predict_weight, movecount);
 
 }
 
@@ -235,7 +237,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
     for(int count = 0; count < 2; ++count)
         treap_vec.emplace_back(std::make_shared<Treap>());
 
-    std::shared_ptr<SearchNode> parent = std::make_shared<SearchNode>(0.0, 0);
+    std::shared_ptr<SearchNode> parent = std::make_shared<SearchNode>(0.0, 0, predict_weight, movecount);
     treap_vec.at(0)->insert(std::make_pair(0.0, parent));
 
     const std::vector<std::vector<int>>& value = field.getValue();
@@ -314,7 +316,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                     if(node_map.count(bs)){
                         ++node_map[bs]->size;
                     }else{
-                        node->childs[index] = std::make_pair(std::make_shared<SearchNode>(point, dep + 1), static_cast<int>(is_move) | (static_cast<int>(is_replace) << 1));
+                        node->childs[index] = std::make_pair(std::make_shared<SearchNode>(point, dep + 1, predict_weight, movecount), static_cast<int>(is_move) | (static_cast<int>(is_replace) << 1));
                         node->childs[index].first->parent = std::make_pair(node.get(), index);
                         node_map[bs] = node->childs[index].first;
                         after->insert(std::make_pair(now_adv + point, node->childs[index].first));
@@ -506,12 +508,14 @@ void DepthFirstSearch::addVisualizerToDock(const std::pair<int,int>& size, const
     dock_stack.emplace(size, route, color, values);
 }
 
-DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs, const std::vector<std::vector<std::vector<double>>>& predict) :
+DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs, const std::vector<std::vector<std::vector<double>>>& predict, double predict_weight, int movecount) :
 
     depth(depth),
     size(0),
     real_size(1),
-    adv(adv)
+    adv(adv),
+    predict_weight(predict_weight),
+    movecount(movecount)
 {
     // 末尾ノード
     if(!remain){
@@ -572,7 +576,7 @@ DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std:
             ++node_map[bs]->size;
         }
         else{
-            childs[move.second] = std::make_pair(std::make_shared<SearchNode>(move.first.first, depth + 1, remain - 1, (is_move ? new_pos : pos), side, value, state, node_map, bs, predict), move.first.second);
+            childs[move.second] = std::make_pair(std::make_shared<SearchNode>(move.first.first, depth + 1, remain - 1, (is_move ? new_pos : pos), side, value, state, node_map, bs, predict, predict_weight, movecount), move.first.second);
             // childs[move.second].first->parent = std::make_pair(shared_from_this(), move.second);
 
             real_size += childs[move.second].first->real_size;
@@ -716,11 +720,13 @@ void DepthFirstSearch::RoutesAndNode::CollectIndex(std::shared_ptr<SearchNode> n
 }
 
 
-DepthFirstSearch::SearchNode::SearchNode(double adv, int depth) :
+DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, double predict_weight, int movecount) :
     depth(depth),
     size(0),
     real_size(1),
-    adv(adv)
+    adv(adv),
+    predict_weight(predict_weight),
+    movecount(movecount)
 {
 }
 
@@ -797,6 +803,7 @@ void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Fi
 const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1, 0});
 const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1, 0});
 
+/*
 bool DepthFirstSearch::dock_show;
 bool DepthFirstSearch::vis_show;
 int DepthFirstSearch::loop_count;
@@ -806,6 +813,7 @@ double DepthFirstSearch::ally_weight;
 double DepthFirstSearch::ratio;
 int DepthFirstSearch::movecount;
 double DepthFirstSearch::predict_weight;
+*/
 
 DepthFirstSearch::Treap::Treap() : root(TreapNode::nil){}
 
