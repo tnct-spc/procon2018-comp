@@ -101,6 +101,8 @@ private:
     std::shared_ptr<ProgresDock> progresdock;
     std::shared_ptr<MinimumVisualizer> minimum;
 
+    uint8_t finishedThreadCount = 0;
+
 
     unsigned int now_field = 0;
 
@@ -121,8 +123,13 @@ private:
     //2:タイル除去 移動方向をintで設定する
     std::vector<std::vector<std::tuple<int,int,int>>> act_stack; //ここは絶対座標での入力なので注意！
 
+    std::pair<std::tuple<int, int, int>, std::tuple<int, int, int>> candidate_move[2];
 
     void nextMoveForManualMode();
+    void completeProgressForManualMode();
+
+private slots:
+    void twoThreadWaiter();
 };
 #endif // GAMEMANAGER_H
 
