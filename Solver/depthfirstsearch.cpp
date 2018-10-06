@@ -222,6 +222,39 @@ void DepthFirstSearch::setParams(std::vector<std::pair<QString, double>> params)
         dock->show();
 }
 
+void DepthFirstSearch::setParams(DepthFirstSearch::Parameters& params){
+    ally_weight      = params.ally_weight;
+    beam_width       = params.beam_width;
+    ally_weight      = params.ally_weight;
+    conflict_atk_per = params.conflict_atk_per;
+    conflict_def_per = params.conflict_def_per;
+    depth_weight     = params.depth_weight;
+    deverse_per      = params.deverse_per;
+    loop_count       = params.loop_count;
+    penaRatio        = params.penaRatio;
+    predict_weight   = params.predict_weight;
+    ratio            = params.ratio;
+    use_beamsearch   = params.use_beamsearch;
+}
+
+DepthFirstSearch::Parameters DepthFirstSearch::getParams(){
+    Parameters params;
+    params.ally_weight      = ally_weight;
+    params.beam_width       = beam_width;
+    params.ally_weight      = ally_weight;
+    params.conflict_atk_per = conflict_atk_per;
+    params.conflict_def_per = conflict_def_per;
+    params.depth_weight     = depth_weight;
+    params.deverse_per      = deverse_per;
+    params.loop_count       = loop_count;
+    params.penaRatio        = penaRatio;
+    params.predict_weight   = predict_weight;
+    params.ratio            = ratio;
+    params.use_beamsearch   = use_beamsearch;
+    return params;
+}
+
+
 std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithDepthSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
     const std::vector<std::vector<int>>& field_values = field.getValue();
 
@@ -243,10 +276,6 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
     treap_vec.at(0)->insert(std::make_pair(0.0, std::make_pair(0.0, parent)));
 
     const std::vector<std::vector<int>>& value = field.getValue();
-
-    std::vector<double> depth_weight(1, 1.8);
-    for(int count = 0; count < maxval + 1; ++count)
-        depth_weight.push_back(depth_weight.back() - 0.05);
 
 
     std::pair<int,int> old_pos = field.getAgent(inp_side, agent);
@@ -698,11 +727,6 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         routes2.push_back(ins);
     }
 
-
-    //std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
-
- //   std::cout<<"HOGHOGE"<<std::endl;
-    std::vector<long long> penaRatio = {1,2,4,8,16,32,64,128,256,512,1024,2048,4096};
     auto check = [&](int index1, int index2){
         RoutesAndNode ro1 = routes1.at(index1);
         RoutesAndNode ro2 = routes2.at(index2);
@@ -859,23 +883,10 @@ void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Fi
         pos = moveAfter(indexs.at(a));
         route_pos.push_back(pos);
     }
-    //std::cout<<route_pos.size()<<std::endl;
 }
 
 const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1, 0});
 const std::vector<int> DepthFirstSearch::SearchNode::dy({0, -1, -1, -1, 0, 1, 1, 1, 0});
-
-/*
-bool DepthFirstSearch::dock_show;
-bool DepthFirstSearch::vis_show;
-int DepthFirstSearch::loop_count;
-bool DepthFirstSearch::use_beamsearch;
-int DepthFirstSearch::beam_width;
-double DepthFirstSearch::ally_weight;
-double DepthFirstSearch::ratio;
-int DepthFirstSearch::movecount;
-double DepthFirstSearch::predict_weight;
-*/
 
 DepthFirstSearch::Treap::Treap() : root(TreapNode::nil){}
 

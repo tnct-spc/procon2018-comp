@@ -22,11 +22,16 @@ class DepthFirstSearch : public AlgorithmWrapper
 public:
     DepthFirstSearch(const procon::Field& field, int final_turn, bool side);
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
-    void setParams(std::vector<std::pair<QString, double>> params);
 
     class  Treap;
     struct TreapNode;
     struct SearchNode;
+    struct Parameters;
+
+    void setParams(std::vector<std::pair<QString, double>> params);
+    void setParams(Parameters& params);
+    Parameters getParams();
+
 private:
 
     // {node, moves, values, depth_size, agent_values};
@@ -88,6 +93,9 @@ private:
 
     double deverse_per = 0.5;
 
+    std::vector<int> penaRatio = {1,2,4,8,16,32,64,128,256,512,1024,2048,4096};
+    std::vector<double> depth_weight = {1.8, 1.75, 1.7, 1.65, 1.6, 1.55, 1.5, 1.45, 1.4, 1.35, 1.3, 1.25, 1.2, 1.15, 1.1, 1.05, 1};
+
 
     static const bool do_output = false;
 
@@ -106,6 +114,23 @@ struct DepthFirstSearch::RoutesAndNode{
 
     std::pair<int,int> next_pos;
 
+};
+
+struct DepthFirstSearch::Parameters{
+    bool use_beamsearch = true;
+    int beam_width = 1000;
+    int loop_count = 4;
+    double ratio = 0.03;
+    int movecount = 3;
+
+    double ally_weight = 1.0;
+    double predict_weight = 0.3;
+    double conflict_atk_per = 0.3;
+    double conflict_def_per = 1.4;
+    double deverse_per = 0.5;
+
+    std::vector<int> penaRatio = {1,2,4,8,16,32,64,128,256,512,1024,2048,4096};
+    std::vector<double> depth_weight = {1.8, 1.75, 1.7, 1.65, 1.6, 1.55, 1.5, 1.45, 1.4, 1.35, 1.3, 1.25, 1.2, 1.15, 1.1, 1.05, 1};
 };
 
 struct DepthFirstSearch::SearchNode : public std::enable_shared_from_this<SearchNode>{

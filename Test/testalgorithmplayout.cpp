@@ -23,10 +23,6 @@ int TestAlgorithmPlayout::playout(bool iswrite){
 
     enemy.setData(params.at(rand_dist(mt)));
 
-    /*
-    for(int index = 0; index < 2; ++index)
-        agents.at(index) = std::make_shared<UseAbstractData>(manager->getField(), manager->getFinalTurn(), index);
-    */
     agents.at(0) = std::make_shared<UseAbstractData>(manager->getField(), manager->getFinalTurn(), 0, agent);
 
     agents.at(1) = std::make_shared<UseAbstractData>(manager->getField(), manager->getFinalTurn(), 1, enemy);
