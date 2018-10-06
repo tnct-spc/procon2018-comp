@@ -3,7 +3,8 @@
 DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, bool side) :
     AlgorithmWrapper(field, final_turn, side)
 {
-    dock = std::make_shared<ProgresDock>();
+    if(dock_show)
+        dock = std::make_shared<ProgresDock>();
 }
 
 const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearch::agentAct(int now_turn){
@@ -218,8 +219,10 @@ void DepthFirstSearch::setParams(std::vector<std::pair<QString, double>> params)
     predict_weight = search("predict_weight");
     ratio = search("ratio");
 
-    if(!dockshow_before && dock_show)
+    if(!dockshow_before && dock_show){
+        dock = std::make_shared<ProgresDock>();
         dock->show();
+    }
 }
 
 void DepthFirstSearch::setParams(DepthFirstSearch::Parameters& params){

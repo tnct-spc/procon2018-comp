@@ -71,7 +71,7 @@ private:
     };
 
     bool dock_show = false;
-    bool vis_show;
+    bool vis_show = false;
 
     int loop_count;
 

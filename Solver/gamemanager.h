@@ -35,7 +35,7 @@ public:
 
     void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
 
-    void resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show = true, const int t_max = 60);
+    void resetManager(int x_size, int y_size, bool v_show = true, const int t_max = 60);
 
     procon::Field& getField();
 
