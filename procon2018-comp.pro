@@ -8,5 +8,4 @@ SUBDIRS += \
     Solver \
     Mejirodai \
     Simulator \
-    Test \
-    proconthread
+    Test
