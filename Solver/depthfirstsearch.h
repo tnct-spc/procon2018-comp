@@ -122,6 +122,7 @@ struct DepthFirstSearch::Parameters{
     int loop_count = 4;
     double ratio = 0.03;
     int movecount = 3;
+    int maxval = 10;
 
     double ally_weight = 1.0;
     double predict_weight = 0.3;

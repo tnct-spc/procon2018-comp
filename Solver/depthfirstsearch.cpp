@@ -223,6 +223,16 @@ void DepthFirstSearch::setParams(std::vector<std::pair<QString, double>> params)
 }
 
 void DepthFirstSearch::setParams(DepthFirstSearch::Parameters& params){
+    assert(params.ally_weight >= -5 && params.ally_weight <= 5);
+    assert(params.predict_weight >= -5 && params.predict_weight <= 5);
+    assert(params.ratio > 0 && params.ratio <= 1);
+    assert(params.movecount > 0);
+    assert(params.beam_width > 0);
+    assert(params.maxval > 0);
+    assert(params.deverse_per >= 0);
+    assert(params.conflict_atk_per >= 0);
+    assert(params.conflict_def_per >= 0);
+
     ally_weight      = params.ally_weight;
     beam_width       = params.beam_width;
     ally_weight      = params.ally_weight;
@@ -235,6 +245,7 @@ void DepthFirstSearch::setParams(DepthFirstSearch::Parameters& params){
     predict_weight   = params.predict_weight;
     ratio            = params.ratio;
     use_beamsearch   = params.use_beamsearch;
+    maxval           = params.maxval;
 }
 
 DepthFirstSearch::Parameters DepthFirstSearch::getParams(){
@@ -251,6 +262,7 @@ DepthFirstSearch::Parameters DepthFirstSearch::getParams(){
     params.predict_weight   = predict_weight;
     params.ratio            = ratio;
     params.use_beamsearch   = use_beamsearch;
+    params.maxval = maxval;
     return params;
 }
 
