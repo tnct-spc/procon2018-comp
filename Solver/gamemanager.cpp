@@ -843,6 +843,10 @@ void GameManager::threadTerminator()
 {
 //    agentActThread_1->terminate();
 //    agentActThread_2->terminate();
+    agentActThread_1->quit();
+    agentActThread_2->quit();
+    agentActThread_1->exit();
+    agentActThread_2->exit();
 }
 
 void GameManager::startupChangeMode()
