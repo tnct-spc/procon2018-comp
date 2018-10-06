@@ -342,7 +342,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                     ++put_tile_count.at(pos.first + SearchNode::dx.at(index)).at(pos.second + SearchNode::dy.at(index));
                     ++put_tile_sum;
 
-                    double priority = now_adv + point * (1 - conf_pri * deverse_per);
+                    double priority = now_adv + point * (1 - std::min(1.0, conf_pri * deverse_per));
 
                     int bit_index = 8 + ((pos.first + SearchNode::dx.at(index)) * 12 + (pos.second + SearchNode::dy.at(index))) * 2;
                     int bit_count = ((bs >> bit_index) & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
