@@ -343,7 +343,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
 
 
                 if(put_tile_sum)
-                    conflict_value += 1.0 * put_tile_count.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index)) / put_tile_sum;
+                    conflict_value += conflict_weight.at(rev_move.size() - 1 - index) * put_tile_count.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index)) / put_tile_sum;
 
                 ++put_tile_count.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index));
                 ++put_tile_sum;
@@ -381,12 +381,12 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                     if(is_defence && !is_move)
                         point *= conflict_def_per;
 
-                    double conf_pri =  conflict_value + 1.0 * put_tile_count.at(pos.first + SearchNode::dx.at(index)).at(pos.second + SearchNode::dy.at(index)) / put_tile_sum;
+                    double conf_pri =  conflict_value + conflict_weight.at(rev_move.size()) * put_tile_count.at(pos.first + SearchNode::dx.at(index)).at(pos.second + SearchNode::dy.at(index)) / put_tile_sum;
 
                     ++put_tile_count.at(pos.first + SearchNode::dx.at(index)).at(pos.second + SearchNode::dy.at(index));
                     ++put_tile_sum;
 
-                    double priority = now_adv + point * (1 - std::min(1.0, conf_pri * deverse_per));
+                    double priority = (now_adv + point) * (1 - std::min(1.0, conf_pri * deverse_per));
 
                     int bit_index = 8 + ((pos.first + SearchNode::dx.at(index)) * 12 + (pos.second + SearchNode::dy.at(index))) * 2;
                     int bit_count = ((bs >> bit_index) & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
