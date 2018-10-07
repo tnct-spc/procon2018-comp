@@ -526,17 +526,15 @@ void DepthFirstSearch::updatePredictData(bool inp_side, bool agent, bool is_addd
 
     std::vector<std::vector<std::vector<double>>> ret_val = getMovePer(inp_side, agent, is_adddock);
 
-    if(do_output){
-        std::vector<std::vector<std::vector<double>>> before_vec = predict_per.at(inp_side * 2 + agent);
-        double diff = 0.0;
-        for(int dep = 0; dep < maxval; ++dep)
-            for(int x_index = 0; x_index < field.getSize().first; ++x_index)
-                for(int y_index = 0; y_index < field.getSize().second; ++y_index)
-                    diff += std::abs(before_vec.at(dep).at(x_index).at(y_index) - ret_val.at(dep).at(x_index).at(y_index));
+    double diff = 0.0;
+    for(int dep = 0; dep < maxval; ++dep)
+        for(int x_index = 0; x_index < field.getSize().first; ++x_index)
+            for(int y_index = 0; y_index < field.getSize().second; ++y_index){
+                diff += std::abs(predict_per.at(inp_side * 2 + agent).at(dep).at(x_index).at(y_index) - ret_val.at(dep).at(x_index).at(y_index));
+                predict_per.at(inp_side * 2 + agent).at(dep).at(x_index).at(y_index) = ret_val.at(dep).at(x_index).at(y_index);
+            }
+    if(do_output)
         std::cout << "diff : " << diff << std::endl;
-    }
-
-    predict_per.at(inp_side * 2 + agent) = std::move(ret_val);
 
 }
 
