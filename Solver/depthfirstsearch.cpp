@@ -293,6 +293,15 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
     treap_vec.at(0)->insert(std::make_pair(0.0, std::make_pair(0.0, parent)));
 
     const std::vector<std::vector<int>>& value = field.getValue();
+    std::vector<std::vector<double>> double_value(field.getSize().first, std::vector<double>(field.getSize().second));
+    int max_value = 0;
+    for(int x_index = 0; x_index < field.getSize().first; ++x_index)
+        for(int y_index = 0; y_index < field.getSize().second; ++y_index)
+            max_value = std::max(max_value, std::abs(value.at(x_index).at(y_index)));
+
+    for(int x_index = 0; x_index < field.getSize().first; ++x_index)
+        for(int y_index = 0; y_index < field.getSize().second; ++y_index)
+            double_value.at(x_index).at(y_index) = 1.0 * value.at(x_index).at(y_index) / max_value;
 
 
     std::pair<int,int> old_pos = field.getAgent(inp_side, agent);
@@ -374,7 +383,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                     bool is_defence = ((std::abs(enemy_agents.at(0).first - x_pos) <= 1) && (std::abs(enemy_agents.at(0).second - y_pos) <= 1)) ||
                                       ((std::abs(enemy_agents.at(1).first - x_pos) <= 1) && (std::abs(enemy_agents.at(1).second - y_pos) <= 1));
 
-                    double point = depth_weight.at(dep) * value.at(x_pos).at(y_pos) * (1.0 - predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0));
+                    double point = depth_weight.at(dep) * double_value.at(x_pos).at(y_pos) * (1.0 - predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0));
 
                     if(!is_replace)
                         point = 0;
