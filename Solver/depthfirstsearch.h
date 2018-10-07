@@ -42,6 +42,7 @@ private:
     std::shared_ptr<MinimumVisualizerDock> dock;
 
     std::vector<std::vector<std::vector<std::vector<double>>>> predict_per;
+    std::vector<std::vector<std::vector<std::vector<double>>>> after_predict_per;
 
     struct BitSetSorter{
         bool operator()(const std::bitset<296>& x, const std::bitset<296>& y) const{
