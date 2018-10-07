@@ -19,6 +19,7 @@ public:
 
 
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int);
+    void setParams(std::vector<std::pair<QString, double>> params);
     bool EdgeCut = true;
 
 private:
