@@ -52,7 +52,6 @@ private:
     std::stack<std::tuple<std::pair<int,int>, std::vector<std::list<std::pair<int,int>>>, std::vector<std::vector<std::vector<int>>>, std::vector<std::vector<double>>>> dock_stack;
 
     std::vector<std::vector<std::vector<std::vector<double>>>> predict_per;
-    std::vector<std::vector<std::vector<std::vector<double>>>> after_predict_per;
 
     struct BitSetSorter{
         bool operator()(const std::bitset<296>& x, const std::bitset<296>& y) const{

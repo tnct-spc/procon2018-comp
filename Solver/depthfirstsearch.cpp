@@ -13,7 +13,6 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 
     maxval = std::min(maxval, final_turn - now_turn);
     predict_per.resize(4, std::vector<std::vector<std::vector<double>>>(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0))));
-    after_predict_per = std::vector<std::vector<std::vector<std::vector<double>>>>(4);
 
     std::shared_ptr<SearchNode> node_1, node_2;
     std::list<std::pair<int,int>> moves_1, moves_2;
@@ -38,8 +37,6 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 
         for(int index = 0; index < 4; ++index)
             threads.at(index).join();
-        predict_per = std::move(after_predict_per);
-        after_predict_per = std::vector<std::vector<std::vector<std::vector<double>>>>(4);
     }
 
     std::vector<std::vector<std::vector<double>>> pred(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0)));
@@ -493,7 +490,7 @@ void DepthFirstSearch::updatePredictData(bool inp_side, bool agent, bool is_addd
         std::cout << "diff : " << diff << std::endl;
     }
 
-        after_predict_per.at(inp_side * 2 + agent) = std::move(ret_val);
+    predict_per.at(inp_side * 2 + agent) = std::move(ret_val);
 
 }
 
