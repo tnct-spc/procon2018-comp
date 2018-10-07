@@ -45,9 +45,10 @@ void TestAlgorithmPlayout::playout(DepthFirstSearch::Parameters& p1, DepthFirstS
 
     if(iswrite){
         std::stringstream outstream;
-        outstream << p1.loop_count << "," << p2.loop_count << ",";
+        outstream << p1.conflict_atk_per << "," << p2.conflict_atk_per << ",";
         outstream << points.at(0) << "," << points.at(1) << "\n";
         logger->info(outstream.str());
+        logger->flush();
     }
 
 }
@@ -55,16 +56,17 @@ void TestAlgorithmPlayout::playout(DepthFirstSearch::Parameters& p1, DepthFirstS
 void TestAlgorithmPlayout::run(){
     std::random_device rnd;
     std::mt19937 mt(rnd());
-    std::uniform_real_distribution<> rand_param(0, 10);
+    std::uniform_real_distribution<> rand_param(0, 3);
 
     for(int count = 0; count < 1e7; ++count){
         std::cout << "count : " << count << std::endl;
         DepthFirstSearch::Parameters params_1, params_2;
         params_1.beam_width = 100;
         params_2.beam_width = 100;
-
-        params_1.loop_count = rand_param(mt);
-        params_2.loop_count = rand_param(mt);
+        params_1.conflict_atk_per = rand_param(mt);
+        params_2.conflict_atk_per = rand_param(mt);
+        if(params_1.conflict_atk_per > params_2.conflict_atk_per)
+            std::swap(params_1, params_2);
 
         playout(params_1, params_2, true);
 
