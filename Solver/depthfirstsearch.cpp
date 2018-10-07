@@ -242,6 +242,7 @@ void DepthFirstSearch::setParams(DepthFirstSearch::Parameters& params){
     conflict_atk_per = params.conflict_atk_per;
     conflict_def_per = params.conflict_def_per;
     depth_weight     = params.depth_weight;
+    conflict_weight  = params.conflict_weight;
     deverse_per      = params.deverse_per;
     loop_count       = params.loop_count;
     penaRatio        = params.penaRatio;
@@ -259,6 +260,7 @@ DepthFirstSearch::Parameters DepthFirstSearch::getParams(){
     params.conflict_atk_per = conflict_atk_per;
     params.conflict_def_per = conflict_def_per;
     params.depth_weight     = depth_weight;
+    params.conflict_weight  = conflict_weight;
     params.deverse_per      = deverse_per;
     params.loop_count       = loop_count;
     params.penaRatio        = penaRatio;

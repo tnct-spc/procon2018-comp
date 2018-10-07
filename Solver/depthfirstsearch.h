@@ -118,21 +118,37 @@ struct DepthFirstSearch::RoutesAndNode{
 };
 
 struct DepthFirstSearch::Parameters{
+
+	// beamsearchを使うかどうか
     bool use_beamsearch = true;
+	// beamsearchの幅
     int beam_width = 1000;
+	// ナッシュ均衡っぽいやつのループ回数
     int loop_count = 4;
+	// コンフリクト対処時に上位どれだけを候補にするか
     double ratio = 0.03;
+	// depthsearch時の葉から伸びるノードの個数
     int movecount = 3;
+	// 探索する最大のターン数
     int maxval = 10;
 
-    double ally_weight = 1.0;
+	// 均衡計算時に行動にかける重み
     double predict_weight = 0.3;
+	// 均衡計算時に味方エージェントとのコンフリクトにかける重み
+    double ally_weight = 1.0;
+	// 相手の移動先に除去をする場合にかける重み
     double conflict_atk_per = 0.3;
+	// 相手が付近にいる状態で除去をする場合にかける重み
     double conflict_def_per = 1.4;
+	// 多様性のある行動の重視度
     double deverse_per = 0.5;
 
+    // コンフリクト対処時にかけるペナルティの倍率(逆数,単調増加が望ましい)
     std::vector<int> penaRatio = {1,2,4,8,16,32,64,128,256,512,1024,2048,4096};
+    // 利得計算時にマスの値にかける倍率(単調減少が望ましい)
     std::vector<double> depth_weight = {1.8, 1.75, 1.7, 1.65, 1.6, 1.55, 1.5, 1.45, 1.4, 1.35, 1.3, 1.25, 1.2, 1.15, 1.1, 1.05, 1};
+    // 多様性のある行動の深さごとの重視度(単調減少が望ましい
+    std::vector<double> conflict_weight = {1.8, 1.75, 1.7, 1.65, 1.6, 1.55, 1.5, 1.45, 1.4, 1.35, 1.3, 1.25, 1.2, 1.15, 1.1, 1.05, 1};
 };
 
 struct DepthFirstSearch::SearchNode : public std::enable_shared_from_this<SearchNode>{
