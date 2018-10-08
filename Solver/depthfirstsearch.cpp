@@ -226,7 +226,7 @@ void DepthFirstSearch::setParams(std::vector<std::pair<QString, double>> params)
 }
 
 void DepthFirstSearch::setParams(DepthFirstSearch::Parameters& params){
-    assert(params.ally_weight >= -5 && params.ally_weight <= 5);
+    assert(params.ally_weight >= -5 && params.ally_weight <= 15);
     assert(params.predict_weight >= -5 && params.predict_weight <= 5);
     assert(params.ratio > 0 && params.ratio <= 1);
     assert(params.movecount > 0);
@@ -237,6 +237,7 @@ void DepthFirstSearch::setParams(DepthFirstSearch::Parameters& params){
     assert(params.conflict_def_per >= 0);
 
     ally_weight      = params.ally_weight;
+
     beam_width       = params.beam_width;
     ally_weight      = params.ally_weight;
     conflict_atk_per = params.conflict_atk_per;
@@ -245,11 +246,21 @@ void DepthFirstSearch::setParams(DepthFirstSearch::Parameters& params){
     conflict_weight  = params.conflict_weight;
     deverse_per      = params.deverse_per;
     loop_count       = params.loop_count;
-    penaRatio        = params.penaRatio;
     predict_weight   = params.predict_weight;
     ratio            = params.ratio;
     use_beamsearch   = params.use_beamsearch;
     maxval           = params.maxval;
+
+    if(params.pena_ratio_val != -1){
+        double value = 1;
+        for(auto& val : penaRatio){
+            val = value;
+            std::cout << val << std::endl;
+            value *= params.pena_ratio_val;
+        }
+    }
+    else
+        penaRatio        = params.penaRatio;
 }
 
 DepthFirstSearch::Parameters DepthFirstSearch::getParams(){
@@ -263,11 +274,13 @@ DepthFirstSearch::Parameters DepthFirstSearch::getParams(){
     params.conflict_weight  = conflict_weight;
     params.deverse_per      = deverse_per;
     params.loop_count       = loop_count;
-    params.penaRatio        = penaRatio;
     params.predict_weight   = predict_weight;
     params.ratio            = ratio;
     params.use_beamsearch   = use_beamsearch;
     params.maxval = maxval;
+
+    params.penaRatio = penaRatio;
+
     return params;
 }
 

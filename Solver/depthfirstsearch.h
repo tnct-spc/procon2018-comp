@@ -149,6 +149,7 @@ struct DepthFirstSearch::Parameters{
     std::vector<double> depth_weight = {1.8, 1.75, 1.7, 1.65, 1.6, 1.55, 1.5, 1.45, 1.4, 1.35, 1.3, 1.25, 1.2, 1.15, 1.1, 1.05, 1};
     // 多様性のある行動の深さごとの重視度(単調減少が望ましい)
     std::vector<double> conflict_weight = {1.8, 1.75, 1.7, 1.65, 1.6, 1.55, 1.5, 1.45, 1.4, 1.35, 1.3, 1.25, 1.2, 1.15, 1.1, 1.05, 1};
+    double pena_ratio_val = -1;
 };
 
 struct DepthFirstSearch::SearchNode : public std::enable_shared_from_this<SearchNode>{

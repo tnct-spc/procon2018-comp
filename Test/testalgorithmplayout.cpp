@@ -45,7 +45,7 @@ void TestAlgorithmPlayout::playout(DepthFirstSearch::Parameters& p1, DepthFirstS
 
     if(iswrite){
         std::stringstream outstream;
-        outstream << p1.conflict_atk_per << "," << p2.conflict_atk_per << ",";
+        outstream << p1.pena_ratio_val << "," << p2.pena_ratio_val << ",";
         outstream << points.at(0) << "," << points.at(1) << "\n";
         logger->info(outstream.str());
         logger->flush();
@@ -56,16 +56,20 @@ void TestAlgorithmPlayout::playout(DepthFirstSearch::Parameters& p1, DepthFirstS
 void TestAlgorithmPlayout::run(){
     std::random_device rnd;
     std::mt19937 mt(rnd());
-    std::uniform_real_distribution<> rand_param(0, 3);
+    std::uniform_real_distribution<> rand_param(0.5, 5);
 
     for(int count = 0; count < 1e7; ++count){
         std::cout << "count : " << count << std::endl;
         DepthFirstSearch::Parameters params_1, params_2;
         params_1.beam_width = 100;
         params_2.beam_width = 100;
-        params_1.conflict_atk_per = rand_param(mt);
-        params_2.conflict_atk_per = rand_param(mt);
-        if(params_1.conflict_atk_per > params_2.conflict_atk_per)
+        params_1.predict_weight = 0.65;
+        params_2.predict_weight = 0.65;
+        do{
+        params_1.pena_ratio_val = rand_param(mt);
+        params_2.pena_ratio_val = rand_param(mt);
+        }while(0);
+        if(params_1.pena_ratio_val > params_2.pena_ratio_val)
             std::swap(params_1, params_2);
 
         playout(params_1, params_2, true);
