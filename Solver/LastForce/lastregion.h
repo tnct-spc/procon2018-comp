@@ -33,7 +33,7 @@ public:
 private:
 
     const static std::vector<int> dx,dy;
-    const int move_count = 10;
+    const int move_count = 8;
     const static int max_turn_count = 7;
 
 };

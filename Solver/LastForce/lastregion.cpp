@@ -15,7 +15,18 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> LastRegion::ag
             points.at(x).at(y) = field.getState(x,y).second;
         }
     }
-    //for(auto que : field)
+    procon::Field _field = field;
+
+    std::vector<std::pair<std::pair<int,int>,int>> area = _field.ifBreakArea(side, 0);
+
+    for(auto que : area){
+        points.at(que.first.first).at(que.first.second) += que.second;
+    }
+
+    area = _field.ifBreakArea(side, 1);
+    for(auto que : area){
+        points.at(que.first.first).at(que.first.second) += que.second;
+    }
 
     auto setState = [=](std::bitset<288>& bits, int state, int x , int y){
         if(!(0 <= x && x <= field.getSize().first - 1 && 0 <= y && y <= field.getSize().second - 1)){
@@ -50,7 +61,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> LastRegion::ag
     }
 
     sta.push(std::make_tuple(0, field.getAgent(side, 0), field.getAgent(side, 1), std::vector<std::pair<int,int>>(), 0, _state));
-    procon::Field _field = field;
 
     int ans_adv = -1e9;
     std::pair<int,int> ans;
@@ -94,7 +104,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> LastRegion::ag
                 way1 = 0;
             }
 
-            adv1 = field.getState(agent1_pos.first + LastRegion::dx.at(index_1), agent1_pos.second + LastRegion::dy.at(index_1)).second;
+            adv1 = points.at(agent1_pos.first + LastRegion::dx.at(index_1)).at(agent1_pos.second + LastRegion::dy.at(index_1));
             if(way1 == 0)adv1 = 0;
 
             for(int index_2 = 0;index_2 < 8;index_2++){
@@ -112,7 +122,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> LastRegion::ag
                     way2 = 0;
                 }
 
-                adv2 = field.getState(agent2_pos.first + LastRegion::dx.at(index_2), agent2_pos.second + LastRegion::dy.at(index_2)).second;
+                adv2 = points.at(agent2_pos.first + LastRegion::dx.at(index_2)).at(agent2_pos.second + LastRegion::dy.at(index_2));
                 if(way2 == 0)adv2 = 0;
 
                 std::pair<int,int> next_move_pos1 = std::make_pair(agent1_pos.first + LastRegion::dx.at(index_1), agent1_pos.second + LastRegion::dy.at(index_1));
