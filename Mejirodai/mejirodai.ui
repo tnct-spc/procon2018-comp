@@ -116,12 +116,12 @@
       </item>
       <item>
        <property name="text">
-        <string>LastRegion</string>
+        <string>DepthFirstSearch</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>DepthFirstSearch</string>
+        <string>LastRegion</string>
        </property>
       </item>
       <item>
@@ -232,12 +232,12 @@
       </item>
       <item>
        <property name="text">
-        <string>LastRegion</string>
+        <string>DepthFirstSearch</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>DepthFirstSearch</string>
+        <string>LastRegion</string>
        </property>
       </item>
       <item>

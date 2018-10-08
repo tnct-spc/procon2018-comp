@@ -6,20 +6,8 @@
 #include <stack>
 #include <algorithm>
 #include <vector>
-#include <utility>
-#include <random>
 #include <queue>
-#include <complex>
 #include <iostream>
-#include <set>
-#include <bitset>
-#include <tuple>
-#include <map>
-#include <functional>
-#include <fstream>
-#include <sstream>
-#include<math.h>
-#include <stdlib.h>
 
 class LastRegion : public AlgorithmWrapper
 {
@@ -33,8 +21,8 @@ public:
 private:
 
     const static std::vector<int> dx,dy;
-    const int move_count = 8;
-    const static int max_turn_count = 7;
+    const int move_count = 3;
+    const int max_turn_count = 9;
 
 };
 #endif // LASTREGION_H
