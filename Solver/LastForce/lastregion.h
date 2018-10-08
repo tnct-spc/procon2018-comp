@@ -4,7 +4,22 @@
 #include "algorithmwrapper.h"
 #include "field.h"
 #include <stack>
-
+#include <algorithm>
+#include <vector>
+#include <utility>
+#include <random>
+#include <queue>
+#include <complex>
+#include <iostream>
+#include <set>
+#include <bitset>
+#include <tuple>
+#include <map>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include<math.h>
+#include <stdlib.h>
 
 class LastRegion : public AlgorithmWrapper
 {
@@ -14,17 +29,12 @@ public:
 
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int);
     void setParams(std::vector<std::pair<QString, double>> params);
-    bool EdgeCut = true;
 
 private:
-    bool checkMate = false;
-    bool calc(procon::Field field,int depth,int a, int b);
-    procon::Field moveAgent(procon::Field field, std::vector<int> act);
-
-    std::pair<int,int> ans;
-    std::vector<std::vector<int>> winner;
-    int coun = 0;
 
     const static std::vector<int> dx,dy;
+    const int move_count = 10;
+    const static int max_turn_count = 7;
+
 };
 #endif // LASTREGION_H
