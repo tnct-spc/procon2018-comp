@@ -16,8 +16,12 @@ public:
     explicit MultipleVisualizer(QWidget *parent = nullptr);
     ~MultipleVisualizer();
 
+    // 表示するVisualizerの設置
+    void setVisualizers(std::vector<Visualizer *> visalizers);
+
 private:
     Ui::MultipleVisualizer *ui;
+    int vis_count = 0;
 };
 
 #endif // MULTIPLEVISUALIZER_H

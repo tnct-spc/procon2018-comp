@@ -3,6 +3,7 @@
 #include "testevaluatespeed.h"
 #include "testalgorithmplayout.h"
 #include "testconvertfield.h"
+#include "testmultiplevisualizer.h"
 
 int main()
 {
@@ -12,6 +13,7 @@ int main()
     std::cout << "1 : TestEvaluateSpeed" << std::endl;
     std::cout << "2 : TestAlgorithmPlayout" << std::endl;
     std::cout << "3 : TestConvertField" << std::endl;
+    std::cout << "4 : TestMultipleVisualizer" << std::endl;
 
     int test_number = -1;
 
@@ -20,7 +22,7 @@ int main()
         std::cout << "algo number : ";
         std::cin >> test_number;
 
-        if(test_number >= 0 && test_number <= 3)
+        if(test_number >= 0 && test_number <= 4)
             break;
 
         std::cout << "incorrect" << std::endl;
@@ -64,6 +66,10 @@ int main()
     else if(test_number == 3){
 
         TestConvertField test;
+        test.run();
+    }
+    else if(test_number == 4) {
+        TestMultipleVisualizer test;
         test.run();
     }
 
