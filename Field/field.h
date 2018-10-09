@@ -43,7 +43,7 @@ public:
     std::vector<std::pair<int,int>> getPoints(std::pair<std::pair<int,int>, std::pair<int, int>> pos, bool flag = true);     //引数にteam番号,移動or破壊(0 or 1),座標を持つ、第二引数には実際に得点を書き換えるか(書き換えるならtrue)
     std::vector<std::pair<int,int>> getPoints(std::vector<std::pair<std::pair<int,int>, std::pair<int, int>>> pos_vec, bool flag = true);//上と大体同じ
 
-    std::vector<std::pair<int,int>> getPoints(std::pair<int,int> pos,int state);
+    std::vector<std::pair<int,int>> getPoints(std::pair<int,int> pos, int state);
 
     void setPoints(int side, std::pair<int,int> value);
 
@@ -60,6 +60,7 @@ public:
 
     bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2, bool double_move = true) const;
 
+    std::vector<std::pair<std::pair<int,int>,int>> ifBreakArea (unsigned long side,unsigned long number);
     void setSize(const std::pair<int, int> &grid);
     void setValue(const std::vector<std::vector<int>> &value);
     void setGridValue(const unsigned int x, const unsigned int y, const unsigned int value);

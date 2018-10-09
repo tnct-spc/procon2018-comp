@@ -121,6 +121,11 @@
       </item>
       <item>
        <property name="text">
+        <string>LastRegion</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>MajorityRuleWithAbstData</string>
        </property>
       </item>
@@ -228,6 +233,11 @@
       <item>
        <property name="text">
         <string>DepthFirstSearch</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>LastRegion</string>
        </property>
       </item>
       <item>
@@ -753,7 +763,7 @@
      <x>0</x>
      <y>0</y>
      <width>977</width>
-     <height>18</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>
