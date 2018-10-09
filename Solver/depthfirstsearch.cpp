@@ -12,6 +12,11 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     if(do_output)
         std::cout << "turn : " << now_turn << std::endl;
 
+    if(now_turn + maxval >= field.getFinalTurn()){
+        LastRegion algo(field, final_turn, side);
+        return algo.agentAct(now_turn);
+    }
+
     maxval = std::min(maxval, final_turn - now_turn);
     predict_per.resize(4, std::vector<std::vector<std::vector<double>>>(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0))));
 
