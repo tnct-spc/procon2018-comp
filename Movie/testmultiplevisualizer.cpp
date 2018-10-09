@@ -23,12 +23,12 @@ void TestMultipleVisualizer::run()
 
     for(int count = 0; count < turn_max; ++count){
         std::ostringstream ost;
-        ost << std::setfill('0') << std::setw(4) << count;
-        pathes.first = pathes.first.substr(0, pathes.first.length() - 4) + ost.str();
+        ost << std::setfill('0') << std::setw(6) << count;
+        pathes.first = pathes.first.substr(0, pathes.first.length() - 6) + ost.str();
 
         std::ostringstream ost2;
-        ost2 << std::setfill('0') << std::setw(4) << count;
-        pathes.second = pathes.second.substr(0, pathes.second.length() - 4) + ost.str();
+        ost2 << std::setfill('0') << std::setw(6) << count;
+        pathes.second = pathes.second.substr(0, pathes.second.length() - 6) + ost.str();
 
         f1 = procon::CsvIo::importField(pathes.first);
         f2 = procon::CsvIo::importField(pathes.second);
@@ -36,6 +36,10 @@ void TestMultipleVisualizer::run()
         vis1 = new Visualizer(f1);
         vis2 = new Visualizer(f2);
         window->setVisualizers(std::vector<Visualizer*>({vis1, vis2}));
+        window->update();
+        window->repaint();
+
+        wait_simulator.wait(&mtx, 1000);
     }
 
     std::cout << "finish" << std::endl;

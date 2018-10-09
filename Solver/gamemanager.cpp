@@ -225,6 +225,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         */
     }
 
+    std::string path = QFileDialog::getOpenFileName().toStdString();
 
     //うぇーいｗｗｗｗｗｗｗ
     if(is_auto){
@@ -232,6 +233,12 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         setFieldCount(field_vec.size() - 1);
         while(field->getTurnCount() < field->getFinalTurn()){
 
+
+            std::ostringstream ost;
+            ost << std::setfill('0') << std::setw(6) << field->getTurnCount();
+            path = path.substr(0, path.length() - 6) + ost.str();
+
+            procon::CsvIo::exportField(*field, path);
 
             //std::cout << "turn " << now_turn + 1 << " started" << std::endl << std::endl;
 

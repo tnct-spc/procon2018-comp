@@ -22,4 +22,7 @@ void MultipleVisualizer::setVisualizers(std::vector<Visualizer *> visualizers)
         vis_count++;
     }
     this->ui->visWidget->setLayout(layout);
+    this->update();
+    this->repaint();
+    this->ui->visWidget->layout()->update();
 }
