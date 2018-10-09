@@ -36,7 +36,8 @@ SOURCES += \
     operator.cpp \
     ciphercards.cpp \
     minimumvisualizer.cpp \
-    minimumvisualizerdock.cpp
+    minimumvisualizerdock.cpp \
+    multiplevisualizer.cpp
 
 HEADERS += \
         visualizer.h \
@@ -44,7 +45,8 @@ HEADERS += \
     operator.h \
     ciphercards.h \
     minimumvisualizer.h \
-    minimumvisualizerdock.h
+    minimumvisualizerdock.h \
+    multiplevisualizer.h
 
 FORMS += \
         visualizer.ui \
@@ -52,7 +54,8 @@ FORMS += \
     operator.ui \
     ciphercards.ui \
     minimumvisualizer.ui \
-    minimumvisualizerdock.ui
+    minimumvisualizerdock.ui \
+    multiplevisualizer.ui
 
 unix {
     target.path = /usr/lib
