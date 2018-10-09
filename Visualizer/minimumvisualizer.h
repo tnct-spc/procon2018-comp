@@ -4,6 +4,7 @@
 #include <utility>
 #include <QDialog>
 #include <QPainter>
+#include <QMouseEvent>
 
 namespace Ui {
 class MinimumVisualizer;
@@ -22,10 +23,14 @@ public:
     void setValues(std::vector<std::vector<int>>& vec, int rgba);
     void setVal(std::vector<std::vector<double>> dval);
 
+signals:
+    void clickField(std::pair<int,int> size, std::vector<std::list<std::pair<int,int>>> routes, std::vector<std::vector<std::vector<int>>> value);
+
 private:
     std::pair<int,int> size;
     Ui::MinimumVisualizer *ui;
     void paintEvent(QPaintEvent *event);
+    void mousePressEvent(QMouseEvent *event);
 
     std::vector<std::list<std::pair<int,int>>> routes;
     std::vector<std::vector<std::vector<int>>> values;
