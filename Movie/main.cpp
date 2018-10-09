@@ -1,13 +1,13 @@
 #include <QApplication>
-#include "multiplevisualizer.h"
+#include "testmultiplevisualizer.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
 
-    MultipleVisualizer m;
-    m.show();
+    TestMultipleVisualizer m;
+    m.run();
 
     return a.exec();
 }

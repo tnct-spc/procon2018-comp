@@ -18,14 +18,12 @@ SOURCES += \
         testevaluatespeed.cpp \
         testconvertfield.cpp \
         testalgorithmplayout.cpp \
-    testmultiplevisualizer.cpp
 
 HEADERS += \
         testagentparam.h \
         testevaluatespeed.h \
         testconvertfield.h \
-        testalgorithmplayout.h \
-    testmultiplevisualizer.h
+        testalgorithmplayout.h
 
 LIBS += -L/usr/lib `pkg-config --libs opencv`
 LIBS += -L/usr/lib64 -lzbar

@@ -14,11 +14,13 @@ void TestMultipleVisualizer::run()
 //    std::shared_ptr<Visualizer> vis1 = std::make_shared<Visualizer>(*field1);
 //    std::shared_ptr<Visualizer> vis2 = std::make_shared<Visualizer>(*field2);
 
-    std::string path = "test1.csv";
+    std::string path = "../../build-procon2018-comp-Desktop-Release/Mejirodai/test1.csv";
+//    procon::Field field1(procon::CsvIo::importField(path));
 
     std::shared_ptr<procon::Field> field1 = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
 
-    std::string path = "test2.csv";
+    path = "../../build-procon2018-comp-Desktop-Release/Mejirodai/test2.csv";
+//    procon::Field field2(procon::CsvIo::importField(path));
 
     std::shared_ptr<procon::Field> field2 = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
 
