@@ -429,7 +429,6 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
 
         }
     }
-
 }
 
 // クリックされたエージェントまたはマスを照合
