@@ -2,6 +2,7 @@
 #define MULTIPLEVISUALIZER_H
 
 #include <QWidget>
+#include <QGridLayout>
 #include "visualizer.h"
 
 namespace Ui {

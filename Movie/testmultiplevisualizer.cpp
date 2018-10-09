@@ -14,31 +14,29 @@ void TestMultipleVisualizer::run()
 //    std::shared_ptr<Visualizer> vis1 = std::make_shared<Visualizer>(*field1);
 //    std::shared_ptr<Visualizer> vis2 = std::make_shared<Visualizer>(*field2);
 
-    std::string path = "../../build-procon2018-comp-Desktop-Release/Mejirodai/test1.csv";
+    std::string path = QFileDialog::getOpenFileName().toStdString();
 //    procon::Field field1(procon::CsvIo::importField(path));
 
     std::shared_ptr<procon::Field> field1 = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
 
-    path = "../../build-procon2018-comp-Desktop-Release/Mejirodai/test2.csv";
+    path = QFileDialog::getOpenFileName().toStdString();
 //    procon::Field field2(procon::CsvIo::importField(path));
 
     std::shared_ptr<procon::Field> field2 = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
 
-    std::shared_ptr<Visualizer> vis1 = std::make_shared<Visualizer>(*field1);
-    std::shared_ptr<Visualizer> vis2 = std::make_shared<Visualizer>(*field2);
-//    Visualizer* vis1 = new Visualizer(field1);
-//    Visualizer* vis2 = new Visualizer(field2);
+//    std::shared_ptr<Visualizer> vis1 = std::make_shared<Visualizer>(*field1);
+//    std::shared_ptr<Visualizer> vis2 = std::make_shared<Visualizer>(*field2);
+    Visualizer* vis1 = new Visualizer(*field1);
+    Visualizer* vis2 = new Visualizer(*field2);
 
     std::vector<Visualizer *> visualizers;
-//    visualizers.push_back(vis1);
-//    visualizers.push_back(vis2);
+    visualizers.push_back(vis1);
+    visualizers.push_back(vis2);
 
     MultipleVisualizer *window = new MultipleVisualizer;
     window->setVisualizers(visualizers);
     window->show();
 
-    int input;
-    std::cin >> input;
     std::cout << "finish" << std::endl;
 }
 
