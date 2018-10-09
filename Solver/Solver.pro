@@ -51,7 +51,8 @@ SOURCES += \
     simplemontecarlo/useabstmontecarlo.cpp \
     LastForce/lastforce.cpp \
     majorityrulewithabstdata.cpp \
-    depthfirstsearch.cpp
+    depthfirstsearch.cpp \
+    LastForce/lastregion.cpp
 
 HEADERS += \
         algorithm_global.h \ 
@@ -79,7 +80,8 @@ HEADERS += \
     simplemontecarlo/useabstmontecarlo.h \
     LastForce/lastforce.h \
     majorityrulewithabstdata.h \
-    depthfirstsearch.h
+    depthfirstsearch.h \
+    LastForce/lastregion.h
 
 unix {
     target.path = /usr/lib
