@@ -96,7 +96,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> LastRegion::ag
             int adv1;
             int state1 = getState(node_state, agent1_pos.first + LastRegion::dx.at(index_1), agent1_pos.second + LastRegion::dy.at(index_1));
 
-            std::cout<<state1<<std::endl;
+           // std::cout<<state1<<std::endl;
 
             if(state1 != side+1 && state1 != 0){
                 way1 = 2;
@@ -116,7 +116,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> LastRegion::ag
                 int adv2;
                 int state2 = getState(node_state, agent2_pos.first + LastRegion::dx.at(index_2), agent2_pos.second + LastRegion::dy.at(index_2));
 
-                std::cout<<state2<<std::endl;
+           //     std::cout<<state2<<std::endl;
 
                 if(state2 != side+1 && state2 != 0){
                     way2 = 2;
