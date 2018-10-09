@@ -17,11 +17,9 @@ void MultipleVisualizer::setVisualizers(std::vector<Visualizer *> visualizers)
 {
     QGridLayout *layout = new QGridLayout;
     for (auto vis : visualizers) {
-        vis->setFixedSize(300, 300);
+        vis->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         layout->addWidget(vis, vis_count / 2, vis_count % 2);
         vis_count++;
     }
     this->ui->visWidget->setLayout(layout);
-//    this->ui->gridLayout->setSizeConstraint(500 * vis_count + 200, 700);
-//    this->ui->gridLayout->widget()->setSizeIncrement(500 * vis_count + 200, 700);
 }
