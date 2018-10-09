@@ -7,35 +7,36 @@ TestMultipleVisualizer::TestMultipleVisualizer(QObject *parent)
 
 void TestMultipleVisualizer::run()
 {
-//    std::shared_ptr<procon::Field> field1 = std::make_shared<procon::Field>(x_size, y_size, 16, -16, true);
-//    std::shared_ptr<procon::Field> field2 = std::make_shared<procon::Field>(x_size, y_size, 16, -16, true);
-//    field1->setFinalTurn(turn_max);
-//    field2->setFinalTurn(turn_max);
-//    std::shared_ptr<Visualizer> vis1 = std::make_shared<Visualizer>(*field1);
-//    std::shared_ptr<Visualizer> vis2 = std::make_shared<Visualizer>(*field2);
 
-    std::string path = QFileDialog::getOpenFileName().toStdString();
-//    procon::Field field1(procon::CsvIo::importField(path));
+    pathes.first = QFileDialog::getOpenFileName().toStdString();
+    pathes.second = QFileDialog::getOpenFileName().toStdString();
 
-    std::shared_ptr<procon::Field> field1 = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
+    procon::Field f1 = procon::CsvIo::importField(pathes.first);
+    procon::Field f2 = procon::CsvIo::importField(pathes.second);
 
-    path = QFileDialog::getOpenFileName().toStdString();
-//    procon::Field field2(procon::CsvIo::importField(path));
-
-    std::shared_ptr<procon::Field> field2 = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
-
-//    std::shared_ptr<Visualizer> vis1 = std::make_shared<Visualizer>(*field1);
-//    std::shared_ptr<Visualizer> vis2 = std::make_shared<Visualizer>(*field2);
-    Visualizer* vis1 = new Visualizer(*field1);
-    Visualizer* vis2 = new Visualizer(*field2);
-
-    std::vector<Visualizer *> visualizers;
-    visualizers.push_back(vis1);
-    visualizers.push_back(vis2);
+    Visualizer* vis1;
+    Visualizer* vis2;
 
     MultipleVisualizer *window = new MultipleVisualizer;
-    window->setVisualizers(visualizers);
+
     window->show();
+
+    for(int count = 0; count < turn_max; ++count){
+        std::ostringstream ost;
+        ost << std::setfill('0') << std::setw(4) << count;
+        pathes.first = pathes.first.substr(0, pathes.first.length() - 4) + ost.str();
+
+        std::ostringstream ost2;
+        ost2 << std::setfill('0') << std::setw(4) << count;
+        pathes.second = pathes.second.substr(0, pathes.second.length() - 4) + ost.str();
+
+        f1 = procon::CsvIo::importField(pathes.first);
+        f2 = procon::CsvIo::importField(pathes.second);
+
+        vis1 = new Visualizer(f1);
+        vis2 = new Visualizer(f2);
+        window->setVisualizers(std::vector<Visualizer*>({vis1, vis2}));
+    }
 
     std::cout << "finish" << std::endl;
 }
