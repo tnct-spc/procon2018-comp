@@ -29,6 +29,8 @@ public:
     struct SearchNode;
 private:
 
+    std::mutex mtx;
+
     // {node, moves, values, depth_size, agent_values};
     std::tuple<std::shared_ptr<SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> calcMove(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
 

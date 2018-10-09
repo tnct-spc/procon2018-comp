@@ -505,6 +505,7 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool 
 }
 
 void DepthFirstSearch::addVisualizerToDock(const std::pair<int,int>& size, const std::vector<std::list<std::pair<int,int>>>& route, const std::vector<std::vector<std::vector<int>>>& color, const std::vector<std::vector<double>>& values){
+    std::lock_guard<std::mutex> lock(mtx);
     dock_stack.emplace(size, route, color, values);
 }
 
