@@ -125,12 +125,25 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
         }
 
     if(dock_show){
-        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_2}), colors_2, states_1.at(maxval - 1));
-        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves_1}), colors_1, states_2.at(maxval - 1));
+        std::pair<int,int> siz = field.getSize();
+        addVisualizerToDock(siz, std::vector<std::list<std::pair<int,int>>>({moves_2}), colors_2, states_1.at(maxval - 1));
+        addVisualizerToDock(siz, std::vector<std::list<std::pair<int,int>>>({moves_1}), colors_1, states_2.at(maxval - 1));
+
+        std::pair<int,int> pos;
+        std::vector<std::list<std::pair<int,int>>> route;
+        std::vector<std::vector<std::vector<int>>> value_int;
+        std::vector<std::vector<double>> value_double;
 
         while(!dock_stack.empty()){
-            dock->addMinumuVisu(std::get<0>(dock_stack.top()), std::get<1>(dock_stack.top()), std::get<2>(dock_stack.top()));
-            std::vector<std::vector<double>> values = std::move(std::get<3>(dock_stack.top()));
+
+            pos = std::get<0>(dock_stack.top());
+            route = std::get<1>(dock_stack.top());
+            value_int = std::get<2>(dock_stack.top());
+            value_double = std::get<3>(dock_stack.top());
+            std::tie(pos, route, value_int, value_double) = dock_stack.top();
+
+            dock->addMinumuVisu(pos, route, value_int);
+            std::vector<std::vector<double>> values = std::move(value_double);
             if(!values.empty())
                 dock->setValuesToBack(values);
             dock_stack.pop();
@@ -182,9 +195,6 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     for(int index = 0; index < 2; ++index)
         agent_pos.at(index) = field.getAgent(side, index);
 
-
-   //std::cout<<agent_pos.at(0).first + SearchNode::dx.at(move_1)<<" "<<agent_pos.at(0).second + SearchNode::dy.at(move_1)<<" "<<agent_pos.at(1).first + SearchNode::dx.at(move_2)<<" "<<agent_pos.at(1).second + SearchNode::dy.at(move_2)<<std::endl;
-   // std::cout<<" "<<std::endl;
 
     return std::make_pair(std::make_tuple((field.getState(agent_pos.at(0).first + SearchNode::dx.at(move_1), agent_pos.at(0).second + SearchNode::dy.at(move_1)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_1), SearchNode::dy.at(move_1)),
                           std::make_tuple((field.getState(agent_pos.at(1).first + SearchNode::dx.at(move_2), agent_pos.at(1).second + SearchNode::dy.at(move_2)).first != (side ? 1 : 2) ? 1 : 2), SearchNode::dx.at(move_2), SearchNode::dy.at(move_2)));
@@ -260,7 +270,6 @@ void DepthFirstSearch::setParams(DepthFirstSearch::Parameters& params){
         double value = 1;
         for(auto& val : penaRatio){
             val = value;
-            std::cout << val << std::endl;
             value *= params.pena_ratio_val;
         }
     }
@@ -610,7 +619,8 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool 
                         colors.at(index).at(x_pos).at(y_pos) = std::max(0, colors.at(index).at(x_pos).at(y_pos));
                 }
 
-        addVisualizerToDock(field.getSize(), std::vector<std::list<std::pair<int,int>>>({moves}), colors);
+        std::pair<int,int> siz = field.getSize();
+        addVisualizerToDock(siz, std::vector<std::list<std::pair<int,int>>>({moves}), colors);
 
     }else
         std::tie(std::ignore, std::ignore, ret_states) = calcMove(inp_side, agent, states, pred);
@@ -624,7 +634,8 @@ std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool 
 }
 
 void DepthFirstSearch::addVisualizerToDock(const std::pair<int,int>& size, const std::vector<std::list<std::pair<int,int>>>& route, const std::vector<std::vector<std::vector<int>>>& color, const std::vector<std::vector<double>>& values){
-    dock_stack.emplace(size, route, color, values);
+    std::lock_guard<std::mutex> lock(mtx);
+    dock_stack.push(std::make_tuple(size, route, color, values));
 }
 
 DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs, const std::vector<std::vector<std::vector<double>>>& predict, double predict_weight, int movecount) :
@@ -722,10 +733,8 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
 
     long long rearch = std::min(age1->size, age2->size);
 
-//    std::cout<<"YES"<<std::endl;
 
      rearch *= ratio;
-    //std::cout<<rearch<<std::endl;
     //rearch = 3;
      if(rearch == 0)rearch = 3;
 
@@ -740,7 +749,6 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         routes1.push_back(ins);
     }
 
-   // std::cout<<routes1.size()<<" "<<routes2.size()<<std::endl;
 
     for(int index = 0;index < rearch;index++){
         RoutesAndNode ins;
@@ -758,7 +766,6 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
         ins.CollectPos(side, 0, field);
         routes1.push_back(ins);
     }
-    // std::cout<<routes1.size()<<std::endl;
 
     for(auto ch :  age2->childs){
         RoutesAndNode ins;
@@ -830,7 +837,6 @@ void DepthFirstSearch::RoutesAndNode::CollectIndex(std::shared_ptr<SearchNode> n
         }
     }
     if(mi != -1e9){
-      //  std::cout<<way<<std::endl;
        indexs.push_back(way);
        CollectIndex(ins, false);
        if(flag){
@@ -894,8 +900,6 @@ std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
 
 void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Field field){
     route_pos.clear();
-  //  for(int a = 0;a < indexs.size();a++)std::cout<<" "<<indexs.at(a);
-  //  std::cout<<std::endl;
     std::pair<int,int> pos = field.getAgent(side, agent);
     route_pos.push_back(pos);
     std::vector<std::vector<int>> flag(12, std::vector<int>(12, 0));
@@ -906,7 +910,6 @@ void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Fi
     }
 
     auto moveAfter = [&](int move){
-       // std::cout<<SearchNode::dx.at(move) + pos.first<<" "<<SearchNode::dy.at(move) + pos.second<<std::endl;
         if(flag.at(SearchNode::dx.at(move) + pos.first).at(SearchNode::dy.at(move) + pos.second) != side + 1 && flag.at(SearchNode::dx.at(move) + pos.first).at(SearchNode::dy.at(move) + pos.second) != 0){
             flag.at(SearchNode::dx.at(move) + pos.first).at(SearchNode::dy.at(move) + pos.second) = 0;
             return pos;

@@ -35,6 +35,7 @@ public:
     Parameters getParams();
 
 private:
+    std::mutex mtx;
 
     // {node, moves, values, depth_size, agent_values};
     std::tuple<std::shared_ptr<SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> calcMove(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict);
@@ -89,11 +90,11 @@ private:
 
     double predict_weight;
 
-    double conflict_atk_per = 0.3;
+    double conflict_atk_per = 0.4;
 
-    double conflict_def_per = 1.4;
+    double conflict_def_per = 1.6;
 
-    double deverse_per = 0.5;
+    double deverse_per = 0.2;
 
     std::vector<int> penaRatio = {1,2,4,8,16,32,64,128,256,512,1024,2048,4096};
     std::vector<double> depth_weight = {1.8, 1.75, 1.7, 1.65, 1.6, 1.55, 1.5, 1.45, 1.4, 1.35, 1.3, 1.25, 1.2, 1.15, 1.1, 1.05, 1};
