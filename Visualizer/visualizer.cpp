@@ -293,6 +293,22 @@ void Visualizer::paintEvent(QPaintEvent *event){
         painter.drawText(text_point,QString::fromStdString(str));
     };
 
+    auto drawisEditMode = [&]{
+        QPoint text_point;
+        text_point.setX(horizontal_margin);
+        text_point.setY(vertical_margin - 1.2 * grid_size);
+
+        painter.setFont(QFont("Decorative", grid_size * 0.4, QFont::Thin)); // text font
+        painter.setPen(QPen(QBrush(QColor(250, 80, 80 , 80)), 0.3));
+
+
+        std::string str;
+        str = is_change_field_mode == true ? "EditMode" : "GameMode";
+        painter.drawText(text_point,QString::fromStdString(str));
+
+
+    };
+
     auto drawRegion = [&]{
 
         QFont text_font;
@@ -361,6 +377,7 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     drawBackGround();
     drawTiles();
+    drawisEditMode();
 
 
     if(is_change_field_mode && is_selected_grid) drawClickedGridWhenChangingMode();
