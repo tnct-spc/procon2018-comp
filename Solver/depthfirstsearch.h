@@ -11,6 +11,8 @@
 #include "minimumvisualizer.h"
 #include "minimumvisualizerdock.h"
 
+#include "LastForce/lastregion.h"
+
 #include "algorithmwrapper.h"
 
 #include "csvio.h"
@@ -133,15 +135,15 @@ struct DepthFirstSearch::Parameters{
     int maxval = 10;
 
 	// 均衡計算時に行動にかける重み
-    double predict_weight = 0.3;
+    double predict_weight = 0.6;
 	// 均衡計算時に味方エージェントとのコンフリクトにかける重み
     double ally_weight = 1.0;
 	// 相手の移動先に除去をする場合にかける重み
-    double conflict_atk_per = 0.3;
+    double conflict_atk_per = 0.4;
 	// 相手が付近にいる状態で除去をする場合にかける重み
-    double conflict_def_per = 1.4;
+    double conflict_def_per = 1.6;
 	// 多様性のある行動の重視度
-    double deverse_per = 0.5;
+    double deverse_per = 0.2;
 
     // コンフリクト対処時にかけるペナルティの倍率(逆数,単調増加が望ましい)
     std::vector<int> penaRatio = {1,2,4,8,16,32,64,128,256,512,1024,2048,4096};
