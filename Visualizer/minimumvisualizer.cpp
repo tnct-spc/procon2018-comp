@@ -132,3 +132,7 @@ void MinimumVisualizer::setValues(std::vector<std::vector<int>>& vec, int rgba){
 void MinimumVisualizer::setVal(std::vector<std::vector<double>> dval){
     val = std::move(dval);
 }
+
+void MinimumVisualizer::mousePressEvent(QMouseEvent *event) {
+    emit clickField(size, routes, values);
+}
