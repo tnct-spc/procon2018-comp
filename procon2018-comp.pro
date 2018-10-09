@@ -9,3 +9,4 @@ SUBDIRS += \
     Mejirodai \
     Simulator \
     Test \
+    Movie
