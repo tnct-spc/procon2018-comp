@@ -257,8 +257,6 @@ void DepthFirstSearch::setParams(DepthFirstSearch::Parameters& params){
     ally_weight      = params.ally_weight;
     conflict_atk_per = params.conflict_atk_per;
     conflict_def_per = params.conflict_def_per;
-    depth_weight     = params.depth_weight;
-    conflict_weight  = params.conflict_weight;
     deverse_per      = params.deverse_per;
     loop_count       = params.loop_count;
     predict_weight   = params.predict_weight;
@@ -275,6 +273,28 @@ void DepthFirstSearch::setParams(DepthFirstSearch::Parameters& params){
     }
     else
         penaRatio        = params.penaRatio;
+
+    if(params.depth_weight_val != -1){
+        double value = 1;
+        for(auto it = std::prev(depth_weight.end()); it >= depth_weight.begin(); --it){
+            auto& val = (*it);
+            val = value;
+            value *= params.depth_weight_val;
+        }
+    }
+    else
+        depth_weight        = params.depth_weight;
+
+    if(params.conflict_weight_val != -1){
+        double value = 1;
+        for(auto it = std::prev(conflict_weight.end()); it >= conflict_weight.begin(); --it){
+            auto& val = (*it);
+            val = value;
+            value *= params.conflict_weight_val;
+        }
+    }
+    else
+        conflict_weight        = params.conflict_weight;
 }
 
 DepthFirstSearch::Parameters DepthFirstSearch::getParams(){
