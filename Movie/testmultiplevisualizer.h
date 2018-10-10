@@ -7,6 +7,10 @@
 #include <field.h>
 #include <QFileDialog>
 #include "csvio.h"
+#include <QWaitCondition>
+#include <QMutex>
+
+#include <iomanip>
 
 class TestMultipleVisualizer : public QAbstractItemModel
 {
@@ -16,6 +20,8 @@ public:
     explicit TestMultipleVisualizer(QObject *parent = nullptr);
 
     void run();
+
+    std::pair<std::string, std::string> pathes;
 
     // Header:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
@@ -31,6 +37,11 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
 private:
+
+    QMutex mtx;
+    QWaitCondition wait_simulator;
+
+    const int turn_max = 30;
 };
 
 #endif // TESTMULTIPLEVISUALIZER_H

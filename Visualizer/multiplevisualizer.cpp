@@ -28,4 +28,7 @@ void MultipleVisualizer::setVisualizers(std::vector<Visualizer *> visualizers)
         dock->addVisuAnswer(field);
     }
     this->ui->visWidget->setLayout(layout);
+    this->update();
+    this->repaint();
+    this->ui->visWidget->layout()->update();
 }
