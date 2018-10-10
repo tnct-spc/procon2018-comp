@@ -48,7 +48,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
             threads.at(index).join();
     }
 
-	// 予測をもとにした各深さごとのペナルティ(高いほど味方が踏みやすい)
+	// 予測をもとにした各深さごとのペナルティ(高いほど味方が踏みやすい)(累積しない)
     std::vector<std::vector<std::vector<double>>> pred(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0)));
     for(int index = 0; index < 4; ++index)
         if(index != side * 2)
@@ -71,7 +71,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 
     std::tie(node_2, moves_2, states_2) = calcMove(side, 1, states, pred);
 
-	// 
+	// kターン後にどのマスが踏まれるかの予測値の累積和を取る
     for(int depth = 0; depth < maxval - 1; ++depth)
         for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
             for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
@@ -79,8 +79,10 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
                 states_2.at(depth + 1).at(pos_x).at(pos_y) += states_2.at(depth).at(pos_x).at(pos_y);
             }
 
+	// 探索する末尾の深さ
     int depth_index = std::max(maxval - 1, 0);
 
+	// 現在の盤面から予測した変動量(の累積和)だけafter_valuesを変動させる
     for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
         for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
 
@@ -95,6 +97,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
         std::cout << "node_2 size : " << node_2->size << " , " << node_2->real_size << std::endl;
     }
 
+	// after_valuesの値によって色付け
     std::vector<std::vector<std::vector<int>>> colors(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
     for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
         for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
@@ -115,6 +118,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     std::vector<std::vector<std::vector<int>>> colors_1(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
     std::vector<std::vector<std::vector<int>>> colors_2(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
 
+	// 各エージェントの出した予測値(の累積和)を元に色つけ
     for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
         for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
 
@@ -131,6 +135,8 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 
     if(dock_show){
         std::pair<int,int> siz = field.getSize();
+
+		// dock_stackに追加 valueには踏まれる可能性の(累積和の)値を格納
         addVisualizerToDock(siz, std::vector<std::list<std::pair<int,int>>>({moves_2}), colors_2, states_1.at(maxval - 1));
         addVisualizerToDock(siz, std::vector<std::list<std::pair<int,int>>>({moves_1}), colors_1, states_2.at(maxval - 1));
 
@@ -141,6 +147,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 
         while(!dock_stack.empty()){
 
+			// dockに投入
             pos = std::get<0>(dock_stack.top());
             route = std::get<1>(dock_stack.top());
             value_int = std::get<2>(dock_stack.top());
@@ -163,6 +170,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
         minimum->setRoute(use_vec);
         */
 
+		// 色指定してビジュアライザに投入
         for(int index = 0; index < 3; ++index)
             minimum->setValues(colors.at(index), index);
 
@@ -175,11 +183,13 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
         return std::make_pair(std::make_tuple(0, 0, 0), std::make_tuple(0, 0, 0));
     }
 
+	// (コンフリクトを考慮していない)最大利得の手
     int move_1 = node_1->getMaxAdvMove().second;
     int move_2 = node_2->getMaxAdvMove().second;
 
 
 
+	// コンフリクト考慮をした上での手を取得
     std::pair<std::pair<int,int>,int> ins = getMaxAdvMove(node_1, node_2);
 
     move_1 = ins.first.first;
@@ -245,6 +255,7 @@ void DepthFirstSearch::setParams(std::vector<std::pair<QString, double>> params)
     }
 }
 
+// Parametersが入力された時に反映
 void DepthFirstSearch::setParams(DepthFirstSearch::Parameters& params){
     assert(params.ally_weight >= -5 && params.ally_weight <= 15);
     assert(params.predict_weight >= -5 && params.predict_weight <= 5);
@@ -302,6 +313,7 @@ void DepthFirstSearch::setParams(DepthFirstSearch::Parameters& params){
         conflict_weight        = params.conflict_weight;
 }
 
+// Parametersを取得
 DepthFirstSearch::Parameters DepthFirstSearch::getParams(){
     Parameters params;
     params.ally_weight      = ally_weight;
@@ -323,8 +335,10 @@ DepthFirstSearch::Parameters DepthFirstSearch::getParams(){
     return params;
 }
 
+// beamsearch 本質
 std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBeamSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
 
+	// pri_que代わりのtreap
     std::vector<std::shared_ptr<Treap>> treap_vec;
     for(int count = 0; count < 2; ++count)
         treap_vec.emplace_back(std::make_shared<Treap>());
@@ -332,6 +346,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
     std::shared_ptr<SearchNode> parent = std::make_shared<SearchNode>(0.0, 0, predict_weight, movecount);
     treap_vec.at(0)->insert(std::make_pair(0.0, std::make_pair(0.0, parent)));
 
+	// 盤面の値をdoubleに置き換えて保管、最大値で割って[1,-1]の範囲で平均化する
     const std::vector<std::vector<int>>& value = field.getValue();
     std::vector<std::vector<double>> double_value(field.getSize().first, std::vector<double>(field.getSize().second));
     int max_value = 0;
@@ -347,14 +362,18 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
     std::pair<int,int> old_pos = field.getAgent(inp_side, agent);
     for(int dep = 0; dep < maxval + 1; ++dep){
 
+		// beforeを吐き出しながらafterに詰め込む
         std::shared_ptr<Treap> before = treap_vec.at(dep % 2);
         std::shared_ptr<Treap> after = treap_vec.at((dep + 1) % 2);
 
+		// 重複判定に使うやつ
         std::vector<std::vector<int>> put_tile_count(field.getSize().first, std::vector<int>(field.getSize().second, 0));
         int put_tile_sum = 0;
 
         std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter> node_map;
+		// 全ての手に対して
         while(before->size()){
+
             std::pair<double, std::shared_ptr<SearchNode>> element = before->get(0).second;
             double now_adv = element.first;
             std::shared_ptr<SearchNode> node = element.second;
@@ -366,8 +385,9 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
             }
 
             SearchNode* now_node = node.get();
-            std::pair<int,int> pos(old_pos);
 
+			// 遡りながら移動先を保存(方向,is_move)
+			// rev_moveはbackが根側になる
             std::vector<std::pair<int,int>> rev_move;
             while(now_node->parent.first){
                 rev_move.emplace_back(now_node->parent.second, now_node->parent.first->childs[now_node->parent.second].second);
@@ -378,6 +398,9 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
 
             double conflict_value = 0.0;
 
+            std::pair<int,int> pos(old_pos);
+
+			// 根から子の方向へ進んでbitsetに回数を格納、put_tile_countに加算する
             for(int index = rev_move.size() - 1; index >= 0; --index){
                 int move_index = rev_move.at(index).first;
                 bool is_move = rev_move.at(index).second & 1;
@@ -408,23 +431,29 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
             bs &= ~std::bitset<296>(255);
             bs |= ((pos.first << 4) | pos.second);
 
+			// 全方向に対して
             for(int index = 0; index < 8; ++index){
                 int x_pos = pos.first + SearchNode::dx.at(index);
                 int y_pos = pos.second + SearchNode::dy.at(index);
+				// 行動が可能なら
                 if(!(x_pos < 0 || y_pos < 0 || x_pos >= static_cast<int>(state.size()) || y_pos >= static_cast<int>(state.at(0).size()))){
 
                     std::pair<int,int> newpos_pair(x_pos, y_pos);
+					// 敵エージェントの位置
                     std::vector<std::pair<int,int>> enemy_agents = {field.getAgent(inp_side ^ 1, 0), field.getAgent(inp_side ^ 1, 1)};
 
                     bool is_move = (state.at(x_pos).at(y_pos) != 2);
                     bool is_replace = state.at(x_pos).at(y_pos);
 
                     bool is_conflict = (newpos_pair == enemy_agents.at(0)) || (newpos_pair == enemy_agents.at(1));
+					// 敵のエージェントが8近傍に存在するなら
                     bool is_defence = ((std::abs(enemy_agents.at(0).first - x_pos) <= 1) && (std::abs(enemy_agents.at(0).second - y_pos) <= 1)) ||
                                       ((std::abs(enemy_agents.at(1).first - x_pos) <= 1) && (std::abs(enemy_agents.at(1).second - y_pos) <= 1));
 
-                    double point = depth_weight.at(dep) * double_value.at(x_pos).at(y_pos) * (1.0 - predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0));
+					// 踏むマスの得点 * 深さごとの重み * (累積しない)そのマスの予測変化率
+                    double point = depth_weight.at(dep) * double_value.at(x_pos).at(y_pos) * (1.0 - std::min(1.0, predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0)));
 
+					// 諸々の処理(主に敵エージェントとのコンフリクト対応とか)
                     if(!is_replace)
                         point = 0;
                     if(is_conflict)
@@ -432,14 +461,17 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                     if(is_defence && !is_move)
                         point *= conflict_def_per;
 
-                    double conf_pri =  conflict_value + conflict_weight.at(rev_move.size()) * put_tile_count.at(pos.first + SearchNode::dx.at(index)).at(pos.second + SearchNode::dy.at(index)) / put_tile_sum;
+					// 次のTreapに採用する優先度は多様性ペナルティを考慮する
+					// 今までの多様性ペナ + この行動での多様性ペナ
+                    double conf_pri =  conflict_value + conflict_weight.at(rev_move.size()) * put_tile_count.at(x_pos).at(y_pos) / put_tile_sum;
 
-                    ++put_tile_count.at(pos.first + SearchNode::dx.at(index)).at(pos.second + SearchNode::dy.at(index));
+                    ++put_tile_count.at(x_pos).at(y_pos);
                     ++put_tile_sum;
 
+					// 多様性ペナを倍率としてかけてしまう
                     double priority = (now_adv + point) * (1 - std::min(1.0, conf_pri * deverse_per));
 
-                    int bit_index = 8 + ((pos.first + SearchNode::dx.at(index)) * 12 + (pos.second + SearchNode::dy.at(index))) * 2;
+                    int bit_index = 8 + (x_pos * 12 + y_pos) * 2;
                     int bit_count = ((bs >> bit_index) & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
 
                     if(is_replace){
@@ -447,9 +479,11 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                         bs |= std::bitset<296>(bit_count + 1) << bit_index;
                     }
 
+					// 枝が重複しているならsize増やして終了(枝切り)
                     if(node_map.count(bs)){
                         ++node_map[bs]->size;
                     }else{
+						// なんかいい感じに子を作ってる
                         node->childs[index] = std::make_pair(std::make_shared<SearchNode>(point, dep + 1, predict_weight, movecount), static_cast<int>(is_move) | (static_cast<int>(is_replace) << 1));
                         node->childs[index].first->parent = std::make_pair(node.get(), index);
                         node_map[bs] = node->childs[index].first;
@@ -464,6 +498,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
             }
 
             pos = old_pos;
+			// 前と同様にstateを戻していく
             for(int index = rev_move.size() - 1; index >= 0; --index){
                 int move_index = rev_move.at(index).first;
                 bool is_move = rev_move.at(index).second & 1;
@@ -479,6 +514,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
             if(node->childs.empty())
                 node->is_back = true;
 
+			// pri_queの最大サイズ制限
             if(after->size() > beam_width)
                 after->erase_back(beam_width);
         }
@@ -490,6 +526,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
 
 std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<int,int>>, std::vector<std::vector<std::vector<double>>>> DepthFirstSearch::calcMove(bool inp_side, int agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
 
+	// nodeを根にした木を生成する
     std::shared_ptr<SearchNode> node;
     if(use_beamsearch)
         node = createNodeWithBeamSearch(inp_side, agent, state, predict);
@@ -568,6 +605,7 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
         std::for_each(vec.begin(), vec.end(), [siz](std::vector<double>& v){std::for_each(v.begin(), v.end(), [siz](double& val){if(val && siz)val /= siz;});});
     }
 
+	// valuesは累積されていないものなはず
     return std::make_tuple(node, moves, values);
 }
 
