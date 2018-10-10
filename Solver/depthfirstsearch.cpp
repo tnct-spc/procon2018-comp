@@ -26,7 +26,9 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     std::vector<std::vector<std::vector<int>>> agent_states_1, agent_states_2;
 
     std::vector<std::vector<double>> after_values(field.getSize().first, std::vector<double>(field.getSize().second, 1));
+	// 元々の盤面状況
     std::vector<std::vector<int>> states(field.getSize().first, std::vector<int>(field.getSize().second, 1));
+
     for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
         for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
             int pos_state = field.getState(pos_x, pos_y).first;
@@ -36,6 +38,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
             }
         }
 
+	// 勝率予測用をマルチスレッドで動かす
     for(int cou = 0; cou < loop_count; ++cou){
         std::vector<std::thread> threads;
         for(int index = 0; index < 4; ++index)
@@ -45,6 +48,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
             threads.at(index).join();
     }
 
+	// 予測をもとにした各深さごとのペナルティ(高いほど味方が踏みやすい)
     std::vector<std::vector<std::vector<double>>> pred(maxval, std::vector<std::vector<double>>(field.getSize().first, std::vector<double>(field.getSize().second, 0.0)));
     for(int index = 0; index < 4; ++index)
         if(index != side * 2)
@@ -67,6 +71,7 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
 
     std::tie(node_2, moves_2, states_2) = calcMove(side, 1, states, pred);
 
+	// 
     for(int depth = 0; depth < maxval - 1; ++depth)
         for(int pos_x = 0; pos_x < field.getSize().first; ++pos_x)
             for(int pos_y = 0; pos_y < field.getSize().second; ++pos_y){
@@ -316,18 +321,6 @@ DepthFirstSearch::Parameters DepthFirstSearch::getParams(){
     params.penaRatio = penaRatio;
 
     return params;
-}
-
-
-std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithDepthSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
-    const std::vector<std::vector<int>>& field_values = field.getValue();
-
-    std::pair<int,int> agent_pos = field.getAgent(inp_side, agent);
-    std::bitset<296> bs((agent_pos.first << 4) + agent_pos.second);
-
-    std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter> node_map;
-    return std::make_shared<SearchNode>(0, 0, maxval, agent_pos, inp_side, field_values, state, node_map, bs, predict, predict_weight, movecount);
-
 }
 
 std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBeamSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
@@ -657,6 +650,19 @@ void DepthFirstSearch::addVisualizerToDock(const std::pair<int,int>& size, const
     std::lock_guard<std::mutex> lock(mtx);
     dock_stack.push(std::make_tuple(size, route, color, values));
 }
+
+
+std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithDepthSearch(bool inp_side, bool agent, std::vector<std::vector<int>>& state, const std::vector<std::vector<std::vector<double>>>& predict){
+    const std::vector<std::vector<int>>& field_values = field.getValue();
+
+    std::pair<int,int> agent_pos = field.getAgent(inp_side, agent);
+    std::bitset<296> bs((agent_pos.first << 4) + agent_pos.second);
+
+    std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter> node_map;
+    return std::make_shared<SearchNode>(0, 0, maxval, agent_pos, inp_side, field_values, state, node_map, bs, predict, predict_weight, movecount);
+
+}
+
 
 DepthFirstSearch::SearchNode::SearchNode(double adv, int depth, int remain, std::pair<int,int> pos, int side, const std::vector<std::vector<int>>& value, std::vector<std::vector<int>>& state, std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter>& node_map, std::bitset<296>& bs, const std::vector<std::vector<std::vector<double>>>& predict, double predict_weight, int movecount) :
 
