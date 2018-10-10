@@ -24,6 +24,7 @@ void MultipleVisualizer::clearLayout(QLayout *layout)
         delete item->widget();
     }
     delete layout;
+
 }
 
 void MultipleVisualizer::setCsv(std::pair<std::string, std::string> csv_path){
@@ -41,8 +42,6 @@ void MultipleVisualizer::setCsv(std::pair<std::string, std::string> csv_path){
     layout->addWidget(vis.second, 0, 1);
 
     this->ui->visWidget->setLayout(layout);
-    this->update();
-    this->repaint();
     this->ui->visWidget->layout()->update();
     this->update();
     this->repaint();

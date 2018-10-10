@@ -37,6 +37,7 @@ void TestMultipleVisualizer::run()
         window->repaint();
 
         wait_simulator.wait(&mtx, 1000);
+
     }
 
     std::cout << "finish" << std::endl;
