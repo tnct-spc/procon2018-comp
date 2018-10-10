@@ -80,7 +80,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> LastRegion::ag
 
         if(depth >= std::min(max_turn_count, field.getFinalTurn() - field.getTurnCount())){
             if(ans_adv <= adv){
-                adv = ans_adv;
+                ans_adv = adv;
                 ans = log.front();
             }
             continue;
