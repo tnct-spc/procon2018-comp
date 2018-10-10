@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QGridLayout>
+#include <QLayoutItem>
 #include "visualizer.h"
 #include "progresdock.h"
 
@@ -20,6 +21,8 @@ public:
 
     // 表示するVisualizerの設置
     void setVisualizers(std::vector<Visualizer *> visalizers);
+
+    void clearLayout(QLayout *layout);
 
 private:
     Ui::MultipleVisualizer *ui;

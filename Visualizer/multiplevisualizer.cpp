@@ -16,9 +16,21 @@ MultipleVisualizer::~MultipleVisualizer()
     delete ui;
 }
 
+void MultipleVisualizer::clearLayout(QLayout *layout)
+{
+    if (!layout) return;
+    QLayoutItem *item;
+    while ((item = layout->takeAt(0))) {
+        delete item->widget();
+    }
+    delete layout;
+}
+
 void MultipleVisualizer::setVisualizers(std::vector<Visualizer *> visualizers)
 {
+    clearLayout(this->ui->visWidget->layout());
     QGridLayout *layout = new QGridLayout;
+    vis_count = 0;
     for (auto vis : visualizers) {
         vis->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         layout->addWidget(vis, vis_count / 2, vis_count % 2);
