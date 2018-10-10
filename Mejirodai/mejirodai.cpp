@@ -79,17 +79,21 @@ void Mejirodai::RunManagerSimulation(){
     // 自チームのアルゴリズム用パラメータ
     std::vector<std::pair<QString, double>> my_params;
 
-    // childern
-    QObjectList objects = ui->my_stackedWidget->widget(ui->selectMyAlgorithmBox->currentIndex())->children();
+    QObjectList objects;
 
-    my_params = getParams(objects);
+    // childern
+    if (ui->my_stackedWidget->widget(ui->selectMyAlgorithmBox->currentIndex())) {
+        objects = ui->my_stackedWidget->widget(ui->selectMyAlgorithmBox->currentIndex())->children();
+        my_params = getParams(objects);
+    }
 
     // 相手チームのアルゴリズム用パラメータ
     std::vector<std::pair<QString, double>> opponent_params;
 
-    objects = ui->opponent_stackedWidget->widget(ui->selectOpponentAlgorithmBox->currentIndex())->children();
-
-    opponent_params = getParams(objects);
+    if (ui->opponent_stackedWidget->widget(ui->selectOpponentAlgorithmBox->currentIndex())) {
+        objects = ui->opponent_stackedWidget->widget(ui->selectOpponentAlgorithmBox->currentIndex())->children();
+        opponent_params = getParams(objects);
+    }
 
 //    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
     manager->startSimulation(my, opponnent, InputMethod, my_params, opponent_params);
