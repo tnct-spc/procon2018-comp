@@ -60,3 +60,22 @@ void ProgresDock::clickedAnswer(std::pair<int,int> size, std::vector<std::list<s
 //void Visualizer::mousePressEvent(QMouseEvent *event) {
 //    std::cout << "OK Vis" << std::endl;
 //}
+
+void ProgresDock::addVisuCSV(std::pair<std::string, std::string> pathes)
+{
+    procon::Field f1 = procon::CsvIo::importField(pathes.first);
+    procon::Field f2 = procon::CsvIo::importField(pathes.second);
+
+    Visualizer* vis1;
+    Visualizer* vis2;
+
+    vis1 = new Visualizer(f1);
+    vis2 = new Visualizer(f2);
+
+    vis1->setFixedSize(300,300);
+    vis2->setFixedSize(300,300);
+
+    this->ui->board_continer->addWidget(vis1,field_count/4,field_count%4);
+    this->ui->board_continer->addWidget(vis2,field_count/4,field_count%4);
+    field_count++;
+}

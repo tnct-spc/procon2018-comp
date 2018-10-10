@@ -8,6 +8,9 @@ TestMultipleVisualizer::TestMultipleVisualizer(QObject *parent)
 void TestMultipleVisualizer::run()
 {
 
+    dock = std::make_shared<ProgresDock>();
+    dock->show();
+
     pathes.first = QFileDialog::getOpenFileName().toStdString();
     pathes.second = QFileDialog::getOpenFileName().toStdString();
 
@@ -16,6 +19,8 @@ void TestMultipleVisualizer::run()
 
     Visualizer* vis1;
     Visualizer* vis2;
+
+    dock->addVisuCSV(pathes);
 
     MultipleVisualizer *window = new MultipleVisualizer;
 
@@ -29,6 +34,8 @@ void TestMultipleVisualizer::run()
         std::ostringstream ost2;
         ost2 << std::setfill('0') << std::setw(6) << count;
         pathes.second = pathes.second.substr(0, pathes.second.length() - 6) + ost.str();
+
+        dock->addVisuCSV(pathes);
 
         f1 = procon::CsvIo::importField(pathes.first);
         f2 = procon::CsvIo::importField(pathes.second);

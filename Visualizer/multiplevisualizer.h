@@ -6,7 +6,6 @@
 #include <QLayoutItem>
 #include "visualizer.h"
 #include "progresdock.h"
-
 namespace Ui {
 class MultipleVisualizer;
 }

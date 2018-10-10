@@ -11,6 +11,7 @@
 #include <QMutex>
 
 #include <iomanip>
+#include "progresdock.h"
 
 class TestMultipleVisualizer : public QAbstractItemModel
 {
@@ -40,6 +41,9 @@ private:
 
     QMutex mtx;
     QWaitCondition wait_simulator;
+
+
+    std::shared_ptr<ProgresDock> dock;
 
     const int turn_max = 30;
 };

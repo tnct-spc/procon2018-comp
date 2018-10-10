@@ -6,6 +6,7 @@
 #include"field.h"
 #include"visualizer.h"
 #include"minimumvisualizer.h"
+#include "csvio.h"
 
 namespace Ui {
 class ProgresDock;
@@ -25,6 +26,7 @@ public:
 
 public slots:
     void clickedAnswer(std::pair<int,int> size, std::vector<std::list<std::pair<int,int>>> routes, std::vector<std::vector<std::vector<int>>> value);
+    void addVisuCSV(std::pair<std::string, std::string> pathes);
 
 private:
     Ui::ProgresDock *ui;

@@ -37,10 +37,12 @@ void MultipleVisualizer::setVisualizers(std::vector<Visualizer *> visualizers)
         vis_count++;
 
         procon::Field field = vis->getField();
-        dock->addVisuAnswer(field);
+//        dock->addVisuAnswer(field);
     }
     this->ui->visWidget->setLayout(layout);
     this->update();
     this->repaint();
     this->ui->visWidget->layout()->update();
+//    dock->update();
+//    dock->repaint();
 }
