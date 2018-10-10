@@ -3,30 +3,26 @@
 TestMultipleVisualizer::TestMultipleVisualizer(QObject *parent)
     : QAbstractItemModel(parent)
 {
+    window = std::make_shared<MultipleVisualizer>();
+
+    connect(this, &TestMultipleVisualizer::sendCsv, window.get(), &MultipleVisualizer::setCsv);
+
+    pathes.first = QFileDialog::getOpenFileName().toStdString();
+    pathes.second = QFileDialog::getOpenFileName().toStdString();
+
+    window->setCsv(std::make_pair(pathes.first, pathes.second));
+    window->show();
+
+    window->update();
+    window->repaint();
+
 }
 
 void TestMultipleVisualizer::run()
 {
 
-    dock = std::make_shared<ProgresDock>();
-    dock->show();
-
-    pathes.first = QFileDialog::getOpenFileName().toStdString();
-    pathes.second = QFileDialog::getOpenFileName().toStdString();
-
-    procon::Field f1 = procon::CsvIo::importField(pathes.first);
-    procon::Field f2 = procon::CsvIo::importField(pathes.second);
-
-    Visualizer* vis1;
-    Visualizer* vis2;
-
-    dock->addVisuCSV(pathes);
-
-    MultipleVisualizer *window = new MultipleVisualizer;
-
-    window->show();
-
     for(int count = 0; count < turn_max; ++count){
+        std::cout << "count : " << count << std::endl;
         std::ostringstream ost;
         ost << std::setfill('0') << std::setw(6) << count;
         pathes.first = pathes.first.substr(0, pathes.first.length() - 6) + ost.str();
@@ -35,14 +31,8 @@ void TestMultipleVisualizer::run()
         ost2 << std::setfill('0') << std::setw(6) << count;
         pathes.second = pathes.second.substr(0, pathes.second.length() - 6) + ost.str();
 
-        dock->addVisuCSV(pathes);
+        emit sendCsv(std::make_pair(pathes.first, pathes.second));
 
-        f1 = procon::CsvIo::importField(pathes.first);
-        f2 = procon::CsvIo::importField(pathes.second);
-
-        vis1 = new Visualizer(f1);
-        vis2 = new Visualizer(f2);
-        window->setVisualizers(std::vector<Visualizer*>({vis1, vis2}));
         window->update();
         window->repaint();
 

@@ -23,6 +23,9 @@ public:
 
     void clearLayout(QLayout *layout);
 
+public slots:
+    void setCsv(std::pair<std::string, std::string> csv_path);
+
 private:
     Ui::MultipleVisualizer *ui;
     int vis_count = 0;

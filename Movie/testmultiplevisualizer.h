@@ -37,11 +37,15 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
+signals:
+    void sendCsv(std::pair<std::string, std::string> csv_path);
+
 private:
 
     QMutex mtx;
     QWaitCondition wait_simulator;
 
+    std::shared_ptr<MultipleVisualizer> window;
 
     std::shared_ptr<ProgresDock> dock;
 
