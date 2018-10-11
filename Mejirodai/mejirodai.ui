@@ -755,6 +755,13 @@
       </property>
      </widget>
     </item>
+    <item row="10" column="2">
+     <widget class="QCheckBox" name="SetRandomParams">
+      <property name="text">
+       <string>SetRandomParams</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -763,7 +770,7 @@
      <x>0</x>
      <y>0</y>
      <width>977</width>
-     <height>33</height>
+     <height>18</height>
     </rect>
    </property>
   </widget>

@@ -43,6 +43,7 @@ private:
 
     // Runボタンが押されたか
     bool runMode = false;
+    bool SRC = false;
 };
 
 #endif // MEJIRODAI_H

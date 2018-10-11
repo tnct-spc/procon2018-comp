@@ -970,4 +970,44 @@ void DepthFirstSearch::Treap::erase_back(int k){
     root = _erase_back(root, k);
 }
 
+void DepthFirstSearch::setRandomParams(std::vector<std::pair<QString, double>> params){
+  std::random_device random_seed;
+  boost::random::mt19937 mt(random_seed());
+  boost::random::uniform_real_distribution<> dist(-5.00,5.00);
+  boost::random::uniform_real_distribution<> dista(0.01,1.00);
+    auto search = [&](std::string param_name) {
+        // 渡されたvectorのすべての要素を検索する
+        int count = params.size();
+
+        for (int i = 0; i < count; i++) {
+
+            // vector内のQStringにパラメータ名が含まれていないか確認
+            if (params.at(i).first.toStdString().find(param_name) != std::string::npos) {
+                // 該当するものがあったら数値を返す
+                return params.at(i).second;
+            }
+        }
+        // 見つからなかったらdoubleの最大値を返す
+        return std::numeric_limits<double>::max();
+    };
+
+    bool dockshow_before = dock_show;
+
+    // 自チームのパラメータを設定
+    dock_show = (bool)search("dock_show");
+    vis_show = (bool)search("vis_show");
+    maxval = (int)search("maxval");
+    loop_count = (int)search("loop_count");
+    movecount = (int)search("movecount");
+
+    predict_weight = dist(mt);
+    ally_weight = dist(mt);
+    ratio = dista(mt);
+    use_beamsearch = true;
+    beam_width = 4;
+
+    if(!dockshow_before && dock_show)
+        dock->show();
+}
+
 np DepthFirstSearch::TreapNode::nil = std::make_shared<DepthFirstSearch::TreapNode>(value_type(), 0);
