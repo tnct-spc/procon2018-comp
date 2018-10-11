@@ -33,8 +33,12 @@ void TestMultipleVisualizer::run()
 
         emit sendCsv(std::make_pair(pathes.first, pathes.second));
 
+
         window->update();
         window->repaint();
+
+        std::string a = QFileDialog::getOpenFileName().toStdString();
+
 
         wait_simulator.wait(&mtx, 1000);
 
