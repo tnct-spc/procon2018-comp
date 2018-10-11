@@ -184,7 +184,7 @@ struct DepthFirstSearch::SearchNode : public std::enable_shared_from_this<Search
     std::pair<int,int> getMaxAdvMove();
 };
 
-using value_type = std::pair<double, std::pair<double, std::shared_ptr<DepthFirstSearch::SearchNode>>>;
+using value_type = std::pair<double, std::shared_ptr<DepthFirstSearch::SearchNode>>;
 
 using np = std::shared_ptr<DepthFirstSearch::TreapNode>;
 
