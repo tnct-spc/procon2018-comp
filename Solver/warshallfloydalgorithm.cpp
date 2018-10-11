@@ -33,31 +33,61 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 
                 wf_vector.at(start_index).at(end_index).sum = (end_pos_state.first == side + 1 ? 0 : end_pos_state.second * length);
             }
+        wf_vector.at(start_index).at(start_index).length = 0;
     }
 
-    for(int k = 0; k < size_sum; ++k)
-        for(int i = 0; i < size_sum; ++i)
-            for(int j = 0; j < size_sum; ++j)
-                wf_vector.at(i).at(j) = std::min(wf_vector.at(i).at(j), wf_vector.at(i).at(k) + wf_vector.at(k).at(j));
+    auto conflict_check = [&](int st, int en, int center){
+
+        if(st == en)
+            return true;
+
+        // [st,center)
+        std::set<int> front_set;
+        while(st != center){
+            front_set.insert(st);
+            st = wf_vector.at(st).at(center).next;
+            front_set.insert(st);
+        }
+
+        // [center,en)
+        while(center != en){
+            center = wf_vector.at(center).at(en).next;
+            if(front_set.count(center))
+                return true;
+            std::cout << st << " " << center << " " << en << std::endl;
+        }
+        return false;
+    };
+
+    for(int center = 0; center < size_sum; ++center)
+        for(int begin = 0; begin < size_sum; ++begin)
+            for(int end = 0; end < size_sum; ++end)
+                // if(wf_vector.at(begin).at(center).length != -1 && wf_vector.at(center).at(end).length != -1)
+                if(wf_vector.at(begin).at(center).length != -1 && wf_vector.at(center).at(end).length != -1 && !conflict_check(begin, end, center))
+                    wf_vector.at(begin).at(end) = std::max(wf_vector.at(begin).at(end), wf_vector.at(begin).at(center) + wf_vector.at(center).at(end));
 
     auto get_list = [&](int st, int en){
         std::list<std::pair<int, int>> pos_list;
 
-        while(st != en){
+        // while(st != en){
+            for(int i = 0; i < 20; ++i){
+                std::cout << st << std::endl;
             pos_list.emplace_back(getPosPair(st));
             st = wf_vector.at(st).at(en).next;
         }
-        pos_list.emplace_back(getPosPair(en));
+        // pos_list.emplace_back(getPosPair(en));
 
         return pos_list;
     };
 
     std::vector<std::list<std::pair<int,int>>> routes;
-
     routes.push_back(get_list(getPosValue(field.getAgent(side, 0)), 0));
-    routes.push_back(get_list(getPosValue(field.getAgent(side, 1)), 0));
+
+    std::vector<std::list<std::pair<int,int>>> routes2;
+    routes2.push_back(get_list(getPosValue(field.getAgent(side, 1)), 0));
 
     dock->addVisualizer(field.getSize(), routes, std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
+    dock->addVisualizer(field.getSize(), routes2, std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
 
     return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
 }

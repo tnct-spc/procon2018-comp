@@ -44,7 +44,8 @@ struct WarshallFloydAlgorithm::Edge{
 
     friend Edge operator+(const Edge& a, const Edge& b){
         Edge e(a.begin, b.end, a.sum + b.sum, a.length + b.length);
-        e.next = b.begin;
+        e.next = a.next;
+
         return e;
     }
 
@@ -53,7 +54,10 @@ struct WarshallFloydAlgorithm::Edge{
     }
 
     double average() const{
-        return length <= 0 ? -1e9 : sum / length;
+        if(length == -1)
+            return -1e9;
+
+        return length ? sum / length : 0;
     }
 };
 
