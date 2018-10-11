@@ -23,34 +23,43 @@ private:
 
     int size_x, size_y, size_sum;
 
+    const int maxval = 30;
+
     std::shared_ptr<MinimumVisualizerDock> dock;
 
 };
 
 struct WarshallFloydAlgorithm::Edge{
 
-    int begin, end, next;
+    int pos;
+    std::pair<int,int> prev;
     double sum;
     int length;
 
-    Edge(int begin, int end, double sum = 0.0, int length = -1) :
-        begin(begin),
-        end(end),
-        next(end),
+    Edge(int pos, double sum = 0.0, int length = -1) :
+        pos(pos),
+        prev(pos, length),
         sum(sum),
         length(length)
     {
     }
 
+
     friend Edge operator+(const Edge& a, const Edge& b){
-        Edge e(a.begin, b.end, a.sum + b.sum, a.length + b.length);
-        e.next = a.next;
+        Edge e(b.pos, a.sum + b.sum, a.length + b.length);
+        e.prev = a.prev;
 
         return e;
     }
 
     friend bool operator<(const Edge& a, const Edge& b){
         return a.average() < b.average();
+    }
+
+    static Edge make(const Edge& x, int pos, double value, int length){
+        Edge e(pos, x.sum + value, x.length + length);
+        e.prev = std::make_pair(x.pos, x.length);
+        return e;
     }
 
     double average() const{
