@@ -3,23 +3,64 @@
 WarshallFloydAlgorithm::WarshallFloydAlgorithm(const procon::Field& field, int final_turn, bool side) :
     AlgorithmWrapper(field, final_turn, side)
 {
+    std::tie(size_x, size_y) = field.getSize();
+    size_sum = size_x * size_y;
+
     dock = std::make_shared<MinimumVisualizerDock>(4);
     dock->show();
 }
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydAlgorithm::agentAct(int){
 
-    std::tie(size_x, size_y) = field.getSize();
-    size_sum = size_x * size_y;
+    std::vector<std::vector<Edge>> edges = calcDijkStra(getPosValue(field.getAgent(side, 0)), 30);
+    for(int index = 0; index < 30; ++index)
+        getRoute(edges, 0, index);
 
+    return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
+}
 
-    std::vector<std::vector<Edge>> wf_vector(size_sum);
+std::list<std::pair<int,int>> WarshallFloydAlgorithm::getRoute(std::vector<std::vector<Edge>>& input, int target_pos, int depth){
+
+    auto get_list = [&](int pos, int depth){
+
+        if(input.at(pos).at(depth).depth != depth){
+            std::cerr << "error case" << std::endl;
+        }
+
+        std::list<std::pair<int, int>> pos_list;
+
+        while(depth > 0){
+            pos_list.emplace_back(getPosPair(pos));
+
+            int bef_pos = pos;
+            pos = input.at(pos).at(depth).prev.first;
+            depth = input.at(bef_pos).at(depth).prev.second;
+        }
+
+        pos_list.emplace_back(getPosPair(pos));
+
+        pos_list.reverse();
+
+        return pos_list;
+    };
+
+    std::list<std::pair<int,int>> routes;
+    routes = get_list(target_pos, depth);
+
+    dock->addVisualizer(field.getSize(), std::vector<std::list<std::pair<int,int>>>({routes}), std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
+
+    return routes;
+}
+
+std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::calcDijkStra(int start_pos, int maxval){
+
+    std::vector<std::vector<Edge>> dp_vector(size_sum);
 
     for(int start_index = 0; start_index < size_sum; ++start_index)
         for(int end_index = 0; end_index < maxval; ++end_index)
-            wf_vector.at(start_index).emplace_back(start_index);
+            dp_vector.at(start_index).emplace_back(start_index);
 
-    wf_vector.at(getPosValue(field.getAgent(side, 0))).at(0).length = 0;
+    dp_vector.at(start_pos).at(0).depth = 0;
 
     auto check = [&](int start_pos, int depth, int end_pos){
         while(depth > 0){
@@ -27,8 +68,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
                 return true;
 
             int bef_pos = start_pos;
-            start_pos = wf_vector.at(start_pos).at(depth).prev.first;
-            depth = wf_vector.at(bef_pos).at(depth).prev.second;
+            start_pos = dp_vector.at(start_pos).at(depth).prev.first;
+            depth = dp_vector.at(bef_pos).at(depth).prev.second;
         }
 
         return start_pos == end_pos;
@@ -36,7 +77,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 
     for(int depth = 0; depth < maxval; ++depth)
         for(int point = 0; point < size_sum; ++point)
-            if(wf_vector.at(point).at(depth).length == depth)
+            if(dp_vector.at(point).at(depth).depth == depth)
                 for(int direction = 0; direction < 8; ++direction)
                     if(!outOfRange(point, direction)){
 
@@ -54,35 +95,12 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
                         if(depth + length >= maxval)
                             continue;
 
-                        Edge e = Edge::make(wf_vector.at(point).at(depth), end_index, value, length);
+                        Edge e = Edge::make(dp_vector.at(point).at(depth), end_index, value, length);
 
-                        wf_vector.at(end_index).at(depth + length) = std::max(wf_vector.at(end_index).at(depth + length), e);
+                        dp_vector.at(end_index).at(depth + length) = std::max(dp_vector.at(end_index).at(depth + length), e);
                     }
 
-    auto get_list = [&](int pos, int depth){
-        std::list<std::pair<int, int>> pos_list;
-
-        while(depth > 0){
-            pos_list.emplace_back(getPosPair(pos));
-
-            int bef_pos = pos;
-            pos = wf_vector.at(pos).at(depth).prev.first;
-            depth = wf_vector.at(bef_pos).at(depth).prev.second;
-        }
-
-        pos_list.emplace_back(getPosPair(pos));
-
-        pos_list.reverse();
-
-        return pos_list;
-    };
-
-    std::vector<std::list<std::pair<int,int>>> routes;
-    routes.push_back(get_list(0, 25));
-
-    dock->addVisualizer(field.getSize(), routes, std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
-
-    return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
+    return dp_vector;
 }
 
 std::pair<int, int> WarshallFloydAlgorithm::getPosPair(int x){

@@ -14,6 +14,10 @@ public:
 
 private:
     struct Edge;
+
+    std::vector<std::vector<Edge>> calcDijkStra(int start_pos, int maxval);
+    std::list<std::pair<int, int>> getRoute(std::vector<std::vector<Edge>>& input, int target_pos, int depth);
+
     static const std::vector<int> dx, dy;
 
     std::pair<int, int> getPosPair(int x);
@@ -22,8 +26,6 @@ private:
     bool outOfRange(int pos, int rotate);
 
     int size_x, size_y, size_sum;
-
-    const int maxval = 30;
 
     std::shared_ptr<MinimumVisualizerDock> dock;
 
@@ -34,19 +36,19 @@ struct WarshallFloydAlgorithm::Edge{
     int pos;
     std::pair<int,int> prev;
     double sum;
-    int length;
+    int depth;
 
-    Edge(int pos, double sum = 0.0, int length = -1) :
+    Edge(int pos, double sum = 0.0, int depth = -1) :
         pos(pos),
-        prev(pos, length),
+        prev(pos, depth),
         sum(sum),
-        length(length)
+        depth(depth)
     {
     }
 
 
     friend Edge operator+(const Edge& a, const Edge& b){
-        Edge e(b.pos, a.sum + b.sum, a.length + b.length);
+        Edge e(b.pos, a.sum + b.sum, a.depth + b.depth);
         e.prev = a.prev;
 
         return e;
@@ -56,17 +58,17 @@ struct WarshallFloydAlgorithm::Edge{
         return a.average() < b.average();
     }
 
-    static Edge make(const Edge& x, int pos, double value, int length){
-        Edge e(pos, x.sum + value, x.length + length);
-        e.prev = std::make_pair(x.pos, x.length);
+    static Edge make(const Edge& x, int pos, double value, int depth){
+        Edge e(pos, x.sum + value, x.depth + depth);
+        e.prev = std::make_pair(x.pos, x.depth);
         return e;
     }
 
     double average() const{
-        if(length == -1)
+        if(depth == -1)
             return -1e9;
 
-        return length ? sum / length : 0;
+        return depth ? sum / depth : 0;
     }
 };
 
