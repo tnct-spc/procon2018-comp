@@ -7,21 +7,23 @@
 class WarshallFloydAlgorithm : public AlgorithmWrapper
 {
 public:
-    using AlgorithmWrapper::AlgorithmWrapper;
+    WarshallFloydAlgorithm(const procon::Field& field, int final_turn, bool side);
 
-public:
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int);
-    void setParams(std::vector<std::pair<QString, double>> params){}
+    void setParams(std::vector<std::pair<QString, double>>){}
 
 private:
     struct Edge;
     static const std::vector<int> dx, dy;
 
     std::pair<int, int> getPosPair(int x);
+    int getPosValue(std::pair<int,int> x);
     int getRotatePos(int pos, int rotate);
     bool outOfRange(int pos, int rotate);
 
     int size_x, size_y, size_sum;
+
+    std::shared_ptr<MinimumVisualizerDock> dock;
 
 };
 
@@ -38,7 +40,6 @@ struct WarshallFloydAlgorithm::Edge{
         sum(sum),
         length(length)
     {
-
     }
 
     friend Edge operator+(const Edge& a, const Edge& b){

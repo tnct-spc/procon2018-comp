@@ -1,9 +1,17 @@
 #include "warshallfloydalgorithm.h"
 
+WarshallFloydAlgorithm::WarshallFloydAlgorithm(const procon::Field& field, int final_turn, bool side) :
+    AlgorithmWrapper(field, final_turn, side)
+{
+    dock = std::make_shared<MinimumVisualizerDock>(4);
+    dock->show();
+}
+
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydAlgorithm::agentAct(int){
 
     std::tie(size_x, size_y) = field.getSize();
     size_sum = size_x * size_y;
+
 
     std::vector<std::vector<Edge>> wf_vector(size_sum);
 
@@ -32,11 +40,34 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
             for(int j = 0; j < size_sum; ++j)
                 wf_vector.at(i).at(j) = std::min(wf_vector.at(i).at(j), wf_vector.at(i).at(k) + wf_vector.at(k).at(j));
 
+    auto get_list = [&](int st, int en){
+        std::list<std::pair<int, int>> pos_list;
+
+        while(st != en){
+            pos_list.emplace_back(getPosPair(st));
+            st = wf_vector.at(st).at(en).next;
+        }
+        pos_list.emplace_back(getPosPair(en));
+
+        return pos_list;
+    };
+
+    std::vector<std::list<std::pair<int,int>>> routes;
+
+    routes.push_back(get_list(getPosValue(field.getAgent(side, 0)), 0));
+    routes.push_back(get_list(getPosValue(field.getAgent(side, 1)), 0));
+
+    dock->addVisualizer(field.getSize(), routes, std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
+
     return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
 }
 
 std::pair<int, int> WarshallFloydAlgorithm::getPosPair(int x){
     return std::make_pair(x / size_y, x % size_y);
+}
+
+int WarshallFloydAlgorithm::getPosValue(std::pair<int, int> pos){
+    return size_y * pos.first + pos.second;
 }
 
 int WarshallFloydAlgorithm::getRotatePos(int pos, int rotate){

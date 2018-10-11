@@ -6,5 +6,4 @@ AlgorithmWrapper::AlgorithmWrapper(const procon::Field& field, int final_turn, b
     final_turn(final_turn),
     side(side)
 {
-
 }
