@@ -7,14 +7,24 @@ TestMultipleVisualizer::TestMultipleVisualizer(QObject *parent)
 
     connect(this, &TestMultipleVisualizer::sendCsv, window.get(), &MultipleVisualizer::setCsv);
 
+    std::pair<procon::Field, procon::Field> fields(procon::Field(8, 8, 16, -16, true), procon::Field(8, 8, 16, -16, true));
+
+    vis.first = std::make_shared<Visualizer>(fields.first);
+    vis.second = std::make_shared<Visualizer>(fields.second);
+
+    vis.first->show();
+    vis.second->show();
+
     pathes.first = QFileDialog::getOpenFileName().toStdString();
     pathes.second = QFileDialog::getOpenFileName().toStdString();
 
+    /*
     window->setCsv(std::make_pair(pathes.first, pathes.second));
     window->show();
 
     window->update();
     window->repaint();
+    */
 
 }
 
@@ -31,13 +41,25 @@ void TestMultipleVisualizer::run()
         ost2 << std::setfill('0') << std::setw(6) << count;
         pathes.second = pathes.second.substr(0, pathes.second.length() - 6) + ost.str();
 
-        emit sendCsv(std::make_pair(pathes.first, pathes.second));
+        // emit sendCsv(std::make_pair(pathes.first, pathes.second));
 
+        std::pair<procon::Field, procon::Field> fields(procon::CsvIo::importField(pathes.first), procon::CsvIo::importField(pathes.second));
 
+        vis.first->setField(fields.first, fields.first.getTurnCount(), fields.first.getFinalTurn());
+        vis.second->setField(fields.second, fields.second.getTurnCount(), fields.second.getFinalTurn());
+
+        vis.first->update();
+        vis.first->repaint();
+
+        vis.second->update();
+        vis.second->repaint();
+
+        /*
         window->update();
         window->repaint();
+        */
 
-        std::string a = QFileDialog::getOpenFileName().toStdString();
+        // std::string a = QFileDialog::getOpenFileName().toStdString();
 
 
         wait_simulator.wait(&mtx, 1000);

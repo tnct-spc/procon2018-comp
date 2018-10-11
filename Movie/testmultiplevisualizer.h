@@ -42,6 +42,8 @@ signals:
 
 private:
 
+    std::pair<std::shared_ptr<Visualizer>, std::shared_ptr<Visualizer>> vis;
+
     QMutex mtx;
     QWaitCondition wait_simulator;
 
