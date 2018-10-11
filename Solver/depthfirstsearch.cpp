@@ -371,6 +371,9 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
         int put_tile_sum = 0;
 
         std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter> node_map;
+
+		std::queue<value_type> nodes_que;
+
 		// 全ての手に対して
         while(before->size()){
 
@@ -396,8 +399,6 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
 
             std::bitset<296> bs;
 
-            double conflict_value = 0.0;
-
             std::pair<int,int> pos(old_pos);
 
 			// 根から子の方向へ進んでbitsetに回数を格納、put_tile_countに加算する
@@ -415,9 +416,6 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                     bs |= std::bitset<296>(bit_count + 1) << bit_index;
                 }
 
-
-                if(put_tile_sum)
-                    conflict_value += conflict_weight.at(rev_move.size() - 1 - index) * put_tile_count.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index)) / put_tile_sum;
 
                 ++put_tile_count.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index));
                 ++put_tile_sum;
@@ -450,7 +448,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                     bool is_defence = ((std::abs(enemy_agents.at(0).first - x_pos) <= 1) && (std::abs(enemy_agents.at(0).second - y_pos) <= 1)) ||
                                       ((std::abs(enemy_agents.at(1).first - x_pos) <= 1) && (std::abs(enemy_agents.at(1).second - y_pos) <= 1));
 
-					// 踏むマスの得点 * 深さごとの重み * (累積しない)そのマスの予測変化率
+					// 踏むマスの得点 * 深さごとの重み * (累積する)そのマスの予測変化率
                     double point = depth_weight.at(dep) * double_value.at(x_pos).at(y_pos) * (1.0 - std::min(1.0, predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0)));
 
 					// 諸々の処理(主に敵エージェントとのコンフリクト対応とか)
@@ -461,15 +459,8 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                     if(is_defence && !is_move)
                         point *= conflict_def_per;
 
-					// 次のTreapに採用する優先度は多様性ペナルティを考慮する
-					// 今までの多様性ペナ + この行動での多様性ペナ
-                    double conf_pri =  conflict_value + conflict_weight.at(rev_move.size()) * put_tile_count.at(x_pos).at(y_pos) / put_tile_sum;
-
                     ++put_tile_count.at(x_pos).at(y_pos);
                     ++put_tile_sum;
-
-					// 多様性ペナを倍率としてかけてしまう
-                    double priority = (now_adv + point) * (1 - std::min(1.0, conf_pri * deverse_per));
 
                     int bit_index = 8 + (x_pos * 12 + y_pos) * 2;
                     int bit_count = ((bs >> bit_index) & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
@@ -487,7 +478,8 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                         node->childs[index] = std::make_pair(std::make_shared<SearchNode>(point, dep + 1, predict_weight, movecount), static_cast<int>(is_move) | (static_cast<int>(is_replace) << 1));
                         node->childs[index].first->parent = std::make_pair(node.get(), index);
                         node_map[bs] = node->childs[index].first;
-                        after->insert(std::make_pair(priority, std::make_pair(now_adv + point, node->childs[index].first)));
+                        nodes_que.push(std::make_pair(priority, std::make_pair(now_adv + point, node->childs[index].first)));
+                        // after->insert(std::make_pair(priority, std::make_pair(now_adv + point, node->childs[index].first)));
                     }
 
                     if(is_replace){
@@ -514,10 +506,41 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
             if(node->childs.empty())
                 node->is_back = true;
 
-			// pri_queの最大サイズ制限
-            if(after->size() > beam_width)
-                after->erase_back(beam_width);
         }
+
+		while(!nodes_que.empty()){
+            value_type val = nodes_que.front();
+            SearchNode* now_node = val.second.second.get();
+            nodes_que.pop();
+
+            std::vector<std::pair<int,int>> rev_move;
+            while(now_node->parent.first){
+                rev_move.emplace_back(now_node->parent.second, now_node->parent.first->childs[now_node->parent.second].second);
+                now_node = now_node->parent.first;
+            }
+
+            double conflict_value = 0.0;
+            std::pair<int,int> pos = field.getAgent(inp_side, agent);
+
+            for(int index = rev_move.size() - 1; index >= 0; --index){
+                int move_index = rev_move.at(index).first;
+                bool is_move = rev_move.at(index).second & 1;
+
+                conflict_value += conflict_weight.at(rev_move.size() - 1 - index) * put_tile_count.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index)) / put_tile_sum;
+
+                if(is_move){
+                    pos.first += SearchNode::dx.at(move_index);
+                    pos.second += SearchNode::dy.at(move_index);
+                }
+            }
+            val.first = val.first * (1 - std::min(1.0, conflict_value * deverse_per));
+
+            after->insert(val);
+        }
+
+		// pri_queの最大サイズ制限
+		if(after->size() > beam_width)
+			after->erase_back(beam_width);
     }
     treap_vec.clear();
 
