@@ -52,7 +52,8 @@ SOURCES += \
     LastForce/lastforce.cpp \
     majorityrulewithabstdata.cpp \
     depthfirstsearch.cpp \
-    LastForce/lastregion.cpp
+    LastForce/lastregion.cpp \
+    warshallfloydalgorithm.cpp
 
 HEADERS += \
         algorithm_global.h \ 
@@ -81,7 +82,8 @@ HEADERS += \
     LastForce/lastforce.h \
     majorityrulewithabstdata.h \
     depthfirstsearch.h \
-    LastForce/lastregion.h
+    LastForce/lastregion.h \
+    warshallfloydalgorithm.h
 
 unix {
     target.path = /usr/lib
