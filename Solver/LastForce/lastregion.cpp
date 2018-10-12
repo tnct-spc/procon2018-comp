@@ -2,6 +2,7 @@
 
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> LastRegion::agentAct(int){
+ //   std::cout<<side<<std::endl;
 
     std::stack<std::tuple<int, std::pair<int,int>, std::pair<int,int>, std::vector<std::pair<int, int>>,int, std::bitset<288>>> sta;
 
@@ -59,7 +60,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> LastRegion::ag
             setState(_state, field.getState(x,y).first, x , y);
         }
     }
-
     sta.push(std::make_tuple(0, field.getAgent(side, 0), field.getAgent(side, 1), std::vector<std::pair<int,int>>(), 0, _state));
 
     int ans_adv = -1e9;
