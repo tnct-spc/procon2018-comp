@@ -12,7 +12,7 @@ class DummyAlgorithm : public AlgorithmWrapper
 public:
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int);
     void setParams(std::vector<std::pair<QString, double>> params);
-    void setRandomParams(std::vector<std::pair<QString, double>> params);
+    void setRandomParams(std::vector<std::pair<QString, double>> params,bool flag);
 };
 
 #endif // DUMMYALGORITHM_H

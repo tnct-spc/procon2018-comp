@@ -971,8 +971,8 @@ void DepthFirstSearch::Treap::erase_back(int k){
     root = _erase_back(root, k);
 }
 
-void DepthFirstSearch::setRandomParams(std::vector<std::pair<QString, double>> params){
-  std::random_device random_seed;
+void DepthFirstSearch::setRandomParams(std::vector<std::pair<QString, double>> params,bool flag){
+    std::random_device random_seed;
   boost::random::mt19937 mt(random_seed());
   boost::random::uniform_real_distribution<> dist(-5.00,5.00);
   boost::random::uniform_real_distribution<> dista(0.01,1.00);
@@ -991,6 +991,22 @@ void DepthFirstSearch::setRandomParams(std::vector<std::pair<QString, double>> p
         // 見つからなかったらdoubleの最大値を返す
         return std::numeric_limits<double>::max();
     };
+  if(flag){
+      bool dockshow_before = dock_show;
+      dock_show = (bool)search("dock_show");
+      vis_show = (bool)search("vis_show");
+      maxval = (int)search("maxval");
+      loop_count = (int)search("loop_count");
+      movecount = (int)search("movecount");
+      predict_weight=bf_predictw;
+      ally_weight=bf_allyw;
+      ratio=bf_ratio;
+      use_beamsearch = true;
+      beam_width = 4;
+      if(!dockshow_before && dock_show)
+          dock->show();
+  }
+  else{
     bool dockshow_before = dock_show;
     // 自チームのパラメータを設定
 
@@ -1007,7 +1023,12 @@ void DepthFirstSearch::setRandomParams(std::vector<std::pair<QString, double>> p
     beam_width = 4;
     if(!dockshow_before && dock_show)
         dock->show();
+
+    bf_predictw=predict_weight;
+    bf_allyw=ally_weight;
+    bf_ratio=ratio;
     std::cout<<"predictw"<<predict_weight<<"    allyw"<<ally_weight<<"  ratio"<<ratio<<"\n";
+  }
 }
 
 np DepthFirstSearch::TreapNode::nil = std::make_shared<DepthFirstSearch::TreapNode>(value_type(), 0);

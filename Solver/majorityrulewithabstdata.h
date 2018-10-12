@@ -13,7 +13,7 @@ public:
     MajorityRuleWithAbstData(const procon::Field& field, int final_turn, bool side);
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
     void setParams(std::vector<std::pair<QString, double>> params);
-    void setRandomParams(std::vector<std::pair<QString, double>> params);
+    void setRandomParams(std::vector<std::pair<QString, double>> params,bool flag);
 
 private:
 

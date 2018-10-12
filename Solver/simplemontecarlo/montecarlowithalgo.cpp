@@ -235,6 +235,6 @@ void MontecarloWithAlgo::setParams(std::vector<std::pair<QString, double>> param
 
 }
 
-void MontecarloWithAlgo::setRandomParams(std::vector<std::pair<QString, double>> params){
+void MontecarloWithAlgo::setRandomParams(std::vector<std::pair<QString, double>> params,bool flag){
 
 }

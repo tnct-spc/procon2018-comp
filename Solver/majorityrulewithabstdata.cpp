@@ -37,6 +37,6 @@ void MajorityRuleWithAbstData::setParams(std::vector<std::pair<QString, double>>
 
 }
 
-void MajorityRuleWithAbstData::setRandomParams(std::vector<std::pair<QString, double>> params){
+void MajorityRuleWithAbstData::setRandomParams(std::vector<std::pair<QString, double>> params,bool flag){
 
 }

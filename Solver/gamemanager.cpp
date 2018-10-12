@@ -97,6 +97,7 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
 
 void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod, std::vector<std::pair<QString, double>> my_params, std::vector<std::pair<QString, double>> opp_params, bool SRC) {
     if(SRC){
+        bool flag=false;
     for(int time=0;time<50;time++){
     if (QString::compare("GenerateField", InputMethod) == 0) {
         int x_size = field->getSize().first;
@@ -142,14 +143,14 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     }
 
     std::cout<<"team1::";
-    team_1->setRandomParams(my_params);
+    team_1->setRandomParams(my_params,flag);
 
     if (QString::compare("DepthFirstSearch", opponent_algo) == 0) {
         team_2 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 1);
     }
 
    std::cout<<"team2::";
-   team_2->setRandomParams(opp_params);
+   team_2->setRandomParams(opp_params,flag);
 
     if(vis_show){
         visualizer->update();
@@ -198,6 +199,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         emit signalAutoMode(false);
 
     }
+    flag=true;
     std::cout<<time<<"\n";
     }
     }

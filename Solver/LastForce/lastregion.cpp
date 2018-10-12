@@ -191,6 +191,6 @@ void LastRegion::setParams(std::vector<std::pair<QString, double>> params)
 
 }
 
-void LastRegion::setRandomParams(std::vector<std::pair<QString, double>> params){
+void LastRegion::setRandomParams(std::vector<std::pair<QString, double>> params,bool flag){
 
 }

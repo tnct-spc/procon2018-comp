@@ -204,6 +204,6 @@ void UseAbstractData::setParameters(std::vector<double>& values, double diagonal
     calc_eval_sum = eval_sum_func;
 }
 
-void UseAbstractData::setRandomParams(std::vector<std::pair<QString, double>> params){
+void UseAbstractData::setRandomParams(std::vector<std::pair<QString, double>> params,bool flag){
 
 }

@@ -9,6 +9,6 @@ void DummyAlgorithm::setParams(std::vector<std::pair<QString, double>> params)
 
 }
 
-void DummyAlgorithm::setRandomParams(std::vector<std::pair<QString, double>> params){
+void DummyAlgorithm::setRandomParams(std::vector<std::pair<QString, double>> params,bool flag){
 
 }

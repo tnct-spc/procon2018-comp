@@ -116,6 +116,6 @@ void AgentManager::setAgentData(const GeneticAgent& agent_data, int agent_number
     agents.at(agent_number)->setAgent(agent_data);
 }
 
-void AgentManager::setRandomParams(std::vector<std::pair<QString, double>> params){
+void AgentManager::setRandomParams(std::vector<std::pair<QString, double>> params,bool flag){
 
 }
