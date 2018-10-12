@@ -45,6 +45,8 @@ public:
 
     std::vector<std::pair<int,int>> getPoints(std::pair<int,int> pos, int state);
 
+    std::vector<std::pair<int,int>> getPoints(std::vector<std::pair<std::pair<int,int>,int>> poses);
+
     void setPoints(int side, std::pair<int,int> value);
 
     int getTurnCount() const;
