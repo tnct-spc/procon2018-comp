@@ -51,7 +51,7 @@ private:
 
     std::shared_ptr<ProgresDock> dock;
 
-    const int turn_max = 30;
+    const int turn_max = 70000;
 };
 
 #endif // TESTMULTIPLEVISUALIZER_H

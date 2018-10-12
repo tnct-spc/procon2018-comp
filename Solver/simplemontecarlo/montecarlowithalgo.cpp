@@ -16,6 +16,7 @@ MontecarloWithAlgo::MontecarloWithAlgo(const procon::Field& field, int final_tur
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWithAlgo::agentAct(int now_turn){
 
+
     int side_r = (side == 0 ? 1 : 0);//敵側
 
     std::vector<int> win_count;
@@ -27,6 +28,35 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
 
         return rand(mt);
     };
+
+    auto ret = [&]{
+        std::vector<int> dx = {1, 1, 1, 0, -1, -1, -1, 0};
+        std::vector<int> dy = {-1, 0, 1, 1, 1, 0, -1, -1};
+
+        std::uniform_int_distribution<> rand(0, 7);
+
+        while(1){
+            int t1 = rand(mt);
+            int t2 = rand(mt);
+            std::pair<int,int> p1 = field.getAgent(side, 0);
+            std::pair<int,int> p2 = field.getAgent(side, 1);
+
+            p1.first += dx.at(t1);
+            p1.second += dy.at(t1);
+            p2.first += dx.at(t2);
+            p2.second += dy.at(t2);
+
+            if(!(p1.first < 0 || p1.second < 0 || p1.first >= field.getSize().first || p1.second >= field.getSize().second
+            || p2.first < 0 || p2.second < 0 || p2.first >= field.getSize().first || p2.second >= field.getSize().second)){
+                return std::make_pair(
+                            std::make_tuple(dx.at(t1), dy.at(t1), 1 + field.getState(p1.first, p1.second).first == (side ? 1 : 2)),
+                            std::make_tuple(dx.at(t2), dy.at(t2), 1 + field.getState(p2.first, p2.second).first == (side ? 1 : 2))
+                                      );
+            }
+        }
+
+    };
+    return ret();
 
     auto playout = [&](int move, int cpu){
 

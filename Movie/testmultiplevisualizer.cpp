@@ -45,6 +45,9 @@ void TestMultipleVisualizer::run()
 
         std::pair<procon::Field, procon::Field> fields(procon::CsvIo::importField(pathes.first), procon::CsvIo::importField(pathes.second));
 
+        fields.first.updatePoint();
+        fields.second.updatePoint();
+
         vis.first->setField(fields.first, fields.first.getTurnCount(), fields.first.getFinalTurn());
         vis.second->setField(fields.second, fields.second.getTurnCount(), fields.second.getFinalTurn());
 
@@ -62,7 +65,7 @@ void TestMultipleVisualizer::run()
         // std::string a = QFileDialog::getOpenFileName().toStdString();
 
 
-        wait_simulator.wait(&mtx, 1000);
+        wait_simulator.wait(&mtx, 10);
 
     }
 
