@@ -532,12 +532,13 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
             std::pair<int,int> pos;
             pos.first = i + x;
             pos.second = j + y;
-            if(x + i >= 0 && y + j >= 0 && getRegion(pos) == int(side + 1)){
+            if(x + i >= 0 && y + j >= 0 && x + i < getSize().first && y + j < getSize().second && getRegion(pos) == int(side + 1)){
                 areaPos.push_back(pos);
                 areaCount++;
             }
         }
     }
+    std::cout << "default!!" << std::endl;
     if(side == 0){
         defaultPoint = getPoints().at(0).second;
     }
@@ -545,97 +546,374 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
         defaultPoint = getPoints().at(0).first;
     }
     for(int i = 0;i < areaCount;i++){
+        std::cout << "Pos = " << areaPos[i].first << "," << areaPos[i].second << std::endl;
         if(side == 0){
             for(int to = 0;to < 4;to++){
-                std::vector<std::pair<int,int>> act (1);
+                std::cout << to << " = to" << std::endl;
+                std::vector<std::pair<std::pair<int,int>,int>> act (1);
+                act[0].second = 0;
                 switch (to){
                     case 0:
-                        act[0].first = areaPos[i].first;
-                        act[0].second = areaPos[i].second - 1;
-                        if(areaPos[i].second != 0 && getPoints(act,1)[0].second < defaultPoint){
-                            std::pair<std::vector<std::pair<int,int>>,int> dummy (act,getPoints(act[0],1)[0].second);
+                        act[0].first.first = areaPos[i].first;
+                        act[0].first.second = areaPos[i].second - 1;
+                        if(areaPos[i].second > 0 && getPoints(act)[0].second < defaultPoint){
+                            std::vector<std::pair<int,int>> move (1,act[0].first);
+                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
                             answer.push_back(dummy);
                         }
-                        else{
-                            for(int tt = 0;tt < 2;tt++){
-                                act.push_back(act[0]);
+                        else if(areaPos[i].second > 0){
+                            act.push_back(act[0]);
+                            for(int tt = 0;tt < 3;tt++){
+                                act[1] = act[0];
                                 switch (tt){
                                     case 0:
-                                        act[1].second--;
-                                        if(areaPos[i].second != 1 && getPoints(act[1],1)[0].second < defaultPoint){
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (act,getPoints(act[1],1)[0].second);
+                                        act[1].first.second--;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].second > 1 && getPoints(act)[0].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
                                             answer.push_back(dummy);
                                         }
+
+                                    break;
                                     case 1:
-
+                                        act[1].first.first--;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].first > 0 && getPoints(act)[0].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
                                     case 2:
-
+                                        act[1].first.first++;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].first < getSize().second-1 && getPoints(act)[0].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
                                 }
                             }
                         }
                         break;
                     case 1:
-                        act[0].first = areaPos[i].first;
-                        act[0].second = areaPos[i].second + 1;
-                        if(areaPos[i].second != getSize().second-1 && getPoints(act[0],1)[0].second < defaultPoint){
-                            std::pair<std::vector<std::pair<int,int>>,int> dummy (act,getPoints(act[0],1)[0].second);
+                        act[0].first.first = areaPos[i].first;
+                        act[0].first.second = areaPos[i].second + 1;
+                        if(areaPos[i].second < getSize().second-1 && getPoints(act)[0].second < defaultPoint){
+                            std::vector<std::pair<int,int>> move (1,act[0].first);
+                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
                             answer.push_back(dummy);
+                        }
+                        else if(areaPos[i].second < getSize().second-1){
+                            act.push_back(act[0]);
+                            for(int tt = 0;tt < 3;tt++){
+                                act[1] = act[0];
+                                switch (tt){
+                                    case 0:
+                                        act[1].first.second++;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].second < getSize().second-2 && getPoints(act)[0].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
+                                    case 1:
+                                        act[1].first.first--;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].first > 0 && getPoints(act)[0].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
+                                    case 2:
+                                        act[1].first.first++;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].first < getSize().first-1 && getPoints(act)[0].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
+                                }
+                            }
                         }
                         break;
                     case 2:
-                        act[0].first = areaPos[i].first - 1;
-                        act[0].second = areaPos[i].second;
-                        if(areaPos[i].first != 0 && getPoints(act[0],1)[0].second < defaultPoint){
-                            std::pair<std::vector<std::pair<int,int>>,int> dummy (act,getPoints(act[0],1)[0].second);
+                        act[0].first.first = areaPos[i].first - 1;
+                        act[0].first.second = areaPos[i].second;
+                        if(areaPos[i].first > 0 && getPoints(act)[0].second < defaultPoint){
+                            std::vector<std::pair<int,int>> move (1,act[0].first);
+                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
                             answer.push_back(dummy);
+                        }
+                        else if(areaPos[i].first > 0){
+                            act.push_back(act[0]);
+                            for(int tt = 0;tt < 3;tt++){
+                                act[1] = act[0];
+                                switch (tt){
+                                    case 0:
+                                        act[1].first.second--;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].second > 0 && getPoints(act)[0].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
+                                    case 1:
+                                        act[1].first.second++;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].second < getSize().second-1 && getPoints(act)[0].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
+                                    case 2:
+                                        act[1].first.first--;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].first > 1 && getPoints(act)[0].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
+                                }
+                            }
                         }
                         break;
                     case 3:
-                        act[0].first = areaPos[i].first + 1;
-                        act[0].second = areaPos[i].second;
-                       if(areaPos[i].first != getSize().second-1 && getPoints(act[0],1)[0].second < defaultPoint){
-                           std::pair<std::vector<std::pair<int,int>>,int> dummy (act,getPoints(act[0],1)[0].second);
+                        act[0].first.first = areaPos[i].first + 1;
+                        act[0].first.second = areaPos[i].second;
+                       if(areaPos[i].first <  getSize().first-1 && getPoints(act)[0].second < defaultPoint){
+                           std::vector<std::pair<int,int>> move (1,act[0].first);
+                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
                            answer.push_back(dummy);
                         }
+                       else if(areaPos[i].first < getSize().first-1){
+                           act.push_back(act[0]);
+                           for(int tt = 0;tt < 3;tt++){
+                               act[1] = act[0];
+                               switch (tt){
+                                   case 0:
+                                       act[1].first.second--;
+                                       std::cout << side << " " << to << " " << tt << std::endl;
+                                       if(areaPos[i].second > 0 && getPoints(act)[0].second < defaultPoint){
+                                           std::vector<std::pair<int,int>> move (1,act[1].first);
+                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                           answer.push_back(dummy);
+                                       }
+                                   break;
+                                   case 1:
+                                       act[1].first.first++;
+                                       std::cout << side << " " << to << " " << tt << std::endl;
+                                       if(areaPos[i].first < getSize().first-2 && getPoints(act)[0].second < defaultPoint){
+                                           std::vector<std::pair<int,int>> move (1,act[1].first);
+                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                           answer.push_back(dummy);
+                                       }
+                                   break;
+                                   case 2:
+                                       act[1].first.second++;
+                                       std::cout << side << " " << to << " " << tt << std::endl;
+                                       if(areaPos[i].second < getSize().second-1 && getPoints(act)[0].second < defaultPoint){
+                                           std::vector<std::pair<int,int>> move (1,act[1].first);
+                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                           answer.push_back(dummy);
+                                       }
+                                   break;
+                               }
+                           }
+                       }
                         break;
                 }
             }
         }
         else{
             for(int to = 0;to < 4;to++){
-                std::vector<std::pair<int,int>> act (1);
+                std::cout << to << " = to" << std::endl;
+                std::vector<std::pair<std::pair<int,int>,int>> act (1);
+                act[0].second = 0;
                 switch (to){
                     case 0:
-                        act[0].first = areaPos[i].first;
-                        act[0].second = areaPos[i].second - 1;
-                        if(areaPos[i].second != 0 && getPoints(act[0],1)[0].first < defaultPoint){
-                            std::pair<std::vector<std::pair<int,int>>,int> dummy (act,getPoints(act[0],1)[0].second);
+                        act[0].first.first = areaPos[i].first;
+                        act[0].first.second = areaPos[i].second - 1;
+                        if(areaPos[i].second > 0 && getPoints(act)[0].first < defaultPoint){
+                            std::vector<std::pair<int,int>> move (1,act[0].first);
+                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
                             answer.push_back(dummy);
+                        }
+                        else if(areaPos[i].second > 0){
+                            act.push_back(act[0]);
+                            for(int tt = 0;tt < 3;tt++){
+                                act[1] = act[0];
+                                switch (tt){
+                                    case 0:
+                                        act[1].first.second--;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].second > 1 && getPoints(act)[0].first < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
+                                    case 1:
+                                        act[1].first.first--;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].first > 0 && getPoints(act)[0].first < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
+                                    case 2:
+                                        act[1].first.first++;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].first < getSize().first-1 && getPoints(act)[0].first < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
+                                }
+                            }
                         }
                         break;
                     case 1:
-                        act[0].first = areaPos[i].first;
-                        act[0].second = areaPos[i].second + 1;
-                        if(areaPos[i].second != getSize().second-1 && getPoints(act[0],1)[0].first < defaultPoint){
-                            std::pair<std::vector<std::pair<int,int>>,int> dummy (act,getPoints(act[0],1)[0].second);
+                        act[0].first.first = areaPos[i].first;
+                        act[0].first.second = areaPos[i].second + 1;
+                        if(areaPos[i].second < getSize().second-1 && getPoints(act)[0].first < defaultPoint){
+                            std::vector<std::pair<int,int>> move (1,act[0].first);
+                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
                             answer.push_back(dummy);
+                        }
+                        else if(areaPos[i].second < getSize().second-1){
+                            act.push_back(act[0]);
+                            for(int tt = 0;tt < 3;tt++){
+                                act[1] = act[0];
+                                switch (tt){
+                                    case 0:
+                                        act[1].first.second++;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].second < getSize().second-2 && getPoints(act)[0].first < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
+                                    case 1:
+                                        act[1].first.first--;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].first > 0 && getPoints(act)[0].first < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
+                                    case 2:
+                                        act[1].first.first++;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].first < getSize().first-1 && getPoints(act)[0].first < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
+                                }
+                            }
                         }
                         break;
                     case 2:
-                        act[0].first = areaPos[i].first - 1;
-                        act[0].second = areaPos[i].second;
-                        if(areaPos[i].first != 0 && getPoints(act[0],1)[0].first < defaultPoint){
-                            std::pair<std::vector<std::pair<int,int>>,int> dummy (act,getPoints(act[0],1)[0].second);
+                        act[0].first.first = areaPos[i].first - 1;
+                        act[0].first.second = areaPos[i].second;
+                        if(areaPos[i].first > 0 && getPoints(act)[0].first < defaultPoint){
+                            std::vector<std::pair<int,int>> move (1,act[0].first);
+                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
                             answer.push_back(dummy);
+                        }
+                        else if(areaPos[i].first > 0){
+                            act.push_back(act[0]);
+                            for(int tt = 0;tt < 3;tt++){
+                                act[1] = act[0];
+                                switch (tt){
+                                    case 0:
+                                        act[1].first.second--;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].second > 0 && getPoints(act)[0].first < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
+                                    case 1:
+                                        act[1].first.second++;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].second < getSize().second-1 && getPoints(act)[0].first < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
+                                    case 2:
+                                        act[1].first.first--;
+                                        std::cout << side << " " << to << " " << tt << std::endl;
+                                        if(areaPos[i].first > 1 && getPoints(act)[0].first < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (1,act[1].first);
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                            answer.push_back(dummy);
+                                        }
+                                    break;
+                                }
+                            }
                         }
                         break;
                     case 3:
-                        act[0].first = areaPos[i].first + 1;
-                        act[0].second = areaPos[i].second;
-                       if(areaPos[i].first != getSize().second-1 && getPoints(act[0],1)[0].first < defaultPoint){
-                           std::pair<std::vector<std::pair<int,int>>,int> dummy (act,getPoints(act[0],1)[0].second);
+                        act[0].first.first = areaPos[i].first + 1;
+                        act[0].first.second = areaPos[i].second;
+                       if(areaPos[i].first < getSize().first-1 && getPoints(act)[0].first < defaultPoint){
+                           std::vector<std::pair<int,int>> move (1,act[0].first);
+                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
                            answer.push_back(dummy);
                         }
+                       else if(areaPos[i].first < getSize().first-1){
+                           act.push_back(act[0]);
+                           for(int tt = 0;tt < 3;tt++){
+                               act[1] = act[0];
+                               switch (tt){
+                                   case 0:
+                                       act[1].first.second--;
+                                       std::cout << side << " " << to << " " << tt << std::endl;
+                                       if(areaPos[i].second > 0 && getPoints(act)[0].first < defaultPoint){
+                                           std::vector<std::pair<int,int>> move (1,act[1].first);
+                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                           answer.push_back(dummy);
+                                       }
+                                   break;
+                                   case 1:
+                                       act[1].first.first++;
+                                       std::cout << side << " " << to << " " << tt << std::endl;
+                                       if(areaPos[i].first < getSize().first-2 && getPoints(act)[0].first < defaultPoint){
+                                           std::vector<std::pair<int,int>> move (1,act[1].first);
+                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                           answer.push_back(dummy);
+                                       }
+                                   break;
+                                   case 2:
+                                       act[1].first.second++;
+                                       std::cout << side << " " << to << " " << tt << std::endl;
+                                       if(areaPos[i].second < getSize().second-1&& getPoints(act)[0].first < defaultPoint){
+                                           std::vector<std::pair<int,int>> move (1,act[1].first);
+                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                           answer.push_back(dummy);
+                                       }
+                                   break;
+                               }
+                           }
+                       }
                         break;
                 }
             }
@@ -964,6 +1242,7 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(std::vector<std::pair<s
     for(auto _pos : poses){
         int state = _pos.second;
         std::pair<int, int> pos = _pos.first;
+        std::cout<<pos.first<<" "<<pos.second<<std::endl;
         setState(pos.first, pos.second, state);
     }
     std::vector<std::pair<int,int>> ans = getPoints();
