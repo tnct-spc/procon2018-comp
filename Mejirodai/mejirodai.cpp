@@ -99,7 +99,7 @@ void Mejirodai::RunManagerSimulation(){
     }
 
 //    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
-    if(SRC)for(int i=0;i<100;i++){std::cout<<"param"<<i<<"\n";manager->startSimulation(my, opponnent, InputMethod, my_params, opponent_params, SRC);}
+    if(SRC)for(int i=0;i<200;i++){std::cout<<"param"<<i<<"\n";manager->startSimulation(my, opponnent, InputMethod, my_params, opponent_params, SRC);}
     else manager->startSimulation(my,opponnent,InputMethod,my_params,opponent_params,SRC);
 }
 
