@@ -6,7 +6,7 @@ WarshallFloydAlgorithm::WarshallFloydAlgorithm(const procon::Field& field, int f
     std::tie(size_x, size_y) = field.getSize();
     size_sum = size_x * size_y;
 
-    dock = std::make_shared<MinimumVisualizerDock>(4);
+    dock = std::make_shared<ProgresDock>();
     dock->show();
 }
 
@@ -23,11 +23,12 @@ std::list<std::pair<int,int>> WarshallFloydAlgorithm::getRoute(std::vector<std::
 
     auto get_list = [&](int pos, int depth){
 
-        if(input.at(pos).at(depth).depth != depth){
-            std::cerr << "error case" << std::endl;
-        }
-
         std::list<std::pair<int, int>> pos_list;
+
+        if(input.at(pos).at(depth).depth != depth){
+            std::cerr << "route is not found" << std::endl;
+            return pos_list;
+        }
 
         while(depth > 0){
             pos_list.emplace_back(getPosPair(pos));
@@ -47,7 +48,7 @@ std::list<std::pair<int,int>> WarshallFloydAlgorithm::getRoute(std::vector<std::
     std::list<std::pair<int,int>> routes;
     routes = get_list(target_pos, depth);
 
-    dock->addVisualizer(field.getSize(), std::vector<std::list<std::pair<int,int>>>({routes}), std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
+    dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({routes}), std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
 
     return routes;
 }

@@ -2,7 +2,7 @@
 #define WARSHALLFLOYDALGORITHM_H
 
 #include "algorithmwrapper.h"
-#include "minimumvisualizerdock.h"
+#include "progresdock.h"
 
 class WarshallFloydAlgorithm : public AlgorithmWrapper
 {
@@ -27,7 +27,7 @@ private:
 
     int size_x, size_y, size_sum;
 
-    std::shared_ptr<MinimumVisualizerDock> dock;
+    std::shared_ptr<ProgresDock> dock;
 
 };
 
