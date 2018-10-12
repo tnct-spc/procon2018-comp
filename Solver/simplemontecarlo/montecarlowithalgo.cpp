@@ -49,8 +49,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> MontecarloWith
             if(!(p1.first < 0 || p1.second < 0 || p1.first >= field.getSize().first || p1.second >= field.getSize().second
             || p2.first < 0 || p2.second < 0 || p2.first >= field.getSize().first || p2.second >= field.getSize().second)){
                 return std::make_pair(
-                            std::make_tuple(dx.at(t1), dy.at(t1), 1 + field.getState(p1.first, p1.second).first == (side ? 1 : 2)),
-                            std::make_tuple(dx.at(t2), dy.at(t2), 1 + field.getState(p2.first, p2.second).first == (side ? 1 : 2))
+                            std::make_tuple(field.getState(p1.first, p1.second).first == (side ? 1 : 2) ? 2 : 1, dx.at(t1), dy.at(t1)),
+                            std::make_tuple(field.getState(p2.first, p2.second).first == (side ? 1 : 2) ? 2 : 1, dx.at(t2), dy.at(t2))
                                       );
             }
         }
