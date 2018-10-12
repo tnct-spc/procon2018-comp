@@ -1,5 +1,6 @@
 #include "depthfirstsearch.h"
 #include<iostream>
+#include<fstream>
 
 DepthFirstSearch::DepthFirstSearch(const procon::Field& field, int final_turn, bool side) :
     AlgorithmWrapper(field, final_turn, side)
@@ -1028,6 +1029,9 @@ void DepthFirstSearch::setRandomParams(std::vector<std::pair<QString, double>> p
     bf_allyw=ally_weight;
     bf_ratio=ratio;
     std::cout<<"predictw"<<predict_weight<<"    allyw"<<ally_weight<<"  ratio"<<ratio<<"\n";
+    std::ofstream ofile("result.txt",std::ios::app);
+    ofile<<predict_weight<<","<<ally_weight<<","<<ratio<<"\n";
+    ofile.close();
   }
 }
 

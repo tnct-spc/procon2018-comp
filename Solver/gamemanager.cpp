@@ -15,6 +15,7 @@
 #include "depthfirstsearch.h"
 #include "LastForce/lastregion.h"
 #include<iostream>
+#include<fstream>
 
 GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, int turn_max, QObject *parent)
     : QObject(parent),
@@ -98,6 +99,8 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
 void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod, std::vector<std::pair<QString, double>> my_params, std::vector<std::pair<QString, double>> opp_params, bool SRC) {
     if(SRC){
         bool flag=false;
+        double R=0,B=0,D=0;
+        int df=0,pr,pb;
     for(int time=0;time<50;time++){
     if (QString::compare("GenerateField", InputMethod) == 0) {
         int x_size = field->getSize().first;
@@ -141,16 +144,14 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     if (QString::compare("DepthFirstSearch", my_algo) == 0) {
         team_1 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 0);
     }
-
-    std::cout<<"team1::";
-    team_1->setRandomParams(my_params,flag);
-
     if (QString::compare("DepthFirstSearch", opponent_algo) == 0) {
         team_2 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 1);
     }
 
-   std::cout<<"team2::";
-   team_2->setRandomParams(opp_params,flag);
+    if(time==0){std::ofstream ofile("result.txt",std::ios::app);std::cout<<"team1::";ofile<<"01,";ofile.close();}
+    team_1->setRandomParams(my_params,flag);
+    if(time==0){std::ofstream ofile("result.txt",std::ios::app);std::cout<<"team2::";ofile<<"02,";ofile.close();}
+    team_2->setRandomParams(opp_params,flag);
 
     if(vis_show){
         visualizer->update();
@@ -199,9 +200,24 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         emit signalAutoMode(false);
 
     }
+    pr=field->getPoints(false).at(0).second;
+    pb=field->getPoints(false).at(1).second;
+    std::ofstream ofile("result.txt",std::ios::app);
+    ofile<<time<<","<<pr<<","<<pb<<",";
+    std::cout<<time<<"   Red"<<pr<<"::Blue"<<pb;
+    if(pr<pb){std::cout<<"   WIN::Blue\n";B++;df=0;ofile<<"111\n";}
+    else if(pr>pb){std::cout<<"   WIN::RED\n";R++;df=0;ofile<<"222\n";}
+    else {std::cout<<"   DRAW\n";D++;df++;ofile<<"000\n";}
     flag=true;
-    std::cout<<time<<"\n";
+    ofile.close();
+    if(df==6){std::cout<<"切り捨て\n";break;}
     }
+    std::cout<<"R勝率::"<<R/50<<"   B勝率::"<<B/50<<"   引き分け率"<<D/50<<"\n";
+    std::ofstream ofile("result.txt",std::ios::app);
+    if(df=6)ofile<<"00\n";
+    else ofile<<"99\n";
+    ofile<<R/50<<","<<B/50<<","<<D/50<<"\n";
+    ofile.close();
     }
 /////////////////////////////////////////////////////////////////////
    else{
