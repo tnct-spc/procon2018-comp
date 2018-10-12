@@ -12,6 +12,7 @@ public:
     SimpleAlgorithm(const procon::Field& field, int final_turn, bool side, const GeneticAgent& agent = GeneticAgent(11));
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int side);
     void setParams(std::vector<std::pair<QString, double>> params);
+    void setRandomParams(std::vector<std::pair<QString, double>> params);
 
     double evaluateMove(int side, std::pair<int,int> move);
 

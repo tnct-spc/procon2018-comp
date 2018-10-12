@@ -153,3 +153,7 @@ double SimpleAlgorithm::evaluateMove(int side, std::pair<int, int> move){
     return calc(0) + calc(1);
 
 }
+
+void SimpleAlgorithm::setRandomParams(std::vector<std::pair<QString, double>> params){
+
+}

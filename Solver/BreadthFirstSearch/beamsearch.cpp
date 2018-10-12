@@ -285,4 +285,6 @@ procon::Field beamsearch::agentmove(procon::Field ins_field, std::vector<std::ve
         return field;
 }
 
+void beamsearch::setRandomParams(std::vector<std::pair<QString, double>> params){
 
+}

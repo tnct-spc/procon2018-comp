@@ -221,3 +221,7 @@ void UseAbstMonteCarlo::setParams(std::vector<std::pair<QString, double>> params
 {
 
 }
+
+void UseAbstMonteCarlo::setRandomParams(std::vector<std::pair<QString, double>> params){
+
+}

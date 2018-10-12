@@ -27,6 +27,7 @@ public:
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
     void setParams(std::vector<std::pair<QString, double>> params);
     void setRandomParams(std::vector<std::pair<QString, double>> params);
+    void setParams(std::vector<std::pair<QString, double>> params,bool exer);
 
     class  Treap;
     struct TreapNode;

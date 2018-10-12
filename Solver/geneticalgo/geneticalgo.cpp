@@ -133,3 +133,7 @@ void GeneticAlgo::setParams(std::vector<std::pair<QString, double>> params)
 {
 
 }
+
+void GeneticAlgo::setRandomParams(std::vector<std::pair<QString, double>> params){
+
+}

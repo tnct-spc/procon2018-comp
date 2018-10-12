@@ -14,6 +14,7 @@
 #include "majorityrulewithabstdata.h"
 #include "depthfirstsearch.h"
 #include "LastForce/lastregion.h"
+#include<iostream>
 
 GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, int turn_max, QObject *parent)
     : QObject(parent),
@@ -96,7 +97,6 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
 
 void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod, std::vector<std::pair<QString, double>> my_params, std::vector<std::pair<QString, double>> opp_params, bool SRC) {
     if(SRC){
-            DepthFirstSearch *dfs;
     for(int time=0;time<50;time++){
     if (QString::compare("GenerateField", InputMethod) == 0) {
         int x_size = field->getSize().first;
@@ -119,9 +119,6 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         field_vec.clear();
         field_vec.push_back(std::make_shared<procon::Field>(*field));
 
-     //   std::string path = QFileDialog::getOpenFileName().toStdString();
-     //   procon::CsvIo::exportField(*field,path);
-
     } else if (QString::compare("CSVImport", InputMethod) == 0) {
 
         std::string path = QFileDialog::getOpenFileName().toStdString();
@@ -139,76 +136,20 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         std::string path = QFileDialog::getOpenFileName().toStdString();
         field = std::make_shared<procon::Field>(procon::BinaryIo::importField(path));
     }
-    //field->guessAgents(1);
 
-    // field->createQRString(0);
-    // field->createQRString(1);
-
-    if (QString::compare("DummyAlgorithm", my_algo) == 0) {
-        team_1 = std::make_shared<DummyAlgorithm>(*field, field->getFinalTurn(), 0);
-    } else if (QString::compare("GeneticAlgo", my_algo) == 0) {
-        team_1 = std::make_shared<GeneticAlgo>(*field, field->getFinalTurn(), 0);
-    } else if (QString::compare("MontecarloWithAlgo", my_algo) == 0) {
-        team_1 = std::make_shared<MontecarloWithAlgo>(*field, field->getFinalTurn(), 0);
-    }else if(QString::compare("SimpleAlgorithm", my_algo) == 0){
-        team_1 = std::make_shared<SimpleAlgorithm>(*field, field->getFinalTurn(), 0);
-    }else if(QString::compare("BeamSearch", my_algo) == 0){
-        team_1 = std::make_shared<beamsearch>(*field, field->getFinalTurn(), 0);
-    }else if(QString::compare("TestDoubleAgentAlgo", my_algo) == 0){
-        team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 0);
-    }else if(QString::compare("DoubleAgentWithSimpleMC", my_algo) == 0){
-        team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 0|(1<<16));
-    }else if(QString::compare("DoubleAgentWithUniformMC", my_algo) == 0){
-        team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 0|(2<<16));
-    }else if(QString::compare("DoubleAgentWithNash", my_algo) == 0){
-        team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 0|(3<<16));
-    }else if(QString::compare("EvaluateParam", my_algo) == 0){
-        team_1 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 0, 1);
-    } else if (QString::compare("UseAbstractData", my_algo) == 0) {
-        team_1 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 0);
-    } else if (QString::compare("UseAbstMonteCarlo", my_algo) == 0) {
-        team_1 = std::make_shared<UseAbstMonteCarlo>(*field, field->getFinalTurn(), 0);
-    } else if (QString::compare("MajorityRuleWithAbstData", my_algo) == 0) {
-        team_1 = std::make_shared<MajorityRuleWithAbstData>(*field, field->getFinalTurn(), 0);
-    } else if (QString::compare("DepthFirstSearch", my_algo) == 0) {
+    if (QString::compare("DepthFirstSearch", my_algo) == 0) {
         team_1 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 0);
-    } else if (QString::compare("LastRegion", my_algo) == 0) {
-        team_1 = std::make_shared<LastRegion>(*field, field->getFinalTurn(), 0);
     }
 
-    if(time==0)dfs->setRandomParams(my_params);
+    std::cout<<"team1::";
+    team_1->setRandomParams(my_params);
 
-    if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
-        team_2 = std::make_shared<DummyAlgorithm>(*field, field->getFinalTurn(), 1);
-    } else if (QString::compare("GeneticAlgo", opponent_algo) == 0) {
-        team_2 = std::make_shared<GeneticAlgo>(*field, field->getFinalTurn(), 1);
-    } else if (QString::compare("MontecarloWithAlgo", opponent_algo) == 0) {
-        team_2 = std::make_shared<MontecarloWithAlgo>(*field, field->getFinalTurn(), 1);
-    } else if (QString::compare("SimpleAlgorithm", opponent_algo) == 0) {
-        team_2 = std::make_shared<SimpleAlgorithm>(*field, field->getFinalTurn(), 1);
-    }else if(QString::compare("BeamSearch", opponent_algo)==0){
-        team_2 = std::make_shared<beamsearch>(*field, field->getFinalTurn(), 1);
-    }else if(QString::compare("TestDoubleAgentAlgo", opponent_algo) == 0){
-        team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 0);
-    }else if(QString::compare("DoubleAgentWithSimpleMC", opponent_algo) == 0){
-        team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 0|(1<<16));
-    }else if(QString::compare("DoubleAgentWithUniformMC", opponent_algo) == 0){
-        team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 0|(2<<16));
-    }else if(QString::compare("DoubleAgentWithNash", opponent_algo) == 0){
-        team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 0|(3<<16));
-    }else if(QString::compare("EvaluateParam", opponent_algo) == 0){
-        team_2 = std::make_shared<AgentManager>(*field, field->getFinalTurn(), 1, 1);
-    } else if (QString::compare("UseAbstractData", opponent_algo) == 0) {
-        team_2 = std::make_shared<UseAbstractData>(*field, field->getFinalTurn(), 1);
-    } else if (QString::compare("MajorityRuleWithAbstData", opponent_algo) == 0) {
-        team_2 = std::make_shared<MajorityRuleWithAbstData>(*field, field->getFinalTurn(), 1);
-    } else if (QString::compare("DepthFirstSearch", opponent_algo) == 0) {
+    if (QString::compare("DepthFirstSearch", opponent_algo) == 0) {
         team_2 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 1);
-    } else if (QString::compare("LastRegion", opponent_algo) == 0) {
-        team_2 = std::make_shared<LastRegion>(*field, field->getFinalTurn(), 0);
     }
 
-    if(time==0)dfs->setRandomParams(opp_params);
+   std::cout<<"team2::";
+   team_2->setRandomParams(opp_params);
 
     if(vis_show){
         visualizer->update();
@@ -251,13 +192,14 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             field_vec.push_back(std::make_shared<procon::Field>(*field));
             setFieldCount(field_vec.size() - 1);
         }
+    }
     }else{
         nextMoveForManualMode();
         emit signalAutoMode(false);
 
     }
+    std::cout<<time<<"\n";
     }
-}
     }
 /////////////////////////////////////////////////////////////////////
    else{

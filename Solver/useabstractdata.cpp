@@ -203,3 +203,7 @@ void UseAbstractData::setParameters(std::vector<double>& values, double diagonal
     calc_value_func = tile_value_func;
     calc_eval_sum = eval_sum_func;
 }
+
+void UseAbstractData::setRandomParams(std::vector<std::pair<QString, double>> params){
+
+}

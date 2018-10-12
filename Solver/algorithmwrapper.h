@@ -16,6 +16,7 @@ public:
 
     virtual const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> agentAct(int now_turn)=0;
     virtual void setParams(std::vector<std::pair<QString, double>> params) = 0;
+    virtual void setRandomParams(std::vector<std::pair<QString, double>> params)=0;
 
 protected:
     const procon::Field& field;

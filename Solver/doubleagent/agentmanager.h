@@ -18,6 +18,7 @@ public:
 
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
     void setParams(std::vector<std::pair<QString, double>> params);
+    void setRandomParams(std::vector<std::pair<QString, double>> params);
 
     void setAgentData(const GeneticAgent& agent_data, int agent_number);
 
