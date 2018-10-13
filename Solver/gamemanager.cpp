@@ -328,7 +328,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         } else if (QString::compare("DepthFirstSearch", opponent_algo) == 0) {
             team_2 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 1);
         } else if (QString::compare("LastRegion", opponent_algo) == 0) {
-            team_2 = std::make_shared<LastRegion>(*field, field->getFinalTurn(), 0);
+            team_2 = std::make_shared<LastRegion>(*field, field->getFinalTurn(), 1);
         }
 
         team_2->setParams(opp_params);
