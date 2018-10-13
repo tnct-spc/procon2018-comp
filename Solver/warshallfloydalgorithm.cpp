@@ -16,11 +16,24 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     std::pair<int,int> bef_1 = field.getAgent(side, 1);
     std::vector<std::pair<int ,std::pair<int,int>>> poses_0 = calcSingleAgent(0);
     std::vector<std::pair<int ,std::pair<int,int>>> poses_1 = calcSingleAgent(1);
-    std::sort(poses_0.begin(), poses_0.end(), std::greater<std::pair<int, std::pair<int,int>>>());
-    std::sort(poses_1.begin(), poses_1.end(), std::greater<std::pair<int, std::pair<int,int>>>());
 
     std::pair<std::pair<int,int> , std::pair<int,int>> ans;
     int max_adv = -1e9;
+
+    for(auto& pos_pair : poses_0){
+        std::pair<int,int> next_move_pos = pos_pair.second;
+
+        if(next_move_pos == field.getAgent(side ^ 1, 0) && next_move_pos == field.getAgent(side ^ 1, 1))
+            pos_pair.first *= conflict_def_per;
+
+        if(field.getState(next_move_pos.first, next_move_pos.second).first == (side ? 1 : 2) &&
+                std::abs(next_move_pos.first - field.getAgent(side ^ 1, 0).first) <= 1 &&
+                std::abs(next_move_pos.second - field.getAgent(side ^ 1, 0).second) <= 1 &&
+                std::abs(next_move_pos.first - field.getAgent(side ^ 1, 1).first) <= 1 &&
+                std::abs(next_move_pos.second - field.getAgent(side ^ 1, 1).second) <= 1)
+
+            pos_pair.first *= conflict_atk_per;
+    }
 
     for(auto& pos0 : poses_0)
         for(auto& pos1 : poses_1)
@@ -79,9 +92,6 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
 
     }
 
-    //std::pair<int,int> max_pos = agent_pos;
-    //int max_count = 0;
-
     std::vector<std::pair<int, std::pair<int,int>>> anses;
 
     for(auto& map_element : route_map){
@@ -110,17 +120,12 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
             color.at(2).at(point_pair.first).at(point_pair.second) -= putcounts.at(point_pair.first).at(point_pair.second) * 512 / put_count_sum;
         }
 
-        anses.push_back(std::make_pair(routes.size(), target_pos));
-
-        /*
-        if(max_count < routes.size()){
-            max_count = routes.size();
-            max_pos = target_pos;
-        }
-        */
+        anses.emplace_back(routes.size(), target_pos);
 
         dock->addMinumuVisu(field.getSize(), routes, color);
     }
+
+    std::sort(anses.begin(), anses.end(), std::greater<std::pair<int, std::pair<int,int>>>());
 
     return anses;
 

@@ -35,6 +35,9 @@ private:
 
     std::shared_ptr<ProgresDock> dock;
 
+    double conflict_def_per = 0.3;
+    double conflict_atk_per = 0.3;
+
     double bound_val = 0.05;
     double depth_weight = 1.02;
     double depth_weight_max = 1.50;
