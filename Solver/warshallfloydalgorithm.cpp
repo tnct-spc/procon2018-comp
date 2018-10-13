@@ -17,6 +17,10 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     std::vector<std::pair<int ,std::pair<int,int>>> poses_0 = calcSingleAgent(0);
     std::vector<std::pair<int ,std::pair<int,int>>> poses_1 = calcSingleAgent(1);
 
+    if(poses_0.empty() || poses_1.empty()){
+        std::cerr << "error case" << std::endl;
+    }
+
     std::pair<std::pair<int,int> , std::pair<int,int>> ans;
     int max_adv = -1e9;
 
@@ -45,14 +49,20 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     std::pair<int,int> pos_0 = ans.first;
     std::pair<int,int> pos_1 = ans.second;
 
-    return std::make_pair(
+
+    std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> ret_value = std::make_pair(
                 std::make_tuple(1 + (field.getState(pos_0.first, pos_0.second).first == (side ? 1 : 2)), pos_0.first - bef_0.first, pos_0.second - bef_0.second),
                 std::make_tuple(1 + (field.getState(pos_1.first, pos_1.second).first == (side ? 1 : 2)), pos_1.first - bef_1.first, pos_1.second - bef_1.second)
                           );
+
+    std::cout << "(" << std::get<0>(ret_value.first) << "," << std::get<1>(ret_value.first) << "," << std::get<2>(ret_value.first) << ")" << " , "
+              << "(" << std::get<0>(ret_value.second) << "," << std::get<1>(ret_value.second) << "," << std::get<2>(ret_value.second) << ")" << std::endl;
+    return ret_value;
 }
 
 std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSingleAgent(int agent){
 
+    // [0,maxdepth]
     int maxdepth = std::min(maxdepth_max, field.getFinalTurn() - field.getTurnCount());
 
     std::pair<int,int> agent_pos = field.getAgent(side, agent);
@@ -65,18 +75,18 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
     Treap treap_que;
 
     for(int pos = 0; pos < size_sum; ++pos)
-        for(int depth = 1; depth < maxdepth; ++depth){
+        for(int depth = 1; depth <= maxdepth; ++depth){
             double score;
             std::list<std::pair<int,int>> route;
 
             std::tie(score, route) = getRoute(edges, pos, depth);
-            if(route.size() < 2)
+            if(route.empty())
                 continue;
             treap_que.insert(std::make_pair(std::min(depth_weight_max, std::pow(depth_weight, depth)) * score / depth, std::move(route)));
 
         }
 
-    treap_que.erase_back(1.0 * treap_que.size() * bound_val);
+    treap_que.erase_back(std::max(1, static_cast<int>(1.0 * treap_que.size() * bound_val)));
 
     for(int index = 0; index < treap_que.size(); ++index){
         double average;
@@ -133,13 +143,13 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
 
 }
 
-std::pair<double, std::list<std::pair<int,int>>> WarshallFloydAlgorithm::getRoute(std::vector<std::vector<Edge>>& inp_2ut, int target_pos, int depth){
+std::pair<double, std::list<std::pair<int,int>>> WarshallFloydAlgorithm::getRoute(std::vector<std::vector<Edge>>& input, int target_pos, int depth){
 
     auto get_list = [&](int pos, int depth){
 
         std::list<std::pair<int, int>> pos_list;
 
-        if(inp_2ut.at(pos).at(depth).depth != depth){
+        if(input.at(pos).at(depth).depth != depth){
             // std::cerr << "route is not found" << std::endl;
             return pos_list;
         }
@@ -148,8 +158,8 @@ std::pair<double, std::list<std::pair<int,int>>> WarshallFloydAlgorithm::getRout
             pos_list.emplace_back(getPosPair(pos));
 
             int bef_pos = pos;
-            pos = inp_2ut.at(pos).at(depth).prev.first;
-            depth = inp_2ut.at(bef_pos).at(depth).prev.second;
+            pos = input.at(pos).at(depth).prev.first;
+            depth = input.at(bef_pos).at(depth).prev.second;
         }
 
         pos_list.emplace_back(getPosPair(pos));
@@ -164,15 +174,16 @@ std::pair<double, std::list<std::pair<int,int>>> WarshallFloydAlgorithm::getRout
 
     // dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({routes}), std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
 
-    return std::make_pair(inp_2ut.at(target_pos).at(depth).sum, routes);
+    return std::make_pair(input.at(target_pos).at(depth).sum, routes);
 }
 
+// [0,maxval]
 std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::calcDijkStra(int start_pos, int maxval){
 
     std::vector<std::vector<Edge>> dp_vector(size_sum);
 
     for(int start_index = 0; start_index < size_sum; ++start_index)
-        for(int end_index = 0; end_index < maxval; ++end_index)
+        for(int end_index = 0; end_index <= maxval; ++end_index)
             dp_vector.at(start_index).emplace_back(start_index);
 
     dp_vector.at(start_pos).at(0).depth = 0;
@@ -207,7 +218,11 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                         int length = 1 + (end_pos_state.first == side ? 1 : 2);
                         double value = (end_pos_state.first == side + 1 ? 0 : end_pos_state.second * length);
 
-                        if(depth + length >= maxval)
+                        if(length == 2 && depth + 1 == maxval){
+                            length = 1;
+                            value /= 2;
+                        }
+                        else if(depth + length > maxval)
                             continue;
 
                         Edge e = Edge::make(dp_vector.at(point).at(depth), end_index, value, length);
