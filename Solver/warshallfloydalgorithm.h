@@ -19,6 +19,8 @@ private:
     struct Edge;
     struct MapElement;
 
+    std::pair<int,int> calcSingleAgent(int agent);
+
     std::vector<std::vector<Edge>> calcDijkStra(int start_pos, int maxval);
     std::pair<double, std::list<std::pair<int, int>>> getRoute(std::vector<std::vector<Edge>>& inp_2ut, int target_pos, int depth);
 
@@ -34,6 +36,8 @@ private:
     std::shared_ptr<ProgresDock> dock;
 
     double bound_val = 0.05;
+    double depth_weight = 1.02;
+    double depth_weight_max = 1.50;
 
 };
 
@@ -61,7 +65,6 @@ struct WarshallFloydAlgorithm::MapElement{
         put_count.resize(size_x, std::vector<int>(size_y, 0));
 
         for(int index = 0; index < routes.first.size(); ++index){
-
             auto score = routes.first.at(index);
             const auto& route = routes.second.at(index);
 

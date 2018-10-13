@@ -12,9 +12,22 @@ WarshallFloydAlgorithm::WarshallFloydAlgorithm(const procon::Field& field, int f
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydAlgorithm::agentAct(int){
 
-    std::vector<std::pair<int,int>> agent_pos = {field.getAgent(side, 0), field.getAgent(side, 1)};
+    std::pair<int,int> bef_0 = field.getAgent(side, 0);
+    std::pair<int,int> bef_1 = field.getAgent(side, 1);
+    std::pair<int,int> pos_0 = calcSingleAgent(0);
+    std::pair<int,int> pos_1 = calcSingleAgent(1);
 
-    std::vector<std::vector<Edge>> edges = calcDijkStra(getPosValue(agent_pos.at(0)), 30);
+    return std::make_pair(
+                std::make_tuple(1 + (field.getState(pos_0.first, pos_0.second).first == (side ? 1 : 2)), pos_0.first - bef_0.first, pos_0.second - bef_0.second),
+                std::make_tuple(1 + (field.getState(pos_1.first, pos_1.second).first == (side ? 1 : 2)), pos_1.first - bef_1.first, pos_1.second - bef_1.second)
+                          );
+}
+
+std::pair<int,int> WarshallFloydAlgorithm::calcSingleAgent(int agent){
+
+    std::pair<int,int> agent_pos = field.getAgent(side, agent);
+
+    std::vector<std::vector<Edge>> edges = calcDijkStra(getPosValue(agent_pos), 30);
     std::vector<std::vector<std::list<std::pair<int,int>>>> routes;
 
     std::map<std::pair<int,int>, MapElement> route_map;
@@ -29,7 +42,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
             std::tie(score, route) = getRoute(edges, pos, depth);
             if(route.size() < 2)
                 continue;
-            treap_que.insert(std::make_pair(score / depth, std::move(route)));
+            treap_que.insert(std::make_pair(std::min(depth_weight_max, std::pow(depth_weight, depth)) * score / depth, std::move(route)));
 
         }
 
@@ -41,8 +54,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 
         std::tie(average, route) = treap_que.get(index);
 
-        std::cout << average << std::endl;
-
         std::pair<int,int> back = *std::next(route.begin());
 
         MapElement element(back);
@@ -52,6 +63,9 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
         route_map[back].addRoute(average, std::move(route));
 
     }
+
+    std::pair<int,int> max_pos = agent_pos;
+    int max_count = 0;
 
     for(auto& map_element : route_map){
 
@@ -64,8 +78,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
         std::vector<std::vector<std::vector<int>>> color(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255)));
 
         color.at(0).at(target_pos.first).at(target_pos.second) = 128;
-        color.at(1).at(agent_pos.at(0).first).at(agent_pos.at(0).second) = 128;
-        color.at(2).at(agent_pos.at(0).first).at(agent_pos.at(0).second) = 128;
+        color.at(1).at(agent_pos.first).at(agent_pos.second) = 128;
+        color.at(2).at(agent_pos.first).at(agent_pos.second) = 128;
 
         int put_count_sum = 0.0;
         std::for_each(putcounts.begin(), putcounts.end(), [&put_count_sum](const std::vector<int>& v){put_count_sum += std::accumulate(v.begin(), v.end(), 0);});
@@ -79,10 +93,16 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
             color.at(2).at(point_pair.first).at(point_pair.second) -= putcounts.at(point_pair.first).at(point_pair.second) * 512 / put_count_sum;
         }
 
+        if(max_count < routes.size()){
+            max_count = routes.size();
+            max_pos = target_pos;
+        }
+
         dock->addMinumuVisu(field.getSize(), routes, color);
     }
 
-    return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
+    return max_pos;
+
 }
 
 std::pair<double, std::list<std::pair<int,int>>> WarshallFloydAlgorithm::getRoute(std::vector<std::vector<Edge>>& inp_2ut, int target_pos, int depth){
