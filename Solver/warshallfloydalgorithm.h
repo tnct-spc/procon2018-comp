@@ -96,13 +96,6 @@ struct WarshallFloydAlgorithm::Edge{
     }
 
 
-    friend Edge operator+(const Edge& a, const Edge& b){
-        Edge e(b.pos, a.sum + b.sum, a.depth + b.depth);
-        e.prev = a.prev;
-
-        return e;
-    }
-
     friend bool operator<(const Edge& a, const Edge& b){
         return a.average() < b.average();
     }
