@@ -101,9 +101,9 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     if(QString::compare("SetRandomParams",SetParams)==0){
         for(int atime=0;atime<200;atime++){
             std::cout<<"params"<<atime<<"\n";
-            bool flag=false;
+            bool flag=false,outf=false;
             double R=0,B=0,D=0;
-            int df=0,pr,pb;
+            int df=0,pr,pb,cnt=0;
     for(int time=0;time<50;time++){
     if (QString::compare("GenerateField", InputMethod) == 0) {
         int x_size = field->getSize().first;
@@ -153,8 +153,9 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
     if(time==0){std::ofstream ofile("result.csv",std::ios::app);std::cout<<"team1::";ofile<<"01,";ofile.close();}
     team_1->setRandomParams(my_params,flag);
-    if(time==0){std::ofstream ofile("result.csv",std::ios::app);std::cout<<"team2::";ofile<<"02,";ofile.close();}
-    team_2->setRandomParams(opp_params,flag);
+    if(time%10==0||outf==true){std::ofstream ofile("result.csv",std::ios::app);std::cout<<"team2::";ofile<<"02,";ofile.close();
+    team_2->setRandomParams(opp_params,false);outf=false;}
+    else team_2->setRandomParams(opp_params,flag);
 
     if(vis_show){
         visualizer->update();
@@ -203,22 +204,25 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         emit signalAutoMode(false);
 
     }
+    cnt++;
     pr=field->getPoints(false).at(0).second;
     pb=field->getPoints(false).at(1).second;
     std::ofstream ofile("result.csv",std::ios::app);
     ofile<<time<<","<<pr<<","<<pb<<",";
     std::cout<<time<<"   Red"<<pr<<"::Blue"<<pb;
-    if(pr<pb){std::cout<<"   WIN::Blue\n";B++;df=0;ofile<<"111\n";}
-    else if(pr>pb){std::cout<<"   WIN::RED\n";R++;df=0;ofile<<"222\n";}
+    if(pr<pb){std::cout<<"   WIN::Blue\n";B++;df=0;ofile<<"222\n";}
+    else if(pr>pb){std::cout<<"   WIN::RED\n";R++;df=0;ofile<<"111\n";}
     else {std::cout<<"   DRAW\n";D++;df++;ofile<<"000\n";}
     flag=true;
     ofile.close();
-    if(df==6){std::cout<<"切り捨て\n";break;}
+    if((time+1)%10==0)cnt=0;
+    if(df==6){std::cout<<"切り捨て\n";outf=true;df=0;time=time+(10-cnt);cnt=0;}
     }
     std::cout<<"R勝率::"<<R/50<<"   B勝率::"<<B/50<<"   引き分け率"<<D/50<<"\n";
     std::ofstream ofile("result.csv",std::ios::app);
-    if(df=6)ofile<<"00\n";
-    else ofile<<"99\n";
+    if(R/50<B/50)ofile<<"00,\n";
+    if(R/50>B/50)ofile<<"99,\n";
+    if(R/50==B/50)ofile<<"55,\n";
     ofile<<R/50<<","<<B/50<<","<<D/50<<"\n";
     ofile.close();
         }
@@ -270,9 +274,11 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         if (QString::compare("DepthFirstSearch", opponent_algo) == 0) {
             team_2 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 1);
         }
+
+        //読み込み
         std::ifstream ifile("result.csv");
         std::vector<std::string> VS;
-        std::vector<std::pair<std::string,std::pair<double,std::pair<double,double>>>>QD;
+        std::vector<std::pair<double,std::pair<double,std::pair<double,std::string>>>>QD;
         std::string str;
         while(getline(ifile,str)){
             for(const auto subStr : spl(str)){
@@ -280,39 +286,80 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             }
         }
         int num=0;
-        for(const auto tesStr : VS)std::cout<<tesStr<<"\n";
             for(int fas=0;fas<VS.size();fas++){
                 if(VS[fas]=="01"){
-                    //QD[num]=std::make_pair("RED"+std::to_string(num),std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::stod(VS[fas+3]))));
-                    //QD[num].first="RED"+std::to_string(num);
-                    //QD[num].second.first=std::stod(VS[fas+1]);
-                    //QD[num].second.second.first=std::stod(VS[fas+2]);
-                    //QD[num].second.second.second=std::stod(VS[fas+3]);
-                    num++;
+                    QD.push_back(std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::make_pair(std::stod(VS[fas+3]),"RED"+std::to_string(num)))));
                 }
-                else if(VS[fas]=="02"){
-                    //QD[num].first="BLUE"+std::to_string(num-1);
-                    //QD[num].second.first=std::stod(VS[fas+1]);
-                    //QD[num].second.second.first=std::stod(VS[fas+2]);
-                    //QD[num].second.second.second=std::stod(VS[fas+3]);
-                    num++;
-                }
+                /*else if(VS[fas]=="02"){
+                    QD.push_back(std::make_pair("BLUE"+std::to_string(num),std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::stod(VS[fas+3])))));
+                }*/
                 else if(VS[fas]=="00"){
-                    //QD[num].first="BAD"+std::to_string(num-2);
-                    //QD[num].second.first=std::stod(VS[fas+1]);
-                    //QD[num].second.second.first=std::stod(VS[fas+2]);
-                    //QD[num].second.second.second=std::stod(VS[fas+3]);
+                    QD.push_back(std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::make_pair(std::stod(VS[fas+3]),std::to_string(num)))));
+                    num++;
+                }
+                else if(VS[fas]=="55"){
+                    QD.push_back(std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::make_pair(std::stod(VS[fas+3]),std::to_string(num)))));
                     num++;
                 }
                 else if(VS[fas]=="99"){
-                    //QD[num].first="OK"+std::to_string(num-2);
-                    //QD[num].second.first=std::stod(VS[fas+1]);
-                    //QD[num].second.second.first=std::stod(VS[fas+2]);
-                    //QD[num].second.second.second=std::stod(VS[fas+3]);
+                    QD.push_back(std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::make_pair(std::stod(VS[fas+3]),std::to_string(num)))));
                     num++;
                 }
              }
-            std::cout<<QD.size();
+            std::sort(QD.begin(),QD.end());
+            std::reverse(QD.begin(),QD.end());
+            for(std::vector<std::pair<double,std::pair<double,std::pair<double,std::string>>>>::iterator itr=QD.begin();itr!=QD.end();itr++){
+                if((*itr).second.second.second.find("RED")==std::string::npos)std::cout<<(*itr).second.second.second<<"\n"<<"R勝率   "<<(*itr).first*100<<"%,"<<"B勝率   "<<(*itr).second.first*100<<"%,"<<"引き分け率   "<<(*itr).second.second.first*100<<"%\n";
+                //else std::cout<<(*itr).second.second.second<<"\n"<<"predict_weight   "<<(*itr).first<<","<<"ally_weight   "<<(*itr).second.first<<","<<"ratio   "<<(*itr).second.second.first<<"\n";
+            }
+
+            if(vis_show){
+                visualizer->update();
+                visualizer->setField(*field, field->getTurnCount(), field->getFinalTurn());
+            if(is_auto){
+                setFieldCount(field_vec.size() - 1);
+                while(field->getTurnCount() < field->getFinalTurn()){
+
+                    std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_1_ans;// = team_1->agentAct(0);
+                    std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> team_2_ans;// = team_2->agentAct(1);
+
+                    team_1_ans = team_1->agentAct(field->getTurnCount());
+                    team_2_ans = team_2->agentAct(field->getTurnCount());
+
+                    std::vector<std::pair<std::pair<int,int>, std::pair<int,int>>> pruning_pos;
+
+
+                    std::pair<int,int> pruning = std::make_pair(std::get<1>(team_1_ans.first) + field->getAgent(0,0).first, std::get<2>(team_1_ans.first) + field->getAgent(0,0).second);
+
+                    pruning_pos.push_back(std::make_pair(std::make_pair(0, std::get<0>(team_1_ans.first) - 1), pruning));
+                    pruning = std::make_pair(std::get<1>(team_1_ans.second) + field->getAgent(0,1).first, std::get<2>(team_1_ans.second) + field->getAgent(0,1).second);
+                    pruning_pos.push_back(std::make_pair(std::make_pair(0, std::get<0>(team_1_ans.second) - 1), pruning));
+                    pruning = std::make_pair(std::get<1>(team_2_ans.first) + field->getAgent(1,0).first, std::get<2>(team_2_ans.first) + field->getAgent(1,0).second);
+                    pruning_pos.push_back(std::make_pair(std::make_pair(1, std::get<0>(team_2_ans.first) - 1), pruning));
+                    pruning = std::make_pair(std::get<1>(team_2_ans.second) + field->getAgent(1,1).first, std::get<2>(team_2_ans.second) + field->getAgent(1,1).second);
+                    pruning_pos.push_back(std::make_pair(std::make_pair(1, std::get<0>(team_2_ans.second) - 1), pruning));
+
+                    std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> test;
+                    test = team_1_ans;
+
+
+                    agentAct(0,0,team_1_ans.first);
+                    agentAct(0,1,team_1_ans.second);
+                    agentAct(1,0,team_2_ans.first);
+                    agentAct(1,1,team_2_ans.second);
+
+                    changeTurn(false);
+                    field->getPoints(pruning_pos);
+
+                    field_vec.push_back(std::make_shared<procon::Field>(*field));
+                    setFieldCount(field_vec.size() - 1);
+                }
+            }
+            }else{
+                nextMoveForManualMode();
+                emit signalAutoMode(false);
+
+            }
         }
 /////////////////////////////////////////////////////////////////////
    else if(QString::compare("Default",SetParams)==0){
