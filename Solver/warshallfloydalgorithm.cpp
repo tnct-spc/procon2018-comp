@@ -17,27 +17,29 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     std::vector<std::pair<int ,std::pair<int,int>>> poses_0 = calcSingleAgent(0);
     std::vector<std::pair<int ,std::pair<int,int>>> poses_1 = calcSingleAgent(1);
 
-    if(poses_0.empty() || poses_1.empty()){
-        std::cerr << "error case" << std::endl;
-    }
-
     std::pair<std::pair<int,int> , std::pair<int,int>> ans;
     int max_adv = -1e9;
 
-    for(auto& pos_pair : poses_0){
-        std::pair<int,int> next_move_pos = pos_pair.second;
+    auto apply_conflict = [&](auto& input_vec){
 
-        if(next_move_pos == field.getAgent(side ^ 1, 0) && next_move_pos == field.getAgent(side ^ 1, 1))
-            pos_pair.first *= conflict_def_per;
+        for(auto& pos_pair : input_vec){
+            std::pair<int,int> next_move_pos = pos_pair.second;
 
-        if(field.getState(next_move_pos.first, next_move_pos.second).first == (side ? 1 : 2) &&
+            if(next_move_pos == field.getAgent(side ^ 1, 0) && next_move_pos == field.getAgent(side ^ 1, 1))
+                pos_pair.first *= conflict_def_per;
+
+            if(field.getState(next_move_pos.first, next_move_pos.second).first == (side ? 1 : 2) &&
                 std::abs(next_move_pos.first - field.getAgent(side ^ 1, 0).first) <= 1 &&
                 std::abs(next_move_pos.second - field.getAgent(side ^ 1, 0).second) <= 1 &&
                 std::abs(next_move_pos.first - field.getAgent(side ^ 1, 1).first) <= 1 &&
                 std::abs(next_move_pos.second - field.getAgent(side ^ 1, 1).second) <= 1)
 
             pos_pair.first *= conflict_atk_per;
-    }
+        }
+    };
+
+    apply_conflict(poses_0);
+    apply_conflict(poses_1);
 
     for(auto& pos0 : poses_0)
         for(auto& pos1 : poses_1)
@@ -54,6 +56,9 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
                 std::make_tuple(1 + (field.getState(pos_0.first, pos_0.second).first == (side ? 1 : 2)), pos_0.first - bef_0.first, pos_0.second - bef_0.second),
                 std::make_tuple(1 + (field.getState(pos_1.first, pos_1.second).first == (side ? 1 : 2)), pos_1.first - bef_1.first, pos_1.second - bef_1.second)
                           );
+
+    if(std::max({std::abs(std::get<1>(ret_value.first)), std::abs(std::get<2>(ret_value.first)), std::abs(std::get<1>(ret_value.second)), std::abs(std::get<2>(ret_value.second))}) > 1)
+        std::cerr << "ret_value err" << std::endl;
 
     std::cout << "(" << std::get<0>(ret_value.first) << "," << std::get<1>(ret_value.first) << "," << std::get<2>(ret_value.first) << ")" << " , "
               << "(" << std::get<0>(ret_value.second) << "," << std::get<1>(ret_value.second) << "," << std::get<2>(ret_value.second) << ")" << std::endl;
@@ -145,21 +150,19 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
 
 std::pair<double, std::list<std::pair<int,int>>> WarshallFloydAlgorithm::getRoute(std::vector<std::vector<Edge>>& input, int target_pos, int depth){
 
-    auto get_list = [&](int pos, int depth){
+    auto get_list = [&](int pos, int dep){
 
         std::list<std::pair<int, int>> pos_list;
 
-        if(input.at(pos).at(depth).depth != depth){
-            // std::cerr << "route is not found" << std::endl;
+        if(input.at(pos).at(dep).depth != dep)
             return pos_list;
-        }
 
-        while(depth > 0){
+        while(dep > 0){
             pos_list.emplace_back(getPosPair(pos));
 
             int bef_pos = pos;
-            pos = input.at(pos).at(depth).prev.first;
-            depth = input.at(bef_pos).at(depth).prev.second;
+            pos = input.at(pos).at(dep).prev.first;
+            dep = input.at(bef_pos).at(dep).prev.second;
         }
 
         pos_list.emplace_back(getPosPair(pos));
@@ -172,9 +175,7 @@ std::pair<double, std::list<std::pair<int,int>>> WarshallFloydAlgorithm::getRout
     std::list<std::pair<int,int>> routes;
     routes = get_list(target_pos, depth);
 
-    // dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({routes}), std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
-
-    return std::make_pair(input.at(target_pos).at(depth).sum, routes);
+    return std::make_pair(input.at(target_pos).at(depth).sum, std::move(routes));
 }
 
 // [0,maxval]
@@ -215,7 +216,7 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                         std::pair<int, int> end_pos = getPosPair(end_index);
                         std::pair<int, int> end_pos_state = field.getState(end_pos.first, end_pos.second);
 
-                        int length = 1 + (end_pos_state.first == side ? 1 : 2);
+                        int length = ((end_pos_state.first != (side ? 1 : 2)) ? 1 : 2);
                         double value = (end_pos_state.first == side + 1 ? 0 : end_pos_state.second * length);
 
                         if(length == 2 && depth + 1 == maxval){
