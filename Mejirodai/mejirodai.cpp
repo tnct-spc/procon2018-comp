@@ -36,13 +36,12 @@ void Mejirodai::RunManagerSimulation(){
 
     runMode = true;
 
-    if(ui->SetRandomParams->isChecked())SRC=true;
-
     // 各チームのアルゴリズムの設定
     QString my = ui->selectMyAlgorithmBox->currentText();
     QString opponnent = ui->selectOpponentAlgorithmBox->currentText();
 
     QString InputMethod = ui->InputMethodSelect->currentText();
+    QString SetParams = ui->SetParamsBox->currentText();
 
     // AutoModeの設定
     manager->setAutoMode(ui->autoMode->isChecked());
@@ -99,8 +98,7 @@ void Mejirodai::RunManagerSimulation(){
     }
 
 //    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
-    if(SRC)for(int i=0;i<200;i++){std::cout<<"param"<<i<<"\n";manager->startSimulation(my, opponnent, InputMethod, my_params, opponent_params, SRC);}
-    else manager->startSimulation(my,opponnent,InputMethod,my_params,opponent_params,SRC);
+    manager->startSimulation(my, opponnent, InputMethod, my_params, opponent_params,SetParams);
 }
 
 void Mejirodai::goNextState(){

@@ -999,11 +999,11 @@ void DepthFirstSearch::setRandomParams(std::vector<std::pair<QString, double>> p
       maxval = (int)search("maxval");
       loop_count = (int)search("loop_count");
       movecount = (int)search("movecount");
+      beam_width = (int)search("beam_width");
       predict_weight=bf_predictw;
       ally_weight=bf_allyw;
       ratio=bf_ratio;
       use_beamsearch = true;
-      beam_width = 4;
       if(!dockshow_before && dock_show)
           dock->show();
   }
@@ -1016,12 +1016,12 @@ void DepthFirstSearch::setRandomParams(std::vector<std::pair<QString, double>> p
     maxval = (int)search("maxval");
     loop_count = (int)search("loop_count");
     movecount = (int)search("movecount");
+    beam_width = (int)search("beam_width");
 
     predict_weight = dist(mt);
     ally_weight = dist(mt);
     ratio = dista(mt);
     use_beamsearch = true;
-    beam_width = 4;
     if(!dockshow_before && dock_show)
         dock->show();
 
@@ -1029,7 +1029,7 @@ void DepthFirstSearch::setRandomParams(std::vector<std::pair<QString, double>> p
     bf_allyw=ally_weight;
     bf_ratio=ratio;
     std::cout<<"predictw"<<predict_weight<<"    allyw"<<ally_weight<<"  ratio"<<ratio<<"\n";
-    std::ofstream ofile("result.txt",std::ios::app);
+    std::ofstream ofile("result.csv",std::ios::app);
     ofile<<predict_weight<<","<<ally_weight<<","<<ratio<<"\n";
     ofile.close();
   }

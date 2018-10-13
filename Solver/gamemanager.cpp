@@ -16,6 +16,7 @@
 #include "LastForce/lastregion.h"
 #include<iostream>
 #include<fstream>
+#include<algorithm>
 
 GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, int turn_max, QObject *parent)
     : QObject(parent),
@@ -96,11 +97,13 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
     field->setFinalTurn(max_t);
 }
 
-void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod, std::vector<std::pair<QString, double>> my_params, std::vector<std::pair<QString, double>> opp_params, bool SRC) {
-    if(SRC){
-        bool flag=false;
-        double R=0,B=0,D=0;
-        int df=0,pr,pb;
+void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod, std::vector<std::pair<QString, double>> my_params, std::vector<std::pair<QString, double>> opp_params,QString SetParams) {
+    if(QString::compare("SetRandomParams",SetParams)==0){
+        for(int atime=0;atime<200;atime++){
+            std::cout<<"params"<<atime<<"\n";
+            bool flag=false;
+            double R=0,B=0,D=0;
+            int df=0,pr,pb;
     for(int time=0;time<50;time++){
     if (QString::compare("GenerateField", InputMethod) == 0) {
         int x_size = field->getSize().first;
@@ -148,9 +151,9 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_2 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 1);
     }
 
-    if(time==0){std::ofstream ofile("result.txt",std::ios::app);std::cout<<"team1::";ofile<<"01,";ofile.close();}
+    if(time==0){std::ofstream ofile("result.csv",std::ios::app);std::cout<<"team1::";ofile<<"01,";ofile.close();}
     team_1->setRandomParams(my_params,flag);
-    if(time==0){std::ofstream ofile("result.txt",std::ios::app);std::cout<<"team2::";ofile<<"02,";ofile.close();}
+    if(time==0){std::ofstream ofile("result.csv",std::ios::app);std::cout<<"team2::";ofile<<"02,";ofile.close();}
     team_2->setRandomParams(opp_params,flag);
 
     if(vis_show){
@@ -202,7 +205,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     }
     pr=field->getPoints(false).at(0).second;
     pb=field->getPoints(false).at(1).second;
-    std::ofstream ofile("result.txt",std::ios::app);
+    std::ofstream ofile("result.csv",std::ios::app);
     ofile<<time<<","<<pr<<","<<pb<<",";
     std::cout<<time<<"   Red"<<pr<<"::Blue"<<pb;
     if(pr<pb){std::cout<<"   WIN::Blue\n";B++;df=0;ofile<<"111\n";}
@@ -213,14 +216,106 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     if(df==6){std::cout<<"切り捨て\n";break;}
     }
     std::cout<<"R勝率::"<<R/50<<"   B勝率::"<<B/50<<"   引き分け率"<<D/50<<"\n";
-    std::ofstream ofile("result.txt",std::ios::app);
+    std::ofstream ofile("result.csv",std::ios::app);
     if(df=6)ofile<<"00\n";
     else ofile<<"99\n";
     ofile<<R/50<<","<<B/50<<","<<D/50<<"\n";
     ofile.close();
+        }
     }
 /////////////////////////////////////////////////////////////////////
-   else{
+    else if(QString::compare("SetParamsFromCSV",SetParams)==0){
+        if (QString::compare("GenerateField", InputMethod) == 0) {
+            int x_size = field->getSize().first;
+            int y_size = field->getSize().second;
+
+            int final_turn = field->getFinalTurn();
+
+            if(use_random_field){
+                std::random_device rnd;
+                std::mt19937 mt(rnd());
+                std::uniform_int_distribution<> rand_size(8, 12);
+                x_size = rand_size(mt);
+                y_size = rand_size(mt);
+                std::uniform_int_distribution<> rand_turn(40,80);
+                final_turn = rand_turn(mt);
+            }
+
+            field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val, use_random_field);
+            field->setFinalTurn(final_turn);
+            field_vec.clear();
+            field_vec.push_back(std::make_shared<procon::Field>(*field));
+
+        } else if (QString::compare("CSVImport", InputMethod) == 0) {
+
+            std::string path = QFileDialog::getOpenFileName().toStdString();
+            field = std::make_shared<procon::Field>(procon::CsvIo::importField(path));
+
+        } else if (QString::compare("QRcode", InputMethod) == 0) {
+            QRCode qr;
+            QrConverterField qrc;
+            std::string f = qr.decodeQRcode();
+            procon::Field hoge = qrc.ConvertCsvToField(f);
+            field = std::make_shared<procon::Field>(hoge);
+            field_vec.clear();
+            field_vec.push_back(std::make_shared<procon::Field>(*field));
+        }else if (QString::compare("BinaryImport", InputMethod) == 0) {
+            std::string path = QFileDialog::getOpenFileName().toStdString();
+            field = std::make_shared<procon::Field>(procon::BinaryIo::importField(path));
+        }
+
+        if (QString::compare("DepthFirstSearch", my_algo) == 0) {
+            team_1 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 0);
+        }
+        if (QString::compare("DepthFirstSearch", opponent_algo) == 0) {
+            team_2 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 1);
+        }
+        std::ifstream ifile("result.csv");
+        std::vector<std::string> VS;
+        std::vector<std::pair<std::string,std::pair<double,std::pair<double,double>>>>QD;
+        std::string str;
+        while(getline(ifile,str)){
+            for(const auto subStr : spl(str)){
+                VS.push_back(subStr);
+            }
+        }
+        int num=0;
+        for(const auto tesStr : VS)std::cout<<tesStr<<"\n";
+            for(int fas=0;fas<VS.size();fas++){
+                if(VS[fas]=="01"){
+                    //QD[num]=std::make_pair("RED"+std::to_string(num),std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::stod(VS[fas+3]))));
+                    //QD[num].first="RED"+std::to_string(num);
+                    //QD[num].second.first=std::stod(VS[fas+1]);
+                    //QD[num].second.second.first=std::stod(VS[fas+2]);
+                    //QD[num].second.second.second=std::stod(VS[fas+3]);
+                    num++;
+                }
+                else if(VS[fas]=="02"){
+                    //QD[num].first="BLUE"+std::to_string(num-1);
+                    //QD[num].second.first=std::stod(VS[fas+1]);
+                    //QD[num].second.second.first=std::stod(VS[fas+2]);
+                    //QD[num].second.second.second=std::stod(VS[fas+3]);
+                    num++;
+                }
+                else if(VS[fas]=="00"){
+                    //QD[num].first="BAD"+std::to_string(num-2);
+                    //QD[num].second.first=std::stod(VS[fas+1]);
+                    //QD[num].second.second.first=std::stod(VS[fas+2]);
+                    //QD[num].second.second.second=std::stod(VS[fas+3]);
+                    num++;
+                }
+                else if(VS[fas]=="99"){
+                    //QD[num].first="OK"+std::to_string(num-2);
+                    //QD[num].second.first=std::stod(VS[fas+1]);
+                    //QD[num].second.second.first=std::stod(VS[fas+2]);
+                    //QD[num].second.second.second=std::stod(VS[fas+3]);
+                    num++;
+                }
+             }
+            std::cout<<QD.size();
+        }
+/////////////////////////////////////////////////////////////////////
+   else if(QString::compare("Default",SetParams)==0){
         if (QString::compare("GenerateField", InputMethod) == 0) {
             int x_size = field->getSize().first;
             int y_size = field->getSize().second;
@@ -984,4 +1079,20 @@ void GameManager::getDataToOperator(const std::pair<int,int> grid, const bool ag
 void GameManager::getChangeOfData(const std::pair<int, int> data, const bool agent)
 {
     emit sendDataToVisualizer(data, agent);
+}
+
+std::vector<std::string> GameManager::spl(std::string str){
+    int first = 0;
+    int last = str.find_first_of(",");
+    std::vector<std::string> result;
+    while (first <str.size()) {
+        std::string subStr(str, first, last - first);
+        result.push_back(subStr);
+        first = last + 1;
+        last = str.find_first_of(",", first);
+        if (last == std::string::npos) {
+            last = str.size();
+        }
+    }
+    return result;
 }
