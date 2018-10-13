@@ -57,11 +57,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
                 std::make_tuple(1 + (field.getState(pos_1.first, pos_1.second).first == (side ? 1 : 2)), pos_1.first - bef_1.first, pos_1.second - bef_1.second)
                           );
 
-    if(std::max({std::abs(std::get<1>(ret_value.first)), std::abs(std::get<2>(ret_value.first)), std::abs(std::get<1>(ret_value.second)), std::abs(std::get<2>(ret_value.second))}) > 1)
-        std::cerr << "ret_value err" << std::endl;
-
-    std::cout << "(" << std::get<0>(ret_value.first) << "," << std::get<1>(ret_value.first) << "," << std::get<2>(ret_value.first) << ")" << " , "
-              << "(" << std::get<0>(ret_value.second) << "," << std::get<1>(ret_value.second) << "," << std::get<2>(ret_value.second) << ")" << std::endl;
     return ret_value;
 }
 
@@ -91,7 +86,7 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
 
         }
 
-    treap_que.erase_back(std::max(1, static_cast<int>(1.0 * treap_que.size() * bound_val)));
+    int bound = treap_que.size() * bound_val;
 
     for(int index = 0; index < treap_que.size(); ++index){
         double average;
@@ -107,6 +102,8 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
             route_map[back] = MapElement(back);
         route_map[back].addRoute(average, std::move(route));
 
+        if(index >= bound && route_map.size() > 2)
+            break;
     }
 
     std::vector<std::pair<int, std::pair<int,int>>> anses;
