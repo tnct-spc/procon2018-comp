@@ -14,8 +14,27 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 
     std::pair<int,int> bef_0 = field.getAgent(side, 0);
     std::pair<int,int> bef_1 = field.getAgent(side, 1);
-    std::pair<int,int> pos_0 = calcSingleAgent(0);
-    std::pair<int,int> pos_1 = calcSingleAgent(1);
+    std::vector<std::pair<int ,std::pair<int,int>>> poses_0 = calcSingleAgent(0);
+    std::vector<std::pair<int ,std::pair<int,int>>> poses_1 = calcSingleAgent(1);
+    std::sort(poses_0.begin(), poses_0.end());
+    std::reverse(poses_0.begin(), poses_0.end());
+    std::sort(poses_1.begin(), poses_1.end());
+    std::reverse(poses_1.begin(), poses_1.end());
+
+    std::pair<std::pair<int,int> , std::pair<int,int>> ans;
+    int max_adv = -1e9;
+
+    for(auto pos0 : poses_0){
+        for(auto pos1 : poses_1){
+            if(pos0.second != pos1.second && pos0.first + pos1.first >= max_adv){
+                max_adv = pos0.first + pos1.first;
+                ans = std::make_pair(pos0.second, pos1.second);
+            }
+        }
+    }
+
+    std::pair<int,int> pos_0 = ans.first;
+    std::pair<int,int> pos_1 = ans.second;
 
     return std::make_pair(
                 std::make_tuple(1 + (field.getState(pos_0.first, pos_0.second).first == (side ? 1 : 2)), pos_0.first - bef_0.first, pos_0.second - bef_0.second),
@@ -23,7 +42,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
                           );
 }
 
-std::pair<int,int> WarshallFloydAlgorithm::calcSingleAgent(int agent){
+std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSingleAgent(int agent){
 
     std::pair<int,int> agent_pos = field.getAgent(side, agent);
 
@@ -64,8 +83,10 @@ std::pair<int,int> WarshallFloydAlgorithm::calcSingleAgent(int agent){
 
     }
 
-    std::pair<int,int> max_pos = agent_pos;
-    int max_count = 0;
+    //std::pair<int,int> max_pos = agent_pos;
+    //int max_count = 0;
+
+    std::vector<std::pair<int, std::pair<int,int>>> anses;
 
     for(auto& map_element : route_map){
 
@@ -93,15 +114,19 @@ std::pair<int,int> WarshallFloydAlgorithm::calcSingleAgent(int agent){
             color.at(2).at(point_pair.first).at(point_pair.second) -= putcounts.at(point_pair.first).at(point_pair.second) * 512 / put_count_sum;
         }
 
+        anses.push_back(std::make_pair(routes.size(), target_pos));
+
+        /*
         if(max_count < routes.size()){
             max_count = routes.size();
             max_pos = target_pos;
         }
+        */
 
         dock->addMinumuVisu(field.getSize(), routes, color);
     }
 
-    return max_pos;
+    return anses;
 
 }
 
