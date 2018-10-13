@@ -33,6 +33,8 @@ private:
 
     int size_x, size_y, size_sum;
 
+    int maxdepth_max = 30;
+
     std::shared_ptr<ProgresDock> dock;
 
     double conflict_def_per = 0.3;

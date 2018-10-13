@@ -53,9 +53,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 
 std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSingleAgent(int agent){
 
+    int maxdepth = std::min(maxdepth_max, field.getFinalTurn() - field.getTurnCount());
+
     std::pair<int,int> agent_pos = field.getAgent(side, agent);
 
-    std::vector<std::vector<Edge>> edges = calcDijkStra(getPosValue(agent_pos), 30);
+    std::vector<std::vector<Edge>> edges = calcDijkStra(getPosValue(agent_pos), maxdepth);
     std::vector<std::vector<std::list<std::pair<int,int>>>> routes;
 
     std::map<std::pair<int,int>, MapElement> route_map;
@@ -63,7 +65,7 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
     Treap treap_que;
 
     for(int pos = 0; pos < size_sum; ++pos)
-        for(int depth = 1; depth < 30; ++depth){
+        for(int depth = 1; depth < maxdepth; ++depth){
             double score;
             std::list<std::pair<int,int>> route;
 
