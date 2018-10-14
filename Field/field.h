@@ -2,6 +2,7 @@
 #define FIELD_H
 
 
+#include <algorithm>
 #include <vector>
 #include <utility>
 #include <random>
