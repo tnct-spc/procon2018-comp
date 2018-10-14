@@ -66,7 +66,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     std::mt19937 mt (rnd());
 
     std::uniform_int_distribution<> rndor(0,1);//[0,1]
-    std::uniform_int_distribution<> rand_fieldtype(0, 8);//[0,1]
+    std::uniform_int_distribution<> rand_fieldtype(0, 16);//[0,1]
 
     grid_x = size_x;
     grid_y = size_y;
@@ -229,7 +229,7 @@ std::vector<std::vector<int>> procon::Field::createField(int x_size, int y_size,
     std::uniform_int_distribution<> plus_rnd(0,max_val / 3);
 
 
-    if(1){
+    if(field_type > 8){
         std::uniform_real_distribution<> uni(0, 1.0);
         auto rndval = [&uni, &mt](){
             return static_cast<double>(uni(mt));
