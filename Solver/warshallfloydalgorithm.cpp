@@ -7,7 +7,7 @@ WarshallFloydAlgorithm::WarshallFloydAlgorithm(const procon::Field& field, int f
     size_sum = size_x * size_y;
 
     dock = std::make_shared<ProgresDock>();
-    dock->show();
+    // dock->show();
 }
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydAlgorithm::agentAct(int){
@@ -136,7 +136,7 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
 
         anses.emplace_back(routes.size(), target_pos);
 
-        dock->addMinumuVisu(field.getSize(), routes, color);
+        // dock->addMinumuVisu(field.getSize(), routes, color);
     }
 
     std::sort(anses.begin(), anses.end(), std::greater<std::pair<int, std::pair<int,int>>>());
