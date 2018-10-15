@@ -53,7 +53,8 @@ SOURCES += \
     majorityrulewithabstdata.cpp \
     depthfirstsearch.cpp \
     LastForce/lastregion.cpp \
-    warshallfloydalgorithm.cpp
+    warshallfloydalgorithm.cpp \
+    typicaldpfordouble.cpp
 
 HEADERS += \
         algorithm_global.h \ 
@@ -83,7 +84,8 @@ HEADERS += \
     majorityrulewithabstdata.h \
     depthfirstsearch.h \
     LastForce/lastregion.h \
-    warshallfloydalgorithm.h
+    warshallfloydalgorithm.h \
+    typicaldpfordouble.h
 
 unix {
     target.path = /usr/lib
