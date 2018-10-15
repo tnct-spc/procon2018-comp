@@ -34,7 +34,7 @@ private:
 
     std::shared_ptr<ProgresDock> dock;
 
-    double conflict_def_per = 0.3;
+    double conflict_def_per = 1.3;
     double conflict_atk_per = 0.3;
 
     double bound_val = 0.05;

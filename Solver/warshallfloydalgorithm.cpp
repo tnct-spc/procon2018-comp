@@ -33,8 +33,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
                 std::abs(next_move_pos.second - field.getAgent(side ^ 1, 0).second) <= 1 &&
                 std::abs(next_move_pos.first - field.getAgent(side ^ 1, 1).first) <= 1 &&
                 std::abs(next_move_pos.second - field.getAgent(side ^ 1, 1).second) <= 1)
-
-            pos_pair.first *= conflict_atk_per;
+                pos_pair.first *= conflict_atk_per;
         }
     };
 
@@ -50,7 +49,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 
     std::pair<int,int> pos_0 = ans.first;
     std::pair<int,int> pos_1 = ans.second;
-
 
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> ret_value = std::make_pair(
                 std::make_tuple(1 + (field.getState(pos_0.first, pos_0.second).first == (side ? 1 : 2)), pos_0.first - bef_0.first, pos_0.second - bef_0.second),
