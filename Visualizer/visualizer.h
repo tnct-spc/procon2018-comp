@@ -128,7 +128,7 @@ private:
     std::pair<int, int> clicked_grid_change;
 
     //margin*size分の余白を取る
-    const double margin = 1.5;
+    const double margin = 2;
 
     const QColor font_color = QColor(0,0,0,64);
     const QColor background_color = QColor(245,245,220);
