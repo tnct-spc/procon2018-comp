@@ -68,7 +68,6 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
     std::pair<int,int> agent_pos = field.getAgent(side, agent);
 
     std::vector<std::vector<Edge>> edges = calcDijkStra(getPosValue(agent_pos), maxdepth);
-    std::vector<std::vector<std::list<std::pair<int,int>>>> routes;
 
     std::map<std::pair<int,int>, MapElement> route_map;
 
@@ -199,19 +198,6 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
 
     dp_vector.at(start_pos).at(0).depth = 0;
 
-    auto check = [&](int start_pos, int depth, int end_pos){
-        while(depth > 0){
-            if(start_pos == end_pos)
-                return true;
-
-            int bef_pos = start_pos;
-            start_pos = dp_vector.at(start_pos).at(depth).prev.first;
-            depth = dp_vector.at(bef_pos).at(depth).prev.second;
-        }
-
-        return start_pos == end_pos;
-    };
-
     for(int depth = 0; depth < maxval; ++depth)
         for(int point = 0; point < size_sum; ++point)
             if(dp_vector.at(point).at(depth).depth == depth)
@@ -219,11 +205,6 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                     if(!outOfRange(point, direction)){
 
                         int end_index = getRotatePos(point, direction);
-
-                        /*
-                        if(check(point, depth, end_index))
-                            continue;
-                        */
 
                         std::pair<int, int> end_pos = getPosPair(end_index);
                         std::pair<int, int> end_pos_state = field.getState(end_pos.first, end_pos.second);
