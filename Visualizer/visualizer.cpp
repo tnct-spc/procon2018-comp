@@ -304,9 +304,12 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
         std::string str;
         str = is_change_field_mode == true ? "EditMode" : "GameMode";
-        painter.drawText(text_point,QString::fromStdString(str));
 
+        std::string recul;
+        if (!is_change_field_mode && is_recalcuration) recul = "Calcurating";
+        painter.drawText(text_point,QString::fromStdString(str + " " + recul));
 
+        is_recalcuration = false;
     };
 
     auto drawRegion = [&]{
@@ -690,6 +693,7 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
         checkClickGrid(std::make_pair(-1,-1), false);
     } else if ((event->key() == Qt::Key_R) && !is_change_field_mode) {
         // 現時点でのfieldで再計算
+        is_recalcuration = true;
         emit sendRecalculation(std::make_pair(field.getTurnCount(), field.getFinalTurn()));
     }
 

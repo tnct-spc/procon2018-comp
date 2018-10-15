@@ -101,6 +101,9 @@ private:
 
     bool is_selected_grid = false;
 
+    // 再計算時に表示
+    bool is_recalcuration = false;
+
     std::pair<int, int> selected_to_change_grid;
 
 
