@@ -72,7 +72,7 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
 
     std::map<std::pair<int,int>, MapElement> route_map;
 
-    Treap treap_que;
+    std::priority_queue<std::pair<double, std::list<std::pair<int,int>>>> que;
 
     for(int pos = 0; pos < size_sum; ++pos)
         for(int depth = 1; depth <= maxdepth; ++depth){
@@ -82,17 +82,18 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
             std::tie(score, route) = getRoute(edges, pos, depth);
             if(route.empty())
                 continue;
-            treap_que.insert(std::make_pair(std::min(depth_weight_max, std::pow(depth_weight, depth)) * score / depth, std::move(route)));
+            que.emplace(std::min(depth_weight_max, std::pow(depth_weight, depth)) * score / depth, std::move(route));
 
         }
 
-    int bound = treap_que.size() * bound_val;
+    int bound = que.size() * bound_val;
 
-    for(int index = 0; index < treap_que.size(); ++index){
+    for(int index = 0; !que.empty(); ++index){
         double average;
         std::list<std::pair<int,int>> route;
 
-        std::tie(average, route) = treap_que.get(index);
+        std::tie(average, route) = que.top();
+        que.pop();
 
         std::pair<int,int> back = *std::next(route.begin());
 
@@ -269,161 +270,3 @@ bool WarshallFloydAlgorithm::outOfRange(int pos, int rotate){
 
 const std::vector<int> WarshallFloydAlgorithm::dx({1, 1, 0, -1, -1, -1, 0, 1, 0});
 const std::vector<int> WarshallFloydAlgorithm::dy({0, -1, -1, -1, 0, 1, 1, 1, 0});
-
-
-
-WarshallFloydAlgorithm::Treap::Treap() : root(TreapNode::nil){}
-
-WarshallFloydAlgorithm::Treap::Treap(tr_type val) : root(std::make_shared<TreapNode>(val)){}
-
-// イテレータが指す[st,en)の範囲で初期化する
-WarshallFloydAlgorithm::Treap::Treap(std::vector<tr_type>::iterator st, std::vector<tr_type>::iterator en) : root(TreapNode::nil){
-    while(st != en){
-        root = _merge(root, std::make_shared<TreapNode>(*st));
-        ++st;
-    }
-}
-
-// 配列で初期化する
-WarshallFloydAlgorithm::Treap::Treap(std::vector<tr_type> v) : root(TreapNode::nil){
-    for(auto& xx : v)
-        root = _merge(root, std::make_shared<TreapNode>(xx));
-}
-
-int WarshallFloydAlgorithm::Treap::_size(np_2 x){
-    return x == TreapNode::nil ? 0 : x->size;
-}
-
-np_2 WarshallFloydAlgorithm::Treap::_update(np_2 x){
-    x->size = _size(x->l) + _size(x->r) + 1;
-    return x;
-}
-
-np_2 WarshallFloydAlgorithm::Treap::_merge(np_2 l, np_2 r){
-    if(l == TreapNode::nil || r == TreapNode::nil)
-        return l == TreapNode::nil ? r : l;
-
-    if(l->pri > r->pri){
-        l->r = _merge(l->r, r);
-        return _update(l);
-    }else{
-        r->l = _merge(l, r->l);
-        return _update(r);
-    }
-}
-
-std::pair<np_2,np_2> WarshallFloydAlgorithm::Treap::_split(np_2 x, int k){
-    if(x == TreapNode::nil)
-        return std::make_pair(TreapNode::nil, TreapNode::nil);
-
-    if(k <= _size(x->l)){
-        std::pair<np_2,np_2> s = _split(x->l, k);
-        x->l = s.second;
-        return std::make_pair(s.first, _update(x));
-
-    }else{
-        std::pair<np_2,np_2> s = _split(x->r, k - _size(x->l) - 1);
-        x->r = s.first;
-        return std::make_pair(_update(x), s.second);
-    }
-}
-
-np_2 WarshallFloydAlgorithm::Treap::_insert(np_2 x, int k, tr_type val){
-    np_2 l,r;
-    std::tie(l, r) = _split(x, k);
-    return _merge(_merge(l, std::make_shared<TreapNode>(val)), r);
-}
-
-np_2 WarshallFloydAlgorithm::Treap::_erase(np_2 x, int k){
-    np_2 l,r,m;
-    std::tie(l, r) = _split(x, k);
-    std::tie(m, r) = _split(r, 1);
-    return _merge(l, r);
-}
-
-np_2 WarshallFloydAlgorithm::Treap::_erase_back(np_2 x, int k){
-    return _split(x, k).first;
-}
-
-void WarshallFloydAlgorithm::Treap::_set(np_2 x, int k, tr_type val){
-    if(k < _size(x->l))
-        _set(x->l, k, val);
-    else if(_size(x->l) == k)
-        x->val = val;
-    else
-        _set(x->r, k - _size(x->l) - 1, val);
-
-    _update(x);
-}
-
-tr_type WarshallFloydAlgorithm::Treap::_get(np_2 x, int k){
-    if(k < _size(x->l))
-        return _get(x->l, k);
-    else if(_size(x->l) == k)
-        return x->val;
-    else
-        return _get(x->r, k - _size(x->l) - 1);
-}
-
-int WarshallFloydAlgorithm::Treap::_lowerbound(np_2 x, tr_type val){
-    if(x == TreapNode::nil)
-        return 0;
-    if(val >= x->val)
-        return _lowerbound(x->l, val);
-    else
-        return _lowerbound(x->r,val) + _size(x->l) + 1;
-}
-
-np_2 WarshallFloydAlgorithm::Treap::_insert(np_2 x, tr_type val){
-    return _insert(x, _lowerbound(x, val), val);
-}
-
-void WarshallFloydAlgorithm::Treap::push_front(tr_type val){
-    root = _merge(std::make_shared<TreapNode>(val), root);
-}
-
-void WarshallFloydAlgorithm::Treap::push_back(tr_type val){
-    root = _merge(root, std::make_shared<TreapNode>(val));
-}
-
-void WarshallFloydAlgorithm::Treap::pop_front(){
-    root = _split(root, 1).second;
-}
-
-void WarshallFloydAlgorithm::Treap::pop_back(){
-    root = _split(root, _size(root) - 1).first;
-}
-
-int WarshallFloydAlgorithm::Treap::size(){
-    return root == TreapNode::nil ? 0 : root->size;
-}
-
-void WarshallFloydAlgorithm::Treap::set(int k, tr_type val){
-    return _set(root, k, val);
-}
-
-tr_type WarshallFloydAlgorithm::Treap::get(int k){
-    return _get(root, k);
-}
-
-void WarshallFloydAlgorithm::Treap::insert(int k, tr_type val){
-    root = _insert(root, k, val);
-}
-
-void WarshallFloydAlgorithm::Treap::insert(tr_type val){
-    root = _insert(root, val);
-}
-
-int WarshallFloydAlgorithm::Treap::lowerbound(tr_type val){
-    return _lowerbound(root, val);
-}
-
-void WarshallFloydAlgorithm::Treap::erase(int k){
-    root = _erase(root, k);
-}
-
-void WarshallFloydAlgorithm::Treap::erase_back(int k){
-    root = _erase_back(root, k);
-}
-
-np_2 WarshallFloydAlgorithm::TreapNode::nil = std::make_shared<WarshallFloydAlgorithm::TreapNode>(tr_type(), 0);

@@ -12,9 +12,6 @@ public:
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int);
     void setParams(std::vector<std::pair<QString, double>>){}
 
-    class  Treap;
-    struct TreapNode;
-
 private:
     struct Edge;
     struct MapElement;
@@ -124,82 +121,6 @@ struct WarshallFloydAlgorithm::Edge{
     }
 };
 
-
-using tr_type = std::pair<double, std::list<std::pair<int,int>>>;
-
-using np_2 = std::shared_ptr<WarshallFloydAlgorithm::TreapNode>;
-
-struct WarshallFloydAlgorithm::TreapNode{
-
-    static np_2 nil;
-
-    tr_type val;
-    uint32_t pri;
-    int size;
-    np_2 l = nil;
-    np_2 r = nil;
-
-    static int k;
-
-    TreapNode() : val(), pri(rndpri()), size(1), l(nil), r(nil){}
-    TreapNode(tr_type v) : val(v), pri(rndpri()), size(1), l(nil), r(nil){}
-    TreapNode(tr_type v, uint32_t p) : val(v), pri(p), size(1), l(nil), r(nil){}
-
-    static uint32_t rndpri() {
-        static uint32_t x = 123456789, y = 362436069, z = 521288629, w = time(0);
-        uint32_t t = x ^ (x << 11);
-        x = y;
-        y = z;
-        z = w;
-        w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
-        return std::max<uint32_t>(1, w & 0x3FFFFFFF);
-    }
-};
-
-class WarshallFloydAlgorithm::Treap{
-public:
-    np_2 root;
-    Treap();
-    Treap(tr_type val);
-    Treap(std::vector<tr_type>::iterator st, std::vector<tr_type>::iterator en);
-    Treap(std::vector<tr_type> v);
-
-protected:
-    int _size(np_2 x);
-    np_2 _update(np_2 x);
-    np_2 _merge(np_2 l, np_2 r);
-    std::pair<np_2,np_2> _split(np_2 x, int k);
-    np_2 _insert(np_2 x, int k, tr_type val);
-    np_2 _erase(np_2 x, int k);
-    np_2 _erase_back(np_2 x, int k);
-    void _set(np_2 x, int k, tr_type val);
-    tr_type _get(np_2 x, int k);
-    int _lowerbound(np_2 x, tr_type val);
-    np_2 _insert(np_2 x, tr_type val);
-
-public:
-    void push_front(tr_type val);
-    void push_back(tr_type val);
-    void pop_front();
-    void pop_back();
-
-    // rootを含めたサイズの出力
-    int size();
-    // k番目への代入
-    void set(int k, tr_type val);
-    // k番目の取得
-    tr_type get(int k);
-    // k番目への挿入
-    void insert(int k, tr_type val);
-    // 適切な位置への挿入
-    void insert(tr_type val);
-    // val <= get(k) となるような最小のk
-    int lowerbound(tr_type val);
-    // k番目の要素削除
-    void erase(int k);
-    // k番目以降の要素削除
-    void erase_back(int k);
-};
 
 #endif // WARSHALLFLOYDALGORITHM_H
 
