@@ -490,7 +490,6 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
         is_moving_agent = false;
 
     }
-
 }
 
 // クリックされたエージェントまたはマスを照合

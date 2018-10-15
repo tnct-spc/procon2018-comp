@@ -13,6 +13,7 @@
 #include "LastForce/lastforce.h"
 #include "majorityrulewithabstdata.h"
 #include "depthfirstsearch.h"
+#include "LastForce/lastregion.h"
 
 GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, int turn_max, QObject *parent)
     : QObject(parent),
@@ -97,7 +98,7 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
     field->setFinalTurn(max_t);
 }
 
-void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod) {
+void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod, std::vector<std::pair<QString, double>> my_params, std::vector<std::pair<QString, double>> opp_params) {
     if (QString::compare("GenerateField", InputMethod) == 0) {
         int x_size = field->getSize().first;
         int y_size = field->getSize().second;
@@ -172,7 +173,11 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_1 = std::make_shared<MajorityRuleWithAbstData>(*field, field->getFinalTurn(), 0);
     } else if (QString::compare("DepthFirstSearch", my_algo) == 0) {
         team_1 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 0);
+    } else if (QString::compare("LastRegion", my_algo) == 0) {
+        team_1 = std::make_shared<LastRegion>(*field, field->getFinalTurn(), 0);
     }
+
+    team_1->setParams(my_params);
 
     if (QString::compare("DummyAlgorithm", opponent_algo) == 0) {
         team_2 = std::make_shared<DummyAlgorithm>(*field, field->getFinalTurn(), 1);
@@ -200,9 +205,11 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_2 = std::make_shared<MajorityRuleWithAbstData>(*field, field->getFinalTurn(), 1);
     } else if (QString::compare("DepthFirstSearch", opponent_algo) == 0) {
         team_2 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 1);
+    } else if (QString::compare("LastRegion", opponent_algo) == 0) {
+        team_2 = std::make_shared<LastRegion>(*field, field->getFinalTurn(), 1);
     }
 
-
+    team_2->setParams(opp_params);
 
 
     // progressdockは一旦表示しない事にします(使う事があまりないため)
@@ -431,7 +438,7 @@ unsigned int GameManager::getFinalTurn(){
 
 
 void GameManager::agentAct(const int turn, const int agent, const std::tuple<int, int, int> tuple_val){
-
+  //  field->ifBreakArea(0, 0);
     int type, x_inp, y_inp;
     std::tie(type, x_inp, y_inp) = tuple_val;
 

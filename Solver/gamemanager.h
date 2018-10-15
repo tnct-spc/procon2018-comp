@@ -42,7 +42,7 @@ public:
     void setFieldCount(const unsigned int number);
     unsigned int getFieldCount();
 
-    void startSimulation(QString my_algo, QString opponent_algo, QString InputMethod);
+    void startSimulation(QString my_algo, QString opponent_algo, QString InputMethod, std::vector<std::pair<QString, double>> my_params, std::vector<std::pair<QString, double>> opp_params);
 
     int simulationGenetic(const GeneticAgent& agent_1, const GeneticAgent& agent_2, int algo_number, const GeneticAgent& agent_3 = 0, const GeneticAgent& agent_4 = 0);
 

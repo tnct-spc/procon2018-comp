@@ -66,7 +66,7 @@ procon::Field::Field(const unsigned int size_x, const unsigned int size_y, const
     std::mt19937 mt (rnd());
 
     std::uniform_int_distribution<> rndor(0,1);//[0,1]
-    std::uniform_int_distribution<> rand_fieldtype(0, 8);//[0,1]
+    std::uniform_int_distribution<> rand_fieldtype(0, 16);//[0,1]
 
     grid_x = size_x;
     grid_y = size_y;
@@ -228,6 +228,57 @@ std::vector<std::vector<int>> procon::Field::createField(int x_size, int y_size,
     //std::lognormal_distribution<> dist(3.0,0.25);
     std::uniform_int_distribution<> plus_rnd(0,max_val / 3);
 
+
+    if(field_type > 8){
+        std::uniform_real_distribution<> uni(0, 1.0);
+        auto rndval = [&uni, &mt](){
+            return static_cast<double>(uni(mt));
+        };
+        std::vector<double> per(4);
+        per.at(0) = (3 * rndval() - 1.5) * 0.5;
+        per.at(1) = (3 * rndval() - 1.5) * 0.05;
+        per.at(2) = (3 * rndval() - 1.5) * 0.01;
+        per.at(3) = -1 * rndval() * 0.05 - 0.5;
+
+        std::vector<double> fx_vec(33);
+        for(int index = 0; index < 33; ++index)
+            fx_vec.at(index) = per.at(0) * index +
+                    per.at(1) * std::pow(index, 2) +
+                    per.at(2) * std::pow(index * 1.6, 3) +
+                    per.at(3) * std::pow(index * 0.3, 4);
+        double bound = rndval() * (8 + *std::max_element(fx_vec.begin(), fx_vec.end())) - 10.5;
+
+        std::for_each(fx_vec.begin(), fx_vec.end(), [bound](double& x){x = std::max((x - bound) / 32 + 0.5, 0.0);});
+        double sum = std::accumulate(fx_vec.begin(), fx_vec.end(), 0.0);
+        std::for_each(fx_vec.begin(), fx_vec.end(), [sum](double& x){x /= sum;});
+
+        double point_sum = 0.0;
+        int max_val = -17;
+        for(int index = 0; index < 33; ++index){
+            point_sum += (index - 16) * fx_vec.at(index);
+            if(fx_vec.at(index))
+                max_val = index - 16;
+        }
+        int max_bound = 16 - max_val;
+        double up_bound = std::max(0.0, 2 - point_sum);
+        int move_val = rndval() * (max_bound - up_bound) + up_bound;
+
+        std::vector<double> point_per(33, 0.0);
+        for(int index = 0; index < 33; ++index)
+            if(index + move_val < 33)
+                point_per.at(index + move_val) = fx_vec.at(index);
+
+        for(int index = 0; index < 32; ++index)
+            point_per.at(index + 1) += point_per.at(index);
+
+        for(int x_index = 0; x_index < x_size; ++x_index)
+            for(int y_index = 0; y_index < y_size; ++y_index){
+                int value = std::distance(point_per.begin(), std::lower_bound(point_per.begin(), point_per.end(), rndval())) - 16;
+                out_vector.at(x_index).at(y_index) = value;
+            }
+        return out_vector;
+    }
+
     if(field_type == 0){//通常
         std::lognormal_distribution<> dist(3.0,0.25);
         for(int x_index = 0; x_index < x_size; ++x_index)
@@ -240,7 +291,7 @@ std::vector<std::vector<int>> procon::Field::createField(int x_size, int y_size,
             }
 
     }
-    
+
     if(field_type == 1){//通常より大きい数が出やすい
         std::lognormal_distribution<> dist(3.0,1);
         for(int x_index = 0; x_index < x_size; ++x_index)
@@ -251,7 +302,7 @@ std::vector<std::vector<int>> procon::Field::createField(int x_size, int y_size,
 
                 out_vector.at(x_index).at(y_index) = (rndminus(mt) ? std::abs(value) : -1 * std::abs(value) );
             }
-        
+
     }
 
     if(field_type == 2){//通常より小さい数が出やすい
@@ -305,7 +356,7 @@ std::vector<std::vector<int>> procon::Field::createField(int x_size, int y_size,
             }
 
     }
-    
+
     if(field_type == 6){//大きすぎる数が出にくい
         std::normal_distribution<> dist(10,3);
         for(int x_index = 0; x_index < x_size; ++x_index)
@@ -520,7 +571,93 @@ bool procon::Field::canPut(const unsigned int side, const unsigned int move_1, c
     return ( check_outofrange(0) && check_outofrange(1) && check_conflict());
 }
 
-
+std::vector<std::pair<std::pair<int,int>,int>> procon::Field::ifBreakArea(unsigned long side, unsigned long number){
+    int areaCount = 0;
+    int x = agents[side][number].first;
+    int y = agents[side][number].second;
+    std::vector<std::pair<int,int>> areaPos;
+    std::vector<std::pair<std::pair<int,int>,int>> answer;
+    for(int i = -2;i < 3;i++){
+        for(int j = -2;j < 3;j++){
+            std::pair<int,int> pos;
+            pos.first = i + x;
+            pos.second = j + y;
+            if(x + i >= 0 && y + j >= 0 && getRegion(pos) == int(side + 1)){
+                areaPos.push_back(pos);
+                areaCount++;
+            }
+        }
+    }
+    if(side == 0){
+        for(int i = 0;i < areaCount;i++){
+            areaPos.at(i).second -= 1;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && areaPos.at(i).second < getSize().second && areaPos.at(i).first < getSize().first && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).second < getPoints().at(0).second){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).second;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).second += 2;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && areaPos.at(i).second < getSize().second && areaPos.at(i).first < getSize().first && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).second < getPoints().at(0).second){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).second;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).second -= 1;
+            areaPos.at(i).first -= 1;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && areaPos.at(i).second < getSize().second && areaPos.at(i).first < getSize().first && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).second < getPoints().at(0).second){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).second;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).first += 2;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && areaPos.at(i).second < getSize().second && areaPos.at(i).first < getSize().first && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).second < getPoints().at(0).second){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).second;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).first -= 1;
+        }
+    }
+    else{
+        for(int i = 0;i < areaCount;i++){
+            areaPos.at(i).second -= 1;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && areaPos.at(i).second < getSize().second && areaPos.at(i).first < getSize().first && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).first < getPoints().at(0).first){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).first;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).second += 2;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && areaPos.at(i).second < getSize().second && areaPos.at(i).first < getSize().first && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).first < getPoints().at(0).first){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).first;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).second -= 1;
+            areaPos.at(i).first -= 1;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && areaPos.at(i).second < getSize().second && areaPos.at(i).first < getSize().first && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).first < getPoints().at(0).first){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).first;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).first += 2;
+            if(areaPos.at(i).second > -1 && areaPos.at(i).first > -1 && areaPos.at(i).second < getSize().second && areaPos.at(i).first < getSize().first && abs(areaPos.at(i).second - y) < 3 && abs(areaPos.at(i).first - x) < 3 && getPoints(areaPos.at(i),0).at(0).first < getPoints().at(0).first){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = areaPos.at(i);
+                dummy.second = getPoints(areaPos.at(i),0).at(0).first;
+                answer.push_back(dummy);
+            }
+            areaPos.at(i).first -= 1;
+        }
+    }
+    return answer;
+}
 
 
 void procon::Field::setSize(const std::pair<int, int> &grid){
