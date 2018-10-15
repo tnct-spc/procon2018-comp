@@ -688,8 +688,9 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
     } else if ((event->key() == Qt::Key_Escape) && selected) {
         // 選択したエージェントの移動入力を解除
         checkClickGrid(std::make_pair(-1,-1), false);
-    } else if ((event->key() == Qt::Key_R) && is_change_field_mode) {
+    } else if ((event->key() == Qt::Key_R) && !is_change_field_mode) {
         // 現時点でのfieldで再計算
+        emit sendRecalculation(std::make_pair(field.getTurnCount(), field.getFinalTurn()));
     }
 
 

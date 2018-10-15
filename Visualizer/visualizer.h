@@ -48,6 +48,7 @@ signals:
     // Gamemanagerに変更を反映させる
     void sendAgentPos(const std::pair<int, int> agent, const std::pair<int, int> pos);
     void sendGridState(const std::pair<int, int> grid, const int state);
+    void sendRecalculation(const std::pair<int, int> turns);
 
 public slots:
     void slotAutoMode(bool value);
