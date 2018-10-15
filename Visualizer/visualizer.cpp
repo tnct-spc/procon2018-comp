@@ -279,8 +279,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
     auto drawTurnCount = [&]{
 
         QPoint text_point;
-        text_point.setX(horizontal_margin);
-        text_point.setY(vertical_margin - 0.3 * grid_size);
+        text_point.setX(horizontal_margin + (field.getSize().first - 2.5) * grid_size);
+        text_point.setY(vertical_margin - 0.2 * grid_size);
 
         painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
         painter.setPen(QPen(QBrush(QColor(250, 80, 80 , 80)), 0.3));
@@ -296,10 +296,10 @@ void Visualizer::paintEvent(QPaintEvent *event){
     auto drawisEditMode = [&]{
         QPoint text_point;
         text_point.setX(horizontal_margin);
-        text_point.setY(vertical_margin - 1.2 * grid_size);
+        text_point.setY(vertical_margin - 0.2 * grid_size);
 
         painter.setFont(QFont("Decorative", grid_size * 0.4, QFont::Thin)); // text font
-        painter.setPen(QPen(QBrush(QColor(250, 80, 80 , 80)), 0.3));
+        painter.setPen(QPen(QBrush(QColor(250, 80, 80, 80)), 0.3));
 
 
         std::string str;
