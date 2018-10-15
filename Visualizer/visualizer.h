@@ -48,6 +48,7 @@ signals:
     // Gamemanagerに変更を反映させる
     void sendAgentPos(const std::pair<int, int> agent, const std::pair<int, int> pos);
     void sendGridState(const std::pair<int, int> grid, const int state);
+    void sendRecalculation(const std::pair<int, int> turns);
 
 public slots:
     void slotAutoMode(bool value);
@@ -99,6 +100,9 @@ private:
     bool is_moving_agent = false;
 
     bool is_selected_grid = false;
+
+    // 再計算時に表示
+    bool is_recalcuration = false;
 
     std::pair<int, int> selected_to_change_grid;
 
