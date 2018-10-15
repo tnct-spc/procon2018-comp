@@ -669,7 +669,7 @@ void Visualizer::setGridState(const std::pair<int, int> grid, const int state)
 
 void Visualizer::keyPressEvent(QKeyEvent *event)
 {
-    if(event->key() == Qt::Key_C){
+    if(event->key() == Qt::Key_C || event->key() == Qt::Key_E){
         if(is_change_field_mode){
             is_change_field_mode = false;
             is_selected_grid = false;
@@ -680,7 +680,7 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
         }
     }
 
-    if(event->key() == Qt::Key_0 && is_changing_field_grid && !is_moving_agent){
+    if((event->key() == Qt::Key_0 || event->key() == Qt::Key_3) && is_changing_field_grid && !is_moving_agent){
         setGridState(selected_to_change_grid, 0);
     }else if(event->key() == Qt::Key_1 && is_changing_field_grid &&	!is_moving_agent){
         setGridState(selected_to_change_grid, 1);
