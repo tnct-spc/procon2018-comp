@@ -304,9 +304,12 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
         std::string str;
         str = is_change_field_mode == true ? "EditMode" : "GameMode";
-        painter.drawText(text_point,QString::fromStdString(str));
 
+        std::string recul;
+        if (!is_change_field_mode && is_recalcuration) recul = "Calcurating";
+        painter.drawText(text_point,QString::fromStdString(str + " " + recul));
 
+        is_recalcuration = false;
     };
 
     auto drawRegion = [&]{
@@ -672,6 +675,7 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
         if(is_change_field_mode){
             is_change_field_mode = false;
             is_selected_grid = false;
+            selected = false;
             update();
         }else{
             is_change_field_mode = true;
@@ -685,6 +689,19 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
         setGridState(selected_to_change_grid, 1);
     }else if(event->key() == Qt::Key_2 && is_changing_field_grid && !is_moving_agent){
         setGridState(selected_to_change_grid, 2);
+    } else if ((event->key() == Qt::Key_Escape) && selected && !is_change_field_mode) {
+        // 選択したエージェントの移動入力を解除
+        checkClickGrid(std::make_pair(-1,-1), false);
+    } else if ((event->key() == Qt::Key_R) && !is_change_field_mode) {
+        // 現時点でのfieldで再計算
+        is_recalcuration = true;
+        emit sendRecalculation(std::make_pair(field.getTurnCount(), field.getFinalTurn()));
+    } else if ((event->key() == Qt::Key_Escape) && is_change_field_mode && is_selected_grid) {
+        // 選択されているマスやエージェントを解除
+        is_selected_grid = false;
+        is_changing_field_grid = false;
+        selected = false;
+        this->repaint();
     }
 
 
