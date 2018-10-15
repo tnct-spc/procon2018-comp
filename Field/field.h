@@ -62,6 +62,7 @@ public:
 
     bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2, bool double_move = true) const;
 
+    std::vector<std::pair<std::pair<int,int>,int>> ifCreateArea(unsigned long side, unsigned long number);
     std::vector<std::pair<std::vector<std::pair<int,int>>,int>> ifBreakArea (unsigned long side,unsigned long number);
     void setSize(const std::pair<int, int> &grid);
     void setValue(const std::vector<std::vector<int>> &value);

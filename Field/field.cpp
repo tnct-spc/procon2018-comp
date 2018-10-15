@@ -520,6 +520,39 @@ bool procon::Field::canPut(const unsigned int side, const unsigned int move_1, c
     return ( check_outofrange(0) && check_outofrange(1) && check_conflict());
 }
 
+std::vector<std::pair<std::pair<int,int>,int>> procon::Field::ifCreateArea(unsigned long side, unsigned long number){
+    int defaultPoint;
+    if(side == 0){
+        defaultPoint = getPoints().at(0).first;
+    }
+    else{
+        defaultPoint = getPoints().at(0).second;
+    }
+    std::vector<std::pair<std::pair<int,int>,int>> answer;
+    int x = agents[side][number].first;
+    int y = agents[side][number].second;
+    for(int i = -2;i < 3;i++){
+        for(int j = -2;j < 3;j++){
+            std::pair<int,int> pos;
+            pos.first = i + x;
+            pos.second = j + y;
+            if(side = 0 && x + i >= 0 && y + j >= 0 && x + i < getSize().first && y + j < getSize().second && getPoints(pos,1)[0].first > defaultPoint){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = pos;
+                dummy.second = getPoints(pos,side+1)[0].first;
+                answer.push_back(dummy);
+            }
+            if(side = 1 && x + i >= 0 && y + j >= 0 && x + i < getSize().first && y + j < getSize().second && getPoints(pos,2)[0].second > defaultPoint){
+                std::pair<std::pair<int,int>,int> dummy;
+                dummy.first = pos;
+                dummy.second = getPoints(pos,side+1)[0].second;
+                answer.push_back(dummy);
+            }
+        }
+    }
+    return answer;
+}
+
 std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBreakArea(unsigned long side, unsigned long number){
     int areaCount = 0;
     int defaultPoint;
