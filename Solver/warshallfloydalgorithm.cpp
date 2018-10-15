@@ -50,6 +50,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     std::pair<int,int> pos_0 = ans.first;
     std::pair<int,int> pos_1 = ans.second;
 
+
     std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> ret_value = std::make_pair(
                 std::make_tuple(1 + (field.getState(pos_0.first, pos_0.second).first == (side ? 1 : 2)), pos_0.first - bef_0.first, pos_0.second - bef_0.second),
                 std::make_tuple(1 + (field.getState(pos_1.first, pos_1.second).first == (side ? 1 : 2)), pos_1.first - bef_1.first, pos_1.second - bef_1.second)
@@ -176,16 +177,14 @@ std::pair<double, std::list<std::pair<int,int>>> WarshallFloydAlgorithm::getRout
 // [0,maxval]
 std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::calcDijkStra(int start_pos, int maxval){
 
-    std::bitset<288> field_states;
+    std::bitset<144> field_states;
     for(int x_pos = 0; x_pos < size_x; ++x_pos)
         for(int y_pos = 0; y_pos < size_y; ++y_pos){
 
             int index = getPosValue(std::make_pair(x_pos, y_pos));
 
-            int before = field.getState(x_pos, y_pos).first;
-            int after = (side + 1 == before ? 0 : 1 + static_cast<bool>(before));
+            field_states[index] = (field.getState(x_pos,y_pos).first != side + 1);
 
-            field_states |= (std::bitset<288>(after) << (index * 2));
         }
 
     std::vector<std::vector<Edge>> dp_vector(size_sum);
@@ -217,7 +216,7 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                         else if(depth + length > maxval)
                             continue;
 
-                        Edge e = Edge::make(dp_vector.at(point).at(depth), end_index, value, length);
+                        Edge e = Edge::make(dp_vector.at(point).at(depth), end_index, value, length, end_pos_state.first == side + 1);
 
                         dp_vector.at(end_index).at(depth + length) = std::max(dp_vector.at(end_index).at(depth + length), e);
                     }
