@@ -8,6 +8,8 @@
 #include <QWidget>
 #include <QPaintEvent>
 #include <QMouseEvent>
+#include <QKeyEvent>
+
 
 #include <memory>
 #include <iostream>
@@ -33,9 +35,19 @@ public:
 
     void setChangeMode(bool value);
 
+    // エージェントの位置を書き換える
+    void setAgentPos(const std::pair<int, int> agent, const std::pair<int, int> pos);
+
+    // グリッドの状態を書き換える
+    void setGridState(const std::pair<int, int> grid, const int state);
+
 signals:
     void nextMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec, std::vector<std::vector<int>> is_delete);
     void selectChangeGrid(const std::pair<int, int> grid, const bool agent);
+
+    // Gamemanagerに変更を反映させる
+    void sendAgentPos(const std::pair<int, int> agent, const std::pair<int, int> pos);
+    void sendGridState(const std::pair<int, int> grid, const int state);
 
 public slots:
     void slotAutoMode(bool value);
@@ -49,6 +61,8 @@ private:
     procon::Field field;
 
     void mousePressEvent(QMouseEvent *event);
+
+    void keyPressEvent(QKeyEvent *event);
 
     void checkClickedAgent(std::pair<int, int> mass);
 
@@ -75,6 +89,19 @@ private:
     bool change_mode = false;
 
     bool clicked = false;
+
+    //フィールドの編集モード/プレイモードの判定
+    bool is_change_field_mode = false;
+
+    //編集モードでグリッドが選択されているかの判定
+    bool is_changing_field_grid = false;
+
+    bool is_moving_agent = false;
+
+    bool is_selected_grid = false;
+
+    std::pair<int, int> selected_to_change_grid;
+
 
     unsigned int confirm_count = 0;
 
@@ -106,6 +133,7 @@ private:
     const QColor team_color_b = QColor(0,0,255);
     const QColor checked_color_a = QColor(255,120,0);
     const QColor checked_color_b = QColor(0,120,255);
+    const QColor selected_grid_color = QColor(0, 0, 0, 50);
 
 };
 

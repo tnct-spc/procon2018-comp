@@ -218,6 +218,16 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     };
 
+    auto drawClickedGridWhenChangingMode = [&]{
+
+       QColor paint_color = selected_grid_color;
+       painter.setBrush(QBrush(paint_color));
+       int draw_x = selected_to_change_grid.first;
+       int draw_y = selected_to_change_grid.second;
+       painter.drawRect(horizontal_margin + draw_x * grid_size, vertical_margin + draw_y * grid_size, grid_size, grid_size);
+
+    };
+
     auto drawPoints = [&]{
 
         //とても汚いコピペコードで申し訳NASA
@@ -269,8 +279,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
     auto drawTurnCount = [&]{
 
         QPoint text_point;
-        text_point.setX(horizontal_margin);
-        text_point.setY(vertical_margin - 0.3 * grid_size);
+        text_point.setX(horizontal_margin + (field.getSize().first - 2.5) * grid_size);
+        text_point.setY(vertical_margin - 0.2 * grid_size);
 
         painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
         painter.setPen(QPen(QBrush(QColor(250, 80, 80 , 80)), 0.3));
@@ -281,6 +291,22 @@ void Visualizer::paintEvent(QPaintEvent *event){
         str += std::to_string(max_turn);
 
         painter.drawText(text_point,QString::fromStdString(str));
+    };
+
+    auto drawisEditMode = [&]{
+        QPoint text_point;
+        text_point.setX(horizontal_margin);
+        text_point.setY(vertical_margin - 0.2 * grid_size);
+
+        painter.setFont(QFont("Decorative", grid_size * 0.4, QFont::Thin)); // text font
+        painter.setPen(QPen(QBrush(QColor(250, 80, 80, 80)), 0.3));
+
+
+        std::string str;
+        str = is_change_field_mode == true ? "EditMode" : "GameMode";
+        painter.drawText(text_point,QString::fromStdString(str));
+
+
     };
 
     auto drawRegion = [&]{
@@ -351,15 +377,20 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     drawBackGround();
     drawTiles();
+    drawisEditMode();
+
+
+    if(is_change_field_mode && is_selected_grid) drawClickedGridWhenChangingMode();
 
     // AutoModeでなくかつChaneModeではないとき
-    if((auto_mode == false) && (change_mode == false)){
+
+    if((auto_mode == false) && (change_mode == false) && !is_change_field_mode){
         drawAgentMove();
         drawCandidateMove();
         if (selected) drawAroundAgent();
     }
 
-    if (clicked) {
+    if (clicked && !is_change_field_mode) {
         // クリックされたグリッド
         if (change_mode) drawClickedGrid();
 
@@ -388,7 +419,7 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
 
         // マスの範囲外をクリックしたら何もしない
         if ((point.x() < horizontal_margin) || (point.x() > window_width - horizontal_margin)
-            || (point.y() < vertical_margin) || (point.y() > window_height - vertical_margin)) {
+                        || (point.y() < vertical_margin) || (point.y() > window_height - vertical_margin)) {
             return;
         }
 
@@ -406,12 +437,36 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
 
         // 移動をを入力するエージェントが選ばれているか
         // ChangeModeのときは機能しない
-        if (!change_mode && selected) {
+
+        if(is_change_field_mode){
+            selected_to_change_grid = clicked_grid;
+            is_selected_grid = true;
+            this->update();
+        }
+
+        if (!change_mode && selected && !is_change_field_mode) {
 
             // グリッドはエージェントの移動先に含まれているか
             checkClickGrid(clicked_grid, right_flag);
 
-        } else {
+        }else if(selected && is_change_field_mode){
+            //すでにagentがいたら早期return
+            std::vector<std::vector<std::pair<int, int>>> agents = field.getAgents();
+            for (int team = 0; team < 2; team++) {
+                for (int agent = 0; agent < 2; agent++) {
+
+                    // クリックされたマスとエージェントの位置が一致したら、チームとエージェントの番号を返す
+                    if (clicked_grid == agents.at(team).at(agent))
+                        return;
+                }
+            }
+
+            setGridState(clicked_grid, selected_agent.first + 1);
+            setAgentPos(selected_agent, clicked_grid);
+            selected = false;
+            is_moving_agent = true;
+
+        }else {
 
             // クリックされたエージェントまたはマスを照合
             checkClickedAgent(clicked_grid);
@@ -428,6 +483,12 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
             emit selectChangeGrid(clicked_grid, selected);
 
         }
+        if(!is_moving_agent && is_change_field_mode){
+            is_changing_field_grid = true;
+
+        }
+        is_moving_agent = false;
+
     }
 }
 
@@ -455,6 +516,7 @@ void Visualizer::checkClickedAgent(std::pair<int, int> mass)
 
                 // エージェントが選択されたことを記録
                 selected = true;
+                is_moving_agent = true;
 
                 // 選択されたエージェントの移動可能範囲を表示
                 this->update();
@@ -584,4 +646,46 @@ void Visualizer::setTurns(const std::pair<int, int> turns)
     field.setTurnCount(turn);
     max_turn = turns.second;
     field.setFinalTurn(max_turn);
+}
+
+void Visualizer::setAgentPos(const std::pair<int, int> agent, const std::pair<int, int> pos)
+{
+    field.setAgent(agent.first, agent.second, pos.first, pos.second);
+    is_selected_grid = false;
+    update();
+
+    emit sendAgentPos(agent, pos);
+}
+
+void Visualizer::setGridState(const std::pair<int, int> grid, const int state)
+{
+    field.setState(grid.first, grid.second, state);
+    is_selected_grid = false;
+    update();
+
+    emit sendGridState(grid, state);
+}
+
+void Visualizer::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_C || event->key() == Qt::Key_E){
+        if(is_change_field_mode){
+            is_change_field_mode = false;
+            is_selected_grid = false;
+            update();
+        }else{
+            is_change_field_mode = true;
+            update();
+        }
+    }
+
+    if((event->key() == Qt::Key_0 || event->key() == Qt::Key_3) && is_changing_field_grid && !is_moving_agent){
+        setGridState(selected_to_change_grid, 0);
+    }else if(event->key() == Qt::Key_1 && is_changing_field_grid &&	!is_moving_agent){
+        setGridState(selected_to_change_grid, 1);
+    }else if(event->key() == Qt::Key_2 && is_changing_field_grid && !is_moving_agent){
+        setGridState(selected_to_change_grid, 2);
+    }
+
+
 }
