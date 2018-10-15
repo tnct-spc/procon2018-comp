@@ -437,7 +437,6 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
 
         // 移動をを入力するエージェントが選ばれているか
         // ChangeModeのときは機能しない
-        //std::cout << clicked_grid.first << " " << clicked_grid.second << "" << std::endl;
 
         if(is_change_field_mode){
             selected_to_change_grid = clicked_grid;
@@ -457,10 +456,8 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
                 for (int agent = 0; agent < 2; agent++) {
 
                     // クリックされたマスとエージェントの位置が一致したら、チームとエージェントの番号を返す
-                    if (clicked_grid == agents.at(team).at(agent)) {
-                        std::cout << "agent alredy here" << std::endl;
+                    if (clicked_grid == agents.at(team).at(agent))
                         return;
-                    }
                 }
             }
 
@@ -675,12 +672,10 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
     if(event->key() == Qt::Key_C){
         if(is_change_field_mode){
             is_change_field_mode = false;
-            std::cout << "mode: PlayGame" << std::endl;
             is_selected_grid = false;
             update();
         }else{
             is_change_field_mode = true;
-            std::cout << "mode: ChangeField" << std::endl;
             update();
         }
     }
