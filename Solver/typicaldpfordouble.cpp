@@ -95,6 +95,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
                 }
         }
 
+    return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
+
 }
 
 const std::vector<int> TypicalDpForDouble::dx({1, 1, 0, -1, -1, -1, 0, 1});
