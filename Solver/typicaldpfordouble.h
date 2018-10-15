@@ -29,9 +29,9 @@ struct TypicalDpForDouble::Edge{
     std::pair<int,int> prev;
     double sum;
     int depth;
-    std::bitset<144> bs;
+    std::bitset<288> bs;
 
-    Edge(int pos, const std::bitset<144>& state, double sum = 0.0, int depth = -1) :
+    Edge(int pos, const std::bitset<288>& state, double sum = 0.0, int depth = -1) :
         pos(pos),
         prev(pos, depth),
         sum(sum),
@@ -45,12 +45,22 @@ struct TypicalDpForDouble::Edge{
         return a.average() < b.average();
     }
 
-    static Edge make(const Edge& x, int pos, double value, int depth, bool is_nocount){
-        Edge e(pos, x.bs, x.sum + value, x.depth + depth);
+    static Edge make(const Edge& x, int pos, double value, int is_update_bitset, std::pair<int,int> target_pos_pair){
+        Edge e(pos, x.bs, x.sum + value, x.depth + 1);
 
-        if(!(e.bs[pos] || is_nocount))
-            e.depth = -1;
-        e.bs[pos] = 0;
+        auto set_bitset = [&e](bool bs_flag, int pos){
+            if(!bs_flag)
+                return ;
+
+            if(!((e.bs >> (pos * 2)) & std::bitset<288>(3)).any())
+                e.depth = -1;
+            e.bs[pos * 2] = e.bs[pos * 2 + 1];
+            e.bs[pos * 2 + 1] = 0;
+
+        };
+
+        set_bitset(is_update_bitset & 2, target_pos_pair.first);
+        set_bitset(is_update_bitset & 1, target_pos_pair.second);
 
         e.prev = std::make_pair(x.pos, x.depth);
         return e;

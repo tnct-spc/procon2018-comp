@@ -33,11 +33,12 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
         return swap_pair(std::make_pair(int_to_pair(x / size_sum), int_to_pair(x % size_sum)));
     };
 
-    std::bitset<144> field_bitset;
+    std::bitset<288> field_bitset;
     for(int index = 0; index < size_sum; ++index){
 
         std::pair<int,int> position = int_to_pair(index);
-        field_bitset[index] = (field.getState(position.first, position.second).first != side + 1);
+        field_bitset[2 * index] = (field.getState(position.first, position.second).first == (side ? 1 : 2));
+        field_bitset[2 * index + 1] = (field.getState(position.first, position.second).first != side + 1);
     }
 
     std::vector<std::vector<Edge>> dp(maxval + 1);
@@ -74,35 +75,21 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
                     after_pos_pairs.second.first += dx.at(direction % 8);
                     after_pos_pairs.second.second += dy.at(direction % 8);
 
+                    int after_pos = two_pair_to_int(after_pos_pairs);
+
                     std::pair<int,int> state, value;
                     std::tie(state.first, value.first) = field.getState(after_pos_pairs.first.first, after_pos_pairs.first.second);
                     std::tie(state.second, value.second) = field.getState(after_pos_pairs.second.first, after_pos_pairs.second.second);
 
-                    double value_sum = 0;
                     int is_update_bitset = 2 * (state.first != side + 1) + state.second != side + 1;
 
-                    std::pair<int,int> length(is_update_bitset & 2 ? 1 + static_cast<bool>(state.first) : 0,
-                                              is_update_bitset & 1 ? 1 + static_cast<bool>(state.second) : 0);
+                    int is_move(2 * (is_update_bitset & 2 ? !state.first : 0) + is_update_bitset & 1 ? !state.second : 0);
 
-                    if(length.first == 2 && dep + 1 == maxval){
-                        length.first = 1;
-                        value.first /= 2;
-                    }
-                    if(length.first == 2 && dep + 1 == maxval){
-                        length.first = 1;
-                        value.first /= 2;
-                    }
-                    if(dep + length.first > maxval || dep + length.second > maxval)
-                        continue;
+                    double value_sum = value.first + value.second;
 
-                    value_sum += length.first * value.first + length.second * value.second;
+                    Edge e = Edge::make(dp.at(dep).at(pos), two_pair_to_int(std::make_pair(is_move & 2 ? after_pos_pairs.first : before_pos_pairs.first, is_move & 1 ? after_pos_pairs.second : before_pos_pairs.second)), value_sum, is_update_bitset, std::make_pair(pair_to_int(after_pos_pairs.first), pair_to_int(after_pos_pairs.second)));
 
-                    /*
-                    Edge e = Edge::make(dp.at(dep).at(pos), two_pair_to_int(after_pos_pairs), value_sum, length, );
-
-                    dp_vector.at(end_index).at(depth + length) = std::max(dp_vector.at(end_index).at(depth + length), e);
-                    */
-
+                    dp.at(dep + 1).at(after_pos) = std::max(dp.at(dep + 1).at(after_pos), e);
                 }
 
 }
