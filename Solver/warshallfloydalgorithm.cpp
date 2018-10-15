@@ -178,11 +178,23 @@ std::pair<double, std::list<std::pair<int,int>>> WarshallFloydAlgorithm::getRout
 // [0,maxval]
 std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::calcDijkStra(int start_pos, int maxval){
 
+    std::bitset<288> field_states;
+    for(int x_pos = 0; x_pos < size_x; ++x_pos)
+        for(int y_pos = 0; y_pos < size_y; ++y_pos){
+
+            int index = getPosValue(std::make_pair(x_pos, y_pos));
+
+            int before = field.getState(x_pos, y_pos).first;
+            int after = (side + 1 == before ? 0 : 1 + static_cast<bool>(before));
+
+            field_states |= (std::bitset<288>(after) << (index * 2));
+        }
+
     std::vector<std::vector<Edge>> dp_vector(size_sum);
 
     for(int start_index = 0; start_index < size_sum; ++start_index)
         for(int end_index = 0; end_index <= maxval; ++end_index)
-            dp_vector.at(start_index).emplace_back(start_index);
+            dp_vector.at(start_index).emplace_back(start_index, field_states);
 
     dp_vector.at(start_pos).at(0).depth = 0;
 
@@ -207,8 +219,10 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
 
                         int end_index = getRotatePos(point, direction);
 
+                        /*
                         if(check(point, depth, end_index))
                             continue;
+                        */
 
                         std::pair<int, int> end_pos = getPosPair(end_index);
                         std::pair<int, int> end_pos_state = field.getState(end_pos.first, end_pos.second);

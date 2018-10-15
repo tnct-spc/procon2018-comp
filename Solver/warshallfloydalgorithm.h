@@ -86,12 +86,14 @@ struct WarshallFloydAlgorithm::Edge{
     std::pair<int,int> prev;
     double sum;
     int depth;
+    std::bitset<288> bs;
 
-    Edge(int pos, double sum = 0.0, int depth = -1) :
+    Edge(int pos, const std::bitset<288>& state, double sum = 0.0, int depth = -1) :
         pos(pos),
         prev(pos, depth),
         sum(sum),
-        depth(depth)
+        depth(depth),
+        bs(state)
     {
     }
 
@@ -101,7 +103,15 @@ struct WarshallFloydAlgorithm::Edge{
     }
 
     static Edge make(const Edge& x, int pos, double value, int depth){
-        Edge e(pos, x.sum + value, x.depth + depth);
+        Edge e(pos, x.bs, x.sum + value, x.depth + depth);
+
+        int before = ((x.bs >> (pos * 2)) & std::bitset<288>(3)).to_ulong();
+        if(!(before))
+            e.depth = -1;
+
+        e.bs &= ~(std::bitset<288>(3) << (pos * 2));
+        e.bs |= (std::bitset<288>(before - 1) << (pos * 2));
+
         e.prev = std::make_pair(x.pos, x.depth);
         return e;
     }
