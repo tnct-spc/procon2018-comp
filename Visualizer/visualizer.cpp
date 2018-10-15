@@ -689,13 +689,19 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
         setGridState(selected_to_change_grid, 1);
     }else if(event->key() == Qt::Key_2 && is_changing_field_grid && !is_moving_agent){
         setGridState(selected_to_change_grid, 2);
-    } else if ((event->key() == Qt::Key_Escape) && selected) {
+    } else if ((event->key() == Qt::Key_Escape) && selected && !is_change_field_mode) {
         // 選択したエージェントの移動入力を解除
         checkClickGrid(std::make_pair(-1,-1), false);
     } else if ((event->key() == Qt::Key_R) && !is_change_field_mode) {
         // 現時点でのfieldで再計算
         is_recalcuration = true;
         emit sendRecalculation(std::make_pair(field.getTurnCount(), field.getFinalTurn()));
+    } else if ((event->key() == Qt::Key_Escape) && is_change_field_mode && is_selected_grid) {
+        // 選択されているマスやエージェントを解除
+        is_selected_grid = false;
+        is_changing_field_grid = false;
+        selected = false;
+        this->repaint();
     }
 
 
