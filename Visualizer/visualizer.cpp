@@ -685,6 +685,11 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
         setGridState(selected_to_change_grid, 1);
     }else if(event->key() == Qt::Key_2 && is_changing_field_grid && !is_moving_agent){
         setGridState(selected_to_change_grid, 2);
+    } else if ((event->key() == Qt::Key_Escape) && selected) {
+        // 選択したエージェントの移動入力を解除
+        checkClickGrid(std::make_pair(-1,-1), false);
+    } else if ((event->key() == Qt::Key_R) && is_change_field_mode) {
+        // 現時点でのfieldで再計算
     }
 
 
