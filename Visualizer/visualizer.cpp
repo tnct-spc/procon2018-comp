@@ -675,6 +675,7 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
         if(is_change_field_mode){
             is_change_field_mode = false;
             is_selected_grid = false;
+            selected = false;
             update();
         }else{
             is_change_field_mode = true;
