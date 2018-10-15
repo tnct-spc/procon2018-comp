@@ -311,7 +311,25 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             for(std::vector<std::pair<double,std::pair<double,std::pair<double,std::string>>>>::iterator itr=QD.begin();itr!=QD.end();itr++){
                 if((*itr).second.second.second.find("RED")==std::string::npos)std::cout<<(*itr).second.second.second<<"\n"<<"R勝率   "<<(*itr).first*100<<"%,"<<"B勝率   "<<(*itr).second.first*100<<"%,"<<"引き分け率   "<<(*itr).second.second.first*100<<"%\n";
                 //else std::cout<<(*itr).second.second.second<<"\n"<<"predict_weight   "<<(*itr).first<<","<<"ally_weight   "<<(*itr).second.first<<","<<"ratio   "<<(*itr).second.second.first<<"\n";
+                else{
+                for(std::vector<std::pair<QString, double>>::iterator mpitr=my_params.begin();mpitr!=my_params.end();mpitr++){
+                    if((*mpitr).first=="ally_weight"){(*mpitr).second=(*itr).second.first;
+                    std::cout<<(*mpitr).second<<"       "<<(*itr).second.first;}
+                    if((*mpitr).first=="predict_weight")(*mpitr).second=(*itr).first;
+                    if((*mpitr).first=="ratio")(*mpitr).second=(*itr).second.second.first;
+                }
+                }
             }
+
+            for(std::vector<std::pair<QString, double>>::iterator mpitr=my_params.begin();mpitr!=my_params.end();mpitr++){
+                //if((*mpitr).first=="ally_weight")(*mpitr).second=
+            }
+            for(std::vector<std::pair<QString, double>>::iterator opitr=opp_params.begin();opitr!=opp_params.end();opitr++){
+
+            }
+
+            team_1->setParams(my_params);
+            team_2->setParams(opp_params);
 
             if(vis_show){
                 visualizer->update();
