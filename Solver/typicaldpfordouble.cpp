@@ -63,7 +63,9 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
     };
 
     for(int dep = 0; dep < maxval; ++dep)
-        for(int pos = 0; pos < size_sum * size_sum; ++pos)
+        for(int pos = 0; pos < size_sum * size_sum; ++pos){
+            if(dp.at(dep).at(pos).depth == -1)
+                continue;
             for(int direction = 0; direction < 64; ++direction)
                 if(!check_outofrange(pos, direction)){
 
@@ -91,6 +93,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
 
                     dp.at(dep + 1).at(after_pos) = std::max(dp.at(dep + 1).at(after_pos), e);
                 }
+        }
 
 }
 
