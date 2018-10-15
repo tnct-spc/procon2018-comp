@@ -376,7 +376,41 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     };
 
+    // Gridの左右に番号をふる
+    auto writeGridNumber = [&] {
 
+        // フォントの設定
+        QFont text_font;
+        text_font.setPixelSize(grid_size * 0.5);
+        painter.setFont(text_font);
+        painter.setPen(Qt::black);
+
+        for (unsigned int x = 0; x < grid_x; x++) {
+            painter.drawText(
+                        QRectF(horizontal_margin + grid_size * x, vertical_margin - grid_size * 1.1, grid_size, grid_size),
+                        Qt::AlignHCenter | Qt::AlignBottom,
+                        QString::number(x+1)
+                        );
+            painter.drawText(
+                        QRectF(horizontal_margin + grid_size * x, vertical_margin + grid_size * (grid_y + 0.1), grid_size, grid_size),
+                        Qt::AlignHCenter | Qt::AlignTop,
+                        QString::number(x+1)
+                        );
+        }
+
+        for (unsigned int y = 0; y < grid_y; y++) {
+            painter.drawText(
+                        QRectF(horizontal_margin - grid_size * 1.1, vertical_margin + grid_size * y, grid_size, grid_size),
+                        Qt::AlignRight | Qt::AlignVCenter,
+                        QString::number(y+1)
+                        );
+            painter.drawText(
+                        QRectF(horizontal_margin + grid_size * (grid_x + 0.1), vertical_margin + grid_size * y, grid_size, grid_size),
+                        Qt::AlignLeft | Qt::AlignVCenter,
+                        QString::number(y+1)
+                        );
+        }
+    };
 
     drawBackGround();
     drawTiles();
@@ -408,6 +442,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     drawTurnCount();
     drawRegion();
+
+    writeGridNumber();
 }
 
 // メインウィンドウ内のマスをクリックしたときに行われるイベント
