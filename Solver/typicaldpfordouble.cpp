@@ -92,24 +92,40 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
         }
 
     auto getRoute = [&](int pos, int depth){
-        std::list<std::pair<int,int>> lis;
-        // std::pair<std::list<std::pair<int,int>>, std::list<std::pair<int,int>>> lis;
+        // std::list<std::pair<int,int>> lis;
+        std::pair<std::list<std::pair<int,int>>, std::list<std::pair<int,int>>> lis;
 
         if(dp.at(depth).at(pos).depth == -1)
             return lis;
 
-        std::cout << "route found" << std::endl;
+        auto match_at_first = [&](std::pair<std::pair<int,int>, std::pair<int,int>> pos){
+
+            auto first_before_pos = lis.first.back();
+            auto second_before_pos = lis.second.back();
+
+            return std::abs(pos.first.first - first_before_pos.first) <= 1 && std::abs(pos.first.second - first_before_pos.second) <= 1 &&
+                    std::abs(pos.second.first - second_before_pos.first) <= 1 && std::abs(pos.second.second - second_before_pos.second) <= 1;
+        };
 
         while(dp.at(depth).at(pos).depth > 0){
             auto pos_pair = int_to_two_pair(pos);
-            lis.push_back(pos_pair.first);
-            lis.push_back(pos_pair.second);
+
+            if(!match_at_first(pos_pair))
+                std::swap(pos_pair.first, pos_pair.second);
+
+            lis.first.push_back(pos_pair.first);
+            lis.second.push_back(pos_pair.second);
 
             std::tie(pos, depth) = dp.at(depth).at(pos).prev;
         }
+
         auto pos_pair = int_to_two_pair(pos);
-        lis.push_back(pos_pair.first);
-        lis.push_back(pos_pair.second);
+
+        if(!match_at_first(pos_pair))
+            std::swap(pos_pair.first, pos_pair.second);
+
+        lis.first.push_back(pos_pair.first);
+        lis.second.push_back(pos_pair.second);
 
         return lis;
     };
@@ -117,8 +133,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
     std::vector<std::list<std::pair<int,int>>> routes;
     for(int pos = 0; pos < size_sum * size_sum; ++pos){
         auto route = getRoute(pos, 2);
-        if(!route.empty())
-            dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({route}), std::vector<std::vector<std::vector<int>>>(3,std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
+        if(!route.first.empty() || !route.second.empty())
+            dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({route.first, route.second}), std::vector<std::vector<std::vector<int>>>(3,std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
 
     }
 
