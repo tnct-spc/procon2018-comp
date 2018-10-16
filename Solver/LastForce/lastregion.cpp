@@ -18,15 +18,21 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> LastRegion::ag
     }
     procon::Field _field = field;
 
-    std::vector<std::pair<std::pair<int,int>,int>> area = _field.ifBreakArea(side, 0);
+    std::vector<std::pair<std::vector<std::pair<int,int>>,int>> area = _field.ifBreakArea(side, 0);
 
     for(auto que : area){
-        points.at(que.first.first).at(que.first.second) += que.second;
+
+        for(std::pair<int,int> pos : que.first){
+            points.at(pos.first).at(pos.second) += que.second;
+        }
     }
 
     area = _field.ifBreakArea(side, 1);
     for(auto que : area){
-        points.at(que.first.first).at(que.first.second) += que.second;
+
+        for(std::pair<int,int> pos : que.first){
+            points.at(pos.first).at(pos.second) += que.second;
+        }
     }
 
     auto setState = [=](std::bitset<288>& bits, int state, int x , int y){
