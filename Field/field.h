@@ -46,6 +46,8 @@ public:
 
     std::vector<std::pair<int,int>> getPoints(std::pair<int,int> pos, int state);
 
+    std::vector<std::pair<int,int>> getPoints(std::vector<std::pair<std::pair<int,int>,int>> poses);
+
     void setPoints(int side, std::pair<int,int> value);
 
     int getTurnCount() const;
@@ -61,7 +63,7 @@ public:
 
     bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2, bool double_move = true) const;
 
-    std::vector<std::pair<std::pair<int,int>,int>> ifBreakArea (unsigned long side,unsigned long number);
+    std::vector<std::pair<std::vector<std::pair<int,int>>,int>> ifBreakArea (unsigned long side,unsigned long number);
     void setSize(const std::pair<int, int> &grid);
     void setValue(const std::vector<std::vector<int>> &value);
     void setGridValue(const unsigned int x, const unsigned int y, const unsigned int value);
