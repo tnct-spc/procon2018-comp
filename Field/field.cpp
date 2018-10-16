@@ -572,7 +572,7 @@ bool procon::Field::canPut(const unsigned int side, const unsigned int move_1, c
 }
 
 std::vector<std::pair<std::pair<int,int>,int>> procon::Field::ifCreateArea(unsigned long side, unsigned long number){
-    std::cout << "START" << std::endl;
+    //std::cout << "START" << std::endl;
     int defaultPoint;
     if(side == 0){
         defaultPoint = getPoints().at(0).first;
@@ -600,8 +600,8 @@ std::vector<std::pair<std::pair<int,int>,int>> procon::Field::ifCreateArea(unsig
         }
     }
     for(int i = 0;i < answer.size();i++){
-        std::cout << answer[i].first.first << "," << answer[i].first.second << std::endl;
-        std::cout << answer[i].second << std::endl << "----------------------------" << std::endl;
+      //  std::cout << answer[i].first.first << "," << answer[i].first.second << std::endl;
+      //  std::cout << answer[i].second << std::endl << "----------------------------" << std::endl;
     }
     return answer;
 }
