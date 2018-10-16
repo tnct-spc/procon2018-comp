@@ -19,7 +19,7 @@ private:
 
     std::shared_ptr<ProgresDock> dock;
 
-    const bool dock_show = true;
+    const bool dock_show = false;
 
     static const std::vector<int> dx, dy;
     struct Edge;
