@@ -521,6 +521,7 @@ bool procon::Field::canPut(const unsigned int side, const unsigned int move_1, c
 }
 
 std::vector<std::pair<std::pair<int,int>,int>> procon::Field::ifCreateArea(unsigned long side, unsigned long number){
+    std::cout << "START" << std::endl;
     int defaultPoint;
     if(side == 0){
         defaultPoint = getPoints().at(0).first;
@@ -529,26 +530,27 @@ std::vector<std::pair<std::pair<int,int>,int>> procon::Field::ifCreateArea(unsig
         defaultPoint = getPoints().at(0).second;
     }
     std::vector<std::pair<std::pair<int,int>,int>> answer;
-    int x = agents[side][number].first;
-    int y = agents[side][number].second;
-    for(int i = -2;i < 3;i++){
-        for(int j = -2;j < 3;j++){
+    for(int i = 0;i < getSize().first;i++){
+        for(int j = 0;j < getSize().second;j++){
             std::pair<int,int> pos;
-            pos.first = i + x;
-            pos.second = j + y;
-            if(side = 0 && x + i >= 0 && y + j >= 0 && x + i < getSize().first && y + j < getSize().second && getPoints(pos,1)[0].first > defaultPoint){
+            pos.first = i;
+            pos.second = j;
+            std::vector<std::pair<std::pair<int,int>,int>> act (1);
+            act[0].first = pos;
+            act[0].second = side+1;
+            if(getPoints()[side].second < getPoints(act)[side].second){
                 std::pair<std::pair<int,int>,int> dummy;
                 dummy.first = pos;
-                dummy.second = getPoints(pos,side+1)[0].first;
-                answer.push_back(dummy);
-            }
-            if(side = 1 && x + i >= 0 && y + j >= 0 && x + i < getSize().first && y + j < getSize().second && getPoints(pos,2)[0].second > defaultPoint){
-                std::pair<std::pair<int,int>,int> dummy;
                 dummy.first = pos;
-                dummy.second = getPoints(pos,side+1)[0].second;
+                dummy.second = getPoints(act)[side].second;
+//             std::cout << pos.first << "," << pos.second << std::endl;
                 answer.push_back(dummy);
             }
         }
+    }
+    for(int i = 0;i < answer.size();i++){
+        std::cout << answer[i].first.first << "," << answer[i].first.second << std::endl;
+        std::cout << answer[i].second << std::endl << "----------------------------" << std::endl;
     }
     return answer;
 }
@@ -559,9 +561,6 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
     else side = 0;
     int areaCount = 0;
     int defaultPoint = getPoints()[side].second;
-    int x = agents[side][number].first;
-    int y = agents[side][number].second;
-//    std::cout << x << y << std::endl;
     std::vector<std::pair<int,int>> areaPos;
     std::vector<std::pair<std::vector<std::pair<int,int>>,int>> answer;
     for(int i = 0;i < getSize().first;i++){
