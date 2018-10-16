@@ -450,7 +450,7 @@ unsigned int GameManager::getFinalTurn(){
 
 
 void GameManager::agentAct(const int turn, const int agent, const std::tuple<int, int, int> tuple_val){
-  //  field->ifBreakArea(0, 0);
+    //field->ifCreateArea(0, 0);
     int type, x_inp, y_inp;
     std::tie(type, x_inp, y_inp) = tuple_val;
 
