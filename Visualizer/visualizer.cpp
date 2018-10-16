@@ -126,6 +126,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     auto drawAgentMove = [&]{
 
+        painter.setPen(QPen(QBrush(Qt::black), 0.3));
+
         for(unsigned int team = 0; team < 2; ++team){
             for(unsigned int index = 0; index < 2; ++index){
 
@@ -140,10 +142,10 @@ void Visualizer::paintEvent(QPaintEvent *event){
                            ? checked_color_a
                            : checked_color_b);
 
-                paint_color.setAlpha(60);
+                paint_color.setAlpha(120);
 
                 if(is_delete.at(team).at(index) || (field.getState(pos_x, pos_y).first == (team == 0 ? 2 : 1)))
-                    paint_color.setAlpha(170);
+                    paint_color.setAlpha(200);
 
                 painter.setBrush(QBrush(paint_color));
 
@@ -157,10 +159,10 @@ void Visualizer::paintEvent(QPaintEvent *event){
     //manual時の移動候補表示
     auto drawCandidateMove = [&]{
 
+        painter.setPen(QPen(QBrush(QColor(20, 20, 20)), 0.3));
+
         for(unsigned int team = 0; team < 2; ++team){
             for(unsigned int index = 0; index < 2; ++index){
-
-
 
                 int pos_x = candidate.at(team).at(index).first;
                 int pos_y = candidate.at(team).at(index).second;
@@ -171,15 +173,15 @@ void Visualizer::paintEvent(QPaintEvent *event){
                            ? checked_color_a
                            : checked_color_b);
 
-                paint_color.setAlpha(100);
+                paint_color.setAlpha(80);
 
                 if(is_delete.at(team).at(index) || (field.getState(pos_x, pos_y).first == (team == 0 ? 2 : 1)))
-                    paint_color.setAlpha(170);
+                    paint_color.setAlpha(160);
 
                 painter.setBrush(QBrush(paint_color));
 
                 //角が取れた四角形らしいです
-                painter.drawRoundRect(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size );
+                painter.drawRoundRect(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size , 75, 50);
             }
         }
 
