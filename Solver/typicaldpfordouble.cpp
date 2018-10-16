@@ -7,7 +7,8 @@ TypicalDpForDouble::TypicalDpForDouble(const procon::Field& field, int final_tur
     size_sum = size_x * size_y;
 
     dock = std::make_shared<ProgresDock>();
-    dock->show();
+    if(dock_show)
+        dock->show();
 }
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDouble::agentAct(int){
@@ -58,12 +59,17 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
     };
 
     for(int dep = 0; dep < maxval; ++dep)
-        for(int pos = 0; pos < size_sum * size_sum; ++pos){
-            if(dp.at(dep).at(pos).depth == -1)
-                continue;
+        for(int pos_0 = 0; pos_0 < size_sum; ++pos_0)
+            for(int pos_1 = pos_0 + 1; pos_1 < size_sum; ++pos_1){
 
-            for(int direction = 0; direction < 64; ++direction)
-                if(!check_outofrange(pos, direction)){
+                int pos = pos_0 * size_sum + pos_1;
+
+                if(dp.at(dep).at(pos).depth == -1)
+                    continue;
+
+                for(int direction = 0; direction < 64; ++direction){
+                    if(check_outofrange(pos, direction))
+                        continue;
 
                     auto before_pos_pairs = int_to_two_pair(pos);
                     auto after_pos_pairs = before_pos_pairs;
@@ -127,16 +133,22 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
         lis.first.push_back(pos_pair.first);
         lis.second.push_back(pos_pair.second);
 
+        lis.first.reverse();
+        lis.second.reverse();
+
         return lis;
     };
 
-    std::vector<std::list<std::pair<int,int>>> routes;
-    for(int pos = 0; pos < size_sum * size_sum; ++pos){
-        auto route = getRoute(pos, 2);
-        if(!route.first.empty() || !route.second.empty())
-            dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({route.first, route.second}), std::vector<std::vector<std::vector<int>>>(3,std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
-
-    }
+    std::vector<std::pair<std::list<std::pair<int,int>>, std::list<std::pair<int,int>>>> routes;
+    for(int dep = 5; dep <= 5; ++dep)
+        for(int pos = 0; pos < size_sum * size_sum; ++pos){
+            auto route = getRoute(pos, dep);
+            if(!route.first.empty() || !route.second.empty()){
+                if(dock_show)
+                    dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({route.first, route.second}), std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
+                routes.push_back(route);
+            }
+        }
 
 
     return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
