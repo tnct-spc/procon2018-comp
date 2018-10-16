@@ -554,41 +554,39 @@ std::vector<std::pair<std::pair<int,int>,int>> procon::Field::ifCreateArea(unsig
 }
 
 std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBreakArea(unsigned long side, unsigned long number){
+//    std::cout << "START" << std::endl;
+    if(side == 0)side = 1;
+    else side = 0;
     int areaCount = 0;
-    int defaultPoint;
+    int defaultPoint = getPoints()[side].second;
     int x = agents[side][number].first;
     int y = agents[side][number].second;
+//    std::cout << x << y << std::endl;
     std::vector<std::pair<int,int>> areaPos;
     std::vector<std::pair<std::vector<std::pair<int,int>>,int>> answer;
-    for(int i = -2;i < 3;i++){
-        for(int j = -2;j < 3;j++){
+    for(int i = 0;i < getSize().first;i++){
+        for(int j = 0;j < getSize().second;j++){
             std::pair<int,int> pos;
-            pos.first = i + x;
-            pos.second = j + y;
-            if(x + i >= 0 && y + j >= 0 && x + i < getSize().first && y + j < getSize().second && getRegion(pos) == int(side + 1)){
+            pos.first = i;
+            pos.second = j;
+            if(getRegion(pos) == int(side + 1)){
+//                std::cout << pos.first << "," << pos.second << std::endl;
                 areaPos.push_back(pos);
                 areaCount++;
             }
         }
     }
-    if(side == 0){
-        defaultPoint = getPoints().at(0).second;
-    }
-    else{
-        defaultPoint = getPoints().at(0).first;
-    }
     for(int i = 0;i < areaCount;i++){
         if(side == 0){
             for(int to = 0;to < 4;to++){
                 std::vector<std::pair<std::pair<int,int>,int>> act (1);
-                act[0].second = 0;
                 switch (to){
                     case 0:
                         act[0].first.first = areaPos[i].first;
                         act[0].first.second = areaPos[i].second - 1;
-                        if(areaPos[i].second > 0 && getPoints(act)[0].second < defaultPoint){
+                        if(areaPos[i].second > 0 && getPoints(act)[side].second < defaultPoint){
                             std::vector<std::pair<int,int>> move (1,act[0].first);
-                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                             answer.push_back(dummy);
                         }
                         else if(areaPos[i].second > 0){
@@ -598,26 +596,28 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
                                 switch (tt){
                                     case 0:
                                         act[1].first.second--;
-                                        if(areaPos[i].second > 1 && getPoints(act)[0].second < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].second > 1 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
-
                                     break;
                                     case 1:
                                         act[1].first.first--;
-                                        if(areaPos[i].first > 0 && getPoints(act)[0].second < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].first > 0 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
                                     case 2:
                                         act[1].first.first++;
-                                        if(areaPos[i].first < getSize().second-1 && getPoints(act)[0].second < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].first < getSize().second-1 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
@@ -628,9 +628,9 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
                     case 1:
                         act[0].first.first = areaPos[i].first;
                         act[0].first.second = areaPos[i].second + 1;
-                        if(areaPos[i].second < getSize().second-1 && getPoints(act)[0].second < defaultPoint){
+                        if(areaPos[i].second < getSize().second-1 && getPoints(act)[side].second < defaultPoint){
                             std::vector<std::pair<int,int>> move (1,act[0].first);
-                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                             answer.push_back(dummy);
                         }
                         else if(areaPos[i].second < getSize().second-1){
@@ -640,25 +640,28 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
                                 switch (tt){
                                     case 0:
                                         act[1].first.second++;
-                                        if(areaPos[i].second < getSize().second-2 && getPoints(act)[0].second < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].second < getSize().second-2 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
                                     case 1:
                                         act[1].first.first--;
-                                        if(areaPos[i].first > 0 && getPoints(act)[0].second < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].first > 0 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
                                     case 2:
                                         act[1].first.first++;
-                                        if(areaPos[i].first < getSize().first-1 && getPoints(act)[0].second < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].first < getSize().first-1 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
@@ -669,9 +672,9 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
                     case 2:
                         act[0].first.first = areaPos[i].first - 1;
                         act[0].first.second = areaPos[i].second;
-                        if(areaPos[i].first > 0 && getPoints(act)[0].second < defaultPoint){
+                        if(areaPos[i].first > 0 && getPoints(act)[side].second < defaultPoint){
                             std::vector<std::pair<int,int>> move (1,act[0].first);
-                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                             answer.push_back(dummy);
                         }
                         else if(areaPos[i].first > 0){
@@ -681,25 +684,28 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
                                 switch (tt){
                                     case 0:
                                         act[1].first.second--;
-                                        if(areaPos[i].second > 0 && getPoints(act)[0].second < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].second > 0 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
                                     case 1:
                                         act[1].first.second++;
-                                        if(areaPos[i].second < getSize().second-1 && getPoints(act)[0].second < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].second < getSize().second-1 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
                                     case 2:
                                         act[1].first.first--;
-                                        if(areaPos[i].first > 1 && getPoints(act)[0].second < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].first > 1 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
@@ -710,9 +716,9 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
                     case 3:
                         act[0].first.first = areaPos[i].first + 1;
                         act[0].first.second = areaPos[i].second;
-                       if(areaPos[i].first <  getSize().first-1 && getPoints(act)[0].second < defaultPoint){
+                       if(areaPos[i].first <  getSize().first-1 && getPoints(act)[side].second < defaultPoint){
                            std::vector<std::pair<int,int>> move (1,act[0].first);
-                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                            answer.push_back(dummy);
                         }
                        else if(areaPos[i].first < getSize().first-1){
@@ -722,25 +728,28 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
                                switch (tt){
                                    case 0:
                                        act[1].first.second--;
-                                       if(areaPos[i].second > 0 && getPoints(act)[0].second < defaultPoint){
-                                           std::vector<std::pair<int,int>> move (1,act[1].first);
-                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                       if(areaPos[i].second > 0 && getPoints(act)[side].second < defaultPoint){
+                                           std::vector<std::pair<int,int>> move (2,act[0].first);
+                                           move[1] = act[1].first;
+                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                            answer.push_back(dummy);
                                        }
                                    break;
                                    case 1:
                                        act[1].first.first++;
-                                       if(areaPos[i].first < getSize().first-2 && getPoints(act)[0].second < defaultPoint){
-                                           std::vector<std::pair<int,int>> move (1,act[1].first);
-                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                       if(areaPos[i].first < getSize().first-2 && getPoints(act)[side].second < defaultPoint){
+                                           std::vector<std::pair<int,int>> move (2,act[0].first);
+                                           move[1] = act[1].first;
+                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                            answer.push_back(dummy);
                                        }
                                    break;
                                    case 2:
                                        act[1].first.second++;
-                                       if(areaPos[i].second < getSize().second-1 && getPoints(act)[0].second < defaultPoint){
-                                           std::vector<std::pair<int,int>> move (1,act[1].first);
-                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                       if(areaPos[i].second < getSize().second-1 && getPoints(act)[side].second < defaultPoint){
+                                           std::vector<std::pair<int,int>> move (2,act[0].first);
+                                           move[1] = act[1].first;
+                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                            answer.push_back(dummy);
                                        }
                                    break;
@@ -759,9 +768,9 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
                     case 0:
                         act[0].first.first = areaPos[i].first;
                         act[0].first.second = areaPos[i].second - 1;
-                        if(areaPos[i].second > 0 && getPoints(act)[0].first < defaultPoint){
+                        if(areaPos[i].second > 0 && getPoints(act)[side].second < defaultPoint){
                             std::vector<std::pair<int,int>> move (1,act[0].first);
-                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                             answer.push_back(dummy);
                         }
                         else if(areaPos[i].second > 0){
@@ -771,25 +780,28 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
                                 switch (tt){
                                     case 0:
                                         act[1].first.second--;
-                                        if(areaPos[i].second > 1 && getPoints(act)[0].first < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].second > 1 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
                                     case 1:
                                         act[1].first.first--;
-                                        if(areaPos[i].first > 0 && getPoints(act)[0].first < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].first > 0 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
                                     case 2:
                                         act[1].first.first++;
-                                        if(areaPos[i].first < getSize().first-1 && getPoints(act)[0].first < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].first < getSize().first-1 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
@@ -800,9 +812,9 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
                     case 1:
                         act[0].first.first = areaPos[i].first;
                         act[0].first.second = areaPos[i].second + 1;
-                        if(areaPos[i].second < getSize().second-1 && getPoints(act)[0].first < defaultPoint){
+                        if(areaPos[i].second < getSize().second-1 && getPoints(act)[side].second < defaultPoint){
                             std::vector<std::pair<int,int>> move (1,act[0].first);
-                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                             answer.push_back(dummy);
                         }
                         else if(areaPos[i].second < getSize().second-1){
@@ -812,25 +824,28 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
                                 switch (tt){
                                     case 0:
                                         act[1].first.second++;
-                                        if(areaPos[i].second < getSize().second-2 && getPoints(act)[0].first < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].second < getSize().second-2 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
                                     case 1:
                                         act[1].first.first--;
-                                        if(areaPos[i].first > 0 && getPoints(act)[0].first < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].first > 0 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
                                     case 2:
                                         act[1].first.first++;
-                                        if(areaPos[i].first < getSize().first-1 && getPoints(act)[0].first < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].first < getSize().first-1 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
@@ -841,9 +856,9 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
                     case 2:
                         act[0].first.first = areaPos[i].first - 1;
                         act[0].first.second = areaPos[i].second;
-                        if(areaPos[i].first > 0 && getPoints(act)[0].first < defaultPoint){
+                        if(areaPos[i].first > 0 && getPoints(act)[side].second < defaultPoint){
                             std::vector<std::pair<int,int>> move (1,act[0].first);
-                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                             answer.push_back(dummy);
                         }
                         else if(areaPos[i].first > 0){
@@ -853,25 +868,28 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
                                 switch (tt){
                                     case 0:
                                         act[1].first.second--;
-                                        if(areaPos[i].second > 0 && getPoints(act)[0].first < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].second > 0 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
                                     case 1:
                                         act[1].first.second++;
-                                        if(areaPos[i].second < getSize().second-1 && getPoints(act)[0].first < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].second < getSize().second-1 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
                                     case 2:
                                         act[1].first.first--;
-                                        if(areaPos[i].first > 1 && getPoints(act)[0].first < defaultPoint){
-                                            std::vector<std::pair<int,int>> move (1,act[1].first);
-                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                        if(areaPos[i].first > 1 && getPoints(act)[side].second < defaultPoint){
+                                            std::vector<std::pair<int,int>> move (2,act[0].first);
+                                            move[1] = act[1].first;
+                                            std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                             answer.push_back(dummy);
                                         }
                                     break;
@@ -882,9 +900,9 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
                     case 3:
                         act[0].first.first = areaPos[i].first + 1;
                         act[0].first.second = areaPos[i].second;
-                       if(areaPos[i].first < getSize().first-1 && getPoints(act)[0].first < defaultPoint){
+                       if(areaPos[i].first < getSize().first-1 && getPoints(act)[side].second < defaultPoint){
                            std::vector<std::pair<int,int>> move (1,act[0].first);
-                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                            answer.push_back(dummy);
                         }
                        else if(areaPos[i].first < getSize().first-1){
@@ -894,25 +912,28 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
                                switch (tt){
                                    case 0:
                                        act[1].first.second--;
-                                       if(areaPos[i].second > 0 && getPoints(act)[0].first < defaultPoint){
-                                           std::vector<std::pair<int,int>> move (1,act[1].first);
-                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                       if(areaPos[i].second > 0 && getPoints(act)[side].second < defaultPoint){
+                                           std::vector<std::pair<int,int>> move (2,act[0].first);
+                                           move[1] = act[1].first;
+                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                            answer.push_back(dummy);
                                        }
                                    break;
                                    case 1:
                                        act[1].first.first++;
-                                       if(areaPos[i].first < getSize().first-2 && getPoints(act)[0].first < defaultPoint){
-                                           std::vector<std::pair<int,int>> move (1,act[1].first);
-                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                       if(areaPos[i].first < getSize().first-2 && getPoints(act)[side].second < defaultPoint){
+                                           std::vector<std::pair<int,int>> move (2,act[0].first);
+                                           move[1] = act[1].first;
+                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                            answer.push_back(dummy);
                                        }
                                    break;
                                    case 2:
                                        act[1].first.second++;
-                                       if(areaPos[i].second < getSize().second-1&& getPoints(act)[0].first < defaultPoint){
-                                           std::vector<std::pair<int,int>> move (1,act[1].first);
-                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[0].second);
+                                       if(areaPos[i].second < getSize().second-1&& getPoints(act)[side].second < defaultPoint){
+                                           std::vector<std::pair<int,int>> move (2,act[0].first);
+                                           move[1] = act[1].first;
+                                           std::pair<std::vector<std::pair<int,int>>,int> dummy (move,getPoints(act)[side].second);
                                            answer.push_back(dummy);
                                        }
                                    break;
@@ -924,6 +945,14 @@ std::vector<std::pair<std::vector<std::pair<int,int>>,int>> procon::Field::ifBre
             }
         }
     }
+/*    for(int i = 0;i < answer.size();i++){
+        for(int j = 0;j < answer.at(i).first.size();j++){
+            std::cout << answer.at(i).first.at(j).first;
+            std::cout << ",";
+            std::cout << answer.at(i).first.at(j).second << std::endl;
+        }
+        std::cout << answer.at(i).second << std::endl << "----------------------------" << std::endl;
+    }*/
     return answer;
 }
 
