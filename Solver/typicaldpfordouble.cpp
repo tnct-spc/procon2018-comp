@@ -94,6 +94,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
 
     auto getRoute = [&](int pos, int depth){
         std::list<std::pair<int,int>> lis;
+        // std::pair<std::list<std::pair<int,int>>, std::list<std::pair<int,int>>> lis;
 
         if(dp.at(depth).at(pos).depth == -1)
             return lis;
@@ -110,7 +111,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
         return lis;
     };
 
-    dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({getRoute(5, 20)}), std::vector<std::vector<std::vector<int>>>(3,std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
+    dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({getRoute(500, 10)}), std::vector<std::vector<std::vector<int>>>(3,std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
 
     return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
 
