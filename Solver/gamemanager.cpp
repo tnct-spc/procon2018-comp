@@ -50,6 +50,9 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show
         connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
         connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
         connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
+        connect(visualizer.get(), &Visualizer::sendAgentPos, this, &GameManager::changeAgentpos);
+        connect(visualizer.get(), &Visualizer::sendGridState, this, &GameManager::changeGridState);
+        connect(visualizer.get(), &Visualizer::sendRecalculation, this, &GameManager::endChangeMode);
 
         /*
         minimum = std::make_shared<MinimumVisualizer>(std::make_pair(x_size, y_size));
@@ -77,6 +80,9 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
         connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
         connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
         connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
+        connect(visualizer.get(), &Visualizer::sendAgentPos, this, &GameManager::changeAgentpos);
+        connect(visualizer.get(), &Visualizer::sendGridState, this, &GameManager::changeGridState);
+        connect(visualizer.get(), &Visualizer::sendRecalculation, this, &GameManager::endChangeMode);
 
         // minimum = std::make_shared<MinimumVisualizer>(std::make_pair(x_size, y_size));
     }else{
@@ -1113,8 +1119,10 @@ void GameManager::endChangeMode(const std::pair<int, int> turns)
     // VisualizerのChangeModeを解除
     visualizer->setChangeMode(false);
 
-    // Operatorを閉じる
-    ope->close();
+    if (ope != nullptr) {
+        // Operatorを閉じる
+        ope->close();
+    }
 
     // Fieldの書き換え
     *field = visualizer->getField();
@@ -1160,4 +1168,18 @@ std::vector<std::string> GameManager::spl(std::string str){
         }
     }
     return result;
+}
+
+// agent => first : team, second : agent
+// pos => first : x, second : y
+void GameManager::changeAgentpos(std::pair<int, int> agent, std::pair<int, int> pos)
+{
+    field->setAgent(agent.first, agent.second, pos.first, pos.second);
+}
+
+// grid => first : x, second : y
+// state => team
+void GameManager::changeGridState(std::pair<int, int> grid, int state)
+{
+    field->setState(grid.first, grid.second, state);
 }
