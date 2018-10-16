@@ -15,7 +15,7 @@ public:
 private:
 
     int size_x, size_y, size_sum;
-    int maxval = 10;
+    int maxval = 30;
 
     std::shared_ptr<ProgresDock> dock;
 

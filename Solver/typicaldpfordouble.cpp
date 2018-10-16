@@ -7,18 +7,13 @@ TypicalDpForDouble::TypicalDpForDouble(const procon::Field& field, int final_tur
     size_sum = size_x * size_y;
 
     dock = std::make_shared<ProgresDock>();
-    // dock->show();
+    dock->show();
 }
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDouble::agentAct(int){
 
     auto int_to_pair = [this](int x){return std::make_pair(x / size_y, x % size_y);};
     auto pair_to_int = [this](std::pair<int,int> x){return x.first * size_y + x.second;};
-
-    /*
-    auto tuple_to_int = [this](std::tuple<int,int,int> x){return std::get<0>(x) * size_sum + std::get<1>(x) * size_y + std::get<0>(x);};
-    auto int_to_tuple = [this](int x){return std::make_tuple(x / size_sum, (x % size_sum) / size_y, x % size_y);};
-    */
 
     auto swap_pair = [](std::pair<std::pair<int,int>,std::pair<int,int>> x){
         if(x.first > x.second)swap(x.first, x.second);
@@ -89,11 +84,33 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
 
                     double value_sum = value.first + value.second;
 
-                    Edge e = Edge::make(dp.at(dep).at(pos), two_pair_to_int(std::make_pair(is_move & 2 ? after_pos_pairs.first : before_pos_pairs.first, is_move & 1 ? after_pos_pairs.second : before_pos_pairs.second)), value_sum, is_update_bitset, std::make_pair(pair_to_int(after_pos_pairs.first), pair_to_int(after_pos_pairs.second)));
+                    int next_pos = two_pair_to_int(std::make_pair(is_move & 2 ? after_pos_pairs.first : before_pos_pairs.first, is_move & 1 ? after_pos_pairs.second : before_pos_pairs.second));
 
-                    dp.at(dep + 1).at(after_pos) = std::max(dp.at(dep + 1).at(after_pos), e);
+                    Edge e = Edge::make(dp.at(dep).at(pos), next_pos, value_sum, is_update_bitset, std::make_pair(pair_to_int(after_pos_pairs.first), pair_to_int(after_pos_pairs.second)));
+
+                    dp.at(dep + 1).at(next_pos) = std::max(dp.at(dep + 1).at(next_pos), e);
                 }
         }
+
+    auto getRoute = [&](int pos, int depth){
+        std::list<std::pair<int,int>> lis;
+
+        if(dp.at(depth).at(pos).depth == -1)
+            return lis;
+
+        while(dp.at(depth).at(pos).depth > 0){
+            lis.push_back(int_to_two_pair(pos).first);
+            lis.push_back(int_to_two_pair(pos).second);
+
+            std::tie(pos, depth) = dp.at(depth).at(pos).prev;
+        }
+        lis.push_back(int_to_two_pair(pos).first);
+        lis.push_back(int_to_two_pair(pos).second);
+
+        return lis;
+    };
+
+    dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({getRoute(5, 20)}), std::vector<std::vector<std::vector<int>>>(3,std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
 
     return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
 
