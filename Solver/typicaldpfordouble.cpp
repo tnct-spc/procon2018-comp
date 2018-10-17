@@ -139,14 +139,14 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
         return lis;
     };
 
-    std::vector<std::pair<std::list<std::pair<int,int>>, std::list<std::pair<int,int>>>> routes;
+    std::vector<std::pair<double, std::pair<std::list<std::pair<int,int>>, std::list<std::pair<int,int>>>>> routes;
     for(int dep = 5; dep <= 5; ++dep)
         for(int pos = 0; pos < size_sum * size_sum; ++pos){
             auto route = getRoute(pos, dep);
             if(!route.first.empty() || !route.second.empty()){
                 if(dock_show)
                     dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({route.first, route.second}), std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
-                routes.push_back(route);
+                routes.emplace_back(dp.at(dep).at(pos).average(), route);
             }
         }
 
