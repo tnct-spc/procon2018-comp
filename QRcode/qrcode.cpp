@@ -7,9 +7,10 @@ QRCode::~QRCode(){
 }
 
 std::string QRCode::decodeQRcode(){
-    cv::VideoCapture cap(0);
+    cv::VideoCapture cap(2);
     if(!cap.isOpened()){
         std::cout<<"Can not connect to cammera."<<std::endl;
+        cap = cv::VideoCapture(0);
         while(!cap.isOpened()){}
     }
 
@@ -17,7 +18,8 @@ std::string QRCode::decodeQRcode(){
     std::string code = {"."};
 
     zbar::ImageScanner scanner;
-    scanner.set_config(zbar::ZBAR_NONE,zbar::ZBAR_CFG_ENABLE,1);
+    scanner.set_config(zbar::ZBAR_NONE,zbar::ZBAR_CFG_ENABLE,0);
+    scanner.set_config(zbar::ZBAR_QRCODE,zbar::ZBAR_CFG_ENABLE,1);
 
     double width = cap.get(CV_CAP_PROP_FRAME_WIDTH);
     double height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);

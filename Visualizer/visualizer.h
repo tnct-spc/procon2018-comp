@@ -55,6 +55,9 @@ public slots:
     void candidateMove(const std::vector<std::vector<std::pair<int,int>>>& inp_vec);
     void getData(const std::pair<int, int> data, const bool agent);
 
+    // 指定された移動予定を解除
+    void resetConfirm();
+
 private:
     Ui::Visualizer *ui;
     void paintEvent(QPaintEvent *event);
