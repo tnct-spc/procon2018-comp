@@ -16,6 +16,7 @@ private:
 
     int size_x, size_y, size_sum;
     int maxval = 30;
+    double bound_per = 0.1;
 
     std::shared_ptr<ProgresDock> dock;
 
@@ -23,6 +24,7 @@ private:
 
     static const std::vector<int> dx, dy;
     struct Edge;
+    struct MapElement;
 };
 
 struct TypicalDpForDouble::Edge{
@@ -73,6 +75,17 @@ struct TypicalDpForDouble::Edge{
             return -1e9;
 
         return depth ? sum / depth : 0;
+    }
+};
+
+struct TypicalDpForDouble::MapElement{
+
+    std::vector<double> points;
+    std::vector<std::pair<std::list<std::pair<int,int>>, std::list<std::pair<int,int>>>> routes;
+
+    void addRoute(double point, std::pair<std::list<std::pair<int,int>>, std::list<std::pair<int,int>>> route){
+        points.push_back(point);
+        routes.push_back(route);
     }
 };
 

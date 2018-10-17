@@ -97,6 +97,13 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
                 }
         }
 
+    auto match_at_first = [&](std::pair<std::pair<int,int>, std::pair<int,int>> before, std::pair<std::pair<int,int>, std::pair<int,int>> after){
+
+        return std::abs(after.first.first - before.first.first) <= 1 && std::abs(after.first.second - before.first.second) <= 1 &&
+            std::abs(after.second.first - before.second.first) <= 1 && std::abs(after.second.second - before.second.second) <= 1;
+    };
+
+
     auto getRoute = [&](int pos, int depth){
         // std::list<std::pair<int,int>> lis;
         std::pair<std::list<std::pair<int,int>>, std::list<std::pair<int,int>>> lis;
@@ -104,19 +111,10 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
         if(dp.at(depth).at(pos).depth == -1)
             return lis;
 
-        auto match_at_first = [&](std::pair<std::pair<int,int>, std::pair<int,int>> pos){
-
-            auto first_before_pos = lis.first.back();
-            auto second_before_pos = lis.second.back();
-
-            return std::abs(pos.first.first - first_before_pos.first) <= 1 && std::abs(pos.first.second - first_before_pos.second) <= 1 &&
-                    std::abs(pos.second.first - second_before_pos.first) <= 1 && std::abs(pos.second.second - second_before_pos.second) <= 1;
-        };
-
         while(dp.at(depth).at(pos).depth > 0){
             auto pos_pair = int_to_two_pair(pos);
 
-            if(!match_at_first(pos_pair))
+            if(!match_at_first(std::make_pair(lis.first.back(), lis.second.back()), pos_pair))
                 std::swap(pos_pair.first, pos_pair.second);
 
             lis.first.push_back(pos_pair.first);
@@ -127,7 +125,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
 
         auto pos_pair = int_to_two_pair(pos);
 
-        if(!match_at_first(pos_pair))
+        if(!match_at_first(std::make_pair(lis.first.back(), lis.second.back()), pos_pair))
             std::swap(pos_pair.first, pos_pair.second);
 
         lis.first.push_back(pos_pair.first);
@@ -139,19 +137,57 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
         return lis;
     };
 
-    std::vector<std::pair<double, std::pair<std::list<std::pair<int,int>>, std::list<std::pair<int,int>>>>> routes;
+    std::priority_queue<std::pair<double, std::pair<std::list<std::pair<int,int>>, std::list<std::pair<int,int>>>>> routes_que;
     for(int dep = 5; dep <= 5; ++dep)
         for(int pos = 0; pos < size_sum * size_sum; ++pos){
             auto route = getRoute(pos, dep);
             if(!route.first.empty() || !route.second.empty()){
                 if(dock_show)
                     dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({route.first, route.second}), std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
-                routes.emplace_back(dp.at(dep).at(pos).average(), route);
+                routes_que.emplace(dp.at(dep).at(pos).average(), route);
             }
         }
 
+    std::map<int, MapElement> move_map;
 
-    return std::make_pair(std::make_tuple(0,0,0), std::make_tuple(0,0,0));
+    int bound = bound_per * routes_que.size();
+
+    for(int count = 0; count < bound; ++count){
+        auto top_element = routes_que.top();
+        routes_que.pop();
+
+        int ori_pos = two_pair_to_int(std::make_pair(*std::next(top_element.second.first.begin()), *std::next(top_element.second.second.begin())));
+
+        move_map[ori_pos].addRoute(top_element.first, top_element.second);
+    }
+
+    double max_adv = -1e9;
+
+    std::pair<int,int> pos_first(field.getAgent(side, 0));
+    std::pair<int,int> pos_second(field.getAgent(side, 1));
+
+    for(auto element : move_map){
+
+        double adv = element.second.routes.size();
+
+        if(!(max_adv < adv))
+            continue;
+
+        max_adv = adv;
+
+        auto after_pair = int_to_two_pair(element.first);
+
+        if(match_at_first(std::make_pair(field.getAgent(side, 0), field.getAgent(side, 1)), after_pair))
+            std::tie(pos_first, pos_second) = after_pair;
+        else
+            std::tie(pos_second, pos_first) = after_pair;
+    }
+
+    std::cout << field.getAgent(side, 0).first << "," << field.getAgent(side, 0).second << " " << field.getAgent(side, 1).first << "," << field.getAgent(side, 1).second << std::endl;
+    std::cout << pos_first.first << "," << pos_first.second << " " << pos_second.first << "," << pos_second.second << std::endl;
+
+    return std::make_pair(std::make_tuple((field.getState(pos_first.first, pos_first.second).first != (side ? 1 : 2) ? 1 : 2), pos_first.first - field.getAgent(side, 0).first, pos_first.second - field.getAgent(side, 0).second),
+                          std::make_tuple((field.getState(pos_second.first, pos_second.second).first != (side ? 1 : 2) ? 1 : 2), pos_second.first - field.getAgent(side, 1).first, pos_second.second - field.getAgent(side, 1).second));
 
 }
 
