@@ -12,6 +12,7 @@
     candidate = std::vector<std::vector<std::pair<int, int>>>(2, std::vector<std::pair<int,int>>(2, std::make_pair(-1, -1)));
 
     is_delete = std::vector<std::vector<int>>(2, std::vector<int>(2, 0));
+
 }
 
 Visualizer::~Visualizer()
@@ -676,6 +677,7 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
             is_change_field_mode = false;
             is_selected_grid = false;
             selected = false;
+            resetConfirm();
             update();
         }else{
             is_change_field_mode = true;
@@ -700,14 +702,30 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
     } else if ((event->key() == Qt::Key_R) && !is_change_field_mode) {
         // 現時点でのfieldで再計算
         is_recalcuration = true;
+
+        // 次の行動が選択されていたエージェントをリセット
+        confirm_count = 0;
+
         emit sendRecalculation(std::make_pair(field.getTurnCount(), field.getFinalTurn()));
     } else if ((event->key() == Qt::Key_Escape) && is_change_field_mode && is_selected_grid) {
         // 選択されているマスやエージェントを解除
         is_selected_grid = false;
         is_changing_field_grid = false;
         selected = false;
+        resetConfirm();
         this->repaint();
     }
 
 
+}
+
+void Visualizer::resetConfirm()
+{
+    confirm_count = 0;
+
+    for (unsigned int t = 0; t < 2; t++) {
+        for (unsigned int c = 0; c < 2; c++) {
+            next_grids.at(t).at(c).first = -1;
+        }
+    }
 }

@@ -50,6 +50,7 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show
         connect(visualizer.get(), &Visualizer::sendAgentPos, this, &GameManager::changeAgentpos);
         connect(visualizer.get(), &Visualizer::sendGridState, this, &GameManager::changeGridState);
         connect(visualizer.get(), &Visualizer::sendRecalculation, this, &GameManager::endChangeMode);
+        connect(this, &GameManager::resetField, visualizer.get(), &Visualizer::resetConfirm);
 
         /*
         minimum = std::make_shared<MinimumVisualizer>(std::make_pair(x_size, y_size));
@@ -80,6 +81,7 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
         connect(visualizer.get(), &Visualizer::sendAgentPos, this, &GameManager::changeAgentpos);
         connect(visualizer.get(), &Visualizer::sendGridState, this, &GameManager::changeGridState);
         connect(visualizer.get(), &Visualizer::sendRecalculation, this, &GameManager::endChangeMode);
+        connect(this, &GameManager::resetField, visualizer.get(), &Visualizer::resetConfirm);
 
         // minimum = std::make_shared<MinimumVisualizer>(std::make_pair(x_size, y_size));
     }else{
@@ -212,6 +214,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     }
 
     team_2->setParams(opp_params);
+
+    emit resetField();
 
 
     // progressdockは一旦表示しない事にします(使う事があまりないため)
@@ -873,6 +877,9 @@ void GameManager::endChangeMode(const std::pair<int, int> turns)
     // Fieldの書き換え
     *field = visualizer->getField();
     field->updatePoint();
+
+    // 選択されていたエージェントの次の動作を解除
+
 
     // ゲームを続行
     nextMoveForManualMode();
