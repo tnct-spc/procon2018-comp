@@ -58,6 +58,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
             pos_1.first < 0 || pos_1.second < 0 || pos_1.first >= size_x || pos_1.second >= size_y;
     };
 
+    std::vector<int> first_move_pos(size_sum * size_sum, 0);
+
     for(int dep = 0; dep < maxval; ++dep)
         for(int pos_0 = 0; pos_0 < size_sum; ++pos_0)
             for(int pos_1 = pos_0 + 1; pos_1 < size_sum; ++pos_1){
@@ -91,7 +93,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
 
                     int next_pos = two_pair_to_int(std::make_pair(is_move & 2 ? after_pos_pairs.first : before_pos_pairs.first, is_move & 1 ? after_pos_pairs.second : before_pos_pairs.second));
 
+
                     Edge e = Edge::make(dp.at(dep).at(pos), next_pos, value_sum, is_update_bitset, std::make_pair(pair_to_int(after_pos_pairs.first), pair_to_int(after_pos_pairs.second)));
+
+                    if(!dep && dp.at(dep + 1).at(next_pos) < e)
+                        first_move_pos.at(next_pos) = two_pair_to_int(after_pos_pairs);
 
                     dp.at(dep + 1).at(next_pos) = std::max(dp.at(dep + 1).at(next_pos), e);
                 }
@@ -156,7 +162,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
         auto top_element = routes_que.top();
         routes_que.pop();
 
-        int ori_pos = two_pair_to_int(std::make_pair(*std::next(top_element.second.first.begin()), *std::next(top_element.second.second.begin())));
+        int ori_pos = first_move_pos.at(two_pair_to_int(std::make_pair(*std::next(top_element.second.first.begin()), *std::next(top_element.second.second.begin()))));
+
+        auto after_pair = int_to_two_pair(ori_pos);
+
+        std::cout << "candidate : " << after_pair.first.first << "," << after_pair.first.second << " " << after_pair.second.first << "," << after_pair.second.second << std::endl;
 
         move_map[ori_pos].addRoute(top_element.first, top_element.second);
     }
