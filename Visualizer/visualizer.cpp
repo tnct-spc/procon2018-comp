@@ -384,13 +384,12 @@ void Visualizer::paintEvent(QPaintEvent *event){
         text_font.setPixelSize(grid_size * 0.5);
         painter.setFont(text_font);
 
-        QColor color = Qt::black;
-        color.setAlpha(150);
+        QColor color(40, 40, 40, 80);
         painter.setPen(color);
 
         for (unsigned int x = 0; x < grid_x; x++) {
             painter.drawText(
-                        QRectF(horizontal_margin + grid_size * x, vertical_margin - grid_size * 1.1, grid_size, grid_size),
+                        QRectF(horizontal_margin + grid_size * x, vertical_margin - grid_size * 0.9, grid_size, grid_size),
                         Qt::AlignHCenter | Qt::AlignBottom,
                         QString::number(x+1)
                         );
