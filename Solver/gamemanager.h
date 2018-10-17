@@ -73,6 +73,9 @@ signals:
     // OperatorのChangeがクリックされたら、変更された値をFieldとVisualizerに反映
     void sendDataToVisualizer(const std::pair<int,int> data, const bool agen);
 
+    // Runが押されたさい、Visualizerに溜まっている移動予定をリセットする
+    void resetField();
+
 public slots:
     void changeMove(const std::vector<std::vector<std::pair<int,int>>>& move, std::vector<std::vector<int>> is_delete);
 
