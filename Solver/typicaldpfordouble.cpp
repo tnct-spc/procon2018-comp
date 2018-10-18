@@ -89,7 +89,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
 
                     int is_move = 2 * (is_update_bitset & 2 ? !state.first : 0) + (is_update_bitset & 1 ? !state.second : 0);
 
-                    double value_sum = value.first + value.second;
+                    double value_sum = (is_update_bitset & 2) * value.first + (is_update_bitset & 1) * value.second;
 
                     int next_pos = two_pair_to_int(std::make_pair(is_move & 2 ? after_pos_pairs.first : before_pos_pairs.first, is_move & 1 ? after_pos_pairs.second : before_pos_pairs.second));
 
@@ -164,10 +164,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
 
         int ori_pos = first_move_pos.at(two_pair_to_int(std::make_pair(*std::next(top_element.second.first.begin()), *std::next(top_element.second.second.begin()))));
 
-        auto after_pair = int_to_two_pair(ori_pos);
-
-        std::cout << "candidate : " << after_pair.first.first << "," << after_pair.first.second << " " << after_pair.second.first << "," << after_pair.second.second << std::endl;
-
         move_map[ori_pos].addRoute(top_element.first, top_element.second);
     }
 
@@ -193,8 +189,10 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
             std::tie(pos_second, pos_first) = after_pair;
     }
 
+    /*
     std::cout << field.getAgent(side, 0).first << "," << field.getAgent(side, 0).second << " " << field.getAgent(side, 1).first << "," << field.getAgent(side, 1).second << std::endl;
     std::cout << pos_first.first << "," << pos_first.second << " " << pos_second.first << "," << pos_second.second << std::endl;
+    */
 
     return std::make_pair(std::make_tuple((field.getState(pos_first.first, pos_first.second).first != (side ? 1 : 2) ? 1 : 2), pos_first.first - field.getAgent(side, 0).first, pos_first.second - field.getAgent(side, 0).second),
                           std::make_tuple((field.getState(pos_second.first, pos_second.second).first != (side ? 1 : 2) ? 1 : 2), pos_second.first - field.getAgent(side, 1).first, pos_second.second - field.getAgent(side, 1).second));
