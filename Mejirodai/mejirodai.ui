@@ -121,6 +121,11 @@
       </item>
       <item>
        <property name="text">
+        <string>TypicalDPForDouble</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>WarshallFloydAlgorithm</string>
        </property>
       </item>
@@ -238,6 +243,11 @@
       <item>
        <property name="text">
         <string>DepthFirstSearch</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>TypicalDPForDouble</string>
        </property>
       </item>
       <item>

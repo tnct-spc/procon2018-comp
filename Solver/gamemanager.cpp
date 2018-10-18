@@ -15,6 +15,7 @@
 #include "depthfirstsearch.h"
 #include "LastForce/lastregion.h"
 #include "warshallfloydalgorithm.h"
+#include "typicaldpfordouble.h"
 
 GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, int turn_max, QObject *parent)
     : QObject(parent),
@@ -182,6 +183,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_1 = std::make_shared<LastRegion>(*field, field->getFinalTurn(), 0);
     } else if (QString::compare("WarshallFloydAlgorithm", my_algo) == 0) {
         team_1 = std::make_shared<WarshallFloydAlgorithm>(*field, field->getFinalTurn(), 0);
+    } else if (QString::compare("TypicalDPForDouble", my_algo) == 0) {
+        team_1 = std::make_shared<TypicalDpForDouble>(*field, field->getFinalTurn(), 0);
     } else{abort();}
 
     team_1->setParams(my_params);
@@ -216,6 +219,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_2 = std::make_shared<LastRegion>(*field, field->getFinalTurn(), 1);
     } else if (QString::compare("WarshallFloydAlgorithm", opponent_algo) == 0) {
         team_2 = std::make_shared<WarshallFloydAlgorithm>(*field, field->getFinalTurn(), 1);
+    } else if (QString::compare("TypicalDPForDouble", opponent_algo) == 0) {
+        team_2 = std::make_shared<TypicalDpForDouble>(*field, field->getFinalTurn(), 1);
     } else{abort();}
 
     team_2->setParams(opp_params);
