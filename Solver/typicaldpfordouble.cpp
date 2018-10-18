@@ -13,6 +13,8 @@ TypicalDpForDouble::TypicalDpForDouble(const procon::Field& field, int final_tur
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDouble::agentAct(int){
 
+    int maxval = std::min(max_maxval, field.getFinalTurn() - field.getTurnCount() + 1);
+
     auto int_to_pair = [this](int x){return std::make_pair(x / size_y, x % size_y);};
     auto pair_to_int = [this](std::pair<int,int> x){return x.first * size_y + x.second;};
 
@@ -144,7 +146,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
     };
 
     std::priority_queue<std::pair<double, std::pair<std::list<std::pair<int,int>>, std::list<std::pair<int,int>>>>> routes_que;
-    for(int dep = 5; dep <= 5; ++dep)
+    for(int dep = 1; dep <= maxval; ++dep)
         for(int pos = 0; pos < size_sum * size_sum; ++pos){
             auto route = getRoute(pos, dep);
             if(!route.first.empty() || !route.second.empty()){
@@ -172,16 +174,32 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
     std::pair<int,int> pos_first(field.getAgent(side, 0));
     std::pair<int,int> pos_second(field.getAgent(side, 1));
 
+    auto agent_conflict = [this](double& score, std::pair<int,int> next_move_pos){
+
+        if(next_move_pos == field.getAgent(side ^ 1, 0) && next_move_pos == field.getAgent(side ^ 1, 1))
+            score *= conflict_def_per;
+
+        if(field.getState(next_move_pos.first, next_move_pos.second).first == (side ? 1 : 2) &&
+        std::abs(next_move_pos.first - field.getAgent(side ^ 1, 0).first) <= 1 &&
+        std::abs(next_move_pos.second - field.getAgent(side ^ 1, 0).second) <= 1 &&
+        std::abs(next_move_pos.first - field.getAgent(side ^ 1, 1).first) <= 1 &&
+        std::abs(next_move_pos.second - field.getAgent(side ^ 1, 1).second) <= 1)
+            score *= conflict_atk_per;
+    };
+
     for(auto element : move_map){
 
         double adv = element.second.routes.size();
+
+        auto after_pair = int_to_two_pair(element.first);
+
+        agent_conflict(adv, after_pair.first);
+        agent_conflict(adv, after_pair.second);
 
         if(!(max_adv < adv))
             continue;
 
         max_adv = adv;
-
-        auto after_pair = int_to_two_pair(element.first);
 
         if(match_at_first(std::make_pair(field.getAgent(side, 0), field.getAgent(side, 1)), after_pair))
             std::tie(pos_first, pos_second) = after_pair;

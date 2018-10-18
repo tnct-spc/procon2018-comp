@@ -15,8 +15,11 @@ public:
 private:
 
     int size_x, size_y, size_sum;
-    int maxval = 30;
+    const int max_maxval = 30;
     double bound_per = 0.1;
+
+    double conflict_def_per = 1.3;
+    double conflict_atk_per = 0.3;
 
     std::shared_ptr<ProgresDock> dock;
 
