@@ -134,8 +134,10 @@ const std::pair<std::tuple<int,int,int>,std::tuple<int,int,int>> DepthFirstSearc
     if(vis_show){
         minimum = std::make_shared<MinimumVisualizer>(field.getSize());
 
+        /*
         std::vector<std::list<std::pair<int,int>>> use_vec = std::vector<std::list<std::pair<int,int>>>({moves_1, moves_2});
         minimum->setRoute(use_vec);
+        */
 
         for(int index = 0; index < 3; ++index)
             minimum->setValues(colors.at(index), index);
@@ -238,9 +240,14 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
         treap_vec.emplace_back(std::make_shared<Treap>());
 
     std::shared_ptr<SearchNode> parent = std::make_shared<SearchNode>(0.0, 0, predict_weight, movecount);
-    treap_vec.at(0)->insert(std::make_pair(0.0, parent));
+    treap_vec.at(0)->insert(std::make_pair(0.0, std::make_pair(0.0, parent)));
 
     const std::vector<std::vector<int>>& value = field.getValue();
+
+    std::vector<double> depth_weight(1, 1.8);
+    for(int count = 0; count < maxval + 1; ++count)
+        depth_weight.push_back(depth_weight.back() - 0.05);
+
 
     std::pair<int,int> old_pos = field.getAgent(inp_side, agent);
     for(int dep = 0; dep < maxval + 1; ++dep){
@@ -248,9 +255,12 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
         std::shared_ptr<Treap> before = treap_vec.at(dep % 2);
         std::shared_ptr<Treap> after = treap_vec.at((dep + 1) % 2);
 
+        std::vector<std::vector<int>> put_tile_count(field.getSize().first, std::vector<int>(field.getSize().second, 0));
+        int put_tile_sum = 0;
+
         std::map<std::bitset<296>, std::shared_ptr<SearchNode>, BitSetSorter> node_map;
         while(before->size()){
-            std::pair<double, std::shared_ptr<SearchNode>> element = before->get(0);
+            std::pair<double, std::shared_ptr<SearchNode>> element = before->get(0).second;
             double now_adv = element.first;
             std::shared_ptr<SearchNode> node = element.second;
             before->erase(0);
@@ -271,6 +281,8 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
 
             std::bitset<296> bs;
 
+            double conflict_value = 0.0;
+
             for(int index = rev_move.size() - 1; index >= 0; --index){
                 int move_index = rev_move.at(index).first;
                 bool is_move = rev_move.at(index).second & 1;
@@ -284,6 +296,13 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                     bs &= ~(std::bitset<296>(3) << bit_index);
                     bs |= std::bitset<296>(bit_count + 1) << bit_index;
                 }
+
+
+                if(put_tile_sum)
+                    conflict_value += 1.0 * put_tile_count.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index)) / put_tile_sum;
+
+                ++put_tile_count.at(pos.first + SearchNode::dx.at(move_index)).at(pos.second + SearchNode::dy.at(move_index));
+                ++put_tile_sum;
 
                 if(is_move){
                     pos.first += SearchNode::dx.at(move_index);
@@ -299,11 +318,31 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                 int y_pos = pos.second + SearchNode::dy.at(index);
                 if(!(x_pos < 0 || y_pos < 0 || x_pos >= static_cast<int>(state.size()) || y_pos >= static_cast<int>(state.at(0).size()))){
 
-                    bool is_replace = state.at(x_pos).at(y_pos);
-
-                    double point = (is_replace ? value.at(x_pos).at(y_pos) * (1.0 - predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0)) : 0);
+                    std::pair<int,int> newpos_pair(x_pos, y_pos);
+                    std::vector<std::pair<int,int>> enemy_agents = {field.getAgent(inp_side ^ 1, 0), field.getAgent(inp_side ^ 1, 1)};
 
                     bool is_move = (state.at(x_pos).at(y_pos) != 2);
+                    bool is_replace = state.at(x_pos).at(y_pos);
+
+                    bool is_conflict = (newpos_pair == enemy_agents.at(0)) || (newpos_pair == enemy_agents.at(1));
+                    bool is_defence = ((std::abs(enemy_agents.at(0).first - x_pos) <= 1) && (std::abs(enemy_agents.at(0).second - y_pos) <= 1)) ||
+                                      ((std::abs(enemy_agents.at(1).first - x_pos) <= 1) && (std::abs(enemy_agents.at(1).second - y_pos) <= 1));
+
+                    double point = depth_weight.at(dep) * value.at(x_pos).at(y_pos) * (1.0 - predict_weight * (dep ? predict.at(dep - 1).at(x_pos).at(y_pos) : 0));
+
+                    if(!is_replace)
+                        point = 0;
+                    if(is_conflict)
+                        point *= conflict_atk_per;
+                    if(is_defence && !is_move)
+                        point *= conflict_def_per;
+
+                    double conf_pri =  conflict_value + 1.0 * put_tile_count.at(pos.first + SearchNode::dx.at(index)).at(pos.second + SearchNode::dy.at(index)) / put_tile_sum;
+
+                    ++put_tile_count.at(pos.first + SearchNode::dx.at(index)).at(pos.second + SearchNode::dy.at(index));
+                    ++put_tile_sum;
+
+                    double priority = now_adv + point * (1 - std::min(1.0, conf_pri * deverse_per));
 
                     int bit_index = 8 + ((pos.first + SearchNode::dx.at(index)) * 12 + (pos.second + SearchNode::dy.at(index))) * 2;
                     int bit_count = ((bs >> bit_index) & std::bitset<296>((1LL << 32) - 1)).to_ulong() & 3;
@@ -319,7 +358,7 @@ std::shared_ptr<DepthFirstSearch::SearchNode> DepthFirstSearch::createNodeWithBe
                         node->childs[index] = std::make_pair(std::make_shared<SearchNode>(point, dep + 1, predict_weight, movecount), static_cast<int>(is_move) | (static_cast<int>(is_replace) << 1));
                         node->childs[index].first->parent = std::make_pair(node.get(), index);
                         node_map[bs] = node->childs[index].first;
-                        after->insert(std::make_pair(now_adv + point, node->childs[index].first));
+                        after->insert(std::make_pair(priority, std::make_pair(now_adv + point, node->childs[index].first)));
                     }
 
                     if(is_replace){
@@ -399,8 +438,6 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
 
             now_ptr->leaf_size = now_ptr->size + 1;
 
-            if(depth)
-                depth_size.at(depth - 1) += now_ptr->size + 1;
             for(auto ch : now_ptr->childs){
                 ch.second.first->size += now_ptr->size;
                 que.push(ch.second.first);
@@ -416,6 +453,20 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
 
     node->dfsAdd(field.getAgent(inp_side, agent), values);
 
+    std::queue<std::shared_ptr<SearchNode>> que;
+
+    que.push(node);
+    while(!que.empty()){
+        std::shared_ptr<SearchNode> now_ptr = que.front();
+
+        for(auto ch : now_ptr->childs)
+            que.push(ch.second.first);
+
+        if(now_ptr->depth)
+            depth_size.at(now_ptr->depth - 1) += now_ptr->size;
+        que.pop();
+    }
+
     for(int dep = 0; dep < maxval; ++dep){
         std::vector<std::vector<double>>& vec = values.at(dep);
         int siz = depth_size.at(dep);
@@ -427,23 +478,20 @@ std::tuple<std::shared_ptr<DepthFirstSearch::SearchNode>, std::list<std::pair<in
 
 void DepthFirstSearch::updatePredictData(bool inp_side, bool agent, bool is_adddock){
 
-    getMovePer(inp_side, agent, is_adddock);
+    std::vector<std::vector<std::vector<double>>> ret_val = getMovePer(inp_side, agent, is_adddock);
+
     if(do_output){
-
-        std::vector<std::vector<std::vector<double>>> ret_val = getMovePer(inp_side, agent, is_adddock);
-
         std::vector<std::vector<std::vector<double>>> before_vec = predict_per.at(inp_side * 2 + agent);
         double diff = 0.0;
         for(int dep = 0; dep < maxval; ++dep)
-        for(int x_index = 0; x_index < field.getSize().first; ++x_index)
-            for(int y_index = 0; y_index < field.getSize().second; ++y_index)
-            diff += std::abs(before_vec.at(dep).at(x_index).at(y_index) - ret_val.at(dep).at(x_index).at(y_index));
-
-        predict_per.at(inp_side * 2 + agent) = std::move(ret_val);
-
-        if(do_output)
-            std::cout << "diff : " << diff << std::endl;
+            for(int x_index = 0; x_index < field.getSize().first; ++x_index)
+                for(int y_index = 0; y_index < field.getSize().second; ++y_index)
+                    diff += std::abs(before_vec.at(dep).at(x_index).at(y_index) - ret_val.at(dep).at(x_index).at(y_index));
+        std::cout << "diff : " << diff << std::endl;
     }
+
+    predict_per.at(inp_side * 2 + agent) = std::move(ret_val);
+
 }
 
 std::vector<std::vector<std::vector<double>>> DepthFirstSearch::getMovePer(bool inp_side, bool agent, bool is_adddock){
@@ -642,7 +690,7 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     }
     // std::cout<<routes1.size()<<std::endl;
 
-    for(auto ch :  age2->childs){  
+    for(auto ch :  age2->childs){
         RoutesAndNode ins;
         if(!ch.second.first->flag)continue;
         ins.indexs.push_back(ch.first);
@@ -670,30 +718,39 @@ std::pair<std::pair<int,int>, int> DepthFirstSearch::getMaxAdvMove(std::shared_p
     };
     std::pair<std::pair<int,int>,long long> ans = std::make_pair(std::make_pair(8,8),-1e18);
 
-//    std::cout<<"HOGE"<<std::endl;
 
-    //std::cout<<age1->childs.size()<<" "<<age2->childs.size()<<std::endl;
+    std::list<std::pair<int,int>> moves_1, moves_2;
 
-
-
-    //std::cout<<routes2.front().indexs.size()<<std::endl;
     for(int a = 0;a < routes1.size();a++){
         for(int b = 0;b < routes2.size();b++){
             double pena = check(a,b);
+
             if(ans.second < routes1.at(a).adv + routes2.at(b).adv - pena && routes1.at(a).next_pos != routes2.at(b).next_pos){
+                moves_1.clear();
+                moves_2.clear();
                 ans.second = routes1.at(a).adv + routes2.at(b).adv - pena;
                 ans.first = std::make_pair(routes1.at(a).indexs.front(), routes2.at(b).indexs.front());
+
+                for(auto pos : routes1.at(a).route_pos){
+                    moves_1.push_back(pos);
+                }
+                for(auto pos : routes2.at(b).route_pos){
+                    moves_2.push_back(pos);
+                }
             }
         }
     }
-    // std::cout<<"NNN"<<std::endl;
-    //  std::cout<<field.getTurnCount()<<"ターン目: "<<ans.first.first<<" "<<ans.first.second<<std::endl;
+    if(vis_show){
+
+        std::vector<std::list<std::pair<int,int>>> use_vec = std::vector<std::list<std::pair<int,int>>>({moves_1, moves_2});
+
+        minimum->setRoute(use_vec);
+    }
 
     return ans;
 }
 
 void DepthFirstSearch::RoutesAndNode::CollectIndex(std::shared_ptr<SearchNode> now, bool flag){
-
 
     std::shared_ptr<SearchNode> ins;
     int way = 8;
@@ -745,7 +802,7 @@ void DepthFirstSearch::SearchNode::dfsAdd(std::pair<int,int> pos, std::vector<st
 
         size += ch.second.first->size;
 
-        vec.at(depth).at(new_pos.first).at(new_pos.second) += ch.second.first->leaf_size;
+        vec.at(depth).at(new_pos.first).at(new_pos.second) += ch.second.first->size;
     }
 
 }
@@ -771,6 +828,7 @@ std::pair<int, int> DepthFirstSearch::SearchNode::getMaxAdvMove(){
 }
 
 void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Field field){
+    route_pos.clear();
   //  for(int a = 0;a < indexs.size();a++)std::cout<<" "<<indexs.at(a);
   //  std::cout<<std::endl;
     std::pair<int,int> pos = field.getAgent(side, agent);
@@ -792,13 +850,17 @@ void DepthFirstSearch::RoutesAndNode::CollectPos(int side, int agent, procon::Fi
         }
     };
 
-    if(!indexs.empty())next_pos = std::make_pair(pos.first + SearchNode::dx.at(indexs.front()), pos.second + SearchNode::dy.at(indexs.front()));
-    else next_pos = pos;
+    if(!indexs.empty()){
+        next_pos = std::make_pair(pos.first + SearchNode::dx.at(indexs.front()), pos.second + SearchNode::dy.at(indexs.front()));
+    }else{
+        next_pos = pos;
+    }
 
     for(int a = 0;a < indexs.size();a++){
         pos = moveAfter(indexs.at(a));
         route_pos.push_back(pos);
     }
+    //std::cout<<route_pos.size()<<std::endl;
 }
 
 const std::vector<int> DepthFirstSearch::SearchNode::dx({1, 1, 0, -1, -1, -1, 0, 1, 0});
