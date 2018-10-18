@@ -64,12 +64,24 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show
     }
 }
 
-void GameManager::resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show, const int t_max){
+void GameManager::resetManager(int x_size, int y_size, bool v_show, const int t_max){
 
     vis_show = v_show;
 
+    std::random_device rnd;
+    std::mt19937 mt(rnd());
+    if(use_random_field){
+        std::uniform_int_distribution<> rand_size(8, 12);
+        x_size = rand_size(mt);
+        y_size = rand_size(mt);
+    }
+    std::uniform_int_distribution<> rand_turn(40,80);
+
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
-    field->setFinalTurn(t_max);
+    if(use_random_field)
+        field->setFinalTurn(rand_turn(mt));
+    else
+        field->setFinalTurn(t_max);
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
