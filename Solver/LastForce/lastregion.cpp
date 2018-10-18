@@ -19,21 +19,35 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> LastRegion::ag
     procon::Field _field = field;
 
     std::vector<std::pair<std::vector<std::pair<int,int>>,int>> area = _field.ifBreakArea(side, 0);
-
     for(auto que : area){
 
+
+        int siz = que.first.size();
         for(std::pair<int,int> pos : que.first){
-            points.at(pos.first).at(pos.second) += que.second;
+            points.at(pos.first).at(pos.second) += que.second / siz;
         }
     }
 
     area = _field.ifBreakArea(side, 1);
     for(auto que : area){
-
+        int siz = que.first.size();
         for(std::pair<int,int> pos : que.first){
-            points.at(pos.first).at(pos.second) += que.second;
+            points.at(pos.first).at(pos.second) += que.second / siz;
         }
     }
+
+    std::vector<std::pair<std::pair<int,int>, int>> Createarea = _field.ifCreateArea(side, 0);
+
+    for(auto que : Createarea){
+        points.at(que.first.first).at(que.first.second) += que.second;
+    }
+
+    Createarea = _field.ifCreateArea(side, 1);
+
+    for(auto que : Createarea){
+        points.at(que.first.first).at(que.first.second) += que.second;
+    }
+
 
     auto setState = [=](std::bitset<288>& bits, int state, int x , int y){
         if(!(0 <= x && x <= field.getSize().first - 1 && 0 <= y && y <= field.getSize().second - 1)){

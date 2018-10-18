@@ -12,6 +12,7 @@
     candidate = std::vector<std::vector<std::pair<int, int>>>(2, std::vector<std::pair<int,int>>(2, std::make_pair(-1, -1)));
 
     is_delete = std::vector<std::vector<int>>(2, std::vector<int>(2, 0));
+
 }
 
 Visualizer::~Visualizer()
@@ -233,7 +234,7 @@ void Visualizer::paintEvent(QPaintEvent *event){
         //とても汚いコピペコードで申し訳NASA
         QPoint side_0_point;
         side_0_point.setX(horizontal_margin);
-        side_0_point.setY(window_height  - vertical_margin + grid_size * 0.7);
+        side_0_point.setY(window_height  - vertical_margin + grid_size * 1.3);
 
         painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
 
@@ -257,7 +258,7 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
         QPoint side_1_point;
         side_1_point.setX(window_width - horizontal_margin - grid_size * 5);
-        side_1_point.setY(window_height  - vertical_margin + grid_size * 0.7 + grid_size * 0.6);
+        side_1_point.setY(window_height  - vertical_margin + grid_size * 1.3 + grid_size * 0.6);
 
         painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
 
@@ -280,7 +281,7 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
         QPoint text_point;
         text_point.setX(horizontal_margin + (field.getSize().first - 2.5) * grid_size);
-        text_point.setY(vertical_margin - 0.2 * grid_size);
+        text_point.setY(vertical_margin - 1.0 * grid_size);
 
         painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
         painter.setPen(QPen(QBrush(QColor(250, 80, 80 , 80)), 0.3));
@@ -296,7 +297,7 @@ void Visualizer::paintEvent(QPaintEvent *event){
     auto drawisEditMode = [&]{
         QPoint text_point;
         text_point.setX(horizontal_margin);
-        text_point.setY(vertical_margin - 0.2 * grid_size);
+        text_point.setY(vertical_margin - 1.0 * grid_size);
 
         painter.setFont(QFont("Decorative", grid_size * 0.4, QFont::Thin)); // text font
         painter.setPen(QPen(QBrush(QColor(250, 80, 80, 80)), 0.3));
@@ -376,7 +377,43 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     };
 
+    // Gridの左右に番号をふる
+    auto writeGridNumber = [&] {
 
+        // フォントの設定
+        QFont text_font;
+        text_font.setPixelSize(grid_size * 0.5);
+        painter.setFont(text_font);
+
+        QColor color(40, 40, 40, 80);
+        painter.setPen(color);
+
+        for (unsigned int x = 0; x < grid_x; x++) {
+            painter.drawText(
+                        QRectF(horizontal_margin + grid_size * x, vertical_margin - grid_size * 0.9, grid_size, grid_size),
+                        Qt::AlignHCenter | Qt::AlignBottom,
+                        QString::number(x+1)
+                        );
+            painter.drawText(
+                        QRectF(horizontal_margin + grid_size * x, vertical_margin + grid_size * (grid_y + 0.1), grid_size, grid_size),
+                        Qt::AlignHCenter | Qt::AlignTop,
+                        QString::number(x+1)
+                        );
+        }
+
+        for (unsigned int y = 0; y < grid_y; y++) {
+            painter.drawText(
+                        QRectF(horizontal_margin - grid_size * 1.1, vertical_margin + grid_size * y, grid_size, grid_size),
+                        Qt::AlignRight | Qt::AlignVCenter,
+                        QString::number(y+1)
+                        );
+            painter.drawText(
+                        QRectF(horizontal_margin + grid_size * (grid_x + 0.1), vertical_margin + grid_size * y, grid_size, grid_size),
+                        Qt::AlignLeft | Qt::AlignVCenter,
+                        QString::number(y+1)
+                        );
+        }
+    };
 
     drawBackGround();
     drawTiles();
@@ -408,6 +445,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     drawTurnCount();
     drawRegion();
+
+    writeGridNumber();
 }
 
 // メインウィンドウ内のマスをクリックしたときに行われるイベント
@@ -676,6 +715,7 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
             is_change_field_mode = false;
             is_selected_grid = false;
             selected = false;
+            resetConfirm();
             update();
         }else{
             is_change_field_mode = true;
@@ -700,14 +740,30 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
     } else if ((event->key() == Qt::Key_R) && !is_change_field_mode) {
         // 現時点でのfieldで再計算
         is_recalcuration = true;
+
+        // 次の行動が選択されていたエージェントをリセット
+        confirm_count = 0;
+
         emit sendRecalculation(std::make_pair(field.getTurnCount(), field.getFinalTurn()));
     } else if ((event->key() == Qt::Key_Escape) && is_change_field_mode && is_selected_grid) {
         // 選択されているマスやエージェントを解除
         is_selected_grid = false;
         is_changing_field_grid = false;
         selected = false;
+        resetConfirm();
         this->repaint();
     }
 
 
+}
+
+void Visualizer::resetConfirm()
+{
+    confirm_count = 0;
+
+    for (unsigned int t = 0; t < 2; t++) {
+        for (unsigned int c = 0; c < 2; c++) {
+            next_grids.at(t).at(c).first = -1;
+        }
+    }
 }
