@@ -25,7 +25,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
         for(auto& pos_pair : input_vec){
             std::pair<int,int> next_move_pos = pos_pair.second;
 
-            if(next_move_pos == field.getAgent(side ^ 1, 0) && next_move_pos == field.getAgent(side ^ 1, 1))
+            if(next_move_pos == field.getAgent(side ^ 1, 0) || next_move_pos == field.getAgent(side ^ 1, 1))
                 pos_pair.first *= conflict_def_per;
 
             if(field.getState(next_move_pos.first, next_move_pos.second).first == (side ? 1 : 2) &&
