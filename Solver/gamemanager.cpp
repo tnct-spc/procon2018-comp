@@ -216,9 +216,9 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     std::ofstream ofile("result.csv",std::ios::app);
     ofile<<time<<","<<pr<<","<<pb<<",";
     std::cout<<time<<"   Red"<<pr<<"::Blue"<<pb;
-    if(pr<pb){std::cout<<"   WIN::Blue\n";B++;df=0;ofile<<"222\n";}
-    else if(pr>pb){std::cout<<"   WIN::RED\n";R++;df=0;ofile<<"111\n";}
-    else {std::cout<<"   DRAW\n";D++;df++;ofile<<"000\n";}
+    if(pr<pb){std::cout<<"   WIN::Blue\n";B++;df=0;ofile<<"222,\n";}
+    else if(pr>pb){std::cout<<"   WIN::RED\n";R++;df=0;ofile<<"111,\n";}
+    else {std::cout<<"   DRAW\n";D++;df++;ofile<<"000,\n";}
     flag=true;
     ofile.close();
     if((time+1)%10==0)cnt=0;
@@ -229,12 +229,92 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     if(R/50<B/50)ofile<<"00,\n";
     if(R/50>B/50)ofile<<"99,\n";
     if(R/50==B/50)ofile<<"55,\n";
-    ofile<<R/50<<","<<B/50<<","<<D/50<<"\n";
+    ofile<<R/50<<","<<B/50<<","<<D/50<<",\n";
     ofile.close();
         }
     }
 /////////////////////////////////////////////////////////////////////
     else if(QString::compare("SetParamsFromCSV",SetParams)==0){
+
+        //読み込み
+        std::ifstream ifile("result.csv");
+        std::vector<std::string> VS;
+        std::vector<std::pair<QString,double>> my_nparams;
+        std::vector<std::pair<QString,double>>opp_nparams;
+        std::vector<std::pair<double,std::pair<double,std::pair<double,std::string>>>>QD;
+        std::string str;
+        while(getline(ifile,str)){
+            for(const auto subStr : spl(str)) VS.push_back(subStr);
+        }
+        int num=0;
+            for(int fas=0;fas<VS.size();fas++){
+                if(VS[fas]=="01")QD.push_back(std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::make_pair(std::stod(VS[fas+3]),"RED"+std::to_string(num)))));
+                //else if(VS[fas]=="02")QD.push_back(std::make_pair("BLUE"+std::to_string(num),std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::stod(VS[fas+3])))));
+                else if(VS[fas]=="00"){
+                    QD.push_back(std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::make_pair(std::stod(VS[fas+3]),std::to_string(num)))));
+                    num++;
+                }
+                else if(VS[fas]=="55"){
+                    QD.push_back(std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::make_pair(std::stod(VS[fas+3]),std::to_string(num)))));
+                    num++;
+                }
+                else if(VS[fas]=="99"){
+                    QD.push_back(std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::make_pair(std::stod(VS[fas+3]),std::to_string(num)))));
+                    num++;
+                }
+             }
+            std::sort(QD.begin(),QD.end());
+            std::reverse(QD.begin(),QD.end());
+
+            auto search = [&](std::string param_name,std::vector<std::pair<QString,double>>params) {
+                // 渡されたvectorのすべての要素を検索する
+                int count = params.size();
+
+                for (int i = 0; i < count; i++) {
+
+                    // vector内のQStringにパラメータ名が含まれていないか確認
+                    if (params.at(i).first.toStdString().find(param_name) != std::string::npos) {
+                        // 該当するものがあったら数値を返す
+                        return params.at(i).second;
+                    }
+                }
+                // 見つからなかったらdoubleの最大値を返す
+                return std::numeric_limits<double>::max();
+            };
+std::string onen;
+std::string oonen;
+int onenf=0;
+            for(std::vector<std::pair<double,std::pair<double,std::pair<double,std::string>>>>::iterator itr=QD.begin();itr!=QD.end();itr++){
+                if((*itr).second.second.second.find("RED")==std::string::npos){std::cout<<(*itr).second.second.second<<"\n"<<"R勝率   "<<(*itr).first*100<<"%,"<<"B勝率   "<<(*itr).second.first*100<<"%,"<<"引き分け率   "<<(*itr).second.second.first*100<<"%\n";if(onenf==0)onen=(*itr).second.second.second;if(onenf==1)oonen=(*itr).second.second.second;onenf++;}
+                //else std::cout<<(*itr).second.second.second<<"\n"<<"predict_weight   "<<(*itr).first<<","<<"ally_weight   "<<(*itr).second.first<<","<<"ratio   "<<(*itr).second.second.first<<"\n";
+                else{
+                    if((*itr).second.second.second=="RED"+onen){
+                            my_nparams.push_back(std::make_pair(QString::fromStdString("dock_show"),search("dock_show",my_params)));
+                            my_nparams.push_back(std::make_pair(QString::fromStdString("maxval"),search("maxval",my_params)));
+                            my_nparams.push_back(std::make_pair(QString::fromStdString("loop_count"),search("loop_count",my_params)));
+                            my_nparams.push_back(std::make_pair(QString::fromStdString("beam_width"),search("beam_width",my_params)));
+                            my_nparams.push_back(std::make_pair(QString::fromStdString("movecount"),search("movecount",my_params)));
+                            my_nparams.push_back(std::make_pair(QString::fromStdString("use_beamsearch"),search("use_beamsearch",my_params)));
+                            my_nparams.push_back(std::make_pair(QString::fromStdString("predict_weight"),(*itr).first));
+                            my_nparams.push_back(std::make_pair(QString::fromStdString("ally_weight"),(*itr).second.first));
+                            my_nparams.push_back(std::make_pair(QString::fromStdString("vis_show"),search("vis_show",my_params)));
+                            my_nparams.push_back(std::make_pair(QString::fromStdString("ratio"),(*itr).second.second.first));
+                    }
+                    if((*itr).second.second.second=="RED"+oonen){
+                        opp_nparams.push_back(std::make_pair(QString::fromStdString("dock_show"),search("dock_show",opp_params)));
+                        opp_nparams.push_back(std::make_pair(QString::fromStdString("maxval"),search("maxval",opp_params)));
+                        opp_nparams.push_back(std::make_pair(QString::fromStdString("loop_count"),search("loop_count",opp_params)));
+                        opp_nparams.push_back(std::make_pair(QString::fromStdString("beam_width"),search("beam_width",opp_params)));
+                        opp_nparams.push_back(std::make_pair(QString::fromStdString("movecount"),search("movecount",opp_params)));
+                        opp_nparams.push_back(std::make_pair(QString::fromStdString("use_beamsearch"),search("use_beamsearch",opp_params)));
+                        opp_nparams.push_back(std::make_pair(QString::fromStdString("predict_weight"),(*itr).first));
+                        opp_nparams.push_back(std::make_pair(QString::fromStdString("ally_weight"),(*itr).second.first));
+                        opp_nparams.push_back(std::make_pair(QString::fromStdString("vis_show"),search("vis_show",opp_params)));
+                        opp_nparams.push_back(std::make_pair(QString::fromStdString("ratio"),(*itr).second.second.first));
+                    }
+                }
+            }
+
         if (QString::compare("GenerateField", InputMethod) == 0) {
             int x_size = field->getSize().first;
             int y_size = field->getSize().second;
@@ -281,52 +361,6 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
             team_2 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 1);
         }
 
-        //読み込み
-        std::ifstream ifile("result.csv");
-        std::vector<std::string> VS;
-        std::vector<std::pair<double,std::pair<double,std::pair<double,std::string>>>>QD;
-        std::string str;
-        while(getline(ifile,str)){
-            for(const auto subStr : spl(str)){
-                VS.push_back(subStr);
-            }
-        }
-        int num=0;
-            for(int fas=0;fas<VS.size();fas++){
-                if(VS[fas]=="01"){
-                    QD.push_back(std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::make_pair(std::stod(VS[fas+3]),"RED"+std::to_string(num)))));
-                }
-                /*else if(VS[fas]=="02"){
-                    QD.push_back(std::make_pair("BLUE"+std::to_string(num),std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::stod(VS[fas+3])))));
-                }*/
-                else if(VS[fas]=="00"){
-                    QD.push_back(std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::make_pair(std::stod(VS[fas+3]),std::to_string(num)))));
-                    num++;
-                }
-                else if(VS[fas]=="55"){
-                    QD.push_back(std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::make_pair(std::stod(VS[fas+3]),std::to_string(num)))));
-                    num++;
-                }
-                else if(VS[fas]=="99"){
-                    QD.push_back(std::make_pair(std::stod(VS[fas+1]),std::make_pair(std::stod(VS[fas+2]),std::make_pair(std::stod(VS[fas+3]),std::to_string(num)))));
-                    num++;
-                }
-             }
-            std::sort(QD.begin(),QD.end());
-            std::reverse(QD.begin(),QD.end());
-            for(std::vector<std::pair<double,std::pair<double,std::pair<double,std::string>>>>::iterator itr=QD.begin();itr!=QD.end();itr++){
-                if((*itr).second.second.second.find("RED")==std::string::npos)std::cout<<(*itr).second.second.second<<"\n"<<"R勝率   "<<(*itr).first*100<<"%,"<<"B勝率   "<<(*itr).second.first*100<<"%,"<<"引き分け率   "<<(*itr).second.second.first*100<<"%\n";
-                //else std::cout<<(*itr).second.second.second<<"\n"<<"predict_weight   "<<(*itr).first<<","<<"ally_weight   "<<(*itr).second.first<<","<<"ratio   "<<(*itr).second.second.first<<"\n";
-                else{
-                for(std::vector<std::pair<QString, double>>::iterator mpitr=my_params.begin();mpitr!=my_params.end();mpitr++){
-                    if((*mpitr).first=="ally_weight"){(*mpitr).second=(*itr).second.first;
-                    std::cout<<(*mpitr).second<<"       "<<(*itr).second.first;}
-                    if((*mpitr).first=="predict_weight")(*mpitr).second=(*itr).first;
-                    if((*mpitr).first=="ratio")(*mpitr).second=(*itr).second.second.first;
-                }
-                }
-            }
-
             for(std::vector<std::pair<QString, double>>::iterator mpitr=my_params.begin();mpitr!=my_params.end();mpitr++){
                 //if((*mpitr).first=="ally_weight")(*mpitr).second=
             }
@@ -334,8 +368,8 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
             }
 
-            team_1->setParams(my_params);
-            team_2->setParams(opp_params);
+            team_1->setParams(my_nparams);
+            team_2->setParams(opp_nparams);
 
             if(vis_show){
                 visualizer->update();
@@ -384,7 +418,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
                 emit signalAutoMode(false);
 
             }
-        }
+}
 /////////////////////////////////////////////////////////////////////
    else if(QString::compare("Default",SetParams)==0){
         if (QString::compare("GenerateField", InputMethod) == 0) {

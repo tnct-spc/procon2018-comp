@@ -1030,7 +1030,7 @@ void DepthFirstSearch::setRandomParams(std::vector<std::pair<QString, double>> p
     bf_ratio=ratio;
     std::cout<<"predictw"<<predict_weight<<"    allyw"<<ally_weight<<"  ratio"<<ratio<<"\n";
     std::ofstream ofile("result.csv",std::ios::app);
-    ofile<<predict_weight<<","<<ally_weight<<","<<ratio<<"\n";
+    ofile<<predict_weight<<","<<ally_weight<<","<<ratio<<",\n";
     ofile.close();
   }
 }
