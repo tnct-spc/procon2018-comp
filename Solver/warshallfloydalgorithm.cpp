@@ -42,7 +42,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSingleAgent(int agent){
 
     // [0,maxdepth]
-    int maxdepth = std::min(maxdepth_max, field.getFinalTurn() - field.getTurnCount());
+    int maxdepth = std::min(params.maxdepth_max, field.getFinalTurn() - field.getTurnCount());
 
     std::pair<int,int> agent_pos = field.getAgent(side, agent);
 
@@ -60,11 +60,11 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
             std::tie(score, route) = getRoute(edges, pos, depth);
             if(route.empty())
                 continue;
-            que.emplace(std::min(depth_weight_max, std::pow(depth_weight, depth)) * score / depth, std::move(route));
+            que.emplace(std::min(params.depth_weight_max, std::pow(params.depth_weight, depth)) * score / depth, std::move(route));
 
         }
 
-    int bound = que.size() * bound_val;
+    int bound = que.size() * params.bound_val;
 
     for(int index = 0; !que.empty(); ++index){
         double average;
@@ -193,21 +193,21 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                         if(!depth){
 
                             if(end_pos == field.getAgent(side ^ 1, 0) || end_pos == field.getAgent(side ^ 1, 1))
-                                value *= conflict_atk_per;
+                                value *= params.conflict_atk_per;
 
                             if(end_pos_state.first == (side ? 1 : 2) &&
                             ((std::abs(end_pos.first - field.getAgent(side ^ 1, 0).first) <= 1 &&
                             std::abs(end_pos.second - field.getAgent(side ^ 1, 0).second) <= 1) ||
                             (std::abs(end_pos.first - field.getAgent(side ^ 1, 1).first) <= 1 &&
                             std::abs(end_pos.second - field.getAgent(side ^ 1, 1).second) <= 1)))
-                                value *= conflict_def_per;
+                                value *= params.conflict_def_per;
 
                             if(end_pos == field.getAgent(side ^ 1, agent ^ 1))
-                                value *= conflict_ally_per;
+                                value *= params.conflict_ally_per;
                         }
 
 
-                        value *= std::min(depth_weight_max, std::pow(depth_weight, maxdepth_max - depth));
+                        value *= std::min(params.depth_weight_max, std::pow(params.depth_weight, params.maxdepth_max - depth));
 
                         if(length == 2 && depth + 1 == maxval){
                             length = 1;
