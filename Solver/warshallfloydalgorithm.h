@@ -16,6 +16,9 @@ private:
     struct Edge;
     struct MapElement;
 
+    std::map<std::pair<int,int>, MapElement> route_map_agent0;
+    std::map<std::pair<int,int>, MapElement> route_map_agent1;
+
     std::vector<std::pair<int, std::pair<int,int>>> calcSingleAgent(int agent);
 
     std::vector<std::vector<Edge>> calcDijkStra(int start_pos, int maxval);

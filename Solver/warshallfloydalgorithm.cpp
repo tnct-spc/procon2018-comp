@@ -39,13 +39,50 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 
     apply_conflict(poses_0);
     apply_conflict(poses_1);
-
+    /*
     for(auto& pos0 : poses_0)
         for(auto& pos1 : poses_1)
             if(pos0.second != pos1.second && pos0.first + pos1.first >= max_adv){
                 max_adv = pos0.first + pos1.first;
                 ans = std::make_pair(pos0.second, pos1.second);
             }
+            */
+
+    std::map<std::pair<int,int> , std::vector<std::vector<std::vector<int>>>> agent0_distributions;
+    std::map<std::pair<int,int> , std::vector<std::vector<std::vector<int>>>> agent1_distributions;
+
+    auto calc_distribution = [](std::map<std::pair<int,int> , std::vector<std::vector<std::vector<int>>>>& agent_distribution, std::map<std::pair<int,int>, MapElement>& route_map){
+        for(auto element : route_map){
+            agent_distribution[element.first] = std::vector<std::vector<std::vector<int>>>(10, std::vector<std::vector<int>>(12, std::vector<int>(12, 0)));
+            std::vector<std::list<std::pair<int, int>>> poses = element.second.routes.second;
+
+            for(int route_index = 0; route_index < poses.size(); route_index++){
+                int depth = 0;
+                for(auto pos : poses.at(route_index)){
+                    agent_distribution[element.first].at(depth).at(pos.first).at(pos.second)++;
+                    depth++;
+                }
+            }
+        }
+    };
+    calc_distribution(agent0_distributions, route_map_agent0);
+    calc_distribution(agent1_distributions, route_map_agent1);
+
+    std::vector<int>  pena_ratio = {1,2,4,8,16,32,64,128,256,512,1024,2048};
+
+    auto calc_pena = [&](std::pair<int,int> pos_agent0, std::pair<int,int> pos_agent1){
+        std::vector<std::vector<std::vector<int>>> agent0_distribution = agent0_distributions[pos_agent0];
+        std::vector<std::vector<std::vector<int>>> agent1_distribution = agent1_distributions[pos_agent1];
+        long long pena = 0;
+        for(int depth = 0; depth < std::min(agent0_distribution.size(), agent1_distribution.size()); depth++){
+            for(int x = 0;x < agent0_distribution.size(); x++){
+                for(int y = 0;y < agent0_distribution.size(); y++){
+                    pena += agent0_distribution.at(depth).at(x).at(y) * agent1_distribution.at(depth).at(x).at(y) / pena_ratio[depth];
+                }
+            }
+        }
+        return pena;
+    };
 
     std::pair<int,int> pos_0 = ans.first;
     std::pair<int,int> pos_1 = ans.second;
@@ -138,6 +175,11 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
         // dock->addMinumuVisu(field.getSize(), routes, color);
     }
 
+    if(agent){
+        route_map_agent1 = route_map;
+    }else{
+        route_map_agent0 = route_map;
+    }
     std::sort(anses.begin(), anses.end(), std::greater<std::pair<int, std::pair<int,int>>>());
 
     return anses;
