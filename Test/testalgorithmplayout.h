@@ -4,6 +4,7 @@
 #include "gamemanager.h"
 #include "depthfirstsearch.h"
 #include "dummyalgorithm.h"
+#include "warshallfloydalgorithm.h"
 
 #define SPDLOG_EOL ""
 
@@ -24,14 +25,14 @@ public:
     void run();
 
 private:
-    void playout(DepthFirstSearch::Parameters& p1, DepthFirstSearch::Parameters& p2, bool iswrite = false);
+    void playout(WarshallFloydAlgorithm::Parameters& p1, WarshallFloydAlgorithm::Parameters& p2, bool iswrite = false);
 
     std::shared_ptr<spdlog::logger> logger;
 
     std::random_device device;
     std::mt19937 mt;
 
-    const std::string path = "../../procon2018-comp/out";
+    const std::string path = "./out";
 
     std::shared_ptr<GameManager> manager;
 };

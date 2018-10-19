@@ -33,6 +33,8 @@ public:
 
     };
 
+    void setParams(Parameters& param);
+
 
 private:
 

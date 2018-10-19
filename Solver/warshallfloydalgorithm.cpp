@@ -39,6 +39,10 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     return ret_value;
 }
 
+void WarshallFloydAlgorithm::setParams(WarshallFloydAlgorithm::Parameters& param){
+    params = param;
+}
+
 std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSingleAgent(int agent){
 
     // [0,maxdepth]
