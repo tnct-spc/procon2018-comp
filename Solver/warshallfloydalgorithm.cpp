@@ -29,10 +29,10 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
                 pos_pair.first *= conflict_def_per;
 
             if(field.getState(next_move_pos.first, next_move_pos.second).first == (side ? 1 : 2) &&
-                std::abs(next_move_pos.first - field.getAgent(side ^ 1, 0).first) <= 1 &&
-                std::abs(next_move_pos.second - field.getAgent(side ^ 1, 0).second) <= 1 &&
-                std::abs(next_move_pos.first - field.getAgent(side ^ 1, 1).first) <= 1 &&
-                std::abs(next_move_pos.second - field.getAgent(side ^ 1, 1).second) <= 1)
+                ((std::abs(next_move_pos.first - field.getAgent(side ^ 1, 0).first) <= 1 &&
+                std::abs(next_move_pos.second - field.getAgent(side ^ 1, 0).second) <= 1) ||
+                (std::abs(next_move_pos.first - field.getAgent(side ^ 1, 1).first) <= 1 &&
+                std::abs(next_move_pos.second - field.getAgent(side ^ 1, 1).second) <= 1)))
                 pos_pair.first *= conflict_atk_per;
         }
     };
