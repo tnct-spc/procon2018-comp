@@ -43,6 +43,9 @@ private:
     double depth_weight = 1.02;
     double depth_weight_max = 1.50;
 
+    double depth_value_weight = 1.02;
+    double depth_value_weight_max = 1.80;
+
 };
 
 struct WarshallFloydAlgorithm::MapElement{

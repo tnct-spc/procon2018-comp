@@ -206,6 +206,9 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                                 value *= conflict_ally_per;
                         }
 
+
+                        value *= std::min(depth_weight_max, std::pow(depth_weight, maxdepth_max - depth));
+
                         if(length == 2 && depth + 1 == maxval){
                             length = 1;
                             value /= 2;
