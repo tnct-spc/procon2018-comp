@@ -18,7 +18,7 @@ private:
 
     std::vector<std::pair<int, std::pair<int,int>>> calcSingleAgent(int agent);
 
-    std::vector<std::vector<Edge>> calcDijkStra(int start_pos, int maxval);
+    std::vector<std::vector<Edge>> calcDijkStra(int start_pos, int maxval, bool agent);
     std::pair<double, std::list<std::pair<int, int>>> getRoute(std::vector<std::vector<Edge>>& input, int target_pos, int depth);
 
     static const std::vector<int> dx, dy;
@@ -36,6 +36,7 @@ private:
 
     double conflict_def_per = 1.3;
     double conflict_atk_per = 0.3;
+    double conflict_ally_per = 0.3;
 
     double bound_val = 0.05;
 

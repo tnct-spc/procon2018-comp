@@ -20,26 +20,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     std::pair<std::pair<int,int> , std::pair<int,int>> ans;
     int max_adv = -1e9;
 
-    auto apply_conflict = [&](auto& input_vec){
-
-        for(auto& pos_pair : input_vec){
-            std::pair<int,int> next_move_pos = pos_pair.second;
-
-            if(next_move_pos == field.getAgent(side ^ 1, 0) || next_move_pos == field.getAgent(side ^ 1, 1))
-                pos_pair.first *= conflict_atk_per;
-
-            if(field.getState(next_move_pos.first, next_move_pos.second).first == (side ? 1 : 2) &&
-                ((std::abs(next_move_pos.first - field.getAgent(side ^ 1, 0).first) <= 1 &&
-                std::abs(next_move_pos.second - field.getAgent(side ^ 1, 0).second) <= 1) ||
-                (std::abs(next_move_pos.first - field.getAgent(side ^ 1, 1).first) <= 1 &&
-                std::abs(next_move_pos.second - field.getAgent(side ^ 1, 1).second) <= 1)))
-                pos_pair.first *= conflict_def_per;
-        }
-    };
-
-    apply_conflict(poses_0);
-    apply_conflict(poses_1);
-
     for(auto& pos0 : poses_0)
         for(auto& pos1 : poses_1)
             if(pos0.second != pos1.second && pos0.first + pos1.first >= max_adv){
@@ -66,7 +46,7 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
 
     std::pair<int,int> agent_pos = field.getAgent(side, agent);
 
-    std::vector<std::vector<Edge>> edges = calcDijkStra(getPosValue(agent_pos), maxdepth);
+    std::vector<std::vector<Edge>> edges = calcDijkStra(getPosValue(agent_pos), maxdepth, agent);
 
     std::map<std::pair<int,int>, MapElement> route_map;
 
@@ -175,7 +155,7 @@ std::pair<double, std::list<std::pair<int,int>>> WarshallFloydAlgorithm::getRout
 }
 
 // [0,maxval]
-std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::calcDijkStra(int start_pos, int maxval){
+std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::calcDijkStra(int start_pos, int maxval, bool agent){
 
     std::bitset<144> field_states;
     for(int x_pos = 0; x_pos < size_x; ++x_pos)
@@ -206,8 +186,25 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                         std::pair<int, int> end_pos = getPosPair(end_index);
                         std::pair<int, int> end_pos_state = field.getState(end_pos.first, end_pos.second);
 
+
                         int length = ((end_pos_state.first != (side ? 1 : 2)) ? 1 : 2);
                         double value = (end_pos_state.first == side + 1 ? 0 : end_pos_state.second * length);
+
+                        if(!depth){
+
+                            if(end_pos == field.getAgent(side ^ 1, 0) || end_pos == field.getAgent(side ^ 1, 1))
+                                value *= conflict_atk_per;
+
+                            if(end_pos_state.first == (side ? 1 : 2) &&
+                            ((std::abs(end_pos.first - field.getAgent(side ^ 1, 0).first) <= 1 &&
+                            std::abs(end_pos.second - field.getAgent(side ^ 1, 0).second) <= 1) ||
+                            (std::abs(end_pos.first - field.getAgent(side ^ 1, 1).first) <= 1 &&
+                            std::abs(end_pos.second - field.getAgent(side ^ 1, 1).second) <= 1)))
+                                value *= conflict_def_per;
+
+                            if(end_pos == field.getAgent(side ^ 1, agent ^ 1))
+                                value *= conflict_ally_per;
+                        }
 
                         if(length == 2 && depth + 1 == maxval){
                             length = 1;
