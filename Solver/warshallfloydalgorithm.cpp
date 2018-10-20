@@ -63,8 +63,10 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
         for(auto& pos1 : poses_1){
             int pena;
 
-            if(FixConflict)int pena = calc_pena(pos0.second, pos1.second) * params.pena_ratio;
-            else pena = 1;
+            if(FixConflict)
+                pena = calc_pena(pos0.second, pos1.second) * params.pena_ratio;
+            else
+                pena = 1;
 
             int adv = (pos0.first + pos1.first);
             if(pena != 0)
