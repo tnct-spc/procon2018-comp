@@ -45,6 +45,7 @@ private:
     double depth_weight = 1.02;
     double depth_weight_max = 1.50;
 
+    double pena_ratio = 0.03; //闇定数、最適化必要
 };
 
 struct WarshallFloydAlgorithm::MapElement{
