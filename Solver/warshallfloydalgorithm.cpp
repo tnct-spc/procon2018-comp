@@ -211,7 +211,7 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                         }
 
 
-                        value *= std::min(params.depth_weight_max, std::pow(params.depth_weight, params.maxdepth_max - depth));
+                        value *= std::min(params.depth_value_weight_max, std::pow(params.depth_value_weight, params.maxdepth_max - depth));
 
                         if(length == 2 && depth + 1 == maxval){
                             length = 1;
