@@ -58,8 +58,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
             }
         }
     };
-    calc_distribution(agent0_distributions, route_map_agent0);
-    calc_distribution(agent1_distributions, route_map_agent1);
+    if(FixConflict)calc_distribution(agent0_distributions, route_map_agent0);
+    if(FixConflict)calc_distribution(agent1_distributions, route_map_agent1);
 
     //std::vector<int>  pena_ratio = {1,2,3,4,5,6,7,8,9,10,11,12};
 
@@ -79,11 +79,15 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 
     for(auto& pos0 : poses_0)
         for(auto& pos1 : poses_1){
-            int pena = calc_pena(pos0.second, pos1.second) * pena_ratio;
+            int pena;
+
+            if(FixConflict)int pena = calc_pena(pos0.second, pos1.second) * pena_ratio;
+            else pena = 1;
+
             int adv = (pos0.first + pos1.first);
-            if(pena != 0){
+            if(pena != 0)
                 adv /= pena;
-            }
+
             if(pos0.second != pos1.second && adv >= max_adv){
                 max_adv = adv;
                 ans = std::make_pair(pos0.second, pos1.second);
