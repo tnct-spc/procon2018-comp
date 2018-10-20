@@ -15,6 +15,8 @@ public:
     struct Edge;
     struct MapElement;
 
+    std::map<std::pair<int,int>, MapElement> route_map_agent0;
+    std::map<std::pair<int,int>, MapElement> route_map_agent1;
     struct Parameters{
 
         int maxdepth_max = 30;
@@ -31,6 +33,7 @@ public:
         double depth_value_weight = 1.02;
         double depth_value_weight_max = 1.80;
 
+        double pena_ratio = 0.03;
     };
 
     void setParams(Parameters& param);
@@ -56,6 +59,7 @@ private:
 
     std::shared_ptr<ProgresDock> dock;
 
+    bool FixConflict = true;  //falseにするとconflict処理なし
 };
 
 struct WarshallFloydAlgorithm::MapElement{
