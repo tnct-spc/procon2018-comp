@@ -9,19 +9,19 @@ TestAlgorithmPlayout::TestAlgorithmPlayout() :
 
 }
 
-void TestAlgorithmPlayout::playout(DepthFirstSearch::Parameters& p1, DepthFirstSearch::Parameters& p2, bool iswrite){
+void TestAlgorithmPlayout::playout(WarshallFloydAlgorithm::Parameters& p1, WarshallFloydAlgorithm::Parameters& p2, bool iswrite){
 
     manager->resetManager(0, 0, false);
 
     manager->getField();
     manager->getField().getFinalTurn();
 
-    std::vector<std::shared_ptr<DepthFirstSearch>> agents;
+    std::vector<std::shared_ptr<WarshallFloydAlgorithm>> agents;
 
-    DepthFirstSearch dep(manager->getField(), manager->getField().getFinalTurn(), 0);
+    WarshallFloydAlgorithm dep(manager->getField(), manager->getField().getFinalTurn(), 0);
 
     for(int side = 0; side < 2; ++side)
-        agents.emplace_back(std::make_shared<DepthFirstSearch>(manager->getField(), manager->getField().getFinalTurn(), side));
+        agents.emplace_back(std::make_shared<WarshallFloydAlgorithm>(manager->getField(), manager->getField().getFinalTurn(), side));
 
     agents.at(0)->setParams(p1);
     agents.at(1)->setParams(p2);
@@ -45,7 +45,7 @@ void TestAlgorithmPlayout::playout(DepthFirstSearch::Parameters& p1, DepthFirstS
 
     if(iswrite){
         std::stringstream outstream;
-        outstream << p1.pena_ratio_val << "," << p2.pena_ratio_val << ",";
+        outstream << p1.depth_value_weight << "," << p2.depth_value_weight << ",";
         outstream << points.at(0) << "," << points.at(1) << "\n";
         logger->info(outstream.str());
         logger->flush();
@@ -60,16 +60,13 @@ void TestAlgorithmPlayout::run(){
 
     for(int count = 0; count < 1e7; ++count){
         std::cout << "count : " << count << std::endl;
-        DepthFirstSearch::Parameters params_1, params_2;
-        params_1.beam_width = 100;
-        params_2.beam_width = 100;
-        params_1.predict_weight = 0.65;
-        params_2.predict_weight = 0.65;
+        WarshallFloydAlgorithm::Parameters params_1, params_2;
+
         do{
-        params_1.pena_ratio_val = rand_param(mt);
-        params_2.pena_ratio_val = rand_param(mt);
+        params_1.depth_value_weight = rand_param(mt);
+        params_2.depth_value_weight = rand_param(mt);
         }while(0);
-        if(params_1.pena_ratio_val > params_2.pena_ratio_val)
+        if(params_1.depth_value_weight > params_2.depth_value_weight)
             std::swap(params_1, params_2);
 
         playout(params_1, params_2, true);

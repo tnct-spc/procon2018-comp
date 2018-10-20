@@ -12,16 +12,40 @@ public:
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int);
     void setParams(std::vector<std::pair<QString, double>>){}
 
-private:
     struct Edge;
     struct MapElement;
 
     std::map<std::pair<int,int>, MapElement> route_map_agent0;
     std::map<std::pair<int,int>, MapElement> route_map_agent1;
+    struct Parameters{
+
+        int maxdepth_max = 30;
+
+        double conflict_def_per = 1.3;
+        double conflict_atk_per = 0.3;
+        double conflict_ally_per = 0.3;
+
+        double bound_val = 0.05;
+
+        double depth_weight = 1.02;
+        double depth_weight_max = 1.50;
+
+        double depth_value_weight = 1.02;
+        double depth_value_weight_max = 1.80;
+
+        double pena_ratio = 0.03;
+    };
+
+    void setParams(Parameters& param);
+
+
+private:
+
+    Parameters params;
 
     std::vector<std::pair<int, std::pair<int,int>>> calcSingleAgent(int agent);
 
-    std::vector<std::vector<Edge>> calcDijkStra(int start_pos, int maxval);
+    std::vector<std::vector<Edge>> calcDijkStra(int start_pos, int maxval, bool agent);
     std::pair<double, std::list<std::pair<int, int>>> getRoute(std::vector<std::vector<Edge>>& input, int target_pos, int depth);
 
     static const std::vector<int> dx, dy;
@@ -33,19 +57,8 @@ private:
 
     int size_x, size_y, size_sum;
 
-    int maxdepth_max = 30;
-
     std::shared_ptr<ProgresDock> dock;
 
-    double conflict_def_per = 1.3;
-    double conflict_atk_per = 0.3;
-
-    double bound_val = 0.05;
-
-    double depth_weight = 1.02;
-    double depth_weight_max = 1.50;
-
-    double pena_ratio = 0.03; //闇定数、最適化必要
     bool FixConflict = true;  //falseにするとconflict処理なし
 };
 

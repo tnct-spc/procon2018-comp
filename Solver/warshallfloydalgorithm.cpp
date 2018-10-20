@@ -20,25 +20,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     std::pair<std::pair<int,int> , std::pair<int,int>> ans;
     int max_adv = -1e9;
 
-    auto apply_conflict = [&](auto& input_vec){
 
-        for(auto& pos_pair : input_vec){
-            std::pair<int,int> next_move_pos = pos_pair.second;
-
-            if(next_move_pos == field.getAgent(side ^ 1, 0) && next_move_pos == field.getAgent(side ^ 1, 1))
-                pos_pair.first *= conflict_def_per;
-
-            if(field.getState(next_move_pos.first, next_move_pos.second).first == (side ? 1 : 2) &&
-                std::abs(next_move_pos.first - field.getAgent(side ^ 1, 0).first) <= 1 &&
-                std::abs(next_move_pos.second - field.getAgent(side ^ 1, 0).second) <= 1 &&
-                std::abs(next_move_pos.first - field.getAgent(side ^ 1, 1).first) <= 1 &&
-                std::abs(next_move_pos.second - field.getAgent(side ^ 1, 1).second) <= 1)
-                pos_pair.first *= conflict_atk_per;
-        }
-    };
-
-    apply_conflict(poses_0);
-    apply_conflict(poses_1);
 
 
     std::map<std::pair<int,int> , std::vector<std::vector<std::vector<int>>>> agent0_distributions;
@@ -46,7 +28,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 
     auto calc_distribution = [=](std::map<std::pair<int,int> , std::vector<std::vector<std::vector<int>>>>& agent_distribution, std::map<std::pair<int,int>, MapElement> route_map){
         for(auto element : route_map){
-            agent_distribution[element.first] = std::vector<std::vector<std::vector<int>>>(maxdepth_max+1, std::vector<std::vector<int>>(12, std::vector<int>(12, 0)));
+            agent_distribution[element.first] = std::vector<std::vector<std::vector<int>>>(params.maxdepth_max+1, std::vector<std::vector<int>>(12, std::vector<int>(12, 0)));
             std::vector<std::list<std::pair<int, int>>> poses = element.second.routes.second;
 
             for(int route_index = 0; route_index < poses.size(); route_index++){
@@ -81,7 +63,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
         for(auto& pos1 : poses_1){
             int pena;
 
-            if(FixConflict)int pena = calc_pena(pos0.second, pos1.second) * pena_ratio;
+            if(FixConflict)int pena = calc_pena(pos0.second, pos1.second) * params.pena_ratio;
             else pena = 1;
 
             int adv = (pos0.first + pos1.first);
@@ -106,14 +88,18 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     return ret_value;
 }
 
+void WarshallFloydAlgorithm::setParams(WarshallFloydAlgorithm::Parameters& param){
+    params = param;
+}
+
 std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSingleAgent(int agent){
 
     // [0,maxdepth]
-    int maxdepth = std::min(maxdepth_max, field.getFinalTurn() - field.getTurnCount());
+    int maxdepth = std::min(params.maxdepth_max, field.getFinalTurn() - field.getTurnCount());
 
     std::pair<int,int> agent_pos = field.getAgent(side, agent);
 
-    std::vector<std::vector<Edge>> edges = calcDijkStra(getPosValue(agent_pos), maxdepth);
+    std::vector<std::vector<Edge>> edges = calcDijkStra(getPosValue(agent_pos), maxdepth, agent);
 
     std::map<std::pair<int,int>, MapElement> route_map;
 
@@ -127,11 +113,11 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
             std::tie(score, route) = getRoute(edges, pos, depth);
             if(route.empty())
                 continue;
-            que.emplace(std::min(depth_weight_max, std::pow(depth_weight, depth)) * score / depth, std::move(route));
+            que.emplace(std::min(params.depth_weight_max, std::pow(params.depth_weight, depth)) * score / depth, std::move(route));
 
         }
 
-    int bound = que.size() * bound_val;
+    int bound = que.size() * params.bound_val;
 
     for(int index = 0; !que.empty(); ++index){
         double average;
@@ -227,7 +213,7 @@ std::pair<double, std::list<std::pair<int,int>>> WarshallFloydAlgorithm::getRout
 }
 
 // [0,maxval]
-std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::calcDijkStra(int start_pos, int maxval){
+std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::calcDijkStra(int start_pos, int maxval, bool agent){
 
     std::bitset<144> field_states;
     for(int x_pos = 0; x_pos < size_x; ++x_pos)
@@ -258,8 +244,28 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                         std::pair<int, int> end_pos = getPosPair(end_index);
                         std::pair<int, int> end_pos_state = field.getState(end_pos.first, end_pos.second);
 
+
                         int length = ((end_pos_state.first != (side ? 1 : 2)) ? 1 : 2);
                         double value = (end_pos_state.first == side + 1 ? 0 : end_pos_state.second * length);
+
+                        if(!depth){
+
+                            if(end_pos == field.getAgent(side ^ 1, 0) || end_pos == field.getAgent(side ^ 1, 1))
+                                value *= params.conflict_atk_per;
+
+                            if(end_pos_state.first == (side ? 1 : 2) &&
+                            ((std::abs(end_pos.first - field.getAgent(side ^ 1, 0).first) <= 1 &&
+                            std::abs(end_pos.second - field.getAgent(side ^ 1, 0).second) <= 1) ||
+                            (std::abs(end_pos.first - field.getAgent(side ^ 1, 1).first) <= 1 &&
+                            std::abs(end_pos.second - field.getAgent(side ^ 1, 1).second) <= 1)))
+                                value *= params.conflict_def_per;
+
+                            if(end_pos == field.getAgent(side ^ 1, agent ^ 1))
+                                value *= params.conflict_ally_per;
+                        }
+
+
+                        value *= std::min(params.depth_value_weight_max, std::pow(params.depth_value_weight, params.maxdepth_max - depth));
 
                         if(length == 2 && depth + 1 == maxval){
                             length = 1;
