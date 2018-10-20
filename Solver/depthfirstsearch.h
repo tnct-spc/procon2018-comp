@@ -11,6 +11,8 @@
 #include "minimumvisualizer.h"
 #include "minimumvisualizerdock.h"
 
+#include "LastForce/lastregion.h"
+
 #include "algorithmwrapper.h"
 
 #include "csvio.h"
@@ -22,13 +24,17 @@ class DepthFirstSearch : public AlgorithmWrapper
 public:
     DepthFirstSearch(const procon::Field& field, int final_turn, bool side);
     const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> agentAct(int now_turn);
-    void setParams(std::vector<std::pair<QString, double>> params);
 
     class  Treap;
     struct TreapNode;
     struct SearchNode;
-private:
+    struct Parameters;
 
+    void setParams(std::vector<std::pair<QString, double>> params);
+    void setParams(Parameters& params);
+    Parameters getParams();
+
+private:
     std::mutex mtx;
 
     // {node, moves, values, depth_size, agent_values};
@@ -49,6 +55,7 @@ private:
 
     std::shared_ptr<MinimumVisualizer> minimum;
     std::shared_ptr<ProgresDock> dock;
+    std::shared_ptr<MinimumVisualizer> conflict_minumum;
 
     std::stack<std::tuple<std::pair<int,int>, std::vector<std::list<std::pair<int,int>>>, std::vector<std::vector<std::vector<int>>>, std::vector<std::vector<double>>>> dock_stack;
 
@@ -67,7 +74,7 @@ private:
     };
 
     bool dock_show = false;
-    bool vis_show;
+    bool vis_show = false;
 
     int loop_count;
 
@@ -82,6 +89,16 @@ private:
     int movecount;
 
     double predict_weight;
+
+    double conflict_atk_per = 0.4;
+
+    double conflict_def_per = 1.6;
+
+    double deverse_per = 0.2;
+
+    std::vector<int> penaRatio = {1,2,4,8,16,32,64,128,256,512,1024,2048,4096};
+    std::vector<double> depth_weight = {1.8, 1.75, 1.7, 1.65, 1.6, 1.55, 1.5, 1.45, 1.4, 1.35, 1.3, 1.25, 1.2, 1.15, 1.1, 1.05, 1};
+    std::vector<double> conflict_weight = {1.8, 1.75, 1.7, 1.65, 1.6, 1.55, 1.5, 1.45, 1.4, 1.35, 1.3, 1.25, 1.2, 1.15, 1.1, 1.05, 1};
 
 
     static const bool do_output = false;
@@ -101,6 +118,44 @@ struct DepthFirstSearch::RoutesAndNode{
 
     std::pair<int,int> next_pos;
 
+};
+
+struct DepthFirstSearch::Parameters{
+
+	// beamsearchを使うかどうか
+    bool use_beamsearch = true;
+	// beamsearchの幅
+    int beam_width = 1000;
+	// ナッシュ均衡っぽいやつのループ回数
+    int loop_count = 4;
+	// コンフリクト対処時に上位どれだけを候補にするか
+    double ratio = 0.03;
+	// depthsearch時の葉から伸びるノードの個数
+    int movecount = 3;
+	// 探索する最大のターン数
+    int maxval = 10;
+
+	// 均衡計算時に行動にかける重み
+    double predict_weight = 0.6;
+	// 均衡計算時に味方エージェントとのコンフリクトにかける重み
+    double ally_weight = 1.0;
+	// 相手の移動先に除去をする場合にかける重み
+    double conflict_atk_per = 0.4;
+	// 相手が付近にいる状態で除去をする場合にかける重み
+    double conflict_def_per = 1.6;
+	// 多様性のある行動の重視度
+    double deverse_per = 0.2;
+
+    // コンフリクト対処時にかけるペナルティの倍率(逆数,単調増加が望ましい)
+    std::vector<int> penaRatio = {1,2,4,8,16,32,64,128,256,512,1024,2048,4096};
+    // 利得計算時にマスの値にかける倍率(単調減少が望ましい)
+    std::vector<double> depth_weight = {1.8, 1.75, 1.7, 1.65, 1.6, 1.55, 1.5, 1.45, 1.4, 1.35, 1.3, 1.25, 1.2, 1.15, 1.1, 1.05, 1};
+    // 多様性のある行動の深さごとの重視度(単調減少が望ましい)
+    std::vector<double> conflict_weight = {1.8, 1.75, 1.7, 1.65, 1.6, 1.55, 1.5, 1.45, 1.4, 1.35, 1.3, 1.25, 1.2, 1.15, 1.1, 1.05, 1};
+
+    double pena_ratio_val = -1;
+    double depth_weight_val = -1;
+    double conflict_weight_val = -1;
 };
 
 struct DepthFirstSearch::SearchNode : public std::enable_shared_from_this<SearchNode>{

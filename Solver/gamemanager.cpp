@@ -14,6 +14,8 @@
 #include "majorityrulewithabstdata.h"
 #include "depthfirstsearch.h"
 #include "LastForce/lastregion.h"
+#include "warshallfloydalgorithm.h"
+#include "typicaldpfordouble.h"
 
 GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, int turn_max, QObject *parent)
     : QObject(parent),
@@ -62,12 +64,24 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show
     }
 }
 
-void GameManager::resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show, const int t_max){
+void GameManager::resetManager(int x_size, int y_size, bool v_show, const int t_max){
 
     vis_show = v_show;
 
+    std::random_device rnd;
+    std::mt19937 mt(rnd());
+    if(use_random_field){
+        std::uniform_int_distribution<> rand_size(8, 12);
+        x_size = rand_size(mt);
+        y_size = rand_size(mt);
+    }
+    std::uniform_int_distribution<> rand_turn(40,80);
+
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
-    field->setFinalTurn(t_max);
+    if(use_random_field)
+        field->setFinalTurn(rand_turn(mt));
+    else
+        field->setFinalTurn(t_max);
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
@@ -179,7 +193,11 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_1 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 0);
     } else if (QString::compare("LastRegion", my_algo) == 0) {
         team_1 = std::make_shared<LastRegion>(*field, field->getFinalTurn(), 0);
-    }
+    } else if (QString::compare("WarshallFloydAlgorithm", my_algo) == 0) {
+        team_1 = std::make_shared<WarshallFloydAlgorithm>(*field, field->getFinalTurn(), 0);
+    } else if (QString::compare("TypicalDPForDouble", my_algo) == 0) {
+        team_1 = std::make_shared<TypicalDpForDouble>(*field, field->getFinalTurn(), 0);
+    } else{abort();}
 
     team_1->setParams(my_params);
 
@@ -211,7 +229,11 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_2 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 1);
     } else if (QString::compare("LastRegion", opponent_algo) == 0) {
         team_2 = std::make_shared<LastRegion>(*field, field->getFinalTurn(), 1);
-    }
+    } else if (QString::compare("WarshallFloydAlgorithm", opponent_algo) == 0) {
+        team_2 = std::make_shared<WarshallFloydAlgorithm>(*field, field->getFinalTurn(), 1);
+    } else if (QString::compare("TypicalDPForDouble", opponent_algo) == 0) {
+        team_2 = std::make_shared<TypicalDpForDouble>(*field, field->getFinalTurn(), 1);
+    } else{abort();}
 
     team_2->setParams(opp_params);
 
