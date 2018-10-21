@@ -9,7 +9,7 @@ TestAlgorithmPlayout::TestAlgorithmPlayout() :
 
 }
 
-void TestAlgorithmPlayout::playout(WarshallFloydAlgorithm::Parameters& p1, WarshallFloydAlgorithm::Parameters& p2, bool iswrite){
+void TestAlgorithmPlayout::playout(int count, WarshallFloydAlgorithm::Parameters& p1, WarshallFloydAlgorithm::Parameters& p2, bool iswrite){
 
     manager->resetManager(0, 0, false);
 
@@ -26,7 +26,7 @@ void TestAlgorithmPlayout::playout(WarshallFloydAlgorithm::Parameters& p1, Warsh
     agents.at(0)->setParams(p1);
     agents.at(1)->setParams(p2);
 
-    while(manager->getTurnCount() < manager->getFinalTurn()){
+    while(manager->getTurnCount() + 10 < manager->getFinalTurn()){
         for(int side = 0; side < 2; ++side){
             std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> act = agents.at(side)->agentAct(manager->getTurnCount());
             manager->agentAct(side, 0, act.first);
@@ -44,11 +44,16 @@ void TestAlgorithmPlayout::playout(WarshallFloydAlgorithm::Parameters& p1, Warsh
         points.at(side) = field_points.at(side).first + field_points.at(side).second;
 
     if(iswrite){
+        std::stringstream st;
+        st << std::setw(6) << std::setfill('0') << count;
+        procon::CsvIo::exportField(manager->getField(), "./" + st.str() + "_" + std::to_string(points.at(0)) + "_" + std::to_string(points.at(1)) + "_.csv");
+        /*
         std::stringstream outstream;
         outstream << p1.depth_value_weight << "," << p2.depth_value_weight << ",";
         outstream << points.at(0) << "," << points.at(1) << "\n";
         logger->info(outstream.str());
         logger->flush();
+        */
     }
 
 }
@@ -58,7 +63,7 @@ void TestAlgorithmPlayout::run(){
     std::mt19937 mt(rnd());
     std::uniform_real_distribution<> rand_param(0.5, 5);
 
-    for(int count = 0; count < 1e7; ++count){
+    for(int count = 0; count < 1e3; ++count){
         std::cout << "count : " << count << std::endl;
         WarshallFloydAlgorithm::Parameters params_1, params_2;
 
@@ -69,7 +74,7 @@ void TestAlgorithmPlayout::run(){
         if(params_1.depth_value_weight > params_2.depth_value_weight)
             std::swap(params_1, params_2);
 
-        playout(params_1, params_2, true);
+        playout(count, params_1, params_2, true);
 
     }
 

@@ -25,7 +25,7 @@ public:
     void run();
 
 private:
-    void playout(WarshallFloydAlgorithm::Parameters& p1, WarshallFloydAlgorithm::Parameters& p2, bool iswrite = false);
+    void playout(int count, WarshallFloydAlgorithm::Parameters& p1, WarshallFloydAlgorithm::Parameters& p2, bool iswrite = false);
 
     std::shared_ptr<spdlog::logger> logger;
 
