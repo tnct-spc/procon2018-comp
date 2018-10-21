@@ -165,14 +165,7 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
             color.at(1).at(point_pair.first).at(point_pair.second) -= putcounts.at(point_pair.first).at(point_pair.second) * 512 / put_count_sum;
             color.at(2).at(point_pair.first).at(point_pair.second) -= putcounts.at(point_pair.first).at(point_pair.second) * 512 / put_count_sum;
         }
-
-        int adv = 0;
-        for(auto route : map_element.second.routes.first){
-            adv += route;
-        }
-
-        anses.emplace_back(adv, target_pos);
-
+        anses.emplace_back(routes.size(), target_pos);
         // dock->addMinumuVisu(field.getSize(), routes, color);
     }
 
@@ -238,6 +231,8 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
 
     dp_vector.at(start_pos).at(0).depth = 0;
 
+    std::vector<double> ratio = {100, 100, 95, 90, 90, 65, 60, 40, 30, 15, 10, 5, 1};
+
     for(int depth = 0; depth < maxval; ++depth)
         for(int point = 0; point < size_sum; ++point)
             if(dp_vector.at(point).at(depth).depth == depth)
@@ -270,7 +265,9 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                         }
 
 
-                        value *= std::min(params.depth_value_weight_max, std::pow(params.depth_value_weight, params.maxdepth_max - depth));
+                        if(side)value *= std::min(params.depth_value_weight_max, std::pow(params.depth_value_weight, params.maxdepth_max - depth));
+                        if(!side)value *= ratio[depth];
+
 
                         if(length == 2 && depth + 1 == maxval){
                             length = 1;
