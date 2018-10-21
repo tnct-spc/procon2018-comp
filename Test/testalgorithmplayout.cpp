@@ -67,12 +67,14 @@ void TestAlgorithmPlayout::run(){
         std::cout << "count : " << count << std::endl;
         WarshallFloydAlgorithm::Parameters params_1, params_2;
 
+        /*
         do{
         params_1.depth_value_weight = rand_param(mt);
         params_2.depth_value_weight = rand_param(mt);
         }while(0);
         if(params_1.depth_value_weight > params_2.depth_value_weight)
             std::swap(params_1, params_2);
+        */
 
         playout(count, params_1, params_2, true);
 
