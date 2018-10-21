@@ -166,7 +166,12 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
             color.at(2).at(point_pair.first).at(point_pair.second) -= putcounts.at(point_pair.first).at(point_pair.second) * 512 / put_count_sum;
         }
 
-        anses.emplace_back(routes.size(), target_pos);
+        int adv = 0;
+        for(auto route : map_element.second.routes.first){
+            adv += route;
+        }
+
+        anses.emplace_back(adv, target_pos);
 
         // dock->addMinumuVisu(field.getSize(), routes, color);
     }

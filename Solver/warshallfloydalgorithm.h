@@ -59,7 +59,7 @@ private:
 
     std::shared_ptr<ProgresDock> dock;
 
-    bool FixConflict = true;  //falseにするとconflict処理なし
+    bool FixConflict = false;  //falseにするとconflict処理なし
 };
 
 struct WarshallFloydAlgorithm::MapElement{
