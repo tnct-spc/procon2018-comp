@@ -132,6 +132,10 @@ private:
 
     void nextMoveForManualMode();
 
+    int red_point_Cumulative = 0;
+    int blue_point_Cumulative = 0;
+    int match = 0;
+
 
 };
 #endif // GAMEMANAGER_H

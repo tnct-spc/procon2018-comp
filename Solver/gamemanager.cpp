@@ -319,7 +319,14 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
             setFieldCount(field_vec.size() - 1);
         }
-
+        std::vector<std::pair<int,int>> points = field->getPoints();
+        if(points.at(0).first + points.at(0).second > points.at(1).first + points.at(1).second){
+            red_point_Cumulative++;
+        }else if(points.at(0).first + points.at(0).second < points.at(1).first + points.at(1).second){
+            blue_point_Cumulative++;
+        }
+        match++;
+        std::cout<<red_point_Cumulative<<"vs"<<blue_point_Cumulative<<":"<<match<<std::endl;
         // procon::CsvIo::exportField(*field, "../../field.csv");
 
         // progresdock->show();
