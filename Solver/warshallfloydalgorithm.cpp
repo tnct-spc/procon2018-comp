@@ -231,7 +231,7 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
 
     dp_vector.at(start_pos).at(0).depth = 0;
 
-    std::vector<double> ratio = {100, 100, 95, 90, 90, 65, 60, 40, 30, 15, 10, 5, 1};
+    std::vector<double> ratio = {100, 95, 90, 90, 90, 70, 60, 50, 40, 30, 20, 10, 1};
 
     for(int depth = 0; depth < maxval; ++depth)
         for(int point = 0; point < size_sum; ++point)
