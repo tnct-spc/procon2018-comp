@@ -62,6 +62,31 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
 
     std::vector<int> first_move_pos(size_sum * size_sum, 0);
 
+    procon::Field ins_field = field;
+    std::vector<std::pair<std::vector<std::pair<int,int>>,int>> BreakRegion_pos_agent0 = ins_field.ifBreakArea(side, 0);
+    std::vector<std::pair<std::vector<std::pair<int,int>>,int>> BreakRegion_pos_agent1 = ins_field.ifBreakArea(side, 1);
+    std::vector<std::pair<std::pair<int,int>, int>> getRegion_pos_agent0 = ins_field.ifCreateArea(side, 0);
+    std::vector<std::pair<std::pair<int,int>, int>> getRegion_pos_agent1 = ins_field.ifCreateArea(side, 1);
+
+    std::map<std::pair<int,int>, int> Region_map;
+
+    for(auto val : BreakRegion_pos_agent0){
+        for(auto pos : val.first){
+            Region_map[pos]+=val.second / val.first.size();
+        }
+    }
+    for(auto val : BreakRegion_pos_agent1){
+        for(auto pos : val.first){
+            Region_map[pos]+=val.second / val.first.size();
+        }
+    }
+    for(auto val : getRegion_pos_agent0){
+        Region_map[val.first] += val.second;
+    }
+    for(auto val : getRegion_pos_agent1){
+        Region_map[val.first] += val.second;
+    }
+
     for(int dep = 0; dep < maxval; ++dep)
         for(int pos_0 = 0; pos_0 < size_sum; ++pos_0)
             for(int pos_1 = pos_0 + 1; pos_1 < size_sum; ++pos_1){
@@ -85,7 +110,9 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
 
                     std::pair<int,int> state, value;
                     std::tie(state.first, value.first) = field.getState(after_pos_pairs.first.first, after_pos_pairs.first.second);
+                    if(side)value.first += Region_map[std::make_pair(after_pos_pairs.first.first, after_pos_pairs.first.second)];
                     std::tie(state.second, value.second) = field.getState(after_pos_pairs.second.first, after_pos_pairs.second.second);
+                    if(side)value.second += Region_map[std::make_pair(after_pos_pairs.second.first, after_pos_pairs.second.second)];
 
                     int is_update_bitset = 2 * (state.first != side + 1) + (state.second != side + 1);
 
