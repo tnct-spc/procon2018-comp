@@ -1722,3 +1722,6 @@ int procon::Field::getRegion(std::pair<int,int> pos){
     }
     return state;
 }
+void procon::Field::setFieldData(std::bitset<288> bits){
+    field_data = bits;
+}
