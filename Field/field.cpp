@@ -1820,12 +1820,13 @@ void procon::Field::invertField()
 
             // side1
             r |= regions >> (12 * y + x);
-            r &= 3;
+            r &= 1;
             invert_regions |= (r << (12 * invert_y + x));
 
             // side2
+            r = std::bitset<288>(0uL);
             r |= regions >> ((12 * y + x) + 144);
-            r &= 3;
+            r &= 1;
             invert_regions |= (r << ((12 * invert_y + x) + 144));
         }
     }
