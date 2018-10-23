@@ -37,6 +37,8 @@ public:
         std::vector<double> route_length_weight = {
            1.0, 0.997528331, 0.988562982, 0.9682778049999999, 0.9318466519999999, 0.8744433749999999, 0.791241826, 0.677415857, 0.52813932, 0.33858606700000005, 0.10392995000000002
         };
+
+        std::vector<double> region_turn_weight = std::vector<double>(80, 1);
     };
 
     void setParams(Parameters& param);

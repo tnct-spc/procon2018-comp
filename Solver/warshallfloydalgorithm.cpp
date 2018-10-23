@@ -161,7 +161,8 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
         _field.setRegions(bits);
         std::vector<std::pair<int,int>> advs = _field.getPoints();
         int adv = advs.at(side).second;
-        adv += points.at(!side).second - advs.at(!side).second;
+
+        adv += params.region_turn_weight.at(field.getFinalTurn() - field.getTurnCount()) * (points.at(!side).second - advs.at(!side).second);
 
         route_map[back].addRoute(average + adv, std::move(route));
 
