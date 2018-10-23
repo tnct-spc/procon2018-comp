@@ -49,6 +49,7 @@ signals:
     void sendAgentPos(const std::pair<int, int> agent, const std::pair<int, int> pos);
     void sendGridState(const std::pair<int, int> grid, const int state);
     void sendRecalculation(const std::pair<int, int> turns);
+    void sendRotateField(bool direction);
 
 public slots:
     void slotAutoMode(bool value);
@@ -68,6 +69,9 @@ private:
     void checkClickedAgent(std::pair<int, int> mass);
 
     void checkClickGrid(std::pair<int, int> mass, bool right_flag);
+
+    // フィールドを回転させた際、他のパラメータも変更する
+    void updateToRotateField(bool direction);
 
     int window_width;
     int window_height;

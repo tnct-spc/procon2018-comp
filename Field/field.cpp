@@ -1,4 +1,4 @@
-#include "field.h"
+﻿#include "field.h"
 
 procon::Field::Field(const unsigned int size_x ,const unsigned int size_y){
     grid_x = size_x;
@@ -1342,6 +1342,10 @@ std::bitset<288> procon::Field::getRegions(){
     return regions;
 }
 
+void procon::Field::setRegions(std::bitset<288>& input) {
+    regions = input;
+}
+
 void procon::Field::updateFeature(){
 
     bool result = true; //trueなら縦に対称、falseなら横対称
@@ -1721,4 +1725,74 @@ int procon::Field::getRegion(std::pair<int,int> pos){
         state += 2;
     }
     return state;
+}
+
+void procon::Field::rotateField(bool direction)
+{
+    std::bitset<288> rotate_field_data(0uL);
+    std::vector<std::vector<int>> rotate_value_data(grid_y, std::vector<int>(grid_x));
+    std::bitset<288> rotate_regions(0uL);
+
+    for (int y = 0; y < grid_y; y++) {
+        for (int x = 0; x < grid_x; x++) {
+            // 回る方向による条件分岐
+            int rotate_x = direction ? grid_y - y - 1 : y;
+            int rotate_y = direction ? x : grid_x - x - 1;
+
+            // field_data
+            // x, yにおける現在のfield_data
+            std::bitset<288> w(0uL);
+            w |= field_data >> (2 * (12 * y + x));
+            w &= 3;
+
+            rotate_field_data |= (w << (2 * (12 * rotate_y + rotate_x)));
+
+            // value_data
+            rotate_value_data.at(rotate_x).at(rotate_y) = value_data.at(x).at(y);
+
+            // regions
+            // x, yにおける現在のregions
+            std::bitset<288> r(0uL);
+
+            // side1
+            r |= regions >> (12 * y + x);
+            r &= 3;
+            rotate_regions |= (r << (12 * rotate_y + rotate_x));
+
+            // side2
+            r |= regions >> ((12 * y + x) + 144);
+            r &= 3;
+            rotate_regions |= (r << ((12 * rotate_y + rotate_x) + 144));
+        }
+    }
+
+    // agents
+    std::vector<std::vector<std::pair<int,int>>> rotate_agents;
+
+    for (int side = 0; side < 2; side++) {
+        // 保管用vector
+        std::vector<std::pair<int,int>> side_data;
+
+        for (int agent = 0; agent < 2; agent++) {
+            // 回る方向による条件分岐
+            std::pair<int, int> now_pos = getAgent(side, agent);
+            int rotate_x = direction ? grid_y - now_pos.second - 1 : now_pos.second;
+            int rotate_y = direction ? now_pos.first : grid_x - now_pos.first - 1;
+
+            side_data.push_back(std::make_pair(rotate_x, rotate_y));
+        }
+        rotate_agents.push_back(side_data);
+    }
+
+    // データの書き換え
+    setField(rotate_field_data);
+    setValue(rotate_value_data);
+    setRegions(rotate_regions);
+    setAgents(rotate_agents);
+    std::swap(grid_x, grid_y);
+}
+
+void procon::Field::invertField(bool direction)
+{
+
 }

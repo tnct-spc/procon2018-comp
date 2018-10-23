@@ -50,6 +50,7 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show
         connect(visualizer.get(), &Visualizer::sendAgentPos, this, &GameManager::changeAgentpos);
         connect(visualizer.get(), &Visualizer::sendGridState, this, &GameManager::changeGridState);
         connect(visualizer.get(), &Visualizer::sendRecalculation, this, &GameManager::endChangeMode);
+        connect(visualizer.get(), &Visualizer::sendRotateField, this, &GameManager::getRotateField);
 
         /*
         minimum = std::make_shared<MinimumVisualizer>(std::make_pair(x_size, y_size));
@@ -80,6 +81,7 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
         connect(visualizer.get(), &Visualizer::sendAgentPos, this, &GameManager::changeAgentpos);
         connect(visualizer.get(), &Visualizer::sendGridState, this, &GameManager::changeGridState);
         connect(visualizer.get(), &Visualizer::sendRecalculation, this, &GameManager::endChangeMode);
+        connect(visualizer.get(), &Visualizer::sendRotateField, this, &GameManager::getRotateField);
 
         // minimum = std::make_shared<MinimumVisualizer>(std::make_pair(x_size, y_size));
     }else{
@@ -912,4 +914,9 @@ void GameManager::changeAgentpos(std::pair<int, int> agent, std::pair<int, int> 
 void GameManager::changeGridState(std::pair<int, int> grid, int state)
 {
     field->setState(grid.first, grid.second, state);
+}
+
+void GameManager::getRotateField(bool direction)
+{
+    field->rotateField(direction);
 }

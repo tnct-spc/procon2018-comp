@@ -19,7 +19,6 @@
 #include<math.h>
 #include <stdlib.h>
 
-
 namespace procon {
 
 class Field
@@ -37,6 +36,7 @@ public:
     const std::vector<std::vector<int>>& getValue() const;
 
     std::bitset<288> getRegions();
+    void setRegions(std::bitset<288>& input);
 
     int getRegion(std::pair<int,int> pos);
 
@@ -96,6 +96,13 @@ public:
     //1 -> 領域点の差の変化 2 -> マスの得点の差の変化 3 -> 味方agents同士の距離の差 4 -> 敵agent同士の距離の差 5 -> 味方と敵の距離の総和の差 6 -> 味方agentと中央との距離の総和の差(大きければ大きいほど外側) 7 -> 敵のagentと中心の距離の総和の差 8 -> 周辺の自分のタイルの割合 9 -> 周辺の敵のタイルの割合 10 -> 現在のターンの進行割合 11 -> マスの埋まり具合 12 -> 残りのターン数
     void createQRString(int side);
 
+    // Fieldを回転
+    // direction : ture -> right, false ->left
+    void rotateField(bool direction);
+
+    // Fieldを反転
+    // direction : ture -> up, false -> down
+    void invertField(bool direction);
 
 private:
     std::bitset<288> field_data;
