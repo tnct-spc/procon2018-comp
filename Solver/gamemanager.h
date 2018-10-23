@@ -97,6 +97,9 @@ public slots:
     // Fieldを回転させる
     void getRotateField(bool direction);
 
+    // Fieldを反転させる
+    void getInvertField();
+
 private:
 
     std::shared_ptr<procon::Field> field;

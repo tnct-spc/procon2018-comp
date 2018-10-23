@@ -101,8 +101,7 @@ public:
     void rotateField(bool direction);
 
     // Fieldを反転
-    // direction : ture -> up, false -> down
-    void invertField(bool direction);
+    void invertField();
 
 private:
     std::bitset<288> field_data;

@@ -767,6 +767,64 @@ void Visualizer::updateToRotateField(bool direction)
     }
 }
 
+void Visualizer::updateToInvertField()
+{
+    // フィールドのサイズ
+    std::pair<int, int> field_size = field.getSize();
+
+    // selected_to_change_grid
+    if(is_change_field_mode && is_selected_grid) {
+        // 回る方向による条件分岐
+        int x = selected_to_change_grid.first;
+        int y = field_size.second - selected_to_change_grid.second - 1;
+
+        selected_to_change_grid = std::make_pair(x, y);
+    }
+
+    // selected_agent_grid
+    if (selected) {
+        // 回る方向による条件分岐
+        int x = selected_agent_grid.first;
+        int y = field_size.second - selected_agent_grid.second - 1;
+
+        selected_agent_grid = std::make_pair(x, y);
+    }
+
+    // next_grid
+    for (int side = 0; side < 2; side++) {
+        for (int agent = 0; agent < 2; agent++) {
+            // まだ選択されていなければパス
+            if (next_grids.at(side).at(agent).first == -1) continue;
+
+            // 回る方向による条件分岐
+            int x = next_grids.at(side).at(agent).first;
+            int y = field_size.second - next_grids.at(side).at(agent).second - 1;
+
+            next_grids.at(side).at(agent) = std::make_pair(x, y);
+        }
+    }
+
+    // candidate
+    for (int side = 0; side < 2; side++) {
+        for (int agent = 0; agent < 2; agent++) {
+            // 回る方向による条件分岐
+            int x = candidate.at(side).at(agent).first;
+            int y = field_size.second - candidate.at(side).at(agent).second - 1;
+
+            candidate.at(side).at(agent) = std::make_pair(x, y);
+        }
+    }
+
+    // clicked_grid_change
+    if (change_mode && clicked) {
+        // 回る方向による条件分岐
+        int x = clicked_grid_change.first;
+        int y = field_size.second - clicked_grid_change.second - 1;
+
+        clicked_grid_change = std::make_pair(x, y);
+    }
+}
+
 void Visualizer::keyPressEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_C || event->key() == Qt::Key_E){
@@ -816,15 +874,21 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
     if (event->key() == Qt::Key_Right) {
         field.rotateField(true);
         this->updateToRotateField(true);
-        sendRotateField(true);
+        emit sendRotateField(true);
         this->repaint();
     } else if (event->key() == Qt::Key_Left) {
         field.rotateField(false);
         this->updateToRotateField(false);
-        sendRotateField(false);
+        emit sendRotateField(false);
         this->repaint();
     }
 
+    if (event->key() == Qt::Key_Up || event->key() == Qt::Key_Down) {
+        field.invertField();
+        this->updateToInvertField();
+        emit sendInvertField();
+        this->repaint();
+    }
 
 }
 

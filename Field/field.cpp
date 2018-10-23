@@ -1792,7 +1792,63 @@ void procon::Field::rotateField(bool direction)
     std::swap(grid_x, grid_y);
 }
 
-void procon::Field::invertField(bool direction)
+void procon::Field::invertField()
 {
+    std::bitset<288> invert_field_data(0uL);
+    std::vector<std::vector<int>> invert_value_data(grid_x, std::vector<int>(grid_y));
+    std::bitset<288> invert_regions(0uL);
 
+    for (int y = 0; y < grid_y; y++) {
+        // 線対称での入れ替え
+        int invert_y = grid_y - y - 1;
+        for (int x = 0; x < grid_x; x++) {
+            // field_data
+            // x, yにおける現在のfield_data
+            std::bitset<288> w(0uL);
+            w |= field_data >> (2 * (12 * y + x));
+            w &= 3;
+
+            invert_field_data |= (w << (2 * (12 * invert_y + x)));
+
+            // value_data
+            invert_value_data.at(x).at(invert_y) = value_data.at(x).at(y);
+
+            // regions
+            // x, yにおける現在のregions
+            std::bitset<288> r(0uL);
+
+            // side1
+            r |= regions >> (12 * y + x);
+            r &= 3;
+            invert_regions |= (r << (12 * invert_y + x));
+
+            // side2
+            r |= regions >> ((12 * y + x) + 144);
+            r &= 3;
+            invert_regions |= (r << ((12 * invert_y + x) + 144));
+        }
+    }
+
+    // agents
+    std::vector<std::vector<std::pair<int,int>>> invert_agents;
+
+    for (int side = 0; side < 2; side++) {
+        // 保管用vector
+        std::vector<std::pair<int,int>> side_data;
+
+        for (int agent = 0; agent < 2; agent++) {
+            // 回る方向による条件分岐
+            std::pair<int, int> now_pos = getAgent(side, agent);
+            int invert_y = grid_y - now_pos.second - 1;
+
+            side_data.push_back(std::make_pair(now_pos.first, invert_y));
+        }
+        invert_agents.push_back(side_data);
+    }
+
+    // データの書き換え
+    setField(invert_field_data);
+    setValue(invert_value_data);
+    setRegions(invert_regions);
+    setAgents(invert_agents);
 }
