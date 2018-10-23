@@ -1756,12 +1756,13 @@ void procon::Field::rotateField(bool direction)
 
             // side1
             r |= regions >> (12 * y + x);
-            r &= 3;
+            r &= 1;
             rotate_regions |= (r << (12 * rotate_y + rotate_x));
 
             // side2
+            r = std::bitset<288>(0uL);
             r |= regions >> ((12 * y + x) + 144);
-            r &= 3;
+            r &= 1;
             rotate_regions |= (r << ((12 * rotate_y + rotate_x) + 144));
         }
     }
