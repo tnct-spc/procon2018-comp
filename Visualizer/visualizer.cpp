@@ -708,6 +708,129 @@ void Visualizer::setGridState(const std::pair<int, int> grid, const int state)
     emit sendGridState(grid, state);
 }
 
+void Visualizer::updateToRotateField(bool direction)
+{
+    // フィールドのサイズ
+    std::pair<int, int> field_size = field.getSize();
+    std::swap(field_size.first, field_size.second);
+
+    // selected_to_change_grid
+    if(is_change_field_mode && is_selected_grid) {
+        // 回る方向による条件分岐
+        int x = direction ? field_size.second - selected_to_change_grid.second - 1 : selected_to_change_grid.second;
+        int y = direction ? selected_to_change_grid.first : field_size.first - selected_to_change_grid.first - 1;
+
+        selected_to_change_grid = std::make_pair(x, y);
+    }
+
+    // selected_agent_grid
+    if (selected) {
+        // 回る方向による条件分岐
+        int x = direction ? field_size.second - selected_agent_grid.second - 1 : selected_agent_grid.second;
+        int y = direction ? selected_agent_grid.first : field_size.first - selected_agent_grid.first - 1;
+
+        selected_agent_grid = std::make_pair(x, y);
+    }
+
+    // next_grid
+    for (int side = 0; side < 2; side++) {
+        for (int agent = 0; agent < 2; agent++) {
+            // まだ選択されていなければパス
+            if (next_grids.at(side).at(agent).first == -1) continue;
+
+            // 回る方向による条件分岐
+            int x = direction ? field_size.second - next_grids.at(side).at(agent).second - 1 : next_grids.at(side).at(agent).second;
+            int y = direction ? next_grids.at(side).at(agent).first : field_size.first - next_grids.at(side).at(agent).first - 1;
+
+            next_grids.at(side).at(agent) = std::make_pair(x, y);
+        }
+    }
+
+    // candidate
+    for (int side = 0; side < 2; side++) {
+        for (int agent = 0; agent < 2; agent++) {
+            // まだ選択されていなければパス
+            if (candidate.at(side).at(agent).first == -1) continue;
+
+            // 回る方向による条件分岐
+            int x = direction ? field_size.second - candidate.at(side).at(agent).second - 1 : candidate.at(side).at(agent).second;
+            int y = direction ? candidate.at(side).at(agent).first : field_size.first - candidate.at(side).at(agent).first - 1;
+
+            candidate.at(side).at(agent) = std::make_pair(x, y);
+        }
+    }
+
+    // clicked_grid_change
+    if (change_mode && clicked) {
+        // 回る方向による条件分岐
+        int x = direction ? field_size.second - clicked_grid_change.second - 1 : clicked_grid_change.second;
+        int y = direction ? clicked_grid_change.first : field_size.first - clicked_grid_change.first - 1;
+
+        clicked_grid_change = std::make_pair(x, y);
+    }
+}
+
+void Visualizer::updateToInvertField()
+{
+    // フィールドのサイズ
+    std::pair<int, int> field_size = field.getSize();
+
+    // selected_to_change_grid
+    if(is_change_field_mode && is_selected_grid) {
+        // 回る方向による条件分岐
+        int x = selected_to_change_grid.first;
+        int y = field_size.second - selected_to_change_grid.second - 1;
+
+        selected_to_change_grid = std::make_pair(x, y);
+    }
+
+    // selected_agent_grid
+    if (selected) {
+        // 回る方向による条件分岐
+        int x = selected_agent_grid.first;
+        int y = field_size.second - selected_agent_grid.second - 1;
+
+        selected_agent_grid = std::make_pair(x, y);
+    }
+
+    // next_grid
+    for (int side = 0; side < 2; side++) {
+        for (int agent = 0; agent < 2; agent++) {
+            // まだ選択されていなければパス
+            if (next_grids.at(side).at(agent).first == -1) continue;
+
+            // 回る方向による条件分岐
+            int x = next_grids.at(side).at(agent).first;
+            int y = field_size.second - next_grids.at(side).at(agent).second - 1;
+
+            next_grids.at(side).at(agent) = std::make_pair(x, y);
+        }
+    }
+
+    // candidate
+    for (int side = 0; side < 2; side++) {
+        for (int agent = 0; agent < 2; agent++) {
+            // まだ選択されていなければパス
+            if (candidate.at(side).at(agent).first == -1) continue;
+
+            // 回る方向による条件分岐
+            int x = candidate.at(side).at(agent).first;
+            int y = field_size.second - candidate.at(side).at(agent).second - 1;
+
+            candidate.at(side).at(agent) = std::make_pair(x, y);
+        }
+    }
+
+    // clicked_grid_change
+    if (change_mode && clicked) {
+        // 回る方向による条件分岐
+        int x = clicked_grid_change.first;
+        int y = field_size.second - clicked_grid_change.second - 1;
+
+        clicked_grid_change = std::make_pair(x, y);
+    }
+}
+
 void Visualizer::keyPressEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_C || event->key() == Qt::Key_E){
@@ -754,6 +877,59 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
         this->repaint();
     }
 
+    if (event->key() == Qt::Key_Right) {
+        // Fieldを右に回す
+        field.rotateField(true);
+
+        // Visualizer側のパラメータも変更
+        this->updateToRotateField(true);
+
+        // GameManager側も変更
+        emit sendRotateField(true);
+        this->repaint();
+    } else if (event->key() == Qt::Key_Left) {
+        // Fieldを左に回す
+        field.rotateField(false);
+
+        // Visualizer側のパラメータも変更
+        this->updateToRotateField(false);
+
+        // GameManager側も変更
+        emit sendRotateField(false);
+        this->repaint();
+    }
+
+    // Fieldを反転
+    if (event->key() == Qt::Key_Up || event->key() == Qt::Key_Down) {
+        field.invertField();
+
+        // Visualizer側も変更
+        this->updateToInvertField();
+
+        // GameManager側も変更
+        emit sendInvertField();
+        this->repaint();
+    }
+
+    if (is_change_field_mode) {
+        // 現時点での値を取得
+        int now_turn = field.getTurnCount();
+        int final_turn = field.getFinalTurn();
+
+        if (event->key() == Qt::Key_U) {
+            // now_turnを１つ減らす
+            if (now_turn > 0) emit sendChangeTurn(std::make_pair(now_turn-1, final_turn));
+        } else if (event->key() == Qt::Key_I) {
+            // now_turnを１つ増やす
+            if (now_turn + 1 <= final_turn) emit sendChangeTurn(std::make_pair(now_turn+1, final_turn));
+        } else if (event->key() == Qt::Key_J) {
+            // final_turnを１つ減らす
+            if (final_turn - 1 >= now_turn) emit sendChangeTurn(std::make_pair(now_turn, final_turn-1));
+        } else if (event->key() == Qt::Key_K) {
+            // final_turnを１つ増やす
+            emit sendChangeTurn(std::make_pair(now_turn, final_turn+1));
+        }
+    }
 
 }
 
