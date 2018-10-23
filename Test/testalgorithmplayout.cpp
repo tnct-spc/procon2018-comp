@@ -45,7 +45,6 @@ void TestAlgorithmPlayout::playout(WarshallFloydAlgorithm::Parameters& p1, Warsh
 
     if(iswrite){
         std::stringstream outstream;
-        outstream << p1.depth_value_weight << "," << p2.depth_value_weight << ",";
         outstream << points.at(0) << "," << points.at(1) << "\n";
         logger->info(outstream.str());
         logger->flush();
@@ -61,13 +60,6 @@ void TestAlgorithmPlayout::run(){
     for(int count = 0; count < 1e7; ++count){
         std::cout << "count : " << count << std::endl;
         WarshallFloydAlgorithm::Parameters params_1, params_2;
-
-        do{
-        params_1.depth_value_weight = rand_param(mt);
-        params_2.depth_value_weight = rand_param(mt);
-        }while(0);
-        if(params_1.depth_value_weight > params_2.depth_value_weight)
-            std::swap(params_1, params_2);
 
         playout(params_1, params_2, true);
 

@@ -43,8 +43,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     if(FixConflict)calc_distribution(agent0_distributions, route_map_agent0);
     if(FixConflict)calc_distribution(agent1_distributions, route_map_agent1);
 
-    //std::vector<int>  pena_ratio = {1,2,3,4,5,6,7,8,9,10,11,12};
-
     auto calc_pena = [&](std::pair<int,int> pos_agent0, std::pair<int,int> pos_agent1){
         std::vector<std::vector<std::vector<int>>> agent0_distribution = agent0_distributions[pos_agent0];
         std::vector<std::vector<std::vector<int>>> agent1_distribution = agent1_distributions[pos_agent1];
@@ -115,8 +113,7 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
             std::tie(score, route) = getRoute(edges, pos, depth);
             if(route.empty())
                 continue;
-            que.emplace(std::min(params.depth_weight_max, std::pow(params.depth_weight, depth)) * score / depth, std::move(route));
-
+            que.emplace((score / depth) * params.route_length_weight.at(depth - 1), std::move(route));
         }
 
     int bound = que.size() * params.bound_val;
@@ -267,7 +264,7 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                         }
 
 
-                        value *= std::min(params.depth_value_weight_max, std::pow(params.depth_value_weight, params.maxdepth_max - depth));
+                        value *= params.point_depth_weight.at(depth);
 
                         if(length == 2 && depth + 1 == maxval){
                             length = 1;
