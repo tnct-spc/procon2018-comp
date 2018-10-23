@@ -121,6 +121,30 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
 
     int bound = que.size() * params.bound_val;
 
+    auto setState = [=](std::bitset<288>& bits, int state, int x , int y){
+        if(!(0 <= x && x <= field.getSize().first - 1 && 0 <= y && y <= field.getSize().second - 1)){
+            std::cerr<<"ERROR :  LastForce内setStateにて盤面外を指定しています!!"<<std::endl;
+            std::abort();
+        }
+        std::bitset<288> w = 3;
+        bits &= ~( w << (2*(12*y+x)));
+        w = state;
+        bits |= ( w << (2*(12*y+x)));
+    };
+    auto getState = [=](std::bitset<288>& bits, int x, int y){
+        if(!(0 <= x && x <= field.getSize().first - 1 && 0 <= y && y <= field.getSize().second - 1)){
+            std::cerr<<"ERROR : LastForce内getStateにて盤面外を指定しています!!"<<std::endl;
+            std::abort();
+        }
+        std::bitset<288> w(0uL);
+        w |= bits >> (2*(12*y+x));
+        w &= 3;
+        return w.to_ulong();
+    };
+    procon::Field _field = field;
+    std::vector<std::pair<int,int>> points = _field.getPoints();
+
+
     for(int index = 0; !que.empty(); ++index){
         double average;
         std::list<std::pair<int,int>> route;
@@ -134,7 +158,21 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
 
         if(route_map.find(back) == route_map.end())
             route_map[back] = MapElement(back);
-        route_map[back].addRoute(average, std::move(route));
+
+        std::bitset<288> bits = _field.getRegions();
+        for(auto pos : route){
+            if(getState(bits, pos.first, pos.second) == 0){
+                setState(bits, side+1, pos.first, pos.second);
+            }else if(getState(bits, pos.first, pos.second) != side + 1){
+                setState(bits, 0, pos.first, pos.second);
+            }
+        }
+        _field.setRegions(bits);
+        std::vector<std::pair<int,int>> advs = _field.getPoints();
+        int adv = advs.at(side).second;
+        adv += points.at(!side).second - advs.at(!side).second;
+
+        route_map[back].addRoute(average + adv, std::move(route));
 
         if(index >= bound && route_map.size() > 2)
             break;
