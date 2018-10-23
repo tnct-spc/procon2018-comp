@@ -52,7 +52,10 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show
         connect(visualizer.get(), &Visualizer::sendAgentPos, this, &GameManager::changeAgentpos);
         connect(visualizer.get(), &Visualizer::sendGridState, this, &GameManager::changeGridState);
         connect(visualizer.get(), &Visualizer::sendRecalculation, this, &GameManager::endChangeMode);
+        connect(visualizer.get(), &Visualizer::sendRotateField, this, &GameManager::getRotateField);
+        connect(visualizer.get(), &Visualizer::sendInvertField, this, &GameManager::getInvertField);
         connect(this, &GameManager::resetField, visualizer.get(), &Visualizer::resetConfirm);
+        connect(visualizer.get(), &Visualizer::sendChangeTurn, this, &GameManager::endChangeMode);
 
         /*
         minimum = std::make_shared<MinimumVisualizer>(std::make_pair(x_size, y_size));
@@ -95,7 +98,10 @@ void GameManager::resetManager(int x_size, int y_size, bool v_show, const int t_
         connect(visualizer.get(), &Visualizer::sendAgentPos, this, &GameManager::changeAgentpos);
         connect(visualizer.get(), &Visualizer::sendGridState, this, &GameManager::changeGridState);
         connect(visualizer.get(), &Visualizer::sendRecalculation, this, &GameManager::endChangeMode);
+        connect(visualizer.get(), &Visualizer::sendRotateField, this, &GameManager::getRotateField);
+        connect(visualizer.get(), &Visualizer::sendInvertField, this, &GameManager::getInvertField);
         connect(this, &GameManager::resetField, visualizer.get(), &Visualizer::resetConfirm);
+        connect(visualizer.get(), &Visualizer::sendChangeTurn, this, &GameManager::endChangeMode);
 
         // minimum = std::make_shared<MinimumVisualizer>(std::make_pair(x_size, y_size));
     }else{
@@ -316,7 +322,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
 //            progresdock->addVisuAnswer(*(field_vec.back()));
 
-
+            now_field = field_vec.size() - 1;
             setFieldCount(field_vec.size() - 1);
         }
 
@@ -452,9 +458,9 @@ unsigned int GameManager::getFieldCount(){
 }
 void GameManager::setFieldCount(const unsigned int number){
     if(number >= field_vec.size())return ;
-    now_field = number;
+//    now_field = number;
     if(vis_show){
-        visualizer->setField(*field_vec.at(number), number, field->getFinalTurn());
+        visualizer->setField(*field_vec.at(number), getFieldCount(), field->getFinalTurn());
         visualizer->update();
         visualizer->repaint();
     }
@@ -802,7 +808,7 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
 //     progresdock->addVisuAnswer(*(field_vec.back()));
 
 
-
+    now_field = field->getTurnCount();
     setFieldCount(field_vec.size() - 1);
 
     visualizer->update();
@@ -941,4 +947,14 @@ void GameManager::changeAgentpos(std::pair<int, int> agent, std::pair<int, int> 
 void GameManager::changeGridState(std::pair<int, int> grid, int state)
 {
     field->setState(grid.first, grid.second, state);
+}
+
+void GameManager::getRotateField(bool direction)
+{
+    field->rotateField(direction);
+}
+
+void GameManager::getInvertField()
+{
+    field->invertField();
 }
