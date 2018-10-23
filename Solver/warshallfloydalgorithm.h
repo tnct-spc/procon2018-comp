@@ -29,6 +29,8 @@ public:
 
         double pena_ratio = 0.03;
 
+        bool fix_conflict = false;  //falseにするとconflict処理なし
+
         std::vector<double> point_depth_weight = {
             1.0, 0.9995497206321, 0.9965839655084, 0.9863446263349, 0.9614730743376, 0.9120101602625, 0.8253962143756, 0.6864710464629, 0.47747394583040004, 0.17804368130409998, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
         };
@@ -60,7 +62,6 @@ private:
 
     std::shared_ptr<ProgresDock> dock;
 
-    bool FixConflict = true;  //falseにするとconflict処理なし
 };
 
 struct WarshallFloydAlgorithm::MapElement{

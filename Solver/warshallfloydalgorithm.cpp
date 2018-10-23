@@ -20,9 +20,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     std::pair<std::pair<int,int> , std::pair<int,int>> ans;
     int max_adv = -1e9;
 
-
-
-
     std::map<std::pair<int,int> , std::vector<std::vector<std::vector<int>>>> agent0_distributions;
     std::map<std::pair<int,int> , std::vector<std::vector<std::vector<int>>>> agent1_distributions;
 
@@ -40,8 +37,9 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
             }
         }
     };
-    if(FixConflict)calc_distribution(agent0_distributions, route_map_agent0);
-    if(FixConflict)calc_distribution(agent1_distributions, route_map_agent1);
+
+    if(params.fix_conflict)calc_distribution(agent0_distributions, route_map_agent0);
+    if(params.fix_conflict)calc_distribution(agent1_distributions, route_map_agent1);
 
     auto calc_pena = [&](std::pair<int,int> pos_agent0, std::pair<int,int> pos_agent1){
         std::vector<std::vector<std::vector<int>>> agent0_distribution = agent0_distributions[pos_agent0];
@@ -59,15 +57,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 
     for(auto& pos0 : poses_0)
         for(auto& pos1 : poses_1){
-            int pena;
 
-            if(FixConflict)
-                pena = calc_pena(pos0.second, pos1.second) * params.pena_ratio;
-            else
-                pena = 1;
+            int pena = params.fix_conflict ? calc_pena(pos0.second, pos1.second) * params.pena_ratio : 1;
 
             int adv = (pos0.first + pos1.first);
-            if(pena != 0)
+            if(pena)
                 adv /= pena;
 
             if(pos0.second != pos1.second && adv >= max_adv){
