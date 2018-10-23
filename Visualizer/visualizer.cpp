@@ -872,22 +872,57 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
     }
 
     if (event->key() == Qt::Key_Right) {
+        // Fieldを右に回す
         field.rotateField(true);
+
+        // Visualizer側のパラメータも変更
         this->updateToRotateField(true);
+
+        // GameManager側も変更
         emit sendRotateField(true);
         this->repaint();
     } else if (event->key() == Qt::Key_Left) {
+        // Fieldを左に回す
         field.rotateField(false);
+
+        // Visualizer側のパラメータも変更
         this->updateToRotateField(false);
+
+        // GameManager側も変更
         emit sendRotateField(false);
         this->repaint();
     }
 
+    // Fieldを反転
     if (event->key() == Qt::Key_Up || event->key() == Qt::Key_Down) {
         field.invertField();
+
+        // Visualizer側も変更
         this->updateToInvertField();
+
+        // GameManager側も変更
         emit sendInvertField();
         this->repaint();
+    }
+
+    if (is_change_field_mode) {
+        // 現時点での値を取得
+        int now_turn = field.getTurnCount();
+        int final_turn = field.getFinalTurn();
+
+        if (event->key() == Qt::Key_U) {
+            // now_turnを１つ減らす
+            if (now_turn > 0) emit sendChangeTurn(std::make_pair(now_turn-1, final_turn));
+        } else if (event->key() == Qt::Key_I) {
+            // now_turnを１つ増やす
+            if (now_turn + 1 <= final_turn) emit sendChangeTurn(std::make_pair(now_turn+1, final_turn));
+        } else if (event->key() == Qt::Key_J) {
+            // final_turnを１つ減らす
+            if (final_turn - 1 >= now_turn) emit sendChangeTurn(std::make_pair(now_turn, final_turn-1));
+        } else if (event->key() == Qt::Key_K) {
+            // final_turnを１つ増やす
+            emit sendChangeTurn(std::make_pair(now_turn, final_turn+1));
+        }
     }
 
 }

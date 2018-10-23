@@ -51,6 +51,7 @@ signals:
     void sendRecalculation(const std::pair<int, int> turns);
     void sendRotateField(bool direction);
     void sendInvertField();
+    void sendChangeTurn(const std::pair<int, int> turns);
 
 public slots:
     void slotAutoMode(bool value);
