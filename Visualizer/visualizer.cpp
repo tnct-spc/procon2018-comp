@@ -749,6 +749,9 @@ void Visualizer::updateToRotateField(bool direction)
     // candidate
     for (int side = 0; side < 2; side++) {
         for (int agent = 0; agent < 2; agent++) {
+            // まだ選択されていなければパス
+            if (candidate.at(side).at(agent).first == -1) continue;
+
             // 回る方向による条件分岐
             int x = direction ? field_size.second - candidate.at(side).at(agent).second - 1 : candidate.at(side).at(agent).second;
             int y = direction ? candidate.at(side).at(agent).first : field_size.first - candidate.at(side).at(agent).first - 1;
@@ -807,6 +810,9 @@ void Visualizer::updateToInvertField()
     // candidate
     for (int side = 0; side < 2; side++) {
         for (int agent = 0; agent < 2; agent++) {
+            // まだ選択されていなければパス
+            if (candidate.at(side).at(agent).first == -1) continue;
+
             // 回る方向による条件分岐
             int x = candidate.at(side).at(agent).first;
             int y = field_size.second - candidate.at(side).at(agent).second - 1;
