@@ -1854,3 +1854,10 @@ void procon::Field::invertField()
     setRegions(invert_regions);
     setAgents(invert_agents);
 }
+
+double procon::Field::getAverage(){
+    double sum = 0.0;
+    for(auto row : value_data)
+        sum += std::accumulate(row.begin(), row.end(), 0.0);
+    return sum / (getSize().first * getSize().second);
+}

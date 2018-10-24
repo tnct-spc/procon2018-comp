@@ -103,6 +103,8 @@ public:
     // Fieldを反転
     void invertField();
 
+    double getAverage();
+
 private:
     std::bitset<288> field_data;
     std::vector<std::vector<int>> value_data;
