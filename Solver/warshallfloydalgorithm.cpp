@@ -223,7 +223,7 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
     std::vector<std::vector<Edge>> dp_vector(size_sum);
 
     procon::Field _field = field;
-    std::bitset<288> field_data = _field.getRegions();
+    std::bitset<288> field_data = _field.getFieldData();
     auto setState = [=](std::bitset<288>& bits, int state, int x , int y){
         if(!(0 <= x && x <= field.getSize().first - 1 && 0 <= y && y <= field.getSize().second - 1)){
             std::cerr<<"ERROR :  WFA内setStateにて盤面外を指定しています!!"<<std::endl;
@@ -297,13 +297,15 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                                 setState(bits, 0, pair_pos.first, pair_pos.second);
                             }
                         }
-                        _field.setRegions(bits);
+                       ;
+                        _field.setFieldData(bits);
                         std::vector<std::pair<int,int>> points_vec = _field.getPoints();
                         std::vector<int> regions = {points_vec.at(0).second, points_vec.at(1).second};
-
-                        if(thinkRegionAdv)value += points_vec.at(side).second - dp_vector.at(point).at(depth).region_points.at(side);
-                        if(thinkRegionAdv)value += -(points_vec.at(!side).second - dp_vector.at(point).at(depth).region_points.at(!side));
-
+                        if(thinkRegionAdv){
+                            double val = value;
+                            value += points_vec.at(side).second - dp_vector.at(point).at(depth).region_points.at(side);
+                            value += -(points_vec.at(!side).second - dp_vector.at(point).at(depth).region_points.at(!side));
+                        }
                         value *= params.point_depth_weight.at(depth);
                         if(length == 2 && depth + 1 == maxval){
                             length = 1;

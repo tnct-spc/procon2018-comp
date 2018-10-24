@@ -50,6 +50,9 @@ public:
 
     void setPoints(int side, std::pair<int,int> value);
 
+    std::bitset<288> getFieldData();
+
+
     int getTurnCount() const;
     int getFinalTurn() const;
     void setTurnCount(int turn_count);
@@ -70,6 +73,7 @@ public:
     void setGridValue(const unsigned int x, const unsigned int y, const unsigned int value);
     void setStates(const std::vector<std::vector<int>>& values);
     void setAgents(const std::vector<std::vector<std::pair<int,int>>>& values);
+    void setFieldData(std::bitset<288> bits);
     int translateMoveToInt(int side, std::tuple<int, int, int> move);
 
     void resetState(const procon::Field& inp_field);

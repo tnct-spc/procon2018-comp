@@ -1341,9 +1341,14 @@ void procon::Field::setPoints(int side, std::pair<int, int> value){
 std::bitset<288> procon::Field::getRegions(){
     return regions;
 }
-
+void procon::Field::setFieldData(std::bitset<288> bits){
+    field_data = bits;
+}
 void procon::Field::setRegions(std::bitset<288>& input) {
     regions = input;
+}
+std::bitset<288> procon::Field::getFieldData(){
+    return field_data;
 }
 
 void procon::Field::updateFeature(){
