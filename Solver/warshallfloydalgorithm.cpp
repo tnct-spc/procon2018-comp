@@ -19,6 +19,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 
     std::pair<std::pair<int,int> , std::pair<int,int>> ans;
     int max_adv = -1e9;
+    if(side == 0)
+        thinkRegionAdv = true;
 
     std::map<std::pair<int,int> , std::vector<std::vector<std::vector<int>>>> agent0_distributions;
     std::map<std::pair<int,int> , std::vector<std::vector<std::vector<int>>>> agent1_distributions;
@@ -220,9 +222,34 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
 
     std::vector<std::vector<Edge>> dp_vector(size_sum);
 
+    procon::Field _field = field;
+    std::bitset<288> field_data = _field.getRegions();
+    auto setState = [=](std::bitset<288>& bits, int state, int x , int y){
+        if(!(0 <= x && x <= field.getSize().first - 1 && 0 <= y && y <= field.getSize().second - 1)){
+            std::cerr<<"ERROR :  WFA内setStateにて盤面外を指定しています!!"<<std::endl;
+            std::abort();
+        }
+        std::bitset<288> w = 3;
+        bits &= ~( w << (2*(12*y+x)));
+        w = state;
+        bits |= ( w << (2*(12*y+x)));
+    };
+
+    auto getState = [=](std::bitset<288>& bits, int x, int y){
+        if(!(0 <= x && x <= field.getSize().first - 1 && 0 <= y && y <= field.getSize().second - 1)){
+            std::cerr<<"ERROR : WFA内getStateにて盤面外を指定しています!!"<<std::endl;
+            std::abort();
+        }
+        std::bitset<288> w(0uL);
+        w |= bits >> (2*(12*y+x));
+        w &= 3;
+        return w.to_ulong();
+    };
+    std::vector<std::pair<int,int>> points = _field.getPoints();
+    std::vector<int> Region_init = {points.at(0).second, points.at(1).second};
     for(int start_index = 0; start_index < size_sum; ++start_index)
         for(int end_index = 0; end_index <= maxval; ++end_index)
-            dp_vector.at(start_index).emplace_back(start_index, field_states);
+            dp_vector.at(start_index).emplace_back(start_index, field_states, field_data, Region_init);
 
     dp_vector.at(start_pos).at(0).depth = 0;
 
@@ -260,6 +287,24 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
 
                         value *= params.point_depth_weight.at(depth);
 
+                        std::bitset<288> bits = dp_vector.at(point).at(depth).field_data;
+                        std::pair<int,int> pair_pos = getPosPair(dp_vector.at(point).at(depth).pos);
+                        int pos_state = getState(bits, pair_pos.first, pair_pos.second);
+                        if(pos_state == 0){
+                            setState(bits, side+1, pair_pos.first, pair_pos.second);
+                        }else{
+                            if(pos_state != side+1){
+                                setState(bits, 0, pair_pos.first, pair_pos.second);
+                            }
+                        }
+                        _field.setRegions(bits);
+                        std::vector<std::pair<int,int>> points_vec = _field.getPoints();
+                        std::vector<int> regions = {points_vec.at(0).second, points_vec.at(1).second};
+
+                        if(thinkRegionAdv)value += points_vec.at(side).second - dp_vector.at(point).at(depth).region_points.at(side);
+                        if(thinkRegionAdv)value += -(points_vec.at(!side).second - dp_vector.at(point).at(depth).region_points.at(!side));
+
+                        value *= params.point_depth_weight.at(depth);
                         if(length == 2 && depth + 1 == maxval){
                             length = 1;
                             value /= 2;
@@ -267,7 +312,7 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                         else if(depth + length > maxval)
                             continue;
 
-                        Edge e = Edge::make(dp_vector.at(point).at(depth), end_index, value, length, end_pos_state.first == side + 1);
+                        Edge e = Edge::make(dp_vector.at(point).at(depth), end_index, bits, regions, value, length, end_pos_state.first == side + 1);
 
                         dp_vector.at(end_index).at(depth + length) = std::max(dp_vector.at(end_index).at(depth + length), e);
                     }

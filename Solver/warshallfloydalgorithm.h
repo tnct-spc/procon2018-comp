@@ -3,6 +3,7 @@
 
 #include "algorithmwrapper.h"
 #include "progresdock.h"
+#include "field.h"
 
 class WarshallFloydAlgorithm : public AlgorithmWrapper
 {
@@ -60,6 +61,8 @@ private:
 
     int size_x, size_y, size_sum;
 
+    bool thinkRegionAdv = false;
+
     std::shared_ptr<ProgresDock> dock;
 
 };
@@ -104,13 +107,17 @@ struct WarshallFloydAlgorithm::Edge{
     double sum;
     int depth;
     std::bitset<144> bs;
+    std::bitset<288> field_data;
+    std::vector<int> region_points;
 
-    Edge(int pos, const std::bitset<144>& state, double sum = 0.0, int depth = -1) :
+    Edge(int pos, const std::bitset<144>& state, std::bitset<288> field_bits, std::vector<int> regions, double sum = 0.0, int depth = -1) :
         pos(pos),
         prev(pos, depth),
         sum(sum),
         depth(depth),
-        bs(state)
+        bs(state),
+        field_data(field_bits),
+        region_points(regions)
     {
     }
 
@@ -119,8 +126,8 @@ struct WarshallFloydAlgorithm::Edge{
         return a.average() < b.average();
     }
 
-    static Edge make(const Edge& x, int pos, double value, int depth, bool is_nocount){
-        Edge e(pos, x.bs, x.sum + value, x.depth + depth);
+    static Edge make(const Edge& x, int pos, std::bitset<288> field_data, std::vector<int> regions, double value, int depth, bool is_nocount){
+        Edge e(pos, x.bs, field_data, regions, x.sum + value, x.depth + depth);
 
         if(!(e.bs[pos] || is_nocount))
             e.depth = -1;
