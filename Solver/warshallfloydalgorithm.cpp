@@ -41,23 +41,34 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     if(params.fix_conflict)calc_distribution(agent0_distributions, route_map_agent0);
     if(params.fix_conflict)calc_distribution(agent1_distributions, route_map_agent1);
 
-    auto predict = [&](bool agent){
-        WarshallFloydAlgorithm enemy(field, final_turn, !side);
+    std::vector<std::map<std::pair<int,int>, int>> move_per_map(4);
 
-        auto ret_vec = enemy.calcSingleAgent(agent);
+    WarshallFloydAlgorithm enemy(field, final_turn, !side);
+
+    auto predict = [&enemy, &move_per_map, &poses_0, &poses_1](bool side, bool agent){
+
+        auto ret_vec = (side ? enemy.calcSingleAgent(agent) : (agent ? poses_1 : poses_0));
         int value_sum = 0;
 
         for(auto& element : ret_vec)
             value_sum += element.first;
+
+        for(auto& element : ret_vec)
+            move_per_map.at(side * 2 + agent)[element.second] = 1.0 * element.first / value_sum;
+
+        /*
         std::vector<std::vector<std::vector<int>>> color(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255)));
+
         for(auto& element : ret_vec){
             color.at(0).at(element.second.first).at(element.second.second) -= 255 * element.first / value_sum;
             color.at(1).at(element.second.first).at(element.second.second) -= 255 * element.first / value_sum;
         }
         dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>(), color);
+        */
     };
-    predict(0);
-    predict(1);
+
+    for(int count = 0; count < 4; ++count)
+        predict(count / 2, count % 2);
 
 
     auto calc_pena = [&](std::pair<int,int> pos_agent0, std::pair<int,int> pos_agent1){
