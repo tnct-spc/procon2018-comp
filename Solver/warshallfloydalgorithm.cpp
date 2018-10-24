@@ -89,6 +89,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
         double lose_conflict = 0.7;
 
         auto check_predict_agent = [&](bool agent){
+            std::vector<std::pair<int ,std::pair<int,int>>> points;
+
             for(auto& element : move_per_map.at(agent)){
                 if((field.getAgent(!side, 0) == element.first && enemy_delete_per.at(0) > delete_bound) &&
                 (field.getAgent(!side, 1) == element.first && enemy_delete_per.at(1) > delete_bound))
@@ -106,13 +108,16 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
                             element.second *= lose_conflict;
                     }
                 }
+                points.emplace_back(element.second, element.first);
             }
+            (agent ? poses_1 : poses_0) = points;
         };
         check_predict_agent(0);
         check_predict_agent(1);
     };
 
-    check_predict();
+    if(side)
+        check_predict();
 
     auto calc_pena = [&](std::pair<int,int> pos_agent0, std::pair<int,int> pos_agent1){
         std::vector<std::vector<std::vector<int>>> agent0_distribution = agent0_distributions[pos_agent0];
