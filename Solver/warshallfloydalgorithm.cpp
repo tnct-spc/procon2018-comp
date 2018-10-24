@@ -159,20 +159,26 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
         if(route_map.find(back) == route_map.end())
             route_map[back] = MapElement(back);
 
-        std::bitset<288> bits = _field.getRegions();
-        for(auto pos : route){
-            if(getState(bits, pos.first, pos.second) == 0){
-                setState(bits, side+1, pos.first, pos.second);
-            }else if(getState(bits, pos.first, pos.second) != side + 1){
-                setState(bits, 0, pos.first, pos.second);
+        if(side){
+            std::bitset<288> bits = _field.getRegions();
+            for(auto pos : route){
+                if(getState(bits, pos.first, pos.second) == 0){
+                    setState(bits, side+1, pos.first, pos.second);
+                }else if(getState(bits, pos.first, pos.second) != side + 1){
+                    setState(bits, 0, pos.first, pos.second);
+                }
             }
-        }
-        _field.setRegions(bits);
-        std::vector<std::pair<int,int>> advs = _field.getPoints();
-        int adv = advs.at(side).second;
-        adv += points.at(!side).second - advs.at(!side).second;
+            _field.setRegions(bits);
 
-        route_map[back].addRoute(average + adv, std::move(route));
+            std::vector<std::pair<int,int>> advs = _field.getPoints();
+            int adv = advs.at(side).second;
+            adv += points.at(!side).second - advs.at(!side).second;
+
+            route_map[back].addRoute(average + adv, std::move(route));
+        }else{
+
+            route_map[back].addRoute(average, std::move(route));
+        }
 
         if(index >= bound && route_map.size() > 2)
             break;
