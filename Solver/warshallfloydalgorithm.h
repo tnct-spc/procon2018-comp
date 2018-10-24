@@ -19,21 +19,26 @@ public:
     std::map<std::pair<int,int>, MapElement> route_map_agent1;
     struct Parameters{
 
-        int maxdepth_max = 30;
+        int maxdepth_max = 10;
 
         double conflict_def_per = 1.3;
         double conflict_atk_per = 0.3;
         double conflict_ally_per = 0.3;
 
-        double bound_val = 0.05;
-
-        double depth_weight = 1.02;
-        double depth_weight_max = 1.50;
-
-        double depth_value_weight = 1.02;
-        double depth_value_weight_max = 1.80;
+        double bound_val = 0.19;
 
         double pena_ratio = 0.03;
+
+        bool fix_conflict = false;  //falseにするとconflict処理なし
+
+        std::vector<double> point_depth_weight = {
+            1.0, 0.9995497206321, 0.9965839655084, 0.9863446263349, 0.9614730743376, 0.9120101602625, 0.8253962143756, 0.6864710464629, 0.47747394583040004, 0.17804368130409998
+        };
+        std::vector<double> route_length_weight = {
+           1.0, 0.997528331, 0.988562982, 0.9682778049999999, 0.9318466519999999, 0.8744433749999999, 0.791241826, 0.677415857, 0.52813932, 0.33858606700000005, 0.10392995000000002
+        };
+
+        std::vector<double> region_turn_weight = std::vector<double>(80, 1);
     };
 
     void setParams(Parameters& param);

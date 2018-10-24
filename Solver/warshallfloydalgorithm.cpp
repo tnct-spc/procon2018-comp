@@ -20,9 +20,6 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     std::pair<std::pair<int,int> , std::pair<int,int>> ans;
     int max_adv = -1e9;
 
-
-
-
     std::map<std::pair<int,int> , std::vector<std::vector<std::vector<int>>>> agent0_distributions;
     std::map<std::pair<int,int> , std::vector<std::vector<std::vector<int>>>> agent1_distributions;
 
@@ -40,10 +37,9 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
             }
         }
     };
-    if(FixConflict)calc_distribution(agent0_distributions, route_map_agent0);
-    if(FixConflict)calc_distribution(agent1_distributions, route_map_agent1);
 
-    //std::vector<int>  pena_ratio = {1,2,3,4,5,6,7,8,9,10,11,12};
+    if(params.fix_conflict)calc_distribution(agent0_distributions, route_map_agent0);
+    if(params.fix_conflict)calc_distribution(agent1_distributions, route_map_agent1);
 
     auto calc_pena = [&](std::pair<int,int> pos_agent0, std::pair<int,int> pos_agent1){
         std::vector<std::vector<std::vector<int>>> agent0_distribution = agent0_distributions[pos_agent0];
@@ -61,15 +57,11 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 
     for(auto& pos0 : poses_0)
         for(auto& pos1 : poses_1){
-            int pena;
 
-            if(FixConflict)
-                pena = calc_pena(pos0.second, pos1.second) * params.pena_ratio;
-            else
-                pena = 1;
+            int pena = params.fix_conflict ? calc_pena(pos0.second, pos1.second) * params.pena_ratio : 1;
 
             int adv = (pos0.first + pos1.first);
-            if(pena != 0)
+            if(pena)
                 adv /= pena;
 
             if(pos0.second != pos1.second && adv >= max_adv){
@@ -115,8 +107,7 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
             std::tie(score, route) = getRoute(edges, pos, depth);
             if(route.empty())
                 continue;
-            que.emplace(std::min(params.depth_weight_max, std::pow(params.depth_weight, depth)) * score / depth, std::move(route));
-
+            que.emplace((score / depth) * params.route_length_weight.at(depth - 1), std::move(route));
         }
 
     int bound = que.size() * params.bound_val;
@@ -172,11 +163,10 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
 
             std::vector<std::pair<int,int>> advs = _field.getPoints();
             int adv = advs.at(side).second;
-            adv += points.at(!side).second - advs.at(!side).second;
+            params.region_turn_weight.at(field.getFinalTurn() - field.getTurnCount()) * (points.at(!side).second - advs.at(!side).second);
 
             route_map[back].addRoute(average + adv, std::move(route));
         }else{
-
             route_map[back].addRoute(average, std::move(route));
         }
 
@@ -311,7 +301,7 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                         }
 
 
-                        value *= std::min(params.depth_value_weight_max, std::pow(params.depth_value_weight, params.maxdepth_max - depth));
+                        value *= params.point_depth_weight.at(depth);
 
                         if(length == 2 && depth + 1 == maxval){
                             length = 1;
