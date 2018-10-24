@@ -302,10 +302,16 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                         std::vector<std::pair<int,int>> points_vec = _field.getPoints();
                         std::vector<int> regions = {points_vec.at(0).second, points_vec.at(1).second};
                         if(thinkRegionAdv){
-                            value += points_vec.at(side).second - dp_vector.at(point).at(depth).region_points.at(side);
-                            value += -(points_vec.at(!side).second - dp_vector.at(point).at(depth).region_points.at(!side));
+
+                            int index = std::max(0, field.getFinalTurn() - field.getTurnCount() - 1);
+                            if(index < params.region_make_weight.size())
+                                value += (points_vec.at(side).second - dp_vector.at(point).at(depth).region_points.at(side)) * params.region_make_weight.at(index);
+                            if(index < params.region_break_weight.size())
+                                value -= (points_vec.at(!side).second - dp_vector.at(point).at(depth).region_points.at(!side)) * params.region_break_weight.at(index);
+
                         }
                         value *= params.point_depth_weight.at(depth);
+
                         if(length == 2 && depth + 1 == maxval){
                             length = 1;
                             value /= 2;
