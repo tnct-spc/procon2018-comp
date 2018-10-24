@@ -302,7 +302,6 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                         std::vector<std::pair<int,int>> points_vec = _field.getPoints();
                         std::vector<int> regions = {points_vec.at(0).second, points_vec.at(1).second};
                         if(thinkRegionAdv){
-                            double val = value;
                             value += points_vec.at(side).second - dp_vector.at(point).at(depth).region_points.at(side);
                             value += -(points_vec.at(!side).second - dp_vector.at(point).at(depth).region_points.at(!side));
                         }
