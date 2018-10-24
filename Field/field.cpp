@@ -1225,6 +1225,10 @@ std::vector<std::pair<int,int>> procon::Field::getPoints(bool flag){
     return points;
 }
 
+std::vector<std::pair<int,int>> procon::Field::getPoints() const{
+    return points;
+}
+
 std::vector<std::pair<int,int>> procon::Field::getPoints(std::pair<std::pair<int,int>, std::pair<int,int>> pos, bool flag){
     int dx[8]={1, 1, 1, 0, -1, -1, -1, 0};
     int dy[8]={1, 0, -1, -1, -1, 0, 1, 1};
