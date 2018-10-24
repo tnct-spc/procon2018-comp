@@ -62,6 +62,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
 
     std::vector<int> first_move_pos(size_sum * size_sum, 0);
 
+    procon::Field _field = field;
+
     for(int dep = 0; dep < maxval; ++dep)
         for(int pos_0 = 0; pos_0 < size_sum; ++pos_0)
             for(int pos_1 = pos_0 + 1; pos_1 < size_sum; ++pos_1){
@@ -91,12 +93,22 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
 
                     int is_move = 2 * (is_update_bitset & 2 ? !state.first : 0) + (is_update_bitset & 1 ? !state.second : 0);
 
+
                     double value_sum = (is_update_bitset & 2) * value.first + (is_update_bitset & 1) * value.second;
+
+                    std::vector<std::pair<int,int>> points = {std::make_pair(0,0), std::make_pair(0,0)};
+
+                    if(dep + 1 == maxval){
+                        _field.setFieldData(is_update_bitset);
+                        std::vector<std::pair<int,int>> points = _field.getPoints();
+                    }
+
 
                     int next_pos = two_pair_to_int(std::make_pair(is_move & 2 ? after_pos_pairs.first : before_pos_pairs.first, is_move & 1 ? after_pos_pairs.second : before_pos_pairs.second));
 
+                    value_sum *= point_depth_weight.at(dep);
 
-                    Edge e = Edge::make(dp.at(dep).at(pos), next_pos, value_sum, is_update_bitset, std::make_pair(pair_to_int(after_pos_pairs.first), pair_to_int(after_pos_pairs.second)));
+                    Edge e = Edge::make(dp.at(dep).at(pos), next_pos, value_sum + points.at(side).second, is_update_bitset, std::make_pair(pair_to_int(after_pos_pairs.first), pair_to_int(after_pos_pairs.second)));
 
                     if(!dep && dp.at(dep + 1).at(next_pos) < e)
                         first_move_pos.at(next_pos) = two_pair_to_int(after_pos_pairs);
@@ -152,7 +164,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
             if(!route.first.empty() || !route.second.empty()){
                 if(dock_show)
                     dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({route.first, route.second}), std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
-                routes_que.emplace(dp.at(dep).at(pos).average(), route);
+                routes_que.emplace(dp.at(dep).at(pos).average() * route_length_weight.at(dep - 1), route);
             }
         }
 

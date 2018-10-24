@@ -71,6 +71,7 @@ public:
     void setStates(const std::vector<std::vector<int>>& values);
     void setAgents(const std::vector<std::vector<std::pair<int,int>>>& values);
     int translateMoveToInt(int side, std::tuple<int, int, int> move);
+    void setFieldData(std::bitset<288> bits);
 
     void resetState(const procon::Field& inp_field);
 

@@ -1726,7 +1726,6 @@ int procon::Field::getRegion(std::pair<int,int> pos){
     }
     return state;
 }
-
 void procon::Field::rotateField(bool direction)
 {
     std::bitset<288> rotate_field_data(0uL);
@@ -1853,4 +1852,8 @@ void procon::Field::invertField()
     setValue(invert_value_data);
     setRegions(invert_regions);
     setAgents(invert_agents);
+}
+
+void procon::Field::setFieldData(std::bitset<288> bits){
+    field_data = bits;
 }
