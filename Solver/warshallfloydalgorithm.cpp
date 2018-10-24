@@ -16,8 +16,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 
     std::pair<int,int> bef_0 = field.getAgent(side, 0);
     std::pair<int,int> bef_1 = field.getAgent(side, 1);
-    std::vector<std::pair<int ,std::pair<int,int>>> poses_0 = calcSingleAgent(0);
-    std::vector<std::pair<int ,std::pair<int,int>>> poses_1 = calcSingleAgent(1);
+    std::vector<std::pair<double, std::pair<int,int>>> poses_0 = calcSingleAgent(0);
+    std::vector<std::pair<double, std::pair<int,int>>> poses_1 = calcSingleAgent(1);
 
     std::pair<std::pair<int,int> , std::pair<int,int>> ans;
     int max_adv = -1e9;
@@ -43,7 +43,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     if(params.fix_conflict)calc_distribution(agent0_distributions, route_map_agent0);
     if(params.fix_conflict)calc_distribution(agent1_distributions, route_map_agent1);
 
-    std::vector<std::map<std::pair<int,int>, int>> move_per_map(4);
+    std::vector<std::map<std::pair<int,int>, double>> move_per_map(4);
     std::vector<double> enemy_delete_per(2, 0.0);
 
     WarshallFloydAlgorithm enemy(field, final_turn, !side);
@@ -59,7 +59,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
         for(auto& element : ret_vec){
             move_per_map.at(side_rev * 2 + agent)[element.second] = 1.0 * element.first / value_sum;
             if(side_rev && field.getState(element.second.first, element.second.second).first == (side + 1))
-                enemy_delete_per.at(agent) += 1.0 * element.first / value_sum;
+                enemy_delete_per.at(agent) += element.first / value_sum;
         }
 
 
@@ -91,7 +91,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
         double lose_conflict = 0.7;
 
         auto check_predict_agent = [&](bool agent){
-            std::vector<std::pair<int ,std::pair<int,int>>> points;
+            std::vector<std::pair<double, std::pair<int,int>>> points;
 
             for(auto& element : move_per_map.at(agent)){
                 if((field.getAgent(!side, 0) == element.first && enemy_delete_per.at(0) > delete_bound) &&
@@ -166,7 +166,7 @@ void WarshallFloydAlgorithm::setParams(WarshallFloydAlgorithm::Parameters& param
     params = param;
 }
 
-std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSingleAgent(int agent){
+std::vector<std::pair<double, std::pair<int,int>>> WarshallFloydAlgorithm::calcSingleAgent(int agent){
 
     // [0,maxdepth]
     int maxdepth = std::min(params.maxdepth_max, field.getFinalTurn() - field.getTurnCount());
@@ -211,7 +211,7 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
             break;
     }
 
-    std::vector<std::pair<int, std::pair<int,int>>> anses;
+    std::vector<std::pair<double, std::pair<int,int>>> anses;
 
     for(auto& map_element : route_map){
 
