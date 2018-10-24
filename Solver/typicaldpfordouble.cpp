@@ -63,6 +63,27 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
     std::vector<int> first_move_pos(size_sum * size_sum, 0);
 
     procon::Field _field = field;
+    auto setState = [=](std::bitset<288>& bits, int state, int x , int y){
+        if(!(0 <= x && x <= field.getSize().first - 1 && 0 <= y && y <= field.getSize().second - 1)){
+            std::cerr<<"ERROR :  LastForce内setStateにて盤面外を指定しています!!"<<std::endl;
+            std::abort();
+        }
+        std::bitset<288> w = 3;
+        bits &= ~( w << (2*(12*y+x)));
+        w = state;
+        bits |= ( w << (2*(12*y+x)));
+    };
+
+    auto getState = [=](std::bitset<288>& bits, int x, int y){
+        if(!(0 <= x && x <= field.getSize().first - 1 && 0 <= y && y <= field.getSize().second - 1)){
+            std::cerr<<"ERROR : LastForce内getStateにて盤面外を指定しています!!"<<std::endl;
+            std::abort();
+        }
+        std::bitset<288> w(0uL);
+        w |= bits >> (2*(12*y+x));
+        w &= 3;
+        return w.to_ulong();
+    };
 
     for(int dep = 0; dep < maxval; ++dep)
         for(int pos_0 = 0; pos_0 < size_sum; ++pos_0)
@@ -99,6 +120,18 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
                     std::vector<std::pair<int,int>> points = {std::make_pair(0,0), std::make_pair(0,0)};
 
                     if(dep + 1 == maxval){
+                        std::bitset<288> decode_bitset;
+                        if(side){
+                            for(int x = 0;x < field.getSize().first;x++){
+                                for(int y = 0;y < field.getSize().second;y++){
+                                    if(getState(is_update_bitset, x, y)){
+
+                                    }
+                                }
+                            }
+                        }else{
+
+                        }
                         _field.setFieldData(is_update_bitset);
                         std::vector<std::pair<int,int>> points = _field.getPoints();
                     }
