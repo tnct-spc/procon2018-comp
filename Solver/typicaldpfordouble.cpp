@@ -121,13 +121,15 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
 
                     if(dep + 1 == maxval){
                         std::bitset<288> decode_bitset;
-                        if(side){
+                        if(!side){
                             for(int x = 0;x < field.getSize().first;x++){
                                 for(int y = 0;y < field.getSize().second;y++){
                                     if(getState(dp.at(dep).at(pos).bs, x, y) == 1){
                                         setState(decode_bitset, 0, x, y);
                                     }else if(getState(dp.at(dep).at(pos).bs, x, y) == 0){
                                         setState(decode_bitset, 1, x, y);
+                                    }else if(getState(dp.at(dep).at(pos).bs, x, y) == 2){
+                                        setState(decode_bitset, 2, x, y);
                                     }
                                 }
                             }
@@ -145,12 +147,23 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
                             }
                         }
                         _field.setFieldData(decode_bitset);
-                        std::vector<std::pair<int,int>> points = _field.getPoints();
+
+                        points = _field.getPoints();
+                        /*
+                        for(int y = 0;y < field.getSize().second;y++){
+                            for(int x = 0;x < field.getSize().first;x++){
+                                std::cout<<getState(decode_bitset,x,y)<<" ";
+                            }
+                            std::cout<<std::endl;
+                        }
+                        std::cout<<std::endl;
+                        */
+                        //if(points.at(side).second)std::cout<<points.at(side).second<<std::endl;
+
                     }
 
 
                     int next_pos = two_pair_to_int(std::make_pair(is_move & 2 ? after_pos_pairs.first : before_pos_pairs.first, is_move & 1 ? after_pos_pairs.second : before_pos_pairs.second));
-
 
                     Edge e = Edge::make(dp.at(dep).at(pos), next_pos, value_sum + points.at(side).second, is_update_bitset, std::make_pair(pair_to_int(after_pos_pairs.first), pair_to_int(after_pos_pairs.second)));
 
