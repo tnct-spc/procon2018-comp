@@ -20,7 +20,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     std::vector<std::pair<double, std::pair<int,int>>> poses_1 = calcSingleAgent(1);
 
     std::pair<std::pair<int,int> , std::pair<int,int>> ans;
-    int max_adv = -1e9;
+    double max_adv = -1e9;
 
     std::map<std::pair<int,int> , std::vector<std::vector<std::vector<int>>>> agent0_distributions;
     std::map<std::pair<int,int> , std::vector<std::vector<std::vector<int>>>> agent1_distributions;
@@ -57,7 +57,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
             value_sum += element.first;
 
         for(auto& element : ret_vec){
-            move_per_map.at(side_rev * 2 + agent)[element.second] = 1.0 * element.first / value_sum;
+            move_per_map.at(side_rev * 2 + agent)[element.second] = element.first / value_sum;
             if(side_rev && field.getState(element.second.first, element.second.second).first == (side + 1))
                 enemy_delete_per.at(agent) += element.first / value_sum;
         }
@@ -80,8 +80,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 
     auto check_predict = [&]{
         std::vector<std::pair<int,int>> points = field.getPoints();
-        bool is_win = points.at(0).first + points.at(0).second > points.at(1).first + points.at(1).second;
-        bool is_lose = points.at(0).first + points.at(0).second < points.at(1).first + points.at(1).second;
+        bool is_win = points.at(side).first + points.at(side).second > 1.1 * (points.at(!side).first + points.at(!side).second);
+        bool is_lose = (points.at(side).first + points.at(side).second) * 1.1 < points.at(!side).first + points.at(!side).second;
 
         double select_bound = 0.3;
         double delete_bound = 0.3;
@@ -94,20 +94,25 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
             std::vector<std::pair<double, std::pair<int,int>>> points;
 
             for(auto& element : move_per_map.at(agent)){
-                if((field.getAgent(!side, 0) == element.first && enemy_delete_per.at(0) > delete_bound) &&
-                (field.getAgent(!side, 1) == element.first && enemy_delete_per.at(1) > delete_bound))
+
+                if((field.getAgent(!side, 0) == element.first && enemy_delete_per.at(0) > delete_bound) ||
+                (field.getAgent(!side, 1) == element.first && enemy_delete_per.at(1) > delete_bound)){
                     element.second *= atk_pena;
+                }
 
                 if(element.second > select_bound){
                     if(field.getState(element.first.first, element.first.second).first == (side ? 1 : 2) &&
-                    (move_per_map.at(2)[field.getAgent(side, agent)] > select_bound || move_per_map.at(3)[field.getAgent(side, agent)] > select_bound))
+                    (move_per_map.at(2)[field.getAgent(side, agent)] > select_bound || move_per_map.at(3)[field.getAgent(side, agent)] > select_bound)){
                         element.second *= def_pena;
+                    }
 
                     if(move_per_map.at(2)[element.first] > select_bound || move_per_map.at(3)[element.first] > select_bound){
-                        if(is_win)
+                        if(is_win){
                             element.second *= win_conflict;
-                        else if(is_lose)
+                        }
+                        else if(is_lose){
                             element.second *= lose_conflict;
+                        }
                     }
                 }
                 points.emplace_back(element.second, element.first);
@@ -140,7 +145,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
 
             int pena = params.fix_conflict ? calc_pena(pos0.second, pos1.second) * params.pena_ratio : 1;
 
-            int adv = (pos0.first + pos1.first);
+            double adv = (pos0.first + pos1.first);
             if(pena)
                 adv /= pena;
 
