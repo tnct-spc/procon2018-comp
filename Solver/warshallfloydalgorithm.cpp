@@ -68,8 +68,16 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
     };
 
     for(int count = 0; count < 4; ++count)
-        predict(count / 2, count % 2);
+        predict(count & 2, count & 1);
 
+
+    auto check_predict = [&]{
+        std::vector<std::pair<int,int>> points = field.getPoints();
+        bool is_win = points.at(0).first + points.at(0).second > points.at(1).first + points.at(1).second;
+        bool is_lose = points.at(0).first + points.at(0).second < points.at(1).first + points.at(1).second;
+    };
+
+    check_predict();
 
     auto calc_pena = [&](std::pair<int,int> pos_agent0, std::pair<int,int> pos_agent1){
         std::vector<std::vector<std::vector<int>>> agent0_distribution = agent0_distributions[pos_agent0];
