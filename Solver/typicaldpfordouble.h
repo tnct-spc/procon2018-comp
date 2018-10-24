@@ -15,7 +15,7 @@ public:
 private:
 
     int size_x, size_y, size_sum;
-    const int max_maxval = 30;
+    const int max_maxval = 10;
     double bound_per = 0.1;
 
     double conflict_def_per = 1.3;
@@ -24,6 +24,13 @@ private:
     std::shared_ptr<ProgresDock> dock;
 
     const bool dock_show = false;
+
+    std::vector<double> point_depth_weight = {
+        1.0, 0.9995497206321, 0.9965839655084, 0.9863446263349, 0.9614730743376, 0.9120101602625, 0.8253962143756, 0.6864710464629, 0.47747394583040004, 0.17804368130409998
+    };
+    std::vector<double> route_length_weight = {
+       1.0, 0.997528331, 0.988562982, 0.9682778049999999, 0.9318466519999999, 0.8744433749999999, 0.791241826, 0.677415857, 0.52813932, 0.33858606700000005, 0.10392995000000002
+    };
 
     static const std::vector<int> dx, dy;
     struct Edge;

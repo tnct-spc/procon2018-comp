@@ -165,6 +165,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
 
                     int next_pos = two_pair_to_int(std::make_pair(is_move & 2 ? after_pos_pairs.first : before_pos_pairs.first, is_move & 1 ? after_pos_pairs.second : before_pos_pairs.second));
 
+                    value_sum *= point_depth_weight.at(dep);
+
                     Edge e = Edge::make(dp.at(dep).at(pos), next_pos, value_sum + points.at(side).second, is_update_bitset, std::make_pair(pair_to_int(after_pos_pairs.first), pair_to_int(after_pos_pairs.second)));
 
                     if(!dep && dp.at(dep + 1).at(next_pos) < e)
@@ -221,7 +223,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
             if(!route.first.empty() || !route.second.empty()){
                 if(dock_show)
                     dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({route.first, route.second}), std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
-                routes_que.emplace(dp.at(dep).at(pos).average(), route);
+                routes_que.emplace(dp.at(dep).at(pos).average() * route_length_weight.at(dep - 1), route);
             }
         }
 

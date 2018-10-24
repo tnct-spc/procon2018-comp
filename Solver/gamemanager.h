@@ -94,6 +94,11 @@ public slots:
     // OperatorからのデータをVisualizerに送る
     void getChangeOfData(const std::pair<int, int> data, const bool agent);
 
+    // Fieldを回転させる
+    void getRotateField(bool direction);
+
+    // Fieldを反転させる
+    void getInvertField();
 
 private:
 
