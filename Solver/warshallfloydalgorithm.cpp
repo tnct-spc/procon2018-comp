@@ -6,8 +6,10 @@ WarshallFloydAlgorithm::WarshallFloydAlgorithm(const procon::Field& field, int f
     std::tie(size_x, size_y) = field.getSize();
     size_sum = size_x * size_y;
 
+    /*
     dock = std::make_shared<ProgresDock>();
     dock->show();
+    */
 }
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydAlgorithm::agentAct(int){
