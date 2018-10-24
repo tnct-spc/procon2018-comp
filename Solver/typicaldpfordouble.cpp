@@ -124,15 +124,27 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
                         if(side){
                             for(int x = 0;x < field.getSize().first;x++){
                                 for(int y = 0;y < field.getSize().second;y++){
-                                    if(getState(is_update_bitset, x, y)){
-
+                                    if(getState(dp.at(dep).at(pos).bs, x, y) == 1){
+                                        setState(decode_bitset, 0, x, y);
+                                    }else if(getState(dp.at(dep).at(pos).bs, x, y) == 0){
+                                        setState(decode_bitset, 1, x, y);
                                     }
                                 }
                             }
                         }else{
-
+                            for(int x = 0;x < field.getSize().first;x++){
+                                for(int y = 0;y < field.getSize().second;y++){
+                                    if(getState(dp.at(dep).at(pos).bs, x, y) == 1){
+                                        setState(decode_bitset, 0, x, y);
+                                    }else if(getState(dp.at(dep).at(pos).bs, x, y) == 2){
+                                        setState(decode_bitset, 1, x, y);
+                                    }else if(getState(dp.at(dep).at(pos).bs, x, y) == 0){
+                                        setState(decode_bitset, 2, x, y);
+                                    }
+                                }
+                            }
                         }
-                        _field.setFieldData(is_update_bitset);
+                        _field.setFieldData(decode_bitset);
                         std::vector<std::pair<int,int>> points = _field.getPoints();
                     }
 
