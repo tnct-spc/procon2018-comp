@@ -123,8 +123,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydA
         check_predict_agent(1);
     };
 
-    if(side)
-        check_predict();
+    check_predict();
 
     auto calc_pena = [&](std::pair<int,int> pos_agent0, std::pair<int,int> pos_agent1){
         std::vector<std::vector<std::vector<int>>> agent0_distribution = agent0_distributions[pos_agent0];
