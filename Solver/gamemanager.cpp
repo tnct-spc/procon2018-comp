@@ -476,6 +476,7 @@ void GameManager::agentAct(const int turn, const int agent, const std::tuple<int
     //field->ifCreateArea(0, 0);
     int type, x_inp, y_inp;
     std::tie(type, x_inp, y_inp) = tuple_val;
+    std::cout << "agentAct: " << std::this_thread::get_id() << std::endl;
 
     std::pair<int,int> agent_pos = field->getAgent(turn, agent);
     std::pair<int,int> grid_size = field->getSize();
@@ -887,12 +888,14 @@ void GameManager::completeProgressForManualMode()
 
 void GameManager::threadTerminator()
 {
-//    agentActThread_1->terminate();
-//    agentActThread_2->terminate();
-    agentActThread_1->quit();
-    agentActThread_2->quit();
-    agentActThread_1->exit();
-    agentActThread_2->exit();
+    agentActThread_1->terminate();
+    agentActThread_2->terminate();
+    while(!agentActThread_1->isFinished() && !agentActThread_2->isFinished())
+        ;
+//    agentActThread_1->quit();
+//    agentActThread_2->quit();
+//    agentActThread_1->exit();
+//    agentActThread_2->exit();
 }
 
 void GameManager::startupChangeMode()
