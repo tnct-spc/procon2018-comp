@@ -46,9 +46,9 @@ private:
 
     Parameters params;
 
-    std::vector<std::pair<int, std::pair<int,int>>> calcSingleAgent(int agent);
+    std::vector<std::pair<double, std::pair<int,int>>> calcSingleAgent(int agent);
 
-    std::vector<std::vector<Edge>> calcDijkStra(int start_pos, int maxval, bool agent);
+    std::vector<std::vector<Edge>> calcDijkStra(int start_pos, int maxval, bool agent, int used_pos = -1);
     std::pair<double, std::list<std::pair<int, int>>> getRoute(std::vector<std::vector<Edge>>& input, int target_pos, int depth);
 
     static const std::vector<int> dx, dy;

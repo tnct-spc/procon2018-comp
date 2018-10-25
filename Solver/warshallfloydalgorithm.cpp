@@ -6,16 +6,18 @@ WarshallFloydAlgorithm::WarshallFloydAlgorithm(const procon::Field& field, int f
     std::tie(size_x, size_y) = field.getSize();
     size_sum = size_x * size_y;
 
+    /*
     dock = std::make_shared<ProgresDock>();
-    // dock->show();
+    dock->show();
+    */
 }
 
 const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> WarshallFloydAlgorithm::agentAct(int){
 
     std::pair<int,int> bef_0 = field.getAgent(side, 0);
     std::pair<int,int> bef_1 = field.getAgent(side, 1);
-    std::vector<std::pair<int ,std::pair<int,int>>> poses_0 = calcSingleAgent(0);
-    std::vector<std::pair<int ,std::pair<int,int>>> poses_1 = calcSingleAgent(1);
+    std::vector<std::pair<double, std::pair<int,int>>> poses_0 = calcSingleAgent(0);
+    std::vector<std::pair<double, std::pair<int,int>>> poses_1 = calcSingleAgent(1);
 
     std::pair<std::pair<int,int> , std::pair<int,int>> ans;
     int max_adv = -1e9;
@@ -86,12 +88,55 @@ void WarshallFloydAlgorithm::setParams(WarshallFloydAlgorithm::Parameters& param
     params = param;
 }
 
-std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSingleAgent(int agent){
+std::vector<std::pair<double, std::pair<int,int>>> WarshallFloydAlgorithm::calcSingleAgent(int agent){
 
     // [0,maxdepth]
     int maxdepth = std::min(params.maxdepth_max, field.getFinalTurn() - field.getTurnCount());
 
     std::pair<int,int> agent_pos = field.getAgent(side, agent);
+
+    if(!side){
+        std::vector<std::pair<double, std::pair<int,int>>> ret;
+
+        for(int dir = 0; dir < 8; ++dir){
+
+            if(outOfRange(getPosValue(agent_pos), dir))
+                continue;
+
+            auto after_pos = agent_pos;
+            after_pos.first += dx.at(dir);
+            after_pos.second += dy.at(dir);
+
+            auto dp_vector = calcDijkStra(getPosValue(after_pos), maxdepth - 1, agent, getPosValue(agent_pos));
+
+            std::priority_queue<double> scores;
+
+            double score;
+            std::list<std::pair<int,int>> route;
+
+            double point = (field.getState(after_pos.first, after_pos.second).first != side + 1 ? field.getState(after_pos.first, after_pos.second).second * params.point_depth_weight.at(0) : 0);
+
+            for(int pos = 0; pos < size_sum; ++pos)
+                for(int depth = 0; depth < maxdepth; ++depth){
+                    std::tie(score, route) = getRoute(dp_vector, pos, depth);
+                    if(route.empty())
+                        continue;
+                    route.push_front(agent_pos);
+                    scores.push((point + score) / (depth + 1) * params.route_length_weight.at(depth));
+                }
+
+            double score_sum = 0.0;
+
+            int bound = std::max(scores.size() * 0.05, 1.0);
+            for(int count = 0; count < bound; ++count){
+                score_sum += scores.top();
+                scores.pop();
+            }
+
+            ret.emplace_back(score_sum, after_pos);
+        }
+        return ret;
+    }
 
     std::vector<std::vector<Edge>> edges = calcDijkStra(getPosValue(agent_pos), maxdepth, agent);
 
@@ -131,7 +176,7 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
             break;
     }
 
-    std::vector<std::pair<int, std::pair<int,int>>> anses;
+    std::vector<std::pair<double, std::pair<int,int>>> anses;
 
     for(auto& map_element : route_map){
 
@@ -206,7 +251,7 @@ std::pair<double, std::list<std::pair<int,int>>> WarshallFloydAlgorithm::getRout
 }
 
 // [0,maxval]
-std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::calcDijkStra(int start_pos, int maxval, bool agent){
+std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::calcDijkStra(int start_pos, int maxval, bool agent, int used_pos){
 
     std::bitset<144> field_states;
     for(int x_pos = 0; x_pos < size_x; ++x_pos)
@@ -217,6 +262,9 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
             field_states[index] = (field.getState(x_pos,y_pos).first != side + 1);
 
         }
+
+    if(used_pos != -1)
+        field_states[used_pos] = 0;
 
     std::vector<std::vector<Edge>> dp_vector(size_sum);
 
@@ -258,7 +306,7 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
                         }
 
 
-                        value *= params.point_depth_weight.at(depth);
+                        value *= params.point_depth_weight.at(depth + (used_pos != -1));
 
                         if(length == 2 && depth + 1 == maxval){
                             length = 1;
