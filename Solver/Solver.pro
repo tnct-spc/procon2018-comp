@@ -51,7 +51,10 @@ SOURCES += \
     simplemontecarlo/useabstmontecarlo.cpp \
     LastForce/lastforce.cpp \
     majorityrulewithabstdata.cpp \
-    depthfirstsearch.cpp
+    depthfirstsearch.cpp \
+    LastForce/lastregion.cpp \
+    warshallfloydalgorithm.cpp \
+    typicaldpfordouble.cpp
 
 HEADERS += \
         algorithm_global.h \ 
@@ -79,7 +82,10 @@ HEADERS += \
     simplemontecarlo/useabstmontecarlo.h \
     LastForce/lastforce.h \
     majorityrulewithabstdata.h \
-    depthfirstsearch.h
+    depthfirstsearch.h \
+    LastForce/lastregion.h \
+    warshallfloydalgorithm.h \
+    typicaldpfordouble.h
 
 unix {
     target.path = /usr/lib

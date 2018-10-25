@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>977</width>
-    <height>703</height>
+    <height>746</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -121,6 +121,16 @@
       </item>
       <item>
        <property name="text">
+        <string>TypicalDPForDouble</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>WarshallFloydAlgorithm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>MajorityRuleWithAbstData</string>
        </property>
       </item>
@@ -177,6 +187,11 @@
       <item>
        <property name="text">
         <string>DummyAlgorithm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>LastRegion</string>
        </property>
       </item>
      </widget>
@@ -232,6 +247,16 @@
       </item>
       <item>
        <property name="text">
+        <string>TypicalDPForDouble</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>WarshallFloydAlgorithm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>MajorityRuleWithAbstData</string>
        </property>
       </item>
@@ -290,6 +315,11 @@
         <string>DummyAlgorithm</string>
        </property>
       </item>
+      <item>
+       <property name="text">
+        <string>LastRegion</string>
+       </property>
+      </item>
      </widget>
     </item>
     <item row="12" column="2">
@@ -321,7 +351,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>12</number>
       </property>
       <widget class="QWidget" name="GeneticAlgo_opponent">
        <widget class="QLabel" name="label_4">
@@ -528,7 +558,7 @@
     <item row="5" column="1">
      <widget class="QStackedWidget" name="my_stackedWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>13</number>
       </property>
       <widget class="QWidget" name="GeneticAlgo_my">
        <widget class="QLabel" name="label_3">

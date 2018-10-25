@@ -36,7 +36,7 @@ public:
 
     void agentAct(const int turn, const int agent, const std::tuple<int,int,int> tuple_val);
 
-    void resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show = true, const int t_max = 60);
+    void resetManager(int x_size, int y_size, bool v_show = true, const int t_max = 60);
 
     procon::Field& getField();
 
@@ -76,11 +76,20 @@ signals:
     // OperatorのChangeがクリックされたら、変更された値をFieldとVisualizerに反映
     void sendDataToVisualizer(const std::pair<int,int> data, const bool agen);
 
+    // Runが押されたさい、Visualizerに溜まっている移動予定をリセットする
+    void resetField();
+
 public slots:
     void changeMove(const std::vector<std::vector<std::pair<int,int>>>& move, std::vector<std::vector<int>> is_delete);
 
     // ChangeModeを終了
     void endChangeMode(const std::pair<int, int> turns);
+
+    // agentの位置の変更を反映
+    void changeAgentpos(std::pair<int, int> agent, std::pair<int, int> pos);
+
+    // グリッドの状態の変更を反映
+    void changeGridState(std::pair<int, int> grid, int state);
 
     // ChangeModeのときクリックされたGridを受け取る
     void getDataToOperator(const std::pair<int,int> grid, const bool agent);
@@ -88,6 +97,11 @@ public slots:
     // OperatorからのデータをVisualizerに送る
     void getChangeOfData(const std::pair<int, int> data, const bool agent);
 
+    // Fieldを回転させる
+    void getRotateField(bool direction);
+
+    // Fieldを反転させる
+    void getInvertField();
 
 private:
 

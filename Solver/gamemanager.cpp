@@ -13,6 +13,9 @@
 #include "LastForce/lastforce.h"
 #include "majorityrulewithabstdata.h"
 #include "depthfirstsearch.h"
+#include "LastForce/lastregion.h"
+#include "warshallfloydalgorithm.h"
+#include "typicaldpfordouble.h"
 
 GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show, int turn_max, QObject *parent)
     : QObject(parent),
@@ -44,6 +47,13 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show
         connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
         connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
         connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
+        connect(visualizer.get(), &Visualizer::sendAgentPos, this, &GameManager::changeAgentpos);
+        connect(visualizer.get(), &Visualizer::sendGridState, this, &GameManager::changeGridState);
+        connect(visualizer.get(), &Visualizer::sendRecalculation, this, &GameManager::endChangeMode);
+        connect(visualizer.get(), &Visualizer::sendRotateField, this, &GameManager::getRotateField);
+        connect(visualizer.get(), &Visualizer::sendInvertField, this, &GameManager::getInvertField);
+        connect(this, &GameManager::resetField, visualizer.get(), &Visualizer::resetConfirm);
+        connect(visualizer.get(), &Visualizer::sendChangeTurn, this, &GameManager::endChangeMode);
 
         /*
         minimum = std::make_shared<MinimumVisualizer>(std::make_pair(x_size, y_size));
@@ -55,12 +65,24 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show
     }
 }
 
-void GameManager::resetManager(const unsigned int x_size, const unsigned int y_size, bool v_show, const int t_max){
+void GameManager::resetManager(int x_size, int y_size, bool v_show, const int t_max){
 
     vis_show = v_show;
 
+    std::random_device rnd;
+    std::mt19937 mt(rnd());
+    if(use_random_field){
+        std::uniform_int_distribution<> rand_size(8, 12);
+        x_size = rand_size(mt);
+        y_size = rand_size(mt);
+    }
+    std::uniform_int_distribution<> rand_turn(40,80);
+
     field = std::make_shared<procon::Field>(x_size, y_size, max_val, min_val);
-    field->setFinalTurn(t_max);
+    if(use_random_field)
+        field->setFinalTurn(rand_turn(mt));
+    else
+        field->setFinalTurn(t_max);
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
@@ -71,6 +93,13 @@ void GameManager::resetManager(const unsigned int x_size, const unsigned int y_s
         connect(this, &GameManager::setCandidateMove, visualizer.get(), &Visualizer::candidateMove);
         connect(visualizer.get(), &Visualizer::selectChangeGrid, this, &GameManager::getDataToOperator);
         connect(this, &GameManager::sendDataToVisualizer, visualizer.get(), &Visualizer::getData);
+        connect(visualizer.get(), &Visualizer::sendAgentPos, this, &GameManager::changeAgentpos);
+        connect(visualizer.get(), &Visualizer::sendGridState, this, &GameManager::changeGridState);
+        connect(visualizer.get(), &Visualizer::sendRecalculation, this, &GameManager::endChangeMode);
+        connect(visualizer.get(), &Visualizer::sendRotateField, this, &GameManager::getRotateField);
+        connect(visualizer.get(), &Visualizer::sendInvertField, this, &GameManager::getInvertField);
+        connect(this, &GameManager::resetField, visualizer.get(), &Visualizer::resetConfirm);
+        connect(visualizer.get(), &Visualizer::sendChangeTurn, this, &GameManager::endChangeMode);
 
         // minimum = std::make_shared<MinimumVisualizer>(std::make_pair(x_size, y_size));
     }else{
@@ -166,7 +195,13 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_1 = std::make_shared<MajorityRuleWithAbstData>(*field, field->getFinalTurn(), 0);
     } else if (QString::compare("DepthFirstSearch", my_algo) == 0) {
         team_1 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 0);
-    }
+    } else if (QString::compare("LastRegion", my_algo) == 0) {
+        team_1 = std::make_shared<LastRegion>(*field, field->getFinalTurn(), 0);
+    } else if (QString::compare("WarshallFloydAlgorithm", my_algo) == 0) {
+        team_1 = std::make_shared<WarshallFloydAlgorithm>(*field, field->getFinalTurn(), 0);
+    } else if (QString::compare("TypicalDPForDouble", my_algo) == 0) {
+        team_1 = std::make_shared<TypicalDpForDouble>(*field, field->getFinalTurn(), 0);
+    } else{abort();}
 
     team_1->setParams(my_params);
 
@@ -196,9 +231,17 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_2 = std::make_shared<MajorityRuleWithAbstData>(*field, field->getFinalTurn(), 1);
     } else if (QString::compare("DepthFirstSearch", opponent_algo) == 0) {
         team_2 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 1);
-    }
+    } else if (QString::compare("LastRegion", opponent_algo) == 0) {
+        team_2 = std::make_shared<LastRegion>(*field, field->getFinalTurn(), 1);
+    } else if (QString::compare("WarshallFloydAlgorithm", opponent_algo) == 0) {
+        team_2 = std::make_shared<WarshallFloydAlgorithm>(*field, field->getFinalTurn(), 1);
+    } else if (QString::compare("TypicalDPForDouble", opponent_algo) == 0) {
+        team_2 = std::make_shared<TypicalDpForDouble>(*field, field->getFinalTurn(), 1);
+    } else{abort();}
 
     team_2->setParams(opp_params);
+
+    emit resetField();
 
 
     // progressdockは一旦表示しない事にします(使う事があまりないため)
@@ -277,7 +320,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
 //            progresdock->addVisuAnswer(*(field_vec.back()));
 
-
+            now_field = field_vec.size() - 1;
             setFieldCount(field_vec.size() - 1);
         }
 
@@ -413,9 +456,9 @@ unsigned int GameManager::getFieldCount(){
 }
 void GameManager::setFieldCount(const unsigned int number){
     if(number >= field_vec.size())return ;
-    now_field = number;
+//    now_field = number;
     if(vis_show){
-        visualizer->setField(*field_vec.at(number), number, field->getFinalTurn());
+        visualizer->setField(*field_vec.at(number), getFieldCount(), field->getFinalTurn());
         visualizer->update();
         visualizer->repaint();
     }
@@ -427,7 +470,7 @@ unsigned int GameManager::getFinalTurn(){
 
 
 void GameManager::agentAct(const int turn, const int agent, const std::tuple<int, int, int> tuple_val){
-
+    //field->ifCreateArea(0, 0);
     int type, x_inp, y_inp;
     std::tie(type, x_inp, y_inp) = tuple_val;
 
@@ -763,7 +806,7 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
 //     progresdock->addVisuAnswer(*(field_vec.back()));
 
 
-
+    now_field = field->getTurnCount();
     setFieldCount(field_vec.size() - 1);
 
     visualizer->update();
@@ -874,12 +917,17 @@ void GameManager::endChangeMode(const std::pair<int, int> turns)
     // VisualizerのChangeModeを解除
     visualizer->setChangeMode(false);
 
-    // Operatorを閉じる
-    ope->close();
+    if (ope != nullptr) {
+        // Operatorを閉じる
+        ope->close();
+    }
 
     // Fieldの書き換え
     *field = visualizer->getField();
     field->updatePoint();
+
+    // 選択されていたエージェントの次の動作を解除
+
 
     // ゲームを続行
     nextMoveForManualMode();
@@ -922,3 +970,27 @@ void GameManager::getChangeOfData(const std::pair<int, int> data, const bool age
 //    search_thread.join();
 //    test_thread.join();
 //}
+
+// agent => first : team, second : agent
+// pos => first : x, second : y
+void GameManager::changeAgentpos(std::pair<int, int> agent, std::pair<int, int> pos)
+{
+    field->setAgent(agent.first, agent.second, pos.first, pos.second);
+}
+
+// grid => first : x, second : y
+// state => team
+void GameManager::changeGridState(std::pair<int, int> grid, int state)
+{
+    field->setState(grid.first, grid.second, state);
+}
+
+void GameManager::getRotateField(bool direction)
+{
+    field->rotateField(direction);
+}
+
+void GameManager::getInvertField()
+{
+    field->invertField();
+}

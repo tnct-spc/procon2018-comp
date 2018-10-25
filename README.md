@@ -3,9 +3,13 @@
 
 opencv zbar hdf5 ffmpeg
 
+## please add the following sentence to your .zshrc or .profile or something...
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+
 ## Description
 
-yui回全国高等専門学校プログラミングコンテスト競技部門用のリポジトリです。
+第29回全国高等専門学校プログラミングコンテスト競技部門用のリポジトリです。
 
 ### 大会Twitterタグ
 [#procon29](https://twitter.com/search?q=%23procon29)

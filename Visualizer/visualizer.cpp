@@ -12,6 +12,7 @@
     candidate = std::vector<std::vector<std::pair<int, int>>>(2, std::vector<std::pair<int,int>>(2, std::make_pair(-1, -1)));
 
     is_delete = std::vector<std::vector<int>>(2, std::vector<int>(2, 0));
+
 }
 
 Visualizer::~Visualizer()
@@ -218,12 +219,22 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     };
 
+    auto drawClickedGridWhenChangingMode = [&]{
+
+       QColor paint_color = selected_grid_color;
+       painter.setBrush(QBrush(paint_color));
+       int draw_x = selected_to_change_grid.first;
+       int draw_y = selected_to_change_grid.second;
+       painter.drawRect(horizontal_margin + draw_x * grid_size, vertical_margin + draw_y * grid_size, grid_size, grid_size);
+
+    };
+
     auto drawPoints = [&]{
 
         //とても汚いコピペコードで申し訳NASA
         QPoint side_0_point;
         side_0_point.setX(horizontal_margin);
-        side_0_point.setY(window_height  - vertical_margin + grid_size * 0.7);
+        side_0_point.setY(window_height  - vertical_margin + grid_size * 1.3);
 
         painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
 
@@ -247,7 +258,7 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
         QPoint side_1_point;
         side_1_point.setX(window_width - horizontal_margin - grid_size * 5);
-        side_1_point.setY(window_height  - vertical_margin + grid_size * 0.7 + grid_size * 0.6);
+        side_1_point.setY(window_height  - vertical_margin + grid_size * 1.3 + grid_size * 0.6);
 
         painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
 
@@ -269,8 +280,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
     auto drawTurnCount = [&]{
 
         QPoint text_point;
-        text_point.setX(horizontal_margin);
-        text_point.setY(vertical_margin - 0.3 * grid_size);
+        text_point.setX(horizontal_margin + (field.getSize().first - 2.5) * grid_size);
+        text_point.setY(vertical_margin - 1.0 * grid_size);
 
         painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
         painter.setPen(QPen(QBrush(QColor(250, 80, 80 , 80)), 0.3));
@@ -281,6 +292,25 @@ void Visualizer::paintEvent(QPaintEvent *event){
         str += std::to_string(max_turn);
 
         painter.drawText(text_point,QString::fromStdString(str));
+    };
+
+    auto drawisEditMode = [&]{
+        QPoint text_point;
+        text_point.setX(horizontal_margin);
+        text_point.setY(vertical_margin - 1.0 * grid_size);
+
+        painter.setFont(QFont("Decorative", grid_size * 0.4, QFont::Thin)); // text font
+        painter.setPen(QPen(QBrush(QColor(250, 80, 80, 80)), 0.3));
+
+
+        std::string str;
+        str = is_change_field_mode == true ? "EditMode" : "GameMode";
+
+        std::string recul;
+        if (!is_change_field_mode && is_recalcuration) recul = "Calcurating";
+        painter.drawText(text_point,QString::fromStdString(str + " " + recul));
+
+        is_recalcuration = false;
     };
 
     auto drawRegion = [&]{
@@ -347,19 +377,60 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     };
 
+    // Gridの左右に番号をふる
+    auto writeGridNumber = [&] {
 
+        // フォントの設定
+        QFont text_font;
+        text_font.setPixelSize(grid_size * 0.5);
+        painter.setFont(text_font);
+
+        QColor color(40, 40, 40, 80);
+        painter.setPen(color);
+
+        for (unsigned int x = 0; x < grid_x; x++) {
+            painter.drawText(
+                        QRectF(horizontal_margin + grid_size * x, vertical_margin - grid_size * 0.9, grid_size, grid_size),
+                        Qt::AlignHCenter | Qt::AlignBottom,
+                        QString::number(x+1)
+                        );
+            painter.drawText(
+                        QRectF(horizontal_margin + grid_size * x, vertical_margin + grid_size * (grid_y + 0.1), grid_size, grid_size),
+                        Qt::AlignHCenter | Qt::AlignTop,
+                        QString::number(x+1)
+                        );
+        }
+
+        for (unsigned int y = 0; y < grid_y; y++) {
+            painter.drawText(
+                        QRectF(horizontal_margin - grid_size * 1.1, vertical_margin + grid_size * y, grid_size, grid_size),
+                        Qt::AlignRight | Qt::AlignVCenter,
+                        QString::number(y+1)
+                        );
+            painter.drawText(
+                        QRectF(horizontal_margin + grid_size * (grid_x + 0.1), vertical_margin + grid_size * y, grid_size, grid_size),
+                        Qt::AlignLeft | Qt::AlignVCenter,
+                        QString::number(y+1)
+                        );
+        }
+    };
 
     drawBackGround();
     drawTiles();
+    drawisEditMode();
+
+
+    if(is_change_field_mode && is_selected_grid) drawClickedGridWhenChangingMode();
 
     // AutoModeでなくかつChaneModeではないとき
-    if((auto_mode == false) && (change_mode == false)){
+
+    if((auto_mode == false) && (change_mode == false) && !is_change_field_mode){
         drawAgentMove();
         drawCandidateMove();
         if (selected) drawAroundAgent();
     }
 
-    if (clicked) {
+    if (clicked && !is_change_field_mode) {
         // クリックされたグリッド
         if (change_mode) drawClickedGrid();
 
@@ -374,6 +445,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     drawTurnCount();
     drawRegion();
+
+    writeGridNumber();
 }
 
 // メインウィンドウ内のマスをクリックしたときに行われるイベント
@@ -388,7 +461,7 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
 
         // マスの範囲外をクリックしたら何もしない
         if ((point.x() < horizontal_margin) || (point.x() > window_width - horizontal_margin)
-            || (point.y() < vertical_margin) || (point.y() > window_height - vertical_margin)) {
+                        || (point.y() < vertical_margin) || (point.y() > window_height - vertical_margin)) {
             return;
         }
 
@@ -406,12 +479,36 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
 
         // 移動をを入力するエージェントが選ばれているか
         // ChangeModeのときは機能しない
-        if (!change_mode && selected) {
+
+        if(is_change_field_mode){
+            selected_to_change_grid = clicked_grid;
+            is_selected_grid = true;
+            this->update();
+        }
+
+        if (!change_mode && selected && !is_change_field_mode) {
 
             // グリッドはエージェントの移動先に含まれているか
             checkClickGrid(clicked_grid, right_flag);
 
-        } else {
+        }else if(selected && is_change_field_mode){
+            //すでにagentがいたら早期return
+            std::vector<std::vector<std::pair<int, int>>> agents = field.getAgents();
+            for (int team = 0; team < 2; team++) {
+                for (int agent = 0; agent < 2; agent++) {
+
+                    // クリックされたマスとエージェントの位置が一致したら、チームとエージェントの番号を返す
+                    if (clicked_grid == agents.at(team).at(agent))
+                        return;
+                }
+            }
+
+            setGridState(clicked_grid, selected_agent.first + 1);
+            setAgentPos(selected_agent, clicked_grid);
+            selected = false;
+            is_moving_agent = true;
+
+        }else {
 
             // クリックされたエージェントまたはマスを照合
             checkClickedAgent(clicked_grid);
@@ -428,8 +525,13 @@ void Visualizer::mousePressEvent(QMouseEvent *event)
             emit selectChangeGrid(clicked_grid, selected);
 
         }
-    }
+        if(!is_moving_agent && is_change_field_mode){
+            is_changing_field_grid = true;
 
+        }
+        is_moving_agent = false;
+
+    }
 }
 
 // クリックされたエージェントまたはマスを照合
@@ -456,6 +558,7 @@ void Visualizer::checkClickedAgent(std::pair<int, int> mass)
 
                 // エージェントが選択されたことを記録
                 selected = true;
+                is_moving_agent = true;
 
                 // 選択されたエージェントの移動可能範囲を表示
                 this->update();
@@ -585,4 +688,258 @@ void Visualizer::setTurns(const std::pair<int, int> turns)
     field.setTurnCount(turn);
     max_turn = turns.second;
     field.setFinalTurn(max_turn);
+}
+
+void Visualizer::setAgentPos(const std::pair<int, int> agent, const std::pair<int, int> pos)
+{
+    field.setAgent(agent.first, agent.second, pos.first, pos.second);
+    is_selected_grid = false;
+    update();
+
+    emit sendAgentPos(agent, pos);
+}
+
+void Visualizer::setGridState(const std::pair<int, int> grid, const int state)
+{
+    field.setState(grid.first, grid.second, state);
+    is_selected_grid = false;
+    update();
+
+    emit sendGridState(grid, state);
+}
+
+void Visualizer::updateToRotateField(bool direction)
+{
+    // フィールドのサイズ
+    std::pair<int, int> field_size = field.getSize();
+    std::swap(field_size.first, field_size.second);
+
+    // selected_to_change_grid
+    if(is_change_field_mode && is_selected_grid) {
+        // 回る方向による条件分岐
+        int x = direction ? field_size.second - selected_to_change_grid.second - 1 : selected_to_change_grid.second;
+        int y = direction ? selected_to_change_grid.first : field_size.first - selected_to_change_grid.first - 1;
+
+        selected_to_change_grid = std::make_pair(x, y);
+    }
+
+    // selected_agent_grid
+    if (selected) {
+        // 回る方向による条件分岐
+        int x = direction ? field_size.second - selected_agent_grid.second - 1 : selected_agent_grid.second;
+        int y = direction ? selected_agent_grid.first : field_size.first - selected_agent_grid.first - 1;
+
+        selected_agent_grid = std::make_pair(x, y);
+    }
+
+    // next_grid
+    for (int side = 0; side < 2; side++) {
+        for (int agent = 0; agent < 2; agent++) {
+            // まだ選択されていなければパス
+            if (next_grids.at(side).at(agent).first == -1) continue;
+
+            // 回る方向による条件分岐
+            int x = direction ? field_size.second - next_grids.at(side).at(agent).second - 1 : next_grids.at(side).at(agent).second;
+            int y = direction ? next_grids.at(side).at(agent).first : field_size.first - next_grids.at(side).at(agent).first - 1;
+
+            next_grids.at(side).at(agent) = std::make_pair(x, y);
+        }
+    }
+
+    // candidate
+    for (int side = 0; side < 2; side++) {
+        for (int agent = 0; agent < 2; agent++) {
+            // まだ選択されていなければパス
+            if (candidate.at(side).at(agent).first == -1) continue;
+
+            // 回る方向による条件分岐
+            int x = direction ? field_size.second - candidate.at(side).at(agent).second - 1 : candidate.at(side).at(agent).second;
+            int y = direction ? candidate.at(side).at(agent).first : field_size.first - candidate.at(side).at(agent).first - 1;
+
+            candidate.at(side).at(agent) = std::make_pair(x, y);
+        }
+    }
+
+    // clicked_grid_change
+    if (change_mode && clicked) {
+        // 回る方向による条件分岐
+        int x = direction ? field_size.second - clicked_grid_change.second - 1 : clicked_grid_change.second;
+        int y = direction ? clicked_grid_change.first : field_size.first - clicked_grid_change.first - 1;
+
+        clicked_grid_change = std::make_pair(x, y);
+    }
+}
+
+void Visualizer::updateToInvertField()
+{
+    // フィールドのサイズ
+    std::pair<int, int> field_size = field.getSize();
+
+    // selected_to_change_grid
+    if(is_change_field_mode && is_selected_grid) {
+        // 回る方向による条件分岐
+        int x = selected_to_change_grid.first;
+        int y = field_size.second - selected_to_change_grid.second - 1;
+
+        selected_to_change_grid = std::make_pair(x, y);
+    }
+
+    // selected_agent_grid
+    if (selected) {
+        // 回る方向による条件分岐
+        int x = selected_agent_grid.first;
+        int y = field_size.second - selected_agent_grid.second - 1;
+
+        selected_agent_grid = std::make_pair(x, y);
+    }
+
+    // next_grid
+    for (int side = 0; side < 2; side++) {
+        for (int agent = 0; agent < 2; agent++) {
+            // まだ選択されていなければパス
+            if (next_grids.at(side).at(agent).first == -1) continue;
+
+            // 回る方向による条件分岐
+            int x = next_grids.at(side).at(agent).first;
+            int y = field_size.second - next_grids.at(side).at(agent).second - 1;
+
+            next_grids.at(side).at(agent) = std::make_pair(x, y);
+        }
+    }
+
+    // candidate
+    for (int side = 0; side < 2; side++) {
+        for (int agent = 0; agent < 2; agent++) {
+            // まだ選択されていなければパス
+            if (candidate.at(side).at(agent).first == -1) continue;
+
+            // 回る方向による条件分岐
+            int x = candidate.at(side).at(agent).first;
+            int y = field_size.second - candidate.at(side).at(agent).second - 1;
+
+            candidate.at(side).at(agent) = std::make_pair(x, y);
+        }
+    }
+
+    // clicked_grid_change
+    if (change_mode && clicked) {
+        // 回る方向による条件分岐
+        int x = clicked_grid_change.first;
+        int y = field_size.second - clicked_grid_change.second - 1;
+
+        clicked_grid_change = std::make_pair(x, y);
+    }
+}
+
+void Visualizer::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_C || event->key() == Qt::Key_E){
+        if(is_change_field_mode){
+            is_change_field_mode = false;
+            is_selected_grid = false;
+            selected = false;
+            resetConfirm();
+            update();
+        }else{
+            is_change_field_mode = true;
+            update();
+        }
+    }
+
+    if((event->key() == Qt::Key_0 || event->key() == Qt::Key_3) && is_changing_field_grid && !is_moving_agent){
+        setGridState(selected_to_change_grid, 0);
+    }else if(event->key() == Qt::Key_1 && is_changing_field_grid &&	!is_moving_agent){
+        setGridState(selected_to_change_grid, 1);
+    }else if(event->key() == Qt::Key_2 && is_changing_field_grid && !is_moving_agent){
+        setGridState(selected_to_change_grid, 2);
+    } else if ((event->key() == Qt::Key_Escape) && selected && !is_change_field_mode) {
+        // 選択したエージェントの移動入力を解除
+        checkClickGrid(std::make_pair(-1,-1), false);
+    } else if ((event->key() == Qt::Key_Escape) && is_change_field_mode) {
+        is_change_field_mode = false;
+        is_selected_grid = false;
+        selected = false;
+        update();
+    } else if ((event->key() == Qt::Key_R) && !is_change_field_mode) {
+        // 現時点でのfieldで再計算
+        is_recalcuration = true;
+
+        // 次の行動が選択されていたエージェントをリセット
+        confirm_count = 0;
+
+        emit sendRecalculation(std::make_pair(field.getTurnCount(), field.getFinalTurn()));
+    } else if ((event->key() == Qt::Key_Escape) && is_change_field_mode && is_selected_grid) {
+        // 選択されているマスやエージェントを解除
+        is_selected_grid = false;
+        is_changing_field_grid = false;
+        selected = false;
+        resetConfirm();
+        this->repaint();
+    }
+
+    if (event->key() == Qt::Key_Right) {
+        // Fieldを右に回す
+        field.rotateField(true);
+
+        // Visualizer側のパラメータも変更
+        this->updateToRotateField(true);
+
+        // GameManager側も変更
+        emit sendRotateField(true);
+        this->repaint();
+    } else if (event->key() == Qt::Key_Left) {
+        // Fieldを左に回す
+        field.rotateField(false);
+
+        // Visualizer側のパラメータも変更
+        this->updateToRotateField(false);
+
+        // GameManager側も変更
+        emit sendRotateField(false);
+        this->repaint();
+    }
+
+    // Fieldを反転
+    if (event->key() == Qt::Key_Up || event->key() == Qt::Key_Down) {
+        field.invertField();
+
+        // Visualizer側も変更
+        this->updateToInvertField();
+
+        // GameManager側も変更
+        emit sendInvertField();
+        this->repaint();
+    }
+
+    if (is_change_field_mode) {
+        // 現時点での値を取得
+        int now_turn = field.getTurnCount();
+        int final_turn = field.getFinalTurn();
+
+        if (event->key() == Qt::Key_U) {
+            // now_turnを１つ減らす
+            if (now_turn > 0) emit sendChangeTurn(std::make_pair(now_turn-1, final_turn));
+        } else if (event->key() == Qt::Key_I) {
+            // now_turnを１つ増やす
+            if (now_turn + 1 <= final_turn) emit sendChangeTurn(std::make_pair(now_turn+1, final_turn));
+        } else if (event->key() == Qt::Key_J) {
+            // final_turnを１つ減らす
+            if (final_turn - 1 >= now_turn) emit sendChangeTurn(std::make_pair(now_turn, final_turn-1));
+        } else if (event->key() == Qt::Key_K) {
+            // final_turnを１つ増やす
+            emit sendChangeTurn(std::make_pair(now_turn, final_turn+1));
+        }
+    }
+
+}
+
+void Visualizer::resetConfirm()
+{
+    confirm_count = 0;
+
+    for (unsigned int t = 0; t < 2; t++) {
+        for (unsigned int c = 0; c < 2; c++) {
+            next_grids.at(t).at(c).first = -1;
+        }
+    }
 }

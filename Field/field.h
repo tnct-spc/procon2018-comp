@@ -2,6 +2,7 @@
 #define FIELD_H
 
 
+#include <algorithm>
 #include <vector>
 #include <utility>
 #include <random>
@@ -17,7 +18,6 @@
 #include <sstream>
 #include<math.h>
 #include <stdlib.h>
-
 
 namespace procon {
 
@@ -36,6 +36,7 @@ public:
     const std::vector<std::vector<int>>& getValue() const;
 
     std::bitset<288> getRegions();
+    void setRegions(std::bitset<288>& input);
 
     int getRegion(std::pair<int,int> pos);
 
@@ -43,7 +44,9 @@ public:
     std::vector<std::pair<int,int>> getPoints(std::pair<std::pair<int,int>, std::pair<int, int>> pos, bool flag = true);     //引数にteam番号,移動or破壊(0 or 1),座標を持つ、第二引数には実際に得点を書き換えるか(書き換えるならtrue)
     std::vector<std::pair<int,int>> getPoints(std::vector<std::pair<std::pair<int,int>, std::pair<int, int>>> pos_vec, bool flag = true);//上と大体同じ
 
-    std::vector<std::pair<int,int>> getPoints(std::pair<int,int> pos,int state);
+    std::vector<std::pair<int,int>> getPoints(std::pair<int,int> pos, int state);
+
+    std::vector<std::pair<int,int>> getPoints(std::vector<std::pair<std::pair<int,int>,int>> poses);
 
     void setPoints(int side, std::pair<int,int> value);
 
@@ -60,6 +63,8 @@ public:
 
     bool canPut(const unsigned int side, const unsigned int move_1, const unsigned int move_2, bool double_move = true) const;
 
+    std::vector<std::pair<std::pair<int,int>,int>> ifCreateArea(unsigned long side, unsigned long number);
+    std::vector<std::pair<std::vector<std::pair<int,int>>,int>> ifBreakArea (unsigned long side,unsigned long number);
     void setSize(const std::pair<int, int> &grid);
     void setValue(const std::vector<std::vector<int>> &value);
     void setGridValue(const unsigned int x, const unsigned int y, const unsigned int value);
@@ -91,6 +96,12 @@ public:
     //1 -> 領域点の差の変化 2 -> マスの得点の差の変化 3 -> 味方agents同士の距離の差 4 -> 敵agent同士の距離の差 5 -> 味方と敵の距離の総和の差 6 -> 味方agentと中央との距離の総和の差(大きければ大きいほど外側) 7 -> 敵のagentと中心の距離の総和の差 8 -> 周辺の自分のタイルの割合 9 -> 周辺の敵のタイルの割合 10 -> 現在のターンの進行割合 11 -> マスの埋まり具合 12 -> 残りのターン数
     void createQRString(int side);
 
+    // Fieldを回転
+    // direction : ture -> right, false ->left
+    void rotateField(bool direction);
+
+    // Fieldを反転
+    void invertField();
 
 private:
     std::bitset<288> field_data;
