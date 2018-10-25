@@ -39,7 +39,7 @@ public:
 
     procon::Field& getField();
 
-    void setFieldCount(const unsigned int number);
+    void setFieldCount(const unsigned int number, bool use_turncount);
     unsigned int getFieldCount();
 
     void startSimulation(QString my_algo, QString opponent_algo, QString InputMethod, std::vector<std::pair<QString, double>> my_params, std::vector<std::pair<QString, double>> opp_params);

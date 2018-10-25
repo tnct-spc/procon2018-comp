@@ -267,7 +267,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
     //うぇーいｗｗｗｗｗｗｗ
     if(is_auto){
         // field->setTurnCount(0);
-        setFieldCount(field_vec.size() - 1);
+        setFieldCount(field_vec.size() - 1, false);
         while(field->getTurnCount() < field->getFinalTurn()){
 
 
@@ -322,8 +322,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
 
 //            progresdock->addVisuAnswer(*(field_vec.back()));
 
-            now_field = field_vec.size() - 1;
-            setFieldCount(field_vec.size() - 1);
+            setFieldCount(field_vec.size() - 1, false);
         }
 
         // procon::CsvIo::exportField(*field, "../../field.csv");
@@ -456,11 +455,12 @@ procon::Field& GameManager::getField(){
 unsigned int GameManager::getFieldCount(){
     return now_field;
 }
-void GameManager::setFieldCount(const unsigned int number){
+void GameManager::setFieldCount(const unsigned int number, bool use_turncount){
     if(number >= field_vec.size())return ;
-//    now_field = number;
+    now_field = number;
     if(vis_show){
-        visualizer->setField(*field_vec.at(number), getFieldCount(), field->getFinalTurn());
+        if (use_turncount) visualizer->setField(*field_vec.at(number), getTurnCount(), field->getFinalTurn());
+        else visualizer->setField(*field_vec.at(number), getFieldCount(), field->getFinalTurn());
         visualizer->update();
         visualizer->repaint();
     }
@@ -808,8 +808,7 @@ void GameManager::changeMove(const std::vector<std::vector<std::pair<int, int>>>
 //     progresdock->addVisuAnswer(*(field_vec.back()));
 
 
-    now_field = field->getTurnCount();
-    setFieldCount(field_vec.size() - 1);
+    setFieldCount(field_vec.size() - 1, true);
 
     visualizer->update();
 

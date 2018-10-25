@@ -100,11 +100,11 @@ void Mejirodai::RunManagerSimulation(){
 }
 
 void Mejirodai::goNextState(){
-    manager->setFieldCount(manager->getFieldCount() + 1);
+    manager->setFieldCount(manager->getFieldCount() + 1, false);
 }
 
 void Mejirodai::goPrevState(){
-    manager->setFieldCount(manager->getFieldCount() - 1);
+    manager->setFieldCount(manager->getFieldCount() - 1, false);
 }
 
 void Mejirodai::exportFieldtoCSV(){
