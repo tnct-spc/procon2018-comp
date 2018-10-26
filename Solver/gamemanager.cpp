@@ -842,6 +842,7 @@ void GameManager::nextMoveForManualMode(){
     agentActThread_2 = QThread::create([&]{
         candidate_move[1] = team_2->agentAct(field->getTurnCount());
     });
+    isThreadStarted = true;
     connect(agentActThread_1, SIGNAL(finished()), this, SLOT(twoThreadWaiter()));
     connect(agentActThread_2, SIGNAL(finished()), this, SLOT(twoThreadWaiter()));
     agentActThread_1->start();
@@ -999,4 +1000,10 @@ void GameManager::getRotateField(bool direction)
 void GameManager::getInvertField()
 {
     field->invertField();
+}
+
+bool GameManager::isSearchThreadFinished()
+{
+    if(!isThreadStarted) return true;
+    return (agentActThread_1->isFinished() && agentActThread_2->isFinished());
 }

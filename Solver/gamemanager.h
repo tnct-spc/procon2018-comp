@@ -64,6 +64,8 @@ public:
 
     void threadTerminator();
 
+    bool isSearchThreadFinished();
+
 
 
 signals:
@@ -136,6 +138,8 @@ private:
 
     QThread *agentActThread_1;
     QThread *agentActThread_2;
+
+    bool isThreadStarted = false;
 
     //行動を保存しておく
     //1:移動 移動方向をintで設定する

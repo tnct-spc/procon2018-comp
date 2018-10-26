@@ -34,6 +34,10 @@ Mejirodai::~Mejirodai()
 
 void Mejirodai::RunManagerSimulation(){
 
+    if(!manager->isSearchThreadFinished()) {
+        return;
+    }
+
     runMode = true;
 
     // 各チームのアルゴリズムの設定
