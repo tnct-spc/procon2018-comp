@@ -95,7 +95,7 @@ std::vector<std::pair<double, std::pair<int,int>>> WarshallFloydAlgorithm::calcS
 
     std::pair<int,int> agent_pos = field.getAgent(side, agent);
 
-    if(!side){
+    if(!side && 0){
         std::vector<std::pair<double, std::pair<int,int>>> ret;
 
         for(int dir = 0; dir < 8; ++dir){
@@ -144,18 +144,22 @@ std::vector<std::pair<double, std::pair<int,int>>> WarshallFloydAlgorithm::calcS
 
     std::priority_queue<std::pair<double, std::list<std::pair<int,int>>>> que;
 
+    const int tex = 5;
+
     for(int pos = 0; pos < size_sum; ++pos)
         for(int depth = 1; depth <= maxdepth; ++depth){
+            if(side && depth != std::min(tex, maxdepth))
+                continue;
             double score;
             std::list<std::pair<int,int>> route;
 
             std::tie(score, route) = getRoute(edges, pos, depth);
             if(route.empty())
                 continue;
-            que.emplace((score / depth) * params.route_length_weight.at(depth - 1), std::move(route));
+            que.emplace((score / depth) * (side ? 1 : params.route_length_weight.at(depth - 1)), std::move(route));
         }
 
-    int bound = que.size() * params.bound_val;
+    int bound = side ? 1 : que.size() * params.bound_val;
 
     for(int index = 0; !que.empty(); ++index){
         double average;
