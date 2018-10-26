@@ -21,6 +21,7 @@ Mejirodai::Mejirodai(QWidget *parent) :
     connect(ui->selectOpponentAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->opponent_stackedWidget, SLOT(setCurrentIndex(int)));
     connect(ui->changeButton, &QPushButton::clicked, this, &Mejirodai::runOperatorWindow);
     connect(ui->ExportFieldBinary, &QPushButton::clicked,this , &Mejirodai::exportFieldtoBinary);
+    connect(ui->terminateButton, &QPushButton::clicked, this, &Mejirodai::searchThreadTerminator);
 
     ui->selectMyAlgorithmBox->currentIndexChanged(0);
     ui->selectOpponentAlgorithmBox->currentIndexChanged(0);
@@ -32,6 +33,10 @@ Mejirodai::~Mejirodai()
 }
 
 void Mejirodai::RunManagerSimulation(){
+
+    if(!manager->isSearchThreadFinished()) {
+        return;
+    }
 
     runMode = true;
 
@@ -126,4 +131,9 @@ void Mejirodai::runOperatorWindow(){
 void Mejirodai::exportFieldtoBinary(){
     procon::Field& exp_field = manager->getField();
     procon::BinaryIo::exportField(exp_field, QFileDialog::getSaveFileName(this,tr("Save CSV")).toStdString());
+}
+
+void Mejirodai::searchThreadTerminator()
+{
+    manager->threadTerminator();
 }

@@ -39,8 +39,6 @@ GameManager::GameManager(unsigned int x_size, unsigned int y_size, bool vis_show
 
     act_stack = std::vector<std::vector<std::tuple<int,int,int>>>(2, std::vector<std::tuple<int,int,int>>(2, std::make_tuple(0, 0, 0) ) );
 
-
-
     if(vis_show){
         visualizer = std::make_shared<Visualizer>(*field);
         visualizer->show();
@@ -838,23 +836,38 @@ void GameManager::nextMoveForManualMode(){
 //    std::pair<int, int> agent = field->getAgent(0,0);
 //    std::cout << agent.first << "," << agent.second << std::endl;
 
-    std::vector<std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>>> candidate_move(2);
-    candidate_move.at(0) = team_1->agentAct(field->getTurnCount());
-    candidate_move.at(1) = team_2->agentAct(field->getTurnCount());
+    agentActThread_1 = QThread::create([&]{
+        candidate_move[0] = team_1->agentAct(field->getTurnCount());
+    });
+    agentActThread_2 = QThread::create([&]{
+        candidate_move[1] = team_2->agentAct(field->getTurnCount());
+    });
+    isThreadStarted = true;
+    connect(agentActThread_1, SIGNAL(finished()), this, SLOT(twoThreadWaiter()));
+    connect(agentActThread_2, SIGNAL(finished()), this, SLOT(twoThreadWaiter()));
+    agentActThread_1->start();
+    agentActThread_2->start();
 
-    /*
-    std::vector<std::vector<procon::Cipher>> ciphers (2, std::vector<procon::Cipher>(1));
-    int move_0 = field->translateMoveToInt(0, candidate_move.at(0).first);
-    int move_1 = 26 + field->translateMoveToInt(0, candidate_move.at(0).second);
-    ciphers.at(0).at(0) = procon::changeIntToCipher(move_0);
-    ciphers.at(1).at(0) = procon::changeIntToCipher(move_1);
-    */
+//    candidate_move.at(0) = team_1->agentAct(field->getTurnCount());
+//    candidate_move.at(1) = team_2->agentAct(field->getTurnCount());
+}
 
+void GameManager::twoThreadWaiter()
+{
+    finishedThreadCount++;
+    if(finishedThreadCount == 2) {
+        finishedThreadCount = 0;
+        completeProgressForManualMode();
+    }
+}
+
+void GameManager::completeProgressForManualMode()
+{
     std::vector<std::vector<procon::Cipher>> ciphers(2, std::vector<procon::Cipher>(2));
-    ciphers.at(0).at(0) = procon::changeIntToCipher(std::get<1>(candidate_move.at(0).first) + 1);
-    ciphers.at(0).at(1) = procon::changeIntToCipher(- std::get<2>(candidate_move.at(0).first) + 14);
-    ciphers.at(1).at(0) = procon::changeIntToCipher(std::get<1>(candidate_move.at(0).second) + 27);
-    ciphers.at(1).at(1) = procon::changeIntToCipher(- std::get<2>(candidate_move.at(0).second) + 40);
+    ciphers.at(0).at(0) = procon::changeIntToCipher(std::get<1>(candidate_move[0].first) + 1);
+    ciphers.at(0).at(1) = procon::changeIntToCipher(- std::get<2>(candidate_move[0].first) + 14);
+    ciphers.at(1).at(0) = procon::changeIntToCipher(std::get<1>(candidate_move[0].second) + 27);
+    ciphers.at(1).at(1) = procon::changeIntToCipher(- std::get<2>(candidate_move[0].second) + 40);
 
     // ciphercard->drawCards(ciphers);
 
@@ -862,8 +875,8 @@ void GameManager::nextMoveForManualMode(){
 
     for(int side = 0; side < 2; ++side){
 
-            return_vec.at(side).at(0) = std::make_pair( std::get<1>(candidate_move.at(side).first), std::get<2>(candidate_move.at(side).first) );
-            return_vec.at(side).at(1) = std::make_pair( std::get<1>(candidate_move.at(side).second), std::get<2>(candidate_move.at(side).second) );
+            return_vec.at(side).at(0) = std::make_pair( std::get<1>(candidate_move[side].first), std::get<2>(candidate_move[side].first) );
+            return_vec.at(side).at(1) = std::make_pair( std::get<1>(candidate_move[side].second), std::get<2>(candidate_move[side].second) );
     }
 
     for(int side = 0; side < 2; ++side)
@@ -871,9 +884,19 @@ void GameManager::nextMoveForManualMode(){
             return_vec.at(side).at(agent).first += field->getAgent(side, agent).first;
             return_vec.at(side).at(agent).second += field->getAgent(side, agent).second;
         }
-
     emit setCandidateMove(return_vec);
+}
 
+void GameManager::threadTerminator()
+{
+    agentActThread_1->terminate();
+    agentActThread_2->terminate();
+    while(!agentActThread_1->isFinished() && !agentActThread_2->isFinished())
+        ;
+//    agentActThread_1->quit();
+//    agentActThread_2->quit();
+//    agentActThread_1->exit();
+//    agentActThread_2->exit();
 }
 
 void GameManager::startupChangeMode()
@@ -939,6 +962,22 @@ void GameManager::getChangeOfData(const std::pair<int, int> data, const bool age
     emit sendDataToVisualizer(data, agent);
 }
 
+//void GameManager::startThread(QString my_algo, QString opponent_algo, QString InputMethod)
+//{
+//    std::thread search_thread(&GameManager::startSimulation, this, my_algo, opponent_algo, InputMethod);
+//    std::thread test_thread([&](){
+//        mtx_.lock();
+//        std::cout << "test thread id: " << std::this_thread::get_id() << std::endl;
+//        mtx_.unlock();
+//    });
+//    std::thread::id main_tid = std::this_thread::get_id();
+//    mtx_.lock();
+//    std::cout << "main thread id: " << main_tid << std::endl;
+//    mtx_.unlock();
+//    search_thread.join();
+//    test_thread.join();
+//}
+
 // agent => first : team, second : agent
 // pos => first : x, second : y
 void GameManager::changeAgentpos(std::pair<int, int> agent, std::pair<int, int> pos)
@@ -961,4 +1000,10 @@ void GameManager::getRotateField(bool direction)
 void GameManager::getInvertField()
 {
     field->invertField();
+}
+
+bool GameManager::isSearchThreadFinished()
+{
+    if(!isThreadStarted) return true;
+    return (agentActThread_1->isFinished() && agentActThread_2->isFinished());
 }
