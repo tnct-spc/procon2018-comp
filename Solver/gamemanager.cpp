@@ -477,7 +477,6 @@ void GameManager::agentAct(const int turn, const int agent, const std::tuple<int
     //field->ifCreateArea(0, 0);
     int type, x_inp, y_inp;
     std::tie(type, x_inp, y_inp) = tuple_val;
-    std::cout << "agentAct: " << std::this_thread::get_id() << std::endl;
 
     std::pair<int,int> agent_pos = field->getAgent(turn, agent);
     std::pair<int,int> grid_size = field->getSize();
