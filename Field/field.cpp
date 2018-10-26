@@ -224,7 +224,7 @@ std::vector<std::vector<int>> procon::Field::createField(int x_size, int y_size,
     std::random_device rnd;
     std::mt19937 mt (rnd());
 
-    std::uniform_int_distribution<> rndminus(0,9);
+    std::uniform_int_distribution<> rndminus(9,9);
     //std::lognormal_distribution<> dist(3.0,0.25);
     std::uniform_int_distribution<> plus_rnd(0,max_val / 3);
 
