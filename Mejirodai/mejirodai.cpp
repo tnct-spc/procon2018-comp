@@ -95,8 +95,11 @@ void Mejirodai::RunManagerSimulation(){
         opponent_params = getParams(objects);
     }
 
+    // QRコード用のターン数
+    int finalTurn = ui->finalTurn->value();
+
 //    AlgorithmWrapper my = ui->selectMyAlgorithmBox->currentText().toStdString();
-    manager->startSimulation(my, opponnent, InputMethod, my_params, opponent_params);
+    manager->startSimulation(my, opponnent, InputMethod, my_params, opponent_params, finalTurn);
 }
 
 void Mejirodai::goNextState(){

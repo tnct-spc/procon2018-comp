@@ -122,7 +122,7 @@ void GameManager::setField(const procon::Field &pro, int now_t, int max_t){
     field->setFinalTurn(max_t);
 }
 
-void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod, std::vector<std::pair<QString, double>> my_params, std::vector<std::pair<QString, double>> opp_params) {
+void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString InputMethod, std::vector<std::pair<QString, double>> my_params, std::vector<std::pair<QString, double>> opp_params, int finalTurn) {
     if (QString::compare("GenerateField", InputMethod) == 0) {
         int x_size = field->getSize().first;
         int y_size = field->getSize().second;
@@ -159,6 +159,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         std::string f = qr.decodeQRcode();
         procon::Field hoge = qrc.ConvertCsvToField(f);
         field = std::make_shared<procon::Field>(hoge);
+        field->setFinalTurn(finalTurn);
         field->updatePoint();
         field_vec.clear();
         field_vec.push_back(std::make_shared<procon::Field>(*field));
