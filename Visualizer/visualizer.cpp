@@ -944,6 +944,8 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
 
     if (event->key() == Qt::Key_F){
         fl ^= 1;
+        this->update();
+        this->repaint();
     }
 
     if (is_change_field_mode) {
