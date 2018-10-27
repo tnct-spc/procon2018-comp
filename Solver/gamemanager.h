@@ -21,7 +21,6 @@
 #include <functional>
 #include <string>
 #include <QFileDialog>
-#include <QThread>
 
 class AlgorithmWrapper;
 
@@ -61,10 +60,6 @@ public:
 
     // ChangeModeを開始
     void startupChangeMode();
-
-    void threadTerminator();
-
-    bool isSearchThreadFinished();
 
 
 
@@ -119,8 +114,6 @@ private:
     std::shared_ptr<ProgresDock> progresdock;
     std::shared_ptr<MinimumVisualizer> minimum;
 
-    uint8_t finishedThreadCount = 0;
-
 
     unsigned int now_field = 0;
 
@@ -136,23 +129,15 @@ private:
 
     bool use_random_field = true;
 
-    QThread *agentActThread_1;
-    QThread *agentActThread_2;
-
-    bool isThreadStarted = false;
-
     //行動を保存しておく
     //1:移動 移動方向をintで設定する
     //2:タイル除去 移動方向をintで設定する
     std::vector<std::vector<std::tuple<int,int,int>>> act_stack; //ここは絶対座標での入力なので注意！
 
-    std::pair<std::tuple<int, int, int>, std::tuple<int, int, int>> candidate_move[2];
 
     void nextMoveForManualMode();
-    void completeProgressForManualMode();
 
-private slots:
-    void twoThreadWaiter();
+
 };
 #endif // GAMEMANAGER_H
 
