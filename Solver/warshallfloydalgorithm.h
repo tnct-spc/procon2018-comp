@@ -58,7 +58,7 @@ private:
     int getRotatePos(int pos, int rotate);
     bool outOfRange(int pos, int rotate);
 
-    int size_x, size_y, size_sum;
+    int size_sum;
 
     std::shared_ptr<ProgresDock> dock;
 

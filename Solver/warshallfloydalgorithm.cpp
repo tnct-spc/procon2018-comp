@@ -3,8 +3,7 @@
 WarshallFloydAlgorithm::WarshallFloydAlgorithm(const procon::Field& field, int final_turn, bool side) :
     AlgorithmWrapper(field, final_turn, side)
 {
-    std::tie(size_x, size_y) = field.getSize();
-    size_sum = size_x * size_y;
+    size_sum = field.getSize().first * field.getSize().second;
 
     dock = std::make_shared<ProgresDock>();
     // dock->show();
@@ -141,7 +140,7 @@ std::vector<std::pair<int, std::pair<int,int>>> WarshallFloydAlgorithm::calcSing
         const std::vector<std::list<std::pair<int,int>>> routes = map_element.second.routes.second;
         const std::vector<std::vector<int>>& putcounts = map_element.second.put_count;
 
-        std::vector<std::vector<std::vector<int>>> color(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255)));
+        std::vector<std::vector<std::vector<int>>> color(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255)));
 
         color.at(0).at(target_pos.first).at(target_pos.second) = 128;
         color.at(1).at(agent_pos.first).at(agent_pos.second) = 128;
@@ -209,8 +208,8 @@ std::pair<double, std::list<std::pair<int,int>>> WarshallFloydAlgorithm::getRout
 std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::calcDijkStra(int start_pos, int maxval, bool agent){
 
     std::bitset<144> field_states;
-    for(int x_pos = 0; x_pos < size_x; ++x_pos)
-        for(int y_pos = 0; y_pos < size_y; ++y_pos){
+    for(int x_pos = 0; x_pos < field.getSize().first; ++x_pos)
+        for(int y_pos = 0; y_pos < field.getSize().second; ++y_pos){
 
             int index = getPosValue(std::make_pair(x_pos, y_pos));
 
@@ -276,15 +275,15 @@ std::vector<std::vector<WarshallFloydAlgorithm::Edge>> WarshallFloydAlgorithm::c
 }
 
 std::pair<int, int> WarshallFloydAlgorithm::getPosPair(int x){
-    return std::make_pair(x / size_y, x % size_y);
+    return std::make_pair(x / field.getSize().second, x % field.getSize().second);
 }
 
 int WarshallFloydAlgorithm::getPosValue(std::pair<int, int> pos){
-    return size_y * pos.first + pos.second;
+    return field.getSize().second * pos.first + pos.second;
 }
 
 int WarshallFloydAlgorithm::getRotatePos(int pos, int rotate){
-    return pos + size_y * dx.at(rotate) + dy.at(rotate);
+    return pos + field.getSize().second * dx.at(rotate) + dy.at(rotate);
 }
 
 bool WarshallFloydAlgorithm::outOfRange(int pos, int rotate){
