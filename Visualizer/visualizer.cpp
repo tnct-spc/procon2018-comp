@@ -183,6 +183,14 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
                 //角が取れた四角形らしいです
                 painter.drawRoundRect(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size , 75, 50);
+
+                QColor qc(index ^ fl ? Qt::red : Qt::black);
+
+                qc.setAlpha(80);
+
+                painter.setBrush(QBrush(qc));
+
+                painter.drawEllipse(horizontal_margin + grid_size * (0.05 + pos_x), vertical_margin + grid_size * (0.05 + pos_y), 0.3 * grid_size, 0.3 * grid_size);
             }
         }
 
@@ -932,6 +940,10 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
         // GameManager側も変更
         emit sendInvertField();
         this->repaint();
+    }
+
+    if (event->key() == Qt::Key_F){
+        fl ^= 1;
     }
 
     if (is_change_field_mode) {

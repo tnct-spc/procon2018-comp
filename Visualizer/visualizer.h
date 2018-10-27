@@ -96,6 +96,7 @@ private:
 
     int grid_size;
 
+    bool fl = false;
     bool auto_mode = true;
 
     // 移動を入力するエージェントが選択されているか
