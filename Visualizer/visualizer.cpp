@@ -235,8 +235,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
         //とても汚いコピペコードで申し訳NASA
         QPoint side_0_point;
-        side_0_point.setX(horizontal_margin);
-        side_0_point.setY(window_height  - vertical_margin + grid_size * 1.3);
+        side_0_point.setX(is_exchange_color ? window_width - horizontal_margin - grid_size * 5 : horizontal_margin);
+        side_0_point.setY(is_exchange_color ? window_height  - vertical_margin + grid_size * 1.3 + grid_size * 0.6 : window_height  - vertical_margin + grid_size * 1.3);
 
         painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
 
@@ -259,8 +259,8 @@ void Visualizer::paintEvent(QPaintEvent *event){
         painter.drawText(side_0_point,QString::fromStdString(side_0_value));
 
         QPoint side_1_point;
-        side_1_point.setX(window_width - horizontal_margin - grid_size * 5);
-        side_1_point.setY(window_height  - vertical_margin + grid_size * 1.3 + grid_size * 0.6);
+        side_1_point.setX(is_exchange_color ? horizontal_margin : window_width - horizontal_margin - grid_size * 5);
+        side_1_point.setY(is_exchange_color ? window_height  - vertical_margin + grid_size * 1.3 : window_height  - vertical_margin + grid_size * 1.3 + grid_size * 0.6);
 
         painter.setFont(QFont("Decorative", grid_size * 0.6, QFont::Thin)); // text font
 
@@ -833,6 +833,19 @@ void Visualizer::updateToInvertField()
     }
 }
 
+void Visualizer::exchangeTeamColor()
+{
+    QColor box = team_color_a;
+    team_color_a = team_color_b;
+    team_color_b = box;
+
+    box = checked_color_a;
+    checked_color_a = checked_color_b;
+    checked_color_b = box;
+
+    is_exchange_color = is_exchange_color ? false : true;
+}
+
 void Visualizer::keyPressEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_C || event->key() == Qt::Key_E){
@@ -898,6 +911,9 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
 
         // GameManager側も変更
         emit sendRotateField(false);
+        this->repaint();
+    } else if (event->key() == Qt::Key_PageUp || event->key() == Qt::Key_PageDown) {
+        this->exchangeTeamColor();
         this->repaint();
     }
 
