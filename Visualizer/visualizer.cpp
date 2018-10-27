@@ -426,9 +426,10 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     // AutoModeでなくかつChaneModeではないとき
 
+    drawCandidateMove();
+
     if((auto_mode == false) && (change_mode == false) && !is_change_field_mode){
         drawAgentMove();
-        drawCandidateMove();
         if (selected) drawAroundAgent();
     }
 
@@ -848,6 +849,7 @@ void Visualizer::exchangeTeamColor()
 
 void Visualizer::keyPressEvent(QKeyEvent *event)
 {
+    /*
     if(event->key() == Qt::Key_C || event->key() == Qt::Key_E){
         if(is_change_field_mode){
             is_change_field_mode = false;
@@ -860,6 +862,7 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
             update();
         }
     }
+    */
 
     if((event->key() == Qt::Key_0 || event->key() == Qt::Key_3) && is_changing_field_grid && !is_moving_agent){
         setGridState(selected_to_change_grid, 0);
@@ -870,12 +873,14 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
     } else if ((event->key() == Qt::Key_Escape) && selected && !is_change_field_mode) {
         // 選択したエージェントの移動入力を解除
         checkClickGrid(std::make_pair(-1,-1), false);
+    /*
     } else if ((event->key() == Qt::Key_Escape) && is_change_field_mode) {
         is_change_field_mode = false;
         is_selected_grid = false;
         selected = false;
         update();
-    } else if ((event->key() == Qt::Key_R) && !is_change_field_mode) {
+    */
+    } else if (event->key() == Qt::Key_R) {
         // 現時点でのfieldで再計算
         is_recalcuration = true;
 
