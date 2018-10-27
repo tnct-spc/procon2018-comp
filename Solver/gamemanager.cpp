@@ -499,8 +499,6 @@ void GameManager::agentAct(const int turn, const int agent, const std::tuple<int
 }
 void GameManager::changeTurn(bool update){
 
-    std::cout << field->getSize().first << " , "  << field->getSize().second << std::endl;
-
     //[(x,y)]:(上書き時の色,(色,エージェント)) わかりづらいね
     std::map<std::pair<int,int>,std::pair<int,std::pair<int,int>>> counts;
 
