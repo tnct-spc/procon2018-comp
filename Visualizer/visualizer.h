@@ -81,6 +81,9 @@ private:
     // フィールドを反転させた際、他のパラメータも変更する
     void updateToInvertField();
 
+    // チームカラーを入れ替える
+    void exchangeTeamColor();
+
     int window_width;
     int window_height;
 
@@ -116,6 +119,9 @@ private:
     // 再計算時に表示
     bool is_recalcuration = false;
 
+    // 色の入れ替え
+    bool is_exchange_color = false;
+
     std::pair<int, int> selected_to_change_grid;
 
 
@@ -145,10 +151,10 @@ private:
     const QColor font_color = QColor(0,0,0,64);
     const QColor background_color = QColor(245,245,220);
     const QColor grid_color = QColor(220,220,180);
-    const QColor team_color_a = QColor(255,0,0);
-    const QColor team_color_b = QColor(0,0,255);
-    const QColor checked_color_a = QColor(255,120,0);
-    const QColor checked_color_b = QColor(0,120,255);
+    QColor team_color_a = QColor(255,0,0);
+    QColor team_color_b = QColor(0,0,255);
+    QColor checked_color_a = QColor(255,120,0);
+    QColor checked_color_b = QColor(0,120,255);
     const QColor selected_grid_color = QColor(0, 0, 0, 50);
 
 };
