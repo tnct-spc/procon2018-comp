@@ -778,10 +778,10 @@
     <item row="2" column="0">
      <widget class="QSpinBox" name="finalTurn">
       <property name="minimum">
-       <number>40</number>
+       <number>10</number>
       </property>
       <property name="maximum">
-       <number>80</number>
+       <number>90</number>
       </property>
       <property name="value">
        <number>40</number>
