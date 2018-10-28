@@ -894,6 +894,7 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
 
         // 次の行動が選択されていたエージェントをリセット
         confirm_count = 0;
+        field.updatePoint();
 
         emit sendRecalculation(std::make_pair(field.getTurnCount(), field.getFinalTurn()));
     } else if ((event->key() == Qt::Key_Escape) && is_change_field_mode && is_selected_grid) {
