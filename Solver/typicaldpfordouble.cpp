@@ -3,8 +3,7 @@
 TypicalDpForDouble::TypicalDpForDouble(const procon::Field& field, int final_turn, bool side) :
     AlgorithmWrapper(field, final_turn, side)
 {
-    std::tie(size_x, size_y) = field.getSize();
-    size_sum = size_x * size_y;
+    size_sum = field.getSize().first * field.getSize().second;
 
     dock = std::make_shared<ProgresDock>();
     if(dock_show)
@@ -15,8 +14,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
 
     int maxval = std::min(max_maxval, field.getFinalTurn() - field.getTurnCount() + 1);
 
-    auto int_to_pair = [this](int x){return std::make_pair(x / size_y, x % size_y);};
-    auto pair_to_int = [this](std::pair<int,int> x){return x.first * size_y + x.second;};
+    auto int_to_pair = [this](int x){return std::make_pair(x / field.getSize().second, x % field.getSize().second);};
+    auto pair_to_int = [this](std::pair<int,int> x){return x.first * field.getSize().second + x.second;};
 
     auto swap_pair = [](std::pair<std::pair<int,int>,std::pair<int,int>> x){
         if(x.first > x.second)std::swap(x.first, x.second);
@@ -56,8 +55,8 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
         pos_1.first += dx.at(dir % 8);
         pos_1.second += dy.at(dir % 8);
 
-        return pos_0.first < 0 || pos_0.second < 0 || pos_0.first >= size_x || pos_0.second >= size_y ||
-            pos_1.first < 0 || pos_1.second < 0 || pos_1.first >= size_x || pos_1.second >= size_y;
+        return pos_0.first < 0 || pos_0.second < 0 || pos_0.first >= field.getSize().first || pos_0.second >= field.getSize().second ||
+            pos_1.first < 0 || pos_1.second < 0 || pos_1.first >= field.getSize().first || pos_1.second >= field.getSize().second;
     };
 
     std::vector<int> first_move_pos(size_sum * size_sum, 0);
@@ -151,7 +150,7 @@ const std::pair<std::tuple<int,int,int>, std::tuple<int,int,int>> TypicalDpForDo
             auto route = getRoute(pos, dep);
             if(!route.first.empty() || !route.second.empty()){
                 if(dock_show)
-                    dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({route.first, route.second}), std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(size_x, std::vector<int>(size_y, 255))));
+                    dock->addMinumuVisu(field.getSize(), std::vector<std::list<std::pair<int,int>>>({route.first, route.second}), std::vector<std::vector<std::vector<int>>>(3, std::vector<std::vector<int>>(field.getSize().first, std::vector<int>(field.getSize().second, 255))));
                 routes_que.emplace(dp.at(dep).at(pos).average(), route);
             }
         }

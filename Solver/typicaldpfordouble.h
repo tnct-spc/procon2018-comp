@@ -14,7 +14,7 @@ public:
 
 private:
 
-    int size_x, size_y, size_sum;
+    int size_sum;
     const int max_maxval = 30;
     double bound_per = 0.1;
 

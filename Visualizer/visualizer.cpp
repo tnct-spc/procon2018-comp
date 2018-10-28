@@ -183,6 +183,14 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
                 //角が取れた四角形らしいです
                 painter.drawRoundRect(horizontal_margin + grid_size * (0.1 + pos_x), vertical_margin + grid_size * (0.1 + pos_y), 0.8 * grid_size, 0.8 * grid_size , 75, 50);
+
+                QColor qc(index ^ fl ? Qt::red : Qt::black);
+
+                qc.setAlpha(80);
+
+                painter.setBrush(QBrush(qc));
+
+                painter.drawEllipse(horizontal_margin + grid_size * (0.05 + pos_x), vertical_margin + grid_size * (0.05 + pos_y), 0.3 * grid_size, 0.3 * grid_size);
             }
         }
 
@@ -426,9 +434,10 @@ void Visualizer::paintEvent(QPaintEvent *event){
 
     // AutoModeでなくかつChaneModeではないとき
 
+    drawCandidateMove();
+
     if((auto_mode == false) && (change_mode == false) && !is_change_field_mode){
         drawAgentMove();
-        drawCandidateMove();
         if (selected) drawAroundAgent();
     }
 
@@ -848,6 +857,7 @@ void Visualizer::exchangeTeamColor()
 
 void Visualizer::keyPressEvent(QKeyEvent *event)
 {
+    /*
     if(event->key() == Qt::Key_C || event->key() == Qt::Key_E){
         if(is_change_field_mode){
             is_change_field_mode = false;
@@ -860,6 +870,7 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
             update();
         }
     }
+    */
 
     if((event->key() == Qt::Key_0 || event->key() == Qt::Key_3) && is_changing_field_grid && !is_moving_agent){
         setGridState(selected_to_change_grid, 0);
@@ -870,17 +881,20 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
     } else if ((event->key() == Qt::Key_Escape) && selected && !is_change_field_mode) {
         // 選択したエージェントの移動入力を解除
         checkClickGrid(std::make_pair(-1,-1), false);
+    /*
     } else if ((event->key() == Qt::Key_Escape) && is_change_field_mode) {
         is_change_field_mode = false;
         is_selected_grid = false;
         selected = false;
         update();
-    } else if ((event->key() == Qt::Key_R) && !is_change_field_mode) {
+    */
+    } else if (event->key() == Qt::Key_R) {
         // 現時点でのfieldで再計算
         is_recalcuration = true;
 
         // 次の行動が選択されていたエージェントをリセット
         confirm_count = 0;
+        field.updatePoint();
 
         emit sendRecalculation(std::make_pair(field.getTurnCount(), field.getFinalTurn()));
     } else if ((event->key() == Qt::Key_Escape) && is_change_field_mode && is_selected_grid) {
@@ -926,6 +940,12 @@ void Visualizer::keyPressEvent(QKeyEvent *event)
 
         // GameManager側も変更
         emit sendInvertField();
+        this->repaint();
+    }
+
+    if (event->key() == Qt::Key_F){
+        fl ^= 1;
+        this->update();
         this->repaint();
     }
 

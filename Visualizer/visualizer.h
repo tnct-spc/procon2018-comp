@@ -96,6 +96,7 @@ private:
 
     int grid_size;
 
+    bool fl = false;
     bool auto_mode = true;
 
     // 移動を入力するエージェントが選択されているか
@@ -107,7 +108,7 @@ private:
     bool clicked = false;
 
     //フィールドの編集モード/プレイモードの判定
-    bool is_change_field_mode = false;
+    bool is_change_field_mode = true;
 
     //編集モードでグリッドが選択されているかの判定
     bool is_changing_field_grid = false;

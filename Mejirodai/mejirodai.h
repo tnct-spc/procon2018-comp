@@ -12,7 +12,6 @@
 #include <QComboBox>
 #include <QStackedWidget>
 #include <QCheckBox>
-#include <QThread>
 #include <QObject>
 
 namespace Ui {
@@ -38,9 +37,8 @@ private:
     void exportFieldtoCSV();
     void runOperatorWindow();
     void exportFieldtoBinary();
-    void searchThreadTerminator();
 
-    const unsigned int x_size = -1;
+    const unsigned int x_size = 11;
     const unsigned int y_size = 8;
 
     // Runボタンが押されたか
