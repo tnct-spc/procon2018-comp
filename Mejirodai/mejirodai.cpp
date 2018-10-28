@@ -17,8 +17,8 @@ Mejirodai::Mejirodai(QWidget *parent) :
     connect(ui->goNext, &QPushButton::clicked, this, &Mejirodai::goNextState);
     connect(ui->goPrev, &QPushButton::clicked, this, &Mejirodai::goPrevState);
     connect(ui->exportField, &QPushButton::clicked, this, &Mejirodai::exportFieldtoCSV);
-    connect(ui->selectMyAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->my_stackedWidget, SLOT(setCurrentIndex(int)));
-    connect(ui->selectOpponentAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->opponent_stackedWidget, SLOT(setCurrentIndex(int)));
+//    connect(ui->selectMyAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->my_stackedWidget, SLOT(setCurrentIndex(int)));
+//    connect(ui->selectOpponentAlgorithmBox, SIGNAL(currentIndexChanged(int)), ui->opponent_stackedWidget, SLOT(setCurrentIndex(int)));
     connect(ui->changeButton, &QPushButton::clicked, this, &Mejirodai::runOperatorWindow);
     connect(ui->ExportFieldBinary, &QPushButton::clicked,this , &Mejirodai::exportFieldtoBinary);
 
@@ -82,18 +82,18 @@ void Mejirodai::RunManagerSimulation(){
     QObjectList objects;
 
     // childern
-    if (ui->my_stackedWidget->widget(ui->selectMyAlgorithmBox->currentIndex())) {
-        objects = ui->my_stackedWidget->widget(ui->selectMyAlgorithmBox->currentIndex())->children();
-        my_params = getParams(objects);
-    }
+//    if (ui->my_stackedWidget->widget(ui->selectMyAlgorithmBox->currentIndex())) {
+//        objects = ui->my_stackedWidget->widget(ui->selectMyAlgorithmBox->currentIndex())->children();
+//        my_params = getParams(objects);
+//    }
 
     // 相手チームのアルゴリズム用パラメータ
     std::vector<std::pair<QString, double>> opponent_params;
 
-    if (ui->opponent_stackedWidget->widget(ui->selectOpponentAlgorithmBox->currentIndex())) {
-        objects = ui->opponent_stackedWidget->widget(ui->selectOpponentAlgorithmBox->currentIndex())->children();
-        opponent_params = getParams(objects);
-    }
+//    if (ui->opponent_stackedWidget->widget(ui->selectOpponentAlgorithmBox->currentIndex())) {
+//        objects = ui->opponent_stackedWidget->widget(ui->selectOpponentAlgorithmBox->currentIndex())->children();
+//        opponent_params = getParams(objects);
+//    }
 
     // QRコード用のターン数
     int finalTurn = ui->finalTurn->value();

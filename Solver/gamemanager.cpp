@@ -203,7 +203,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_1 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 0);
     } else if (QString::compare("LastRegion", my_algo) == 0) {
         team_1 = std::make_shared<LastRegion>(*field, field->getFinalTurn(), 0);
-    } else if (QString::compare("WarshallFloydAlgorithm", my_algo) == 0) {
+    } else if (QString::compare("UsedAlgorithm", my_algo) == 0) {
         team_1 = std::make_shared<WarshallFloydAlgorithm>(*field, field->getFinalTurn(), 0);
     } else if (QString::compare("TypicalDPForDouble", my_algo) == 0) {
         team_1 = std::make_shared<TypicalDpForDouble>(*field, field->getFinalTurn(), 0);
@@ -239,7 +239,7 @@ void GameManager::startSimulation(QString my_algo, QString opponent_algo,QString
         team_2 = std::make_shared<DepthFirstSearch>(*field, field->getFinalTurn(), 1);
     } else if (QString::compare("LastRegion", opponent_algo) == 0) {
         team_2 = std::make_shared<LastRegion>(*field, field->getFinalTurn(), 1);
-    } else if (QString::compare("WarshallFloydAlgorithm", opponent_algo) == 0) {
+    } else if (QString::compare("UsedAlgorithm", opponent_algo) == 0) {
         team_2 = std::make_shared<WarshallFloydAlgorithm>(*field, field->getFinalTurn(), 1);
     } else if (QString::compare("TypicalDPForDouble", opponent_algo) == 0) {
         team_2 = std::make_shared<TypicalDpForDouble>(*field, field->getFinalTurn(), 1);
