@@ -7,10 +7,10 @@ QRCode::~QRCode(){
 }
 
 std::string QRCode::decodeQRcode(){
-    cv::VideoCapture cap(0);
+    cv::VideoCapture cap(2);
     if(!cap.isOpened()){
         std::cout<<"Can not connect to cammera."<<std::endl;
-        cap = cv::VideoCapture(2);
+        cap = cv::VideoCapture();
         while(!cap.isOpened()){}
     }
 
