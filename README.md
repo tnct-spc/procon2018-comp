@@ -1,15 +1,30 @@
 # procon2018-comp
-## インストールすべきもの(pacmanで入る)
-
-opencv zbar hdf5 ffmpeg
-
-## please add the following sentence to your .zshrc or .profile or something...
-
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
-
 ## Description
 
 第29回全国高等専門学校プログラミングコンテスト競技部門用のリポジトリです。
+
+### 対戦結果
+|  | 対戦相手 | 得点 | 対戦結果 |
+|:-----------|:------------:|:------------:|:------------:|
+| 予行演習 | 茨城 | おぼえてない… | 負け |
+| 予選1試合目 | モンゴル科学技術 | 81-73 | 勝ち |
+| 予選2試合目 | 有明 | 86-66 | 勝ち |
+| 予選3試合目 | 国際 | 93-90 | 勝ち |
+| 決勝トーナメント1回戦 | 徳山 | 141-117 | 勝ち |
+| 決勝トーナメント2回戦 | 北九州 | 168-155 | 勝ち |
+| 準々決勝 | 佐世保 | 280-275 | 勝ち |
+| 準決勝 | 福井 | 319-205 | 勝ち |
+| 決勝 | 仙台(名取) | 190-469 | 負け |
+
+## 開発環境
+
+よくわかりません…
+
+
+## インストールすべきもの(pacmanで入るらしいです)
+
+opencv zbar hdf5 ffmpeg vtk
+
 
 ### 大会Twitterタグ
 [#procon29](https://twitter.com/search?q=%23procon29)
